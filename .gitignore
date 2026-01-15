@@ -1,11 +1,14 @@
 *.pdf
-*.html
+temp_web_itinerario.html
 __pycache__/
 .venv/
 .env/
 temp_*/
 paquetes_personalizados.json
 Captura de pantalla*.png
+!Captura de pantalla 2026-01-05 102612.png
+!Captura de pantalla 2026-01-13 094056.png
+!Captura de pantalla 2026-01-13 094212.png
 Captura de pantalla*.jpg
 ITINERARIOS WEB/
 dev_roc/
