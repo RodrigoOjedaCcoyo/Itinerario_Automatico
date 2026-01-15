@@ -167,7 +167,7 @@ def generar_pdf_web(tours, pasajero, fechas, categoria, modo, vendedor, celular,
         extras_template = ""
     
     # Logo y Fondo (Rutas relativas)
-    uri_logo = 'Captura de pantalla 2026-01-05 102612.png'
+    uri_logo = 'logo_viajes.png'
     uri_llama = 'Fondo.png'
     
     # --- CONSTRUIR SECCIÓN DE PRECIOS DINÁMICA ---
@@ -292,7 +292,10 @@ def generar_pdf_web(tours, pasajero, fechas, categoria, modo, vendedor, celular,
         'margin-left': '0',
         'encoding': "UTF-8",
         'no-outline': None,
-        'enable-local-file-access': None
+        'enable-local-file-access': None,
+        'quiet': '',
+        'load-error-handling': 'ignore',
+        'load-media-error-handling': 'ignore'
     }
     
     pdfkit.from_file(OUTPUT_HTML, OUTPUT_PDF, options=options)
@@ -549,10 +552,10 @@ with col2:
             if nombre and st.session_state.itinerario:
                 # Determinar portada y títulos
                 if cat_sel == "Perú para el Mundo":
-                    cover_img = "Captura de pantalla 2026-01-13 094212.png"
+                    cover_img = "portada_peru.png"
                     t1, t2 = "PERÚ", "PARA EL MUNDO"
                 else: # Cusco Tradicional o por defecto
-                    cover_img = "Captura de pantalla 2026-01-13 094056.png"
+                    cover_img = "portada_cusco.png"
                     t1, t2 = "CUSCO", "TRADICIONAL"
 
                 # Estructura de precios para el PDF
