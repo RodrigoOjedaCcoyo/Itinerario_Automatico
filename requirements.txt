@@ -1,0 +1,6 @@
+streamlit
+pdfkit
+jinja2
+imgkit
+pathlib
+datetime

@@ -1,0 +1,10 @@
+*.pdf
+*.html
+__pycache__/
+.venv/
+.env/
+temp_*/
+paquetes_personalizados.json
+Captura de pantalla*.png
+Captura de pantalla*.jpg
+ITINERARIOS WEB/
