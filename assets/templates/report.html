@@ -3,43 +3,49 @@
 
 <head>
     <meta charset="UTF-8">
-    <title>Itinerario - {{ title_1 }} {{ title_2 }}</title>
-    {% if inline_css %}
+    <title>Itinerario</title>
     <style>
-        {
+        /* INYECCIÓN DE DISEÑO DIRECTO */
+            {
                 {
                 inline_css | safe
             }
         }
+
+        /* Correcciones de emergencia para iconos */
+        .service-icon {
+            width: 32px !important;
+            height: 32px !important;
+            display: flex !important;
+        }
+
+        .service-icon svg {
+            width: 32px !important;
+            height: 32px !important;
+        }
     </style>
-    {% endif %}
 </head>
 
 <body>
     <!-- PORTADA -->
     <div class="cover-container" style="background-image: url('{{ cover_url }}'); page-break-after: always;">
         <div class="overlay"></div>
-
         <div class="pasajero-info">
             {{ pasajero }}<br>
             Del {{ fechas }}
         </div>
-
         <div class="title-group">
             <div class="title-peru">{{ title_1 }}</div>
             <div class="title-mundo">{{ title_2 }}</div>
         </div>
-
         <div class="logo-bottom-cover">
-            <img src="{{ logo_cover_url }}" alt="Viajes Cusco Peru">
+            <img src="{{ logo_cover_url }}" alt="Logo">
         </div>
-
         <div class="duration-box">{{ duracion }}</div>
-
         <div class="footer-line-cover"></div>
     </div>
 
-    <!-- PÁGINAS DE ITINERARIO -->
+    <!-- PÁGINAS DE CADA DÍA -->
     {% for day in days %}
     <div class="page-container" {% if not loop.last %}style="page-break-after: always;" {% endif %}>
         <div class="decor-top-right"></div>
@@ -48,20 +54,16 @@
                 <img src="{{ logo_url }}" alt="Logo">
             </div>
         </div>
-
         <div class="day-header">
             <h2>DÍA {{ day.numero }}:</h2>
             <h3>{{ day.titulo }}</h3>
         </div>
-
         <p class="description">{{ day.descripcion }}</p>
-
         <ul class="highlights-list">
             {% for h in day.highlights %}
             <li>{{ h }}</li>
             {% endfor %}
         </ul>
-
         <h4 class="section-title">SERVICIOS QUE INCLUYE:</h4>
         <ul class="services-list">
             {% for s in day.servicios %}
@@ -77,39 +79,20 @@
             {% endfor %}
         </ul>
 
-        {% if day.servicios_no %}
-        <h4 class="section-title">SERVICIOS QUE NO INCLUYE:</h4>
-        <ul class="services-list">
-            {% for s in day.servicios_no %}
-            <li class="service-item">
-                <div class="service-icon">
-                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
-                        stroke-linejoin="round">
-                        {{ s.svg | safe }}
-                    </svg>
-                </div>
-                <span class="service-text">{{ s.texto }}</span>
-            </li>
-            {% endfor %}
-        </ul>
-        {% endif %}
-
+        <!-- COLLAGE DE IMÁGENES -->
         <div class="collage-container">
             <svg class="pin-icon pin-start" viewBox="0 0 24 24" fill="currentColor">
                 <path
                     d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5c-1.38 0-2.5-1.12-2.5-2.5s1.12-2.5 2.5-2.5 2.5 1.12 2.5 2.5-1.12 2.5-2.5 2.5z" />
             </svg>
-
             <svg class="dotted-line" viewBox="0 0 400 750" preserveAspectRatio="none">
                 <path
                     d="M200,730 C200,680 280,620 280,560 C280,500 120,440 120,380 C120,320 280,260 280,200 C280,140 200,80 200,20"
                     fill="none" stroke="#55b7b0" stroke-width="3" stroke-dasharray="10,8" stroke-linecap="round" />
             </svg>
-
             {% for img in day.images|reverse %}
             <div class="circular-img img-{{ loop.index }}" style="background-image: url('{{ img }}');"></div>
             {% endfor %}
-
             <svg class="pin-icon pin-end" viewBox="0 0 24 24" fill="currentColor">
                 <path
                     d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5c-1.38 0-2.5-1.12-2.5-2.5s1.12-2.5 2.5-2.5 2.5 1.12 2.5 2.5-1.12 2.5-2.5 2.5z" />
@@ -118,7 +101,7 @@
     </div>
     {% endfor %}
 
-    <!-- PÁGINAS DE EXTRAS -->
+    <!-- PÁGINA DE PRECIOS -->
     <div class="page-container extra-page" style="page-break-after: always;">
         <div class="decor-top-right"></div>
         <div class="decor-bottom-left">
@@ -126,23 +109,19 @@
                 <img src="{{ logo_url }}" alt="Logo">
             </div>
         </div>
-
         <h2 class="extra-title">INVERSIÓN PARA<br>TU AVENTURA</h2>
-
         {% if precios.nac %}
         <div class="extra-title" style="margin-top: 30px;">PRECIO NACIONAL</div>
         <div class="extra-subtitle">por persona</div>
         <div class="price-value">S/ {{ precios.nac.monto }}</div>
         <div class="price-detail">ADULTO<br>NO INCLUYE HOTEL</div>
         {% endif %}
-
         {% if precios.ext %}
         <div class="extra-title" style="margin-top: 30px;">PRECIO EXTRANJERO</div>
         <div class="extra-subtitle">por persona</div>
         <div class="price-value">$ {{ precios.ext.monto }}</div>
         <div class="price-detail">ADULTO<br>NO INCLUYE HOTEL</div>
         {% endif %}
-
         {% if precios.can %}
         <div class="extra-title" style="margin-top: 30px;">PRECIO CAN</div>
         <div class="extra-subtitle">por persona</div>
@@ -151,7 +130,7 @@
         {% endif %}
     </div>
 
-    <!-- RECOMENDACIONES -->
+    <!-- PÁGINA DE RECOMENDACIONES -->
     <div class="page-container extra-page" style="page-break-after: always;">
         <div class="decor-top-right"></div>
         <div class="decor-bottom-left">
@@ -159,9 +138,7 @@
                 <img src="{{ logo_url }}" alt="Logo">
             </div>
         </div>
-
         <h2 class="extra-title">RECOMENDACIONES<br>DE VIAJE</h2>
-
         <div class="recom-grid">
             <h4 class="recom-title">EQUIPAJE</h4>
             <div class="recom-item">Llevar ropa cómoda y abrigada</div>
@@ -169,7 +146,6 @@
             <div class="recom-item">Zapatos de trekking o cómodos</div>
             <div class="recom-item">Botella de agua reutilizable</div>
         </div>
-
         <div class="recom-grid" style="margin-top: 20px;">
             <h4 class="recom-title">SALUD</h4>
             <div class="recom-item">Aclimatarse gradualmente a la altura</div>
@@ -177,7 +153,6 @@
             <div class="recom-item">Evitar comidas pesadas el primer día</div>
             <div class="recom-item">Traer medicamentos personales</div>
         </div>
-
         <div class="recom-grid" style="margin-top: 20px;">
             <h4 class="recom-title">DOCUMENTOS</h4>
             <div class="recom-item">Pasaporte o DNI vigente</div>
@@ -186,6 +161,7 @@
         </div>
     </div>
 
+    <!-- POLÍTICAS -->
     <div class="page-container extra-page">
         <div class="decor-top-right"></div>
         <div class="decor-bottom-left">
@@ -193,33 +169,15 @@
                 <img src="{{ logo_url }}" alt="Logo">
             </div>
         </div>
-
         <h2 class="extra-title">POLÍTICAS Y<br>CONDICIONES</h2>
-
         <div class="policy-section">
             <h4 class="policy-title">RESERVAS</h4>
-            <p class="policy-text">Para confirmar la reserva se requiere un depósito del 50% del valor total. El saldo
-                debe ser cancelado 15 días antes del inicio del viaje.</p>
+            <p class="policy-text">Para confirmar la reserva se requiere un depósito del 50% del valor total.</p>
         </div>
-
         <div class="policy-section">
             <h4 class="policy-title">CANCELACIONES</h4>
-            <p class="policy-text">Cancelaciones con más de 30 días de anticipación: devolución del 80%. Entre 15-30
-                días: devolución del 50%. Menos de 15 días: sin devolución.</p>
+            <p class="policy-text">Cancelaciones con más de 30 días de anticipación: devolución del 80%.</p>
         </div>
-
-        <div class="policy-section">
-            <h4 class="policy-title">MODIFICACIONES</h4>
-            <p class="policy-text">Cambios de fecha están sujetos a disponibilidad y pueden incurrir en cargos
-                adicionales según temporada.</p>
-        </div>
-
-        <div class="policy-section">
-            <h4 class="policy-title">RESPONSABILIDAD</h4>
-            <p class="policy-text">La agencia no se responsabiliza por pérdida de objetos personales, retrasos por
-                condiciones climáticas o modificaciones operativas fuera de nuestro control.</p>
-        </div>
-
         <div class="llama-circle" style="background-image: url('{{ llama_img }}');"></div>
     </div>
 </body>
