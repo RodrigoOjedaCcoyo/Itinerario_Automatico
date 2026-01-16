@@ -12,16 +12,11 @@
     margin: 0;
 }
 
-
-
-
-
 body {
     margin: 0;
     padding: 0;
     width: 210mm;
     height: 297mm;
-    /* Force exact A4 height */
     background-color: white;
     font-family: var(--font-main);
     color: var(--color-text);
@@ -29,17 +24,15 @@ body {
     print-color-adjust: exact;
 }
 
-/* --- FROM Diseño.css (ITINERARY PAGES) --- */
+/* --- ITINERARY PAGES --- */
 .page-container {
     width: 210mm;
     min-height: 297mm;
     height: 297mm;
     background: white;
     margin: 0 auto;
-    /* Ensure centered */
     position: relative;
     padding: 40px 50px 100px 50px;
-    /* Restore original padding */
     box-sizing: border-box;
     overflow: hidden;
     page-break-after: always;
@@ -149,7 +142,6 @@ body {
 .highlights-list li::before {
     content: "•";
     color: var(--color-primary);
-    /* Changed to primary based on design conventions */
     font-weight: 800;
     flex-shrink: 0;
 }
@@ -168,7 +160,7 @@ body {
 
 .services-list {
     list-style: none;
-    padding-left: 20px;
+    padding-left: 0;
     margin-bottom: 25px;
     max-width: 60%;
     position: relative;
@@ -203,7 +195,7 @@ body {
     color: var(--color-text);
 }
 
-/* Collage Section from Diseño.css / Estructura.html */
+/* Collage Section */
 .collage-container {
     position: absolute;
     bottom: 20px;
@@ -249,12 +241,11 @@ body {
     overflow: hidden;
 }
 
-/* Image Positions (Adjusted to match Diseño.css exactly) */
+/* Image Positions */
 .img-1 {
     width: 150px;
     height: 150px;
     bottom: 40px;
-    /* From .img-5 in Ref (inverted order in template) */
     left: 180px;
     z-index: 10;
     border-width: 3px;
@@ -264,7 +255,6 @@ body {
     width: 120px;
     height: 120px;
     bottom: 170px;
-    /* From .img-4 in Ref */
     left: 100px;
     z-index: 9;
     border-width: 3px;
@@ -274,7 +264,6 @@ body {
     width: 140px;
     height: 140px;
     top: 250px;
-    /* Ref .img-3 */
     left: 90px;
     z-index: 8;
     border-width: 3px;
@@ -284,7 +273,6 @@ body {
     width: 130px;
     height: 130px;
     top: -80px;
-    /* Ref .img-2 */
     right: 0px;
     left: auto;
     z-index: 9;
@@ -295,18 +283,16 @@ body {
     width: 150px;
     height: 150px;
     top: 50px;
-    /* Ref .img-1 */
     left: 50px;
     z-index: 8;
     border-width: 3px;
 }
 
-
-/* --- FROM Portada.html (COVER PAGE) --- */
+/* --- COVER PAGE --- */
 .cover-container {
     position: relative;
-    width: 100%;
-    height: 100%;
+    width: 210mm;
+    height: 297mm;
     background-size: cover !important;
     background-repeat: no-repeat !important;
     background-position: center bottom;
@@ -316,9 +302,11 @@ body {
     padding: 0;
 }
 
-/* REMOVED OVERLAY to fix "black stain" */
 .overlay {
-    display: none;
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(to bottom, rgba(0, 0, 0, 0.1), rgba(0, 0, 0, 0.3));
 }
 
 .pasajero-info {
@@ -389,10 +377,10 @@ body {
     bottom: 0;
     width: 100%;
     height: 15px;
-    background-color: #00bcd4;
+    background-color: #55b7b0;
 }
 
-/* --- FROM Extras.html --- */
+/* --- EXTRAS PAGES --- */
 .extra-page {
     display: flex;
     flex-direction: column;
@@ -404,7 +392,6 @@ body {
 .extra-title {
     color: #00bcd4;
     font-size: 28px;
-    /* Corrected to match user Ref tweak */
     font-weight: 800;
     margin-top: 20px;
     margin-bottom: 5px;
@@ -435,69 +422,6 @@ body {
     text-transform: uppercase;
 }
 
-.info-list {
-    text-align: left;
-    width: 100%;
-    padding: 0 40px;
-    margin-bottom: 40px;
-}
-
-.info-list li {
-    font-size: 14px;
-    margin-bottom: 12px;
-    line-height: 1.5;
-    list-style: none;
-    position: relative;
-    padding-left: 20px;
-}
-
-.info-list li::before {
-    content: "•";
-    position: absolute;
-    left: 0;
-    font-weight: bold;
-    color: #2d3436;
-    /* Default black bullets in Ref Extras.html, but using dark grey */
-}
-
-.section-header-red {
-    color: #ff5252;
-    font-size: 32px;
-    font-weight: 800;
-    text-align: left;
-    width: 100%;
-    padding: 0 40px;
-    margin-bottom: 20px;
-    text-transform: uppercase;
-}
-
-.train-subtitle {
-    color: #00bcd4;
-    font-size: 22px;
-    font-weight: 800;
-    text-align: left;
-    width: 100%;
-    padding: 0 40px;
-    margin-bottom: 15px;
-    display: flex;
-    align-items: center;
-    gap: 10px;
-}
-
-.img-collage {
-    display: flex;
-    width: 90%;
-    height: 250px;
-    margin-top: 20px;
-    gap: 5px;
-}
-
-.img-collage div {
-    flex: 1;
-    background-size: cover;
-    background-position: center;
-}
-
 /* Recom Grid */
 .recom-grid {
     text-align: left;
@@ -516,7 +440,7 @@ body {
 
 .recom-item {
     font-size: 13px;
-    font-weight: 800;
+    font-weight: 600;
     margin-bottom: 5px;
     display: flex;
     align-items: flex-start;
@@ -527,23 +451,7 @@ body {
 .recom-item::before {
     content: "•";
     font-weight: 900;
-}
-
-.mask-parallelogram {
-    width: 300px;
-    height: 400px;
-    margin-top: 40px;
-    background-size: cover;
-    transform: skew(-15deg);
-    overflow: hidden;
-    border-radius: 20px;
-}
-
-.mask-parallelogram div {
-    width: 100%;
-    height: 100%;
-    transform: skew(15deg) scale(1.2);
-    background-size: cover;
+    color: var(--color-primary);
 }
 
 .policy-section {
@@ -557,6 +465,7 @@ body {
     font-weight: 800;
     font-size: 16px;
     margin-bottom: 5px;
+    color: #00bcd4;
 }
 
 .policy-text {
@@ -565,8 +474,8 @@ body {
 }
 
 .llama-circle {
-    width: 250px;
-    height: 250px;
+    width: 200px;
+    height: 200px;
     border-radius: 50%;
     background-size: cover;
     background-position: center;

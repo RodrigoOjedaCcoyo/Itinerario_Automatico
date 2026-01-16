@@ -1,1 +1,0 @@
-# Itinerario_Automatico

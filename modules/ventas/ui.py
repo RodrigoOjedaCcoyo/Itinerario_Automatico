@@ -2,60 +2,105 @@ import streamlit as st
 import os
 import json
 from datetime import datetime
+from pathlib import Path
 from data.tours_db import tours_db, paquetes_db
 from utils.pdf_generator import generate_pdf
 
 # --- CONSTANTS ---
-PACKAGES_FILE = 'data/paquetes_guardados.json'
+PACKAGES_FILE = 'paquetes_personalizados.json'
 
-# --- PERSISTENCE HELPERS ---
-def load_saved_packages():
+# --- FUNCIONES DE PERSISTENCIA ---
+def guardar_paquete(nombre, itinerario):
+    data = {}
     if os.path.exists(PACKAGES_FILE):
-        try:
-            with open(PACKAGES_FILE, 'r', encoding='utf-8') as f:
-                return json.load(f)
-        except:
-            return {}
-    return {}
-
-def save_package(name, itinerary):
-    data = load_saved_packages()
-    data[name] = itinerary
-    
-    # Create dir if not exists
-    os.makedirs(os.path.dirname(PACKAGES_FILE), exist_ok=True)
-    
+        with open(PACKAGES_FILE, 'r', encoding='utf-8') as f:
+            data = json.load(f)
+    data[nombre] = itinerario
     with open(PACKAGES_FILE, 'w', encoding='utf-8') as f:
         json.dump(data, f, ensure_ascii=False, indent=4)
 
-# --- MAIN UI RENDERER ---
-def render_ventas_ui():
-    st.title("🛡️ Constructor de Itinerarios Premium")
-    st.caption("Módulo de Ventas v2.0 - Arquitectura Modular")
+def cargar_paquetes():
+    if os.path.exists(PACKAGES_FILE):
+        with open(PACKAGES_FILE, 'r', encoding='utf-8') as f:
+            return json.load(f)
+    return {}
+
+# --- DICCIONARIO DE ICONOS SVG ---
+ICON_MAP = {
+    'transporte': '<path d="M19 17h2c.6 0 1-.4 1-1v-3c0-.9-.7-1.7-1.5-1.9C18.7 10.6 16 10 16 10s-1.3-1.4-2.2-2.3c-.5-.4-1.1-.7-1.8-.7H5c-1.1 0-2 .9-2 2v7c0 1.1.9 2 2 2h2"></path><circle cx="7" cy="17" r="2"></circle><path d="M9 17h6"></path><circle cx="17" cy="17" r="2"></circle>',
+    'traslado': '<path d="M19 17h2c.6 0 1-.4 1-1v-3c0-.9-.7-1.7-1.5-1.9C18.7 10.6 16 10 16 10s-1.3-1.4-2.2-2.3c-.5-.4-1.1-.7-1.8-.7H5c-1.1 0-2 .9-2 2v7c0 1.1.9 2 2 2h2"></path><circle cx="7" cy="17" r="2"></circle><path d="M9 17h6"></path><circle cx="17" cy="17" r="2"></circle>',
+    'guía': '<path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"></path><circle cx="9" cy="7" r="4"></circle><path d="M22 21v-2a4 4 0 0 0-3-3.87"></path><path d="M16 3.13a4 4 0 0 1 0 7.75"></path>',
+    'asistencia': '<path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"></path><circle cx="9" cy="7" r="4"></circle>',
+    'almuerzo': '<path d="M3 2v7c0 1.1.9 2 2 2h4V2"></path><path d="M7 2v20"></path><path d="M21 15V2v0a5 5 0 0 0-5 5v6c0 1.1.9 2 2 2h3Zm0 0v7"></path>',
+    'alimentación': '<path d="M3 2v7c0 1.1.9 2 2 2h4V2"></path><path d="M7 2v20"></path><path d="M21 15V2v0a5 5 0 0 0-5 5v6c0 1.1.9 2 2 2h3Zm0 0v7"></path>',
+    'ingreso': '<path d="M2 9a3 3 0 0 1 0 6v2a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2v-2a3 3 0 0 1 0-6V7a2 2 0 0 0-2-2H4a2 2 0 0 0-2 2Z"></path><path d="M13 5v2"></path><path d="M13 17v2"></path><path d="M13 11v2"></path>',
+    'boleto': '<path d="M2 9a3 3 0 0 1 0 6v2a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2v-2a3 3 0 0 1 0-6V7a2 2 0 0 0-2-2H4a2 2 0 0 0-2 2Z"></path><path d="M13 5v2"></path><path d="M13 17v2"></path><path d="M13 11v2"></path>',
+    'vuelo': '<path d="M17.8 19.2 16 11l3.5-3.5C21 6 21.5 4 21 3c-1-.5-3 0-4.5 1.5L13 8 4.8 6.2c-.5-.1-.9.1-1.1.5l-.3.5c-.2.5-.1 1 .3 1.3L9 12l-2 3H4l-1 1 3 2 2 3 1-1v-3l3-2 3.5 5.3c.3.4.8.5 1.3.3l.5-.2c.4-.3.6-.7.5-1.2z"></path>',
+    'botiquín': '<rect x="3" y="5" width="18" height="14" rx="2"/><path d="M9 12h6"/><path d="M12 9v6"/>',
+    'oxígeno': '<rect x="3" y="5" width="18" height="14" rx="2"/><path d="M9 12h6"/><path d="M12 9v6"/>',
+    'propinas': '<line x1="12" y1="2" x2="12" y2="22"/><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/>',
+    'default_in': '<polyline points="20 6 9 17 4 12"></polyline>',
+    'default_out': '<line x1="5" y1="12" x2="19" y2="12"></line>'
+}
+
+def get_svg_icon(text, default_key='default_in'):
+    text_lower = text.lower()
+    for key, svg in ICON_MAP.items():
+        if key in text_lower:
+            return svg
+    return ICON_MAP[default_key]
+
+def obtener_imagenes_tour(nombre_carpeta):
+    """Obtiene las imágenes de un tour desde la carpeta assets/img/tours/"""
+    base_path = Path(os.getcwd()) / 'assets' / 'img' / 'tours' / nombre_carpeta
     
-    # Ensure Session State
+    if not base_path.exists():
+        # Fallback a carpeta general si existe
+        general_path = Path(os.getcwd()) / 'assets' / 'img' / 'tours' / 'general'
+        if general_path.exists():
+            base_path = general_path
+        else:
+            return ["https://via.placeholder.com/400x300?text=Foto+Tour"] * 5
+    
+    imagenes = []
+    if base_path.exists():
+        for f in base_path.iterdir():
+            if f.suffix.lower() in ['.png', '.jpg', '.jpeg', '.webp']:
+                imagenes.append(str(f.absolute()))
+    
+    while len(imagenes) < 5:
+        imagenes.append("https://via.placeholder.com/400x300?text=Foto+Tour")
+        
+    return imagenes[:5]
+
+# --- UI PRINCIPAL ---
+def render_ventas_ui():
+    """Renderiza la interfaz de ventas"""
+    
+    # Estado de sesión
     if 'itinerario' not in st.session_state:
         st.session_state.itinerario = []
     if 'origen_previo' not in st.session_state:
         st.session_state.origen_previo = "Nacional/Chileno"
-
-    # Layout
+    
+    st.title("🏔️ Constructor de Itinerarios Premium")
+    st.write("Interfaz exclusiva para el equipo de ventas de Viajes Cusco Perú.")
+    
     col1, col2 = st.columns([1, 2])
-
-    # --- COLUMNA 1: CONFIGURACIÓN ---
+    
     with col1:
         st.subheader("👤 Datos del Pasajero")
         nombre = st.text_input("Nombre Completo del Cliente", placeholder="Ej: Juan Pérez")
         
         cv1, cv2 = st.columns(2)
-        vendedor = cv1.text_input("Vendedor", placeholder="Nombre Agente")
-        celular = cv2.text_input("Celular", placeholder="+51 9XX...")
+        vendedor = cv1.text_input("Vendedor", placeholder="Nombre del Agente")
+        celular = cv2.text_input("Celular del Cliente", placeholder="Ej: +51 9XX XXX XXX")
         
         t_col1, t_col2 = st.columns(2)
         tipo_t = t_col1.radio("Origen", ["Nacional/Chileno", "Extranjero"])
         modo_s = t_col2.radio("Servicio", ["Sistema Pool", "Servicio Privado"])
-
-        # Auto-update Prices logic
+        
+        # Actualizar precios al cambiar origen
         if tipo_t != st.session_state.origen_previo:
             for tour in st.session_state.itinerario:
                 t_base = next((t for t in tours_db if t['titulo'] == tour['titulo']), None)
@@ -63,39 +108,71 @@ def render_ventas_ui():
                     tour['costo'] = t_base['costo_nacional'] if "Nacional" in tipo_t else t_base['costo_extranjero']
             st.session_state.origen_previo = tipo_t
             st.rerun()
-
-        st.markdown("#### 👥 Pasajeros")
-        p_c1, p_c2, p_c3 = st.columns(3)
-        n_adultos_nac = p_c1.number_input("Ad. Nac", 0, value=1 if "Nacional" in tipo_t else 0)
-        n_ninos_nac = p_c1.number_input("Niñ. Nac", 0)
-        n_adultos_ext = p_c2.number_input("Ad. Ext", 0, value=1 if "Extranjero" in tipo_t else 0)
-        n_ninos_ext = p_c2.number_input("Niñ. Ext", 0)
-        n_adultos_can = p_c3.number_input("Ad. CAN", 0)
-        n_ninos_can = p_c3.number_input("Niñ. CAN", 0)
+        
+        st.markdown("#### 👥 Cantidad de Pasajeros")
+        p_col1, p_col2, p_col3 = st.columns(3)
+        with p_col1:
+            n_adultos_nac = st.number_input("Adultos Nacionales", min_value=0, value=1 if "Nacional" in tipo_t else 0, step=1)
+            n_ninos_nac = st.number_input("Niños Nacionales", min_value=0, value=0, step=1)
+        with p_col2:
+            n_adultos_ext = st.number_input("Adultos Extranjeros", min_value=0, value=1 if "Extranjero" in tipo_t else 0, step=1)
+            n_ninos_ext = st.number_input("Niños Extranjeros", min_value=0, value=0, step=1)
+        with p_col3:
+            n_adultos_can = st.number_input("Adultos CAN", min_value=0, value=0, step=1)
+            n_ninos_can = st.number_input("Niños CAN", min_value=0, value=0, step=1)
+        
+        total_pasajeros = n_adultos_nac + n_ninos_nac + n_adultos_ext + n_ninos_ext + n_adultos_can + n_ninos_can
+        st.info(f"Total personas: {total_pasajeros}")
         
         col_f1, col_f2 = st.columns(2)
-        fecha_inicio = col_f1.date_input("Inicio", datetime.now())
-        fecha_fin = col_f2.date_input("Fin", datetime.now())
-
+        fecha_inicio = col_f1.date_input("Fecha Inicio", datetime.now())
+        fecha_fin = col_f2.date_input("Fecha Fin", datetime.now())
+        rango_fechas = f"Del {fecha_inicio.strftime('%d/%m')} al {fecha_fin.strftime('%d/%m, %Y')}"
+        
+        # Sidebar para paquetes guardados
+        with st.sidebar:
+            st.header("💾 Mis Paquetes Guardados")
+            
+            with st.expander("➕ Guardar Itinerario Actual", expanded=False):
+                nombre_p = st.text_input("Nombre de tu paquete", placeholder="Ej: Machu Picchu VIP 3D")
+                if st.button("💾 Confirmar Guardado"):
+                    if nombre_p and st.session_state.itinerario:
+                        guardar_paquete(nombre_p, st.session_state.itinerario)
+                        st.success(f"¡'{nombre_p}' guardado!")
+                        st.rerun()
+                    else:
+                        st.warning("Ponle un nombre y agrega tours primero.")
+            
+            st.divider()
+            
+            paquetes_c = cargar_paquetes()
+            if paquetes_c:
+                p_sel = st.selectbox("📂 Selecciona uno de tus paquetes", ["-- Seleccione --"] + list(paquetes_c.keys()))
+                if p_sel != "-- Seleccione --":
+                    if st.button("🚀 Cargar mi Paquete"):
+                        st.session_state.itinerario = paquetes_c[p_sel]
+                        st.success(f"Paquete '{p_sel}' cargado.")
+                        st.rerun()
+            else:
+                st.caption("No tienes paquetes guardados aún.")
+        
         st.divider()
         
-        # --- CARGA DE PAQUETES ---
-        st.subheader("📦 Cargar Paquete")
-        cat_sel = st.selectbox("Línea de Producto", ["-- Seleccione --", "Cusco Tradicional", "Perú para el Mundo"])
+        st.subheader("🎁 Cargar Paquete Sugerido")
+        cat_sel = st.selectbox("Elija Línea de Producto", ["-- Seleccione --", "Cusco Tradicional", "Perú para el Mundo"])
         
         if cat_sel != "-- Seleccione --":
             pkgs_filtered = [p for p in paquetes_db if cat_sel.upper() in p['nombre'].upper()]
             dias_disponibles = [p['nombre'].split(" ")[-1] for p in pkgs_filtered]
-            dia_sel = st.selectbox("Duración", dias_disponibles)
+            dia_sel = st.selectbox("Seleccione Duración", dias_disponibles)
             
-            if st.button("🚀 Cargar"):
+            if st.button("🚀 Cargar Itinerario"):
                 pkg_final = next(p for p in pkgs_filtered if dia_sel in p['nombre'])
                 st.session_state.itinerario = []
                 for t_n in pkg_final['tours']:
                     t_f = next((t for t in tours_db if t['titulo'] == t_n), None)
                     if t_f:
                         nuevo_t = t_f.copy()
-                        # Init prices
                         nuevo_t['costo_nac'] = t_f.get('costo_nacional', 0)
                         nuevo_t['costo_ext'] = t_f.get('costo_extranjero', 0)
                         if "MACHU PICCHU" in t_f['titulo'].upper():
@@ -103,13 +180,13 @@ def render_ventas_ui():
                         else:
                             nuevo_t['costo_can'] = nuevo_t['costo_ext']
                         st.session_state.itinerario.append(nuevo_t)
-                st.success("Cargado")
+                st.success("Itinerario cargado.")
                 st.rerun()
-
-        st.subheader("📍 Individual")
+        
+        st.subheader("📍 Agregar Tour Individual")
         tour_nombres = [t['titulo'] for t in tours_db]
-        tour_sel = st.selectbox("Tour Individual", ["-- Seleccione --"] + tour_nombres)
-        if st.button("Agregar +"):
+        tour_sel = st.selectbox("Seleccione un tour", ["-- Seleccione --"] + tour_nombres)
+        if st.button("Agregar Tour"):
             if tour_sel != "-- Seleccione --":
                 t_data = next(t for t in tours_db if t['titulo'] == tour_sel)
                 nuevo_t = t_data.copy()
@@ -121,116 +198,187 @@ def render_ventas_ui():
                     nuevo_t['costo_can'] = nuevo_t['costo_ext']
                 st.session_state.itinerario.append(nuevo_t)
                 st.rerun()
-
-    # --- COLUMNA 2: ITINERARIO ---
+    
     with col2:
-        st.subheader("📋 Detalle del Itinerario")
+        st.subheader("📋 Plan de Viaje Actual")
         
-        # Totals calc
         total_nac_pp = 0
         total_ext_pp = 0
         total_can_pp = 0
+        
         es_pool = (modo_s == "Sistema Pool")
         
         if not st.session_state.itinerario:
-            st.info("Itinerario vacío.")
+            st.info("El itinerario está vacío. Comienza cargando un paquete o un tour individual.")
         else:
             for i, tour in enumerate(st.session_state.itinerario):
                 total_nac_pp += tour.get('costo_nac', 0)
                 total_ext_pp += tour.get('costo_ext', 0)
                 total_can_pp += tour.get('costo_can', 0)
                 
-                with st.expander(f"DÍA {i+1}: {tour['titulo']}", expanded=False):
-                    c_edit, c_ctrl = st.columns([6, 1])
-                    with c_edit:
-                         # Edit Prices
-                        col_n, col_e, col_c = st.columns(3)
-                        tour['costo_nac'] = col_n.number_input(f"S/ Nac", value=float(tour.get('costo_nac', 0)), key=f"cn_{i}", disabled=es_pool)
-                        tour['costo_ext'] = col_e.number_input(f"$ Ext", value=float(tour.get('costo_ext', 0)), key=f"ce_{i}", disabled=es_pool)
-                        
-                        if "MACHU PICCHU" in tour['titulo'].upper():
-                            tour['costo_can'] = col_c.number_input(f"$ CAN", value=float(tour.get('costo_can', 0)), key=f"cc_{i}", disabled=es_pool)
-                        else:
-                            st.write("") # Spacer
-                            tour['costo_can'] = tour['costo_ext']
-
-                        # Edit Content
-                        tour['titulo'] = st.text_input("Título", tour['titulo'], key=f"tt_{i}", disabled=es_pool)
-                        tour['descripcion'] = st.text_area("Desc", tour['descripcion'], key=f"desc_{i}", height=70, disabled=es_pool)
+                c_content, c_btns = st.columns([0.88, 0.12])
+                
+                with c_content:
+                    es_mp = "MACHU PICCHU" in tour['titulo'].upper()
                     
-                    with c_ctrl:
-                         if st.button("🗑️", key=f"del_{i}"):
-                            st.session_state.itinerario.pop(i)
-                            st.rerun()
-                         if i > 0 and st.button("🔼", key=f"up_{i}"):
+                    header_text = f"DÍA {i+1}: {tour['titulo']} - (S/ {tour.get('costo_nac', 0)} | $ {tour.get('costo_ext', 0)})"
+                    if es_mp:
+                        header_text = f"DÍA {i+1}: {tour['titulo']} - (S/ {tour.get('costo_nac', 0)} | $ {tour.get('costo_ext', 0)} | CAN $ {tour.get('costo_can', 0)})"
+                    
+                    with st.expander(header_text, expanded=False):
+                        if es_mp:
+                            col_t1, col_n, col_e, col_c = st.columns([1.5, 0.8, 0.8, 0.8])
+                            tour['titulo'] = col_t1.text_input(f"Título día {i+1}", tour['titulo'], key=f"title_{i}", disabled=es_pool)
+                            tour['costo_nac'] = col_n.number_input(f"Nac (S/)", value=float(tour.get('costo_nac', 0)), key=f"cn_{i}", disabled=es_pool)
+                            tour['costo_ext'] = col_e.number_input(f"Ext ($)", value=float(tour.get('costo_ext', 0)), key=f"ce_{i}", disabled=es_pool)
+                            tour['costo_can'] = col_c.number_input(f"CAN ($)", value=float(tour.get('costo_can', 0)), key=f"cc_{i}", disabled=es_pool)
+                        else:
+                            col_t1, col_n, col_e = st.columns([2, 1, 1])
+                            tour['titulo'] = col_t1.text_input(f"Título día {i+1}", tour['titulo'], key=f"title_{i}", disabled=es_pool)
+                            tour['costo_nac'] = col_n.number_input(f"Nac (S/)", value=float(tour.get('costo_nac', 0)), key=f"cn_{i}", disabled=es_pool)
+                            tour['costo_ext'] = col_e.number_input(f"Ext ($)", value=float(tour.get('costo_ext', 0)), key=f"ce_{i}", disabled=es_pool)
+                            tour['costo_can'] = tour['costo_ext']
+                        
+                        st.divider()
+                        tour['descripcion'] = st.text_area(f"Descripción día {i+1}", tour.get('descripcion', ""), key=f"desc_{i}", height=100, disabled=es_pool)
+                        
+                        col_ex1, col_ex2 = st.columns(2)
+                        h_text = col_ex1.text_area(f"📍 Atractivos", "\n".join(tour.get('highlights', [])), key=f"h_{i}", height=120, disabled=es_pool)
+                        tour['highlights'] = [line.strip() for line in h_text.split("\n") if line.strip()]
+                        
+                        s_text = col_ex2.text_area(f"✅ Incluye", "\n".join(tour.get('servicios', [])), key=f"s_{i}", height=120, disabled=es_pool)
+                        tour['servicios'] = [line.strip() for line in s_text.split("\n") if line.strip()]
+                        
+                        if es_pool:
+                            st.caption("⚠️ Los detalles del servicio Pool no se pueden modificar.")
+                
+                with c_btns:
+                    st.write('<div style="margin-top: 4px;"></div>', unsafe_allow_html=True)
+                    b1, b2, b3 = st.columns(3)
+                    if b1.button("🔼", key=f"up_{i}"):
+                        if i > 0:
                             st.session_state.itinerario.insert(i-1, st.session_state.itinerario.pop(i))
                             st.rerun()
-
-            # --- TOTALES ---
-            st.divider()
-            pas_nac = n_adultos_nac + n_ninos_nac
-            pas_ext = n_adultos_ext + n_ninos_ext
-            pas_can = n_adultos_can + n_ninos_can
-            
-            c_r1, c_r2, c_r3 = st.columns(3)
-            c_r1.metric("Total Nacional (S/)", f"{total_nac_pp * pas_nac:,.2f}")
-            c_r2.metric("Total Extranjero ($)", f"{total_ext_pp * pas_ext:,.2f}")
-            c_r3.metric("Total CAN ($)", f"{total_can_pp * pas_can:,.2f}")
-            
-            # --- GENERAR PDF ---
-            if st.button("🔥 GENERAR PDF PREMIUM", use_container_width=True):
-                if nombre:
-                    # Prepare Data for Generator
-                    
-                    # Logic for cover image
-                    cover = "portada_peru.png" if cat_sel == "Perú para el Mundo" else "portada_cusco.png"
-                    # Resolve absolute path for cover
-                    cover_path = os.path.abspath(cover).replace('\\', '/')
-                    logo_path = os.path.abspath("logo_viajes.png").replace('\\', '/')
-                    # Check if exists, else use placeholder logic in generator can handle, but better here
-                    
-                    pdf_data = {
-                        'pasajero': nombre.upper(),
-                        'fechas': f"Del {fecha_inicio.strftime('%d/%m')} al {fecha_fin.strftime('%d/%m')}",
-                        'duracion': f"{len(st.session_state.itinerario)}D/{(len(st.session_state.itinerario)-1)}N",
-                        'cover_img': cover_path,
-                        'title_1': "PERÚ" if cat_sel == "Perú para el Mundo" else "CUSCO",
-                        'title_2': "PARA EL MUNDO" if cat_sel == "Perú para el Mundo" else "TRADICIONAL",
-                        'vendedor': vendedor,
-                        'celular': celular,
-                        'logo_url': logo_path,
-                        'logo_cover_url': logo_path,
-                        'llama_img': os.path.abspath("Fondo.png").replace('\\', '/'),
-                        'precios': {
-                            'nac': {'monto': f"{total_nac_pp:,.2f}"} if pas_nac > 0 else None,
-                            'ext': {'monto': f"{total_ext_pp:,.2f}"} if pas_ext > 0 else None,
-                            'can': {'monto': f"{total_can_pp:,.2f}"} if pas_can > 0 else None
-                        },
-                        'days': st.session_state.itinerario
-                    }
-                    
-                    with st.spinner("Diseñando PDF..."):
-                        pdf_file = generate_pdf(pdf_data, f"Itinerario_{nombre}.pdf")
-                        
-                    with open(pdf_file, "rb") as f:
-                        st.download_button("📥 DESCARGAR PDF", f, file_name=f"Itinerario_{nombre}.pdf", mime="application/pdf", type="primary")
-                else:
-                    st.error("Falta Nombre del Pasajero")
-
-    # Sidebar: Saved Packages
-    with st.sidebar:
-        st.header("💾 Guardados")
-        p_name = st.text_input("Nombre Paquete")
-        if st.button("Guardar"):
-            if p_name and st.session_state.itinerario:
-                save_package(p_name, st.session_state.itinerario)
-                st.success("Guardado!")
+                    if b2.button("🔽", key=f"down_{i}"):
+                        if i < len(st.session_state.itinerario)-1:
+                            st.session_state.itinerario.insert(i+1, st.session_state.itinerario.pop(i))
+                            st.rerun()
+                    if b3.button("🗑️", key=f"del_{i}"):
+                        st.session_state.itinerario.pop(i)
+                        st.rerun()
                 
-        saved = load_saved_packages()
-        if saved:
-            sel_s = st.selectbox("Cargar", ["--"] + list(saved.keys()))
-            if sel_s != "--":
-                if st.button("Cargar "):
-                    st.session_state.itinerario = saved[sel_s]
-                    st.rerun()
-
+                st.markdown('<div style="margin-top: -15px;"></div>', unsafe_allow_html=True)
+            
+            st.divider()
+            
+            pasajeros_nac = n_adultos_nac + n_ninos_nac
+            pasajeros_ext = n_adultos_ext + n_ninos_ext
+            pasajeros_can = n_adultos_can + n_ninos_can
+            
+            real_nac = total_nac_pp * pasajeros_nac
+            real_ext = total_ext_pp * pasajeros_ext
+            real_can = total_can_pp * pasajeros_can
+            
+            col_res1, col_res2, col_res3 = st.columns(3)
+            with col_res1:
+                st.markdown("### 🇵🇪 Nacionales")
+                st.markdown(f"**S/ {real_nac:,.2f}**")
+                st.caption(f"({pasajeros_nac} pas x S/ {total_nac_pp:,.2f} p/p)")
+            
+            with col_res2:
+                st.markdown("### 🌎 Extranjeros")
+                st.markdown(f"**$ {real_ext:,.2f}**")
+                st.caption(f"({pasajeros_ext} pas x $ {total_ext_pp:,.2f} p/p)")
+            
+            with col_res3:
+                st.markdown("### 🤝 CAN")
+                st.markdown(f"**$ {real_can:,.2f}**")
+                st.caption(f"({pasajeros_can} pas x $ {total_can_pp:,.2f} p/p)")
+            
+            st.divider()
+            
+            c_btn1, c_btn2 = st.columns(2)
+            if c_btn2.button("🧹 Limpiar Todo"):
+                st.session_state.itinerario = []
+                st.rerun()
+            
+            if c_btn1.button("🔥 GENERAR ITINERARIO PDF"):
+                if nombre and st.session_state.itinerario:
+                    with st.spinner("Generando PDF con Edge..."):
+                        # Determinar portada y títulos
+                        if cat_sel == "Perú para el Mundo":
+                            cover_img = "Captura de pantalla 2026-01-13 094212.png"
+                            t1, t2 = "PERÚ", "PARA EL MUNDO"
+                        else:
+                            cover_img = "Captura de pantalla 2026-01-13 094056.png"
+                            t1, t2 = "CUSCO", "TRADICIONAL"
+                        
+                        # Logo
+                        logo_path = os.path.abspath("Captura de pantalla 2026-01-05 102612.png")
+                        
+                        # Preparar días con imágenes
+                        days_data = []
+                        for i, tour in enumerate(st.session_state.itinerario):
+                            carpeta = tour.get('carpeta_img', 'general')
+                            imgs = obtener_imagenes_tour(carpeta)
+                            
+                            # Preparar servicios con iconos SVG
+                            servicios_html = []
+                            for s in tour.get('servicios', []):
+                                svg_content = get_svg_icon(s, 'default_in')
+                                servicios_html.append({'texto': s, 'svg': svg_content})
+                            
+                            servicios_no_html = []
+                            for s in tour.get('servicios_no_incluye', []):
+                                svg_content = get_svg_icon(s, 'default_out')
+                                servicios_no_html.append({'texto': s, 'svg': svg_content})
+                            
+                            days_data.append({
+                                'numero': i + 1,
+                                'titulo': tour['titulo'],
+                                'descripcion': tour.get('descripcion', ''),
+                                'highlights': tour.get('highlights', []),
+                                'servicios': servicios_html,
+                                'servicios_no': servicios_no_html,
+                                'images': imgs
+                            })
+                        
+                        try:
+                            pdf_path = generate_pdf({
+                                'title_1': t1,
+                                'title_2': t2,
+                                'pasajero': nombre.upper(),
+                                'fechas': rango_fechas.upper(),
+                                'categoria': modo_s.upper(),
+                                'modo': modo_s.upper(),
+                                'duracion': f"{len(st.session_state.itinerario)}D-{max(0, len(st.session_state.itinerario)-1)}N",
+                                'cover_url': os.path.abspath(cover_img),
+                                'vendedor': vendedor,
+                                'celular': celular,
+                                'logo_url': logo_path,
+                                'logo_cover_url': logo_path,
+                                'llama_img': os.path.abspath("Fondo.png"),
+                                'precios': {
+                                    'nac': {'monto': f"{total_nac_pp:,.2f}"} if pasajeros_nac > 0 else None,
+                                    'ext': {'monto': f"{total_ext_pp:,.2f}"} if pasajeros_ext > 0 else None,
+                                    'can': {'monto': f"{total_can_pp:,.2f}"} if pasajeros_can > 0 else None,
+                                },
+                                'days': days_data
+                            })
+                            
+                            with open(pdf_path, "rb") as file:
+                                st.download_button(
+                                    label="📥 Descargar PDF Final",
+                                    data=file,
+                                    file_name=f"Itinerario_{nombre.replace(' ', '_')}.pdf",
+                                    mime="application/pdf"
+                                )
+                            st.success(f"¡Itinerario listo para {nombre}!")
+                        except Exception as e:
+                            st.error(f"Error generando PDF: {e}")
+                else:
+                    st.warning("Asegúrate de poner el nombre del cliente y tener al menos un día en el plan.")
+    
+    # Pie de página
+    st.markdown("---")
+    st.caption("v2.0 - Sistema de Gestión de Itinerarios con Edge PDF | Viajes Cusco Perú")
