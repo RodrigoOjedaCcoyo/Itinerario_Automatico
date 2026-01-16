@@ -148,7 +148,7 @@ def generate_pdf(itinerary_data, output_filename="Itinerario_Generado.pdf"):
         'no-outline': None,
         'enable-local-file-access': None,
         'disable-smart-shrinking': '', # Disable smart shrinking to obey zoom
-        'zoom': '1.25', # 1.25 to 1.3 usually fills A4 perfectly from webkit default
+        'zoom': '1.28', # Scale up fixed layout to fill A4
         'quiet': '',
         'print-media-type': '' 
     }
