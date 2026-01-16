@@ -5,10 +5,13 @@ __pycache__/
 .env/
 temp_*/
 paquetes_personalizados.json
-Captura de pantalla*.png
-!logo_viajes.png
-!portada_cusco.png
-!portada_peru.png
-Captura de pantalla*.jpg
+
+# No ignorar imágenes necesarias para el itinerario
+!*.png
+!*.jpg
+!*.jpeg
+!*.webp
+!assets/
+
 ITINERARIOS WEB/
 env_itinerario/

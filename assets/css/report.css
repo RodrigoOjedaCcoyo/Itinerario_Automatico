@@ -40,10 +40,10 @@ body {
 
 .decor-top-right {
     position: absolute;
-    top: -50px;
-    right: -50px;
-    width: 200px;
-    height: 200px;
+    top: -80px;
+    right: -80px;
+    width: 250px;
+    height: 250px;
     background-color: var(--color-primary);
     border-radius: 50%;
     z-index: 1;
@@ -51,10 +51,10 @@ body {
 
 .decor-bottom-left {
     position: absolute;
-    bottom: -60px;
-    left: -60px;
-    width: 220px;
-    height: 220px;
+    bottom: -80px;
+    left: -80px;
+    width: 280px;
+    height: 280px;
     background-color: var(--color-primary);
     border-radius: 50%;
     display: flex;
@@ -198,34 +198,29 @@ body {
 /* Collage Section */
 .collage-container {
     position: absolute;
-    top: 80px;
-    /* SUBIMOS TODO EL LISTÓN */
-    right: 10px;
+    top: 50px;
+    right: 15px;
     width: 400px;
     height: 850px;
-    /* Más alto para cubrir toda la página */
     z-index: 2;
 }
 
 .pin-icon {
     position: absolute;
-    width: 45px;
-    height: 45px;
-    color: var(--color-primary);
     z-index: 20;
 }
 
 .pin-start {
-    bottom: 20px;
-    left: 178px;
+    bottom: -10px;
+    left: 200px;
 }
 
 .pin-end {
-    top: -10px;
-    left: 178px;
+    top: -20px;
+    left: 198px;
 }
 
-.dotted-line {
+.serpent-path-svg {
     position: absolute;
     width: 100%;
     height: 100%;
@@ -236,55 +231,48 @@ body {
 .circular-img {
     position: absolute;
     border-radius: 50%;
-    border: 5px solid white;
-    box-shadow: 0 6px 15px rgba(0, 0, 0, 0.15);
+    border: 6px solid white;
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.2);
     background-size: cover;
     background-position: center;
     overflow: hidden;
+    z-index: 5;
 }
 
-/* Image Positions - DISTRIBUCIÓN EQUILIBRADA SUBIDA */
+/* Image Positions - SINCRONIZADAS CON EL CAMINO "S" */
 .img-1 {
-    width: 140px;
-    height: 140px;
-    bottom: 80px;
-    right: 40px;
-    left: auto;
-    z-index: 10;
+    width: 150px;
+    height: 150px;
+    top: 50px;
+    right: 20px;
 }
 
 .img-2 {
-    width: 125px;
-    height: 125px;
-    bottom: 250px;
+    width: 140px;
+    height: 140px;
+    top: 220px;
     left: 60px;
-    z-index: 9;
 }
 
 .img-3 {
-    width: 135px;
-    height: 135px;
-    top: 300px;
-    right: 50px;
-    left: auto;
-    z-index: 8;
+    width: 145px;
+    height: 145px;
+    top: 410px;
+    right: 10px;
 }
 
 .img-4 {
-    width: 130px;
-    height: 130px;
-    top: 120px;
-    left: 40px;
-    z-index: 9;
+    width: 135px;
+    height: 135px;
+    top: 590px;
+    left: 80px;
 }
 
 .img-5 {
-    width: 155px;
-    height: 155px;
-    top: -30px;
+    width: 160px;
+    height: 160px;
+    top: 730px;
     right: 30px;
-    left: auto;
-    z-index: 10;
 }
 
 /* --- COVER PAGE --- */
