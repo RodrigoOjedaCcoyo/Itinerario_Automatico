@@ -140,14 +140,18 @@ def generate_pdf(itinerary_data, output_filename="Itinerario_Generado.pdf"):
     # 5. Generate PDF
     options = {
         'page-size': 'A4',
-        'margin-top': '0',
-        'margin-right': '0',
-        'margin-bottom': '0',
-        'margin-left': '0',
+        'margin-top': '0mm',
+        'margin-right': '0mm',
+        'margin-bottom': '0mm',
+        'margin-left': '0mm',
         'encoding': "UTF-8",
         'no-outline': None,
         'enable-local-file-access': None,
-        'disable-smart-shrinking': None,
+        'disable-smart-shrinking': None, # Keep this to prevent random shrinking
+        'zoom': '1.0', # Ensure 1:1 scale
+        'viewport-size': '1280x1024', # Virtual viewport to force full width render logic if needed, or remove if causing issues. Let's try standard A4 pixel ratio.
+        # Actually, for full page background, smart shrinking disable is usually correct, but layout needs to be responsive or exact.
+        # Let's try removing viewport-size and sticking to basics but ensuring CSS is 100%
         'quiet': '',
         'print-media-type': '' 
     }
