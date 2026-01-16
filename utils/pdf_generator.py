@@ -123,13 +123,19 @@ def generate_pdf(itinerary_data, output_filename="Itinerario_Generado.pdf"):
         
     itinerary_data['days'] = enriched_days
     
-    # 3. Read CSS
+    # 3. Handle CSS (External File Strategy for Robustness)
+    # We write the CSS to a temp file alongside the HTML so wkhtmltopdf resolves it naturally
+    temp_css = BASE_DIR / "temp_style.css"
     with open(CSS_FILE, 'r', encoding='utf-8') as f:
-        # Asegurar que el CSS sea seguro para inyección
         css_content = f.read()
     
+    with open(temp_css, 'w', encoding='utf-8') as f:
+        f.write(css_content)
+
     # 4. Render HTML
-    html_content = template.render(**itinerary_data, css=css_content)
+    # We pass css_url relative to the HTML file
+    print(f"DEBUG: Linking CSS from {temp_css}")
+    html_content = template.render(**itinerary_data, css_url="temp_style.css")
     
     # 5. Generate PDF
     options = {
@@ -141,7 +147,7 @@ def generate_pdf(itinerary_data, output_filename="Itinerario_Generado.pdf"):
         'encoding': "UTF-8",
         'no-outline': None,
         'enable-local-file-access': None,
-        'disable-smart-shrinking': None, # Sometimes helps with flexbox
+        'disable-smart-shrinking': None,
         'quiet': '',
         'print-media-type': '' 
     }
@@ -162,5 +168,7 @@ def generate_pdf(itinerary_data, output_filename="Itinerario_Generado.pdf"):
     # Cleanup
     if temp_html.exists():
         temp_html.unlink()
+    if temp_css.exists():
+        temp_css.unlink()
         
     return str(output_path)

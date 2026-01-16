@@ -199,7 +199,7 @@ def render_ventas_ui():
                         'vendedor': vendedor,
                         'celular': celular,
                         'logo_url': logo_path,
-                        'logo_cover_url': os.path.abspath("Fondo.png").replace('\\', '/'),
+                        'logo_cover_url': logo_path,
                         'llama_img': os.path.abspath("Fondo.png").replace('\\', '/'),
                         'precios': {
                             'nac': {'monto': f"{total_nac_pp:,.2f}"} if pas_nac > 0 else None,
