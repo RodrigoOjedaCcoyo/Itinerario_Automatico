@@ -147,7 +147,8 @@ def generate_pdf(itinerary_data, output_filename="Itinerario_Generado.pdf"):
         'encoding': "UTF-8",
         'no-outline': None,
         'enable-local-file-access': None,
-        # 'disable-smart-shrinking': None, # Commented out to let wkhtmltopdf handle A4 fit automatically
+        'disable-smart-shrinking': '', # Disable smart shrinking to obey zoom
+        'zoom': '1.25', # 1.25 to 1.3 usually fills A4 perfectly from webkit default
         'quiet': '',
         'print-media-type': '' 
     }

@@ -14,12 +14,12 @@
 
 
 
+
 body {
     margin: 0;
     padding: 0;
-    width: 210mm;
-    height: 297mm;
-    /* Force exact A4 height */
+    width: 100%;
+    height: 100%;
     background-color: white;
     font-family: var(--font-main);
     color: var(--color-text);
@@ -29,9 +29,8 @@ body {
 
 /* --- FROM Diseño.css (ITINERARY PAGES) --- */
 .page-container {
-    width: 210mm;
-    min-height: 297mm;
-    height: 297mm;
+    width: 100%;
+    height: 100%;
     background: white;
     margin: 0;
     position: relative;
@@ -312,8 +311,8 @@ body {
 /* --- FROM Portada.html (COVER PAGE) --- */
 .cover-container {
     position: relative;
-    width: 210mm;
-    height: 297mm;
+    width: 100%;
+    height: 100%;
     background-size: cover !important;
     background-repeat: no-repeat !important;
     background-position: center bottom;
