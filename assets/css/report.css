@@ -6,25 +6,15 @@
     --font-main: 'Montserrat', sans-serif;
 }
 
-/* --- BASE SETTINGS --- */
-@page {
-    size: A4;
-    margin: 0;
-}
-
 body {
     margin: 0;
     padding: 0;
-    width: 210mm;
-    height: 297mm;
     background-color: white;
     font-family: var(--font-main);
-    color: var(--color-text);
     -webkit-print-color-adjust: exact;
     print-color-adjust: exact;
 }
 
-/* --- ITINERARY PAGES --- */
 .page-container {
     width: 210mm;
     min-height: 297mm;
@@ -38,6 +28,21 @@ body {
     page-break-after: always;
 }
 
+@media print {
+    @page {
+        size: A4;
+        margin: 0;
+    }
+
+    .page-container {
+        margin: 0;
+        box-shadow: none;
+        width: 100%;
+        height: 100vh;
+    }
+}
+
+/* DECORATIONS */
 .decor-top-right {
     position: absolute;
     top: -80px;
@@ -83,6 +88,7 @@ body {
     object-fit: cover;
 }
 
+/* HEADERS */
 .day-header {
     color: var(--color-primary);
     margin-bottom: 30px;
@@ -90,7 +96,8 @@ body {
     z-index: 20;
 }
 
-.day-header h2 {
+.day-header h2,
+.day-header h3 {
     font-size: 1.3rem;
     font-weight: 800;
     margin: 0;
@@ -99,14 +106,7 @@ body {
     letter-spacing: 0.5px;
 }
 
-.day-header h3 {
-    font-size: 1.3rem;
-    font-weight: 800;
-    margin: 5px 0 0 0;
-    text-transform: uppercase;
-    letter-spacing: 0.5px;
-}
-
+/* CONTENT */
 .description {
     font-size: 0.92rem;
     line-height: 1.6;
@@ -119,6 +119,7 @@ body {
     text-align: justify;
 }
 
+/* HIGHLIGHTS */
 .highlights-list {
     margin: 15px 0;
     padding-left: 20px;
@@ -143,7 +144,6 @@ body {
     content: "•";
     color: var(--color-primary);
     font-weight: 800;
-    flex-shrink: 0;
 }
 
 .section-title {
@@ -158,6 +158,7 @@ body {
     z-index: 20;
 }
 
+/* SERVICES */
 .services-list {
     list-style: none;
     padding-left: 0;
@@ -195,29 +196,31 @@ body {
     color: var(--color-text);
 }
 
-/* Collage Section */
+/* COLLAGE SECTION */
 .collage-container {
     position: absolute;
-    top: 120px;
-    /* Bajamos el contenedor para más aire arriba */
+    bottom: 20px;
+    /* Tal como pediste: más abajo */
     right: 15px;
     width: 400px;
-    height: 850px;
+    height: 800px;
     z-index: 2;
 }
 
 .pin-icon {
     position: absolute;
+    width: 45px;
+    height: 45px;
     z-index: 20;
 }
 
 .pin-start {
-    bottom: -10px;
+    bottom: 0px;
     left: 178px;
 }
 
 .pin-end {
-    top: -20px;
+    top: 0px;
     left: 178px;
 }
 
@@ -240,54 +243,57 @@ body {
     z-index: 5;
 }
 
-/* Image Positions - SINCRONIZADAS CON "S" EXTREMA */
+/* Image Positions - SINCRONIZADAS CON LA ESTRUCTURA "S" */
 .img-1 {
-    width: 155px;
-    height: 155px;
-    top: 60px;
-    right: 10px;
+    width: 150px;
+    height: 150px;
+    top: 50px;
+    left: 50px;
+    z-index: 8;
 }
 
 .img-2 {
-    width: 145px;
-    height: 145px;
-    top: 230px;
-    left: 30px;
+    width: 130px;
+    height: 130px;
+    top: -80px;
+    right: 0px;
+    left: auto;
+    z-index: 9;
 }
 
 .img-3 {
-    width: 150px;
-    height: 150px;
-    top: 420px;
-    right: 0px;
+    width: 140px;
+    height: 140px;
+    top: 250px;
+    left: 90px;
+    z-index: 8;
 }
 
 .img-4 {
-    width: 140px;
-    height: 140px;
-    top: 600px;
-    left: 50px;
+    width: 120px;
+    height: 120px;
+    bottom: 170px;
+    left: 100px;
+    z-index: 9;
 }
 
 .img-5 {
-    width: 165px;
-    height: 165px;
-    top: 740px;
-    right: 20px;
+    width: 150px;
+    height: 150px;
+    bottom: 40px;
+    left: 180px;
+    z-index: 10;
 }
 
-/* --- COVER PAGE --- */
+/* PORTADA */
 .cover-container {
     position: relative;
     width: 210mm;
     height: 297mm;
     background-size: cover !important;
-    background-repeat: no-repeat !important;
     background-position: center bottom;
     color: white;
     overflow: hidden;
-    margin: 0;
-    padding: 0;
 }
 
 .overlay {
@@ -302,11 +308,9 @@ body {
     top: 40px;
     right: 40px;
     text-align: right;
-    color: white;
     z-index: 20;
     font-weight: bold;
     text-shadow: 0 2px 4px rgba(0, 0, 0, 0.5);
-    font-family: var(--font-main);
 }
 
 .title-group {
@@ -318,18 +322,15 @@ body {
 
 .title-peru {
     background-color: #00bcd4;
-    display: table;
     padding: 6px 25px;
     font-size: 32px;
     font-weight: 900;
     margin-bottom: 6px;
-    letter-spacing: 1px;
     text-transform: uppercase;
 }
 
 .title-mundo {
     background-color: #00bcd4;
-    display: table;
     padding: 6px 25px;
     font-size: 24px;
     font-weight: 900;
@@ -357,7 +358,6 @@ body {
     text-align: right;
     line-height: 1;
     z-index: 10;
-    color: white;
 }
 
 .footer-line-cover {
@@ -365,16 +365,15 @@ body {
     bottom: 0;
     width: 100%;
     height: 15px;
-    background-color: #55b7b0;
+    background-color: var(--color-primary);
 }
 
-/* --- EXTRAS PAGES --- */
+/* EXTRAS */
 .extra-page {
     display: flex;
     flex-direction: column;
     align-items: center;
     text-align: center;
-    color: #2d3436;
 }
 
 .extra-title {
@@ -382,9 +381,7 @@ body {
     font-size: 28px;
     font-weight: 800;
     margin-top: 20px;
-    margin-bottom: 5px;
     text-transform: uppercase;
-    line-height: 1.2;
 }
 
 .extra-subtitle {
@@ -399,7 +396,6 @@ body {
     font-size: 45px;
     font-weight: 800;
     color: #000;
-    margin-bottom: 5px;
 }
 
 .price-detail {
@@ -410,7 +406,6 @@ body {
     text-transform: uppercase;
 }
 
-/* Recom Grid */
 .recom-grid {
     text-align: left;
     width: 100%;
@@ -433,13 +428,12 @@ body {
     display: flex;
     align-items: flex-start;
     gap: 10px;
-    color: #2d3436;
 }
 
 .recom-item::before {
     content: "•";
-    font-weight: 900;
     color: var(--color-primary);
+    font-weight: 900;
 }
 
 .policy-section {
