@@ -1,6 +1,7 @@
 import os
 import base64
 import subprocess
+import sys
 from pathlib import Path
 from jinja2 import Environment, FileSystemLoader
 
@@ -101,9 +102,9 @@ asyncio.run(main())
         f.write(script_content)
     
     try:
-        # Ejecutar el script en un proceso separado
+        # Ejecutar el script en un proceso separado usando el mismo ejecutable de python
         result = subprocess.run(
-            ['python', str(script_path)],
+            [sys.executable, str(script_path)],
             capture_output=True,
             text=True,
             timeout=60,
@@ -112,7 +113,15 @@ asyncio.run(main())
         
         if result.returncode != 0:
             print(f"Error Playwright: {result.stderr}")
-            raise Exception(f"Error generando PDF: {result.stderr}")
+            # Si el error es que no está instalado en linux/cloud, intentamos instalarlo
+            if "browser has been closed" in result.stderr or "Executable doesn't exist" in result.stderr:
+                subprocess.run([sys.executable, "-m", "playwright", "install", "chromium"], check=True)
+                # Re-intentar
+                result = subprocess.run([sys.executable, str(script_path)], capture_output=True, text=True, timeout=60, cwd=str(BASE_DIR))
+                if result.returncode != 0:
+                     raise Exception(f"Error tras re-instalacion: {result.stderr}")
+            else:
+                raise Exception(f"Error generando PDF: {result.stderr}")
         
         print(f"PDF generado en: {output_path}")
         
