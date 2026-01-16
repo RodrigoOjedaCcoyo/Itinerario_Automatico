@@ -4,7 +4,15 @@
 <head>
     <meta charset="UTF-8">
     <title>Itinerario - {{ title_1 }} {{ title_2 }}</title>
-    <link rel="stylesheet" href="{{ css_url }}">
+    {% if inline_css %}
+    <style>
+        {
+                {
+                inline_css | safe
+            }
+        }
+    </style>
+    {% endif %}
 </head>
 
 <body>
@@ -110,7 +118,7 @@
     </div>
     {% endfor %}
 
-    <!-- PÁGINAS DE EXTRAS (PRECIOS, ETC) -->
+    <!-- PÁGINAS DE EXTRAS -->
     <div class="page-container extra-page" style="page-break-after: always;">
         <div class="decor-top-right"></div>
         <div class="decor-bottom-left">
@@ -143,7 +151,7 @@
         {% endif %}
     </div>
 
-    <!-- PÁGINA DE RECOMENDACIONES -->
+    <!-- RECOMENDACIONES -->
     <div class="page-container extra-page" style="page-break-after: always;">
         <div class="decor-top-right"></div>
         <div class="decor-bottom-left">
