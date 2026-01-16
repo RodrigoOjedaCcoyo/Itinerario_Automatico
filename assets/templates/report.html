@@ -1,0 +1,253 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8">
+    <title>Itinerario - {{ title_1 }} {{ title_2 }}</title>
+    <style>
+        {
+                {
+                css
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+    <!-- PORTADA -->
+    <div class="page-container cover-container" style="background-image: url('{{ cover_img }}');">
+        <div class="overlay"></div>
+
+        <div class="pasajero-info">
+            {{ pasajero }}<br>
+            {{ fechas }}
+        </div>
+
+        <div class="title-group">
+            <div class="title-peru">{{ title_1 }}</div>
+            <div class="title-mundo">{{ title_2 }}</div>
+        </div>
+
+        <div class="logo-bottom-cover">
+            <!-- Ensure logo path is absolute or base64 -->
+            <img src="{{ logo_url }}" alt="Viajes Cusco Peru">
+        </div>
+
+        <div class="duration-box">
+            {{ duracion }}
+        </div>
+
+        <div class="footer-line-cover"></div>
+    </div>
+
+    <!-- DÍAS DEL ITINERARIO -->
+    {% for day in days %}
+    <div class="page-container">
+        <!-- Decoration Top Right -->
+        <div class="decor-top-right"></div>
+
+        <div class="day-header">
+            <h2>DÍA {{ loop.index }}:</h2>
+            <h3>{{ day.titulo }}</h3>
+        </div>
+
+        <div class="description">
+            <p>{{ day.descripcion }}</p>
+
+            <ul class="highlights-list">
+                {% for highlight in day.highlights %}
+                <li>{{ highlight }}</li>
+                {% endfor %}
+            </ul>
+        </div>
+
+        <div class="section-title">SERVICIOS QUE INCLUYE:</div>
+        <div class="services-list">
+            {% for s in day.servicios_incluye_svg %}
+            <div class="service-item">
+                <div class="service-icon">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                        stroke-linejoin="round">{{ s.svg|safe }}</svg>
+                </div>
+                <div class="service-text">{{ s.text }}</div>
+            </div>
+            {% endfor %}
+        </div>
+
+        <div class="section-title">SERVICIOS QUE NO INCLUYE:</div>
+        <div class="services-list">
+            {% for s in day.servicios_no_svg %}
+            <div class="service-item">
+                <div class="service-icon">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                        stroke-linejoin="round">{{ s.svg|safe }}</svg>
+                </div>
+                <div class="service-text">{{ s.text }}</div>
+            </div>
+            {% endfor %}
+        </div>
+
+        <!-- Collage Section -->
+        <div class="collage-container">
+            <svg class="dotted-line" viewBox="0 0 400 750" preserveAspectRatio="none">
+                <path d="M200,730 C 50,650 350,550 200,450 S 50,250 200,150 S 350,50 200,20" stroke="#55b7b0"
+                    stroke-width="60" stroke-linecap="round" opacity="0.15" fill="none" />
+                <path d="M200,730 C 50,650 350,550 200,450 S 50,250 200,150 S 350,50 200,20" stroke="#55b7b0"
+                    stroke-width="4" stroke-dasharray="12,12" fill="none" />
+            </svg>
+
+            {% for img in day.images %}
+            <div class="circular-img img-{{ loop.index }}" style="background-image: url('{{ img }}');"></div>
+            {% endfor %}
+        </div>
+
+        <!-- Decoration Bottom Left with Logo -->
+        <div class="decor-bottom-left">
+            <div class="logo-container">
+                <img src="{{ logo_url }}" alt="Logo Viajes">
+            </div>
+        </div>
+    </div>
+    {% endfor %}
+
+    <!-- EXTRAS: PRECIOS -->
+    <div class="page-container extra-page">
+        <div class="decor-top-right"></div>
+
+        {% if precios.nac %}
+        <div class="extra-title" style="margin-top: 60px;">PRECIO NACIONAL</div>
+        <div class="extra-subtitle">por persona</div>
+        <div class="price-value">S/ {{ precios.nac.monto }}</div>
+        <div class="price-detail">ADULTO<br>NO INCLUYE HOTEL</div>
+        {% endif %}
+
+        {% if precios.ext %}
+        <div class="extra-title">PRECIO EXTRANJERO</div>
+        <div class="extra-subtitle">por persona</div>
+        <div class="price-value">$ {{ precios.ext.monto }}</div>
+        <div class="price-detail">ADULTO<br>NO INCLUYE HOTEL</div>
+        {% endif %}
+
+        {% if precios.can %}
+        <div class="extra-title">PRECIO CAN</div>
+        <div class="extra-subtitle">por persona</div>
+        <div class="price-value">$ {{ precios.can.monto }}</div>
+        <div class="price-detail">ADULTO<br>NO INCLUYE HOTEL</div>
+        {% endif %}
+
+        <ul class="info-list" style="margin-top: 40px;">
+            <li>Sujeto a disponibilidad.</li>
+            <li>Salidas confirmadas todos los días.</li>
+            <li>De acuerdo al nuevo reglamento de Uso Sostenible y Visita Turística para la conservación del Santuario
+                Histórico de Machu Picchu 2025, el ticket es válido para un solo ingreso.</li>
+        </ul>
+
+        <div class="section-header-red">IMPORTANTE</div>
+        <div class="train-subtitle">
+            <svg style="width:24px;height:24px" viewBox="0 0 24 24">
+                <path fill="currentColor"
+                    d="M18,10H6V5H18M12,17C10.89,17 10,16.1 10,15C10,13.89 10.89,13 12,13C13.11,13 14,13.89 14,15C14,16.1 13.11,17 12,17M18,1H6A2,2 0 0,0 4,3V15.5C4,17.43 5.57,19 7.5,19L6,20.5V21H18V20.5L16.5,19C18.43,19 20,17.43 20,15.5V3A2,2 0 0,0 18,1Z" />
+            </svg>
+            Tren Turístico - Voyager Inca Rail
+        </div>
+        <ul class="info-list">
+            <li>Podremos comprar tus boletos con anticipación desde ahora.</li>
+            <li>Viajas con asiento asignado.</li>
+        </ul>
+
+        <div class="img-collage">
+            <div
+                style="background-image: url('https://images.unsplash.com/photo-1527631746650-b1c1375d9564?auto=format&fit=crop&q=80&w=400');">
+            </div>
+            <div
+                style="background-image: url('https://images.unsplash.com/photo-1587590227264-0ac64ce63ce8?auto=format&fit=crop&q=80&w=400'); flex: 0.7;">
+            </div>
+            <div
+                style="background-image: url('https://images.unsplash.com/photo-1544735749-2eee75b5dabf?auto=format&fit=crop&q=80&w=400');">
+            </div>
+        </div>
+
+        <div class="decor-bottom-left">
+            <div class="logo-container">
+                <img src="{{ logo_url }}" alt="Logo Viajes">
+            </div>
+        </div>
+    </div>
+
+    <!-- EXTRAS: RECOMENDACIONES -->
+    <div class="page-container extra-page">
+        <div class="decor-top-right"></div>
+
+        <div class="recom-grid">
+            <div class="recom-title">RECOMENDACIONES</div>
+            <div class="recom-item">ESENCIAL (Pasaporte, DNI)</div>
+            <div class="recom-item">ARTÍCULOS DE ASEO</div>
+            <div class="recom-item">PROTECTOR SOLAR + LENTES DE SOL</div>
+            <div class="recom-item">REPELENTE DE INSECTOS (Para Machu Picchu)</div>
+            <div class="recom-item">MOCHILA PEQUEÑA</div>
+
+            <div class="recom-title" style="margin-top: 25px;">EQUIPAJE</div>
+            <div class="recom-item">ROPA CÓMODA PARA CAMINATAS</div>
+            <div class="recom-item">ZAPATILLAS DE TREKKING O DEPORTIVAS</div>
+            <div class="recom-item">CHAQUETA IMPERMEABLE / PONCHO (Nov-Abr)</div>
+            <div class="recom-item">ROPA ABRIGADORA (Para noches frías)</div>
+            <div class="recom-item">BATERÍA EXTERNA PARA CELULAR</div>
+        </div>
+
+        <div class="mask-parallelogram">
+            <div
+                style="background-image: url('https://images.unsplash.com/photo-1587590227264-0ac64ce63ce8?auto=format&fit=crop&q=80&w=600');">
+            </div>
+        </div>
+
+        <div class="decor-bottom-left">
+            <div class="logo-container">
+                <img src="{{ logo_url }}" alt="Logo Viajes">
+            </div>
+        </div>
+    </div>
+
+    <!-- EXTRAS: POLÍTICAS -->
+    <div class="page-container extra-page">
+        <div class="decor-top-right"></div>
+
+        <div class="extra-title" style="font-size: 28px; margin-bottom: 40px; margin-top: 80px;">INFORMACIÓN DE COMPRA
+        </div>
+
+        <div class="policy-section">
+            <div class="policy-title">Reserva:</div>
+            <div class="policy-text">Se requiere un adelanto del 50% para garantizar los espacios (trenes, ingresos). El
+                saldo se cancela al llegar a Cusco.</div>
+        </div>
+
+        <div class="policy-section">
+            <div class="policy-title">Método de pago:</div>
+            <div class="policy-text">Aceptamos transferencias bancarias, Yape/Plin, y tarjetas de crédito/débito (+5%
+                comisión). Western Union y MoneyGram disponibles.</div>
+        </div>
+
+        <div class="policy-section">
+            <div class="policy-title">ANULACIONES Y CAMBIOS:</div>
+            <div class="policy-text">
+                • Ingresos a Machu Picchu NO son reembolsables ni transferibles por disposición del Ministerio de
+                Cultura.<br>
+                • Trenes y Hoteles sujetos a penalidades según sus propias políticas.<br>
+                • Cancelaciones con menos de 15 días: No hay devolución del adelanto.<br>
+                • Cambios por fuerza mayor (huelgas, clima) se gestionan para reprogramar sin costo operativo, sujeto a
+                disponibilidad de terceros.
+            </div>
+        </div>
+
+        <div class="llama-circle" style="background-image: url('{{ llama_img }}');"></div>
+
+        <div class="decor-bottom-left">
+            <div class="logo-container">
+                <img src="{{ logo_url }}" alt="Logo Viajes">
+            </div>
+        </div>
+    </div>
+
+</body>
+
+</html>

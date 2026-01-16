@@ -1,0 +1,501 @@
+/* PDF REPORT STYLES - Consolidated */
+@page {
+    size: A4;
+    margin: 0;
+}
+
+body {
+    margin: 0;
+    padding: 0;
+    font-family: 'Arial', sans-serif;
+    color: #2d3436;
+    -webkit-print-color-adjust: exact;
+}
+
+/* --- COMMON UTILS --- */
+.page-container {
+    position: relative;
+    width: 210mm;
+    height: 297mm;
+    overflow: hidden;
+    background-color: white;
+    page-break-after: always;
+}
+
+.page-break {
+    page-break-after: always;
+}
+
+/* --- DECORATIONS --- */
+.decor-top-right {
+    position: absolute;
+    top: -50px;
+    right: -50px;
+    width: 150px;
+    height: 150px;
+    background-color: rgba(85, 183, 176, 0.1);
+    /* #55b7b0 */
+    border-radius: 50%;
+    z-index: 0;
+}
+
+.decor-bottom-left {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    height: 100px;
+    /* Adjust as needed */
+    z-index: 10;
+}
+
+.logo-container {
+    position: absolute;
+    bottom: 20px;
+    left: 20px;
+    width: 120px;
+}
+
+.logo-container img {
+    width: 100%;
+}
+
+/* --- PORTADA (COVER) --- */
+.cover-container {
+    position: relative;
+    width: 100%;
+    height: 100%;
+    background-size: cover;
+    background-position: center bottom;
+    color: white;
+}
+
+.overlay {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(to bottom, rgba(0, 0, 0, 0.1), rgba(0, 0, 0, 0.4));
+}
+
+.title-group {
+    position: absolute;
+    bottom: 28%;
+    left: 0;
+    z-index: 10;
+}
+
+.title-peru {
+    background-color: #00bcd4;
+    display: table;
+    padding: 6px 25px;
+    font-size: 32px;
+    font-weight: 900;
+    margin-bottom: 6px;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+}
+
+.title-mundo {
+    background-color: #00bcd4;
+    display: table;
+    padding: 6px 25px;
+    font-size: 24px;
+    font-weight: 900;
+    text-transform: uppercase;
+}
+
+.logo-bottom-cover {
+    position: absolute;
+    bottom: 60px;
+    left: 20px;
+    width: 200px;
+    z-index: 20;
+}
+
+.duration-box {
+    position: absolute;
+    bottom: 40px;
+    right: 40px;
+    font-size: 70px;
+    font-weight: 900;
+    text-align: right;
+    line-height: 1;
+    z-index: 10;
+    color: white;
+}
+
+.footer-line-cover {
+    position: absolute;
+    bottom: 0;
+    width: 100%;
+    height: 15px;
+    background-color: #00bcd4;
+}
+
+.pasajero-info {
+    position: absolute;
+    top: 40px;
+    right: 40px;
+    text-align: right;
+    color: white;
+    z-index: 20;
+    font-weight: bold;
+    text-shadow: 0 2px 4px rgba(0, 0, 0, 0.5);
+}
+
+/* --- DAY PAGE (ITINERARY) --- */
+.day-header {
+    margin-top: 40px;
+    margin-left: 40px;
+    margin-right: 40px;
+    border-bottom: 3px solid #55b7b0;
+    padding-bottom: 10px;
+}
+
+.day-header h2 {
+    color: #55b7b0;
+    font-size: 18px;
+    margin: 0;
+    text-transform: uppercase;
+    font-weight: 800;
+}
+
+.day-header h3 {
+    color: #2d3436;
+    font-size: 28px;
+    margin: 5px 0 0 0;
+    text-transform: uppercase;
+    font-weight: 900;
+}
+
+.description {
+    margin: 20px 40px;
+    font-size: 14px;
+    line-height: 1.5;
+    text-align: justify;
+    color: #636e72;
+    max-width: 60%;
+    /* Leave space for collage */
+}
+
+.highlights-list {
+    margin: 15px 0;
+    padding-left: 20px;
+    color: #55b7b0;
+    font-weight: bold;
+    font-size: 13px;
+}
+
+.highlights-list li {
+    margin-bottom: 5px;
+}
+
+.section-title {
+    margin: 20px 40px 10px 40px;
+    font-weight: 800;
+    color: #2d3436;
+    font-size: 14px;
+    text-transform: uppercase;
+    clear: left;
+    max-width: 60%;
+}
+
+.services-list {
+    margin: 0 40px;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    max-width: 60%;
+}
+
+.service-item {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    background: #f1f2f6;
+    padding: 5px 10px;
+    border-radius: 15px;
+    font-size: 11px;
+    font-weight: 600;
+    color: #2d3436;
+}
+
+.service-icon svg {
+    width: 14px;
+    height: 14px;
+    color: #55b7b0;
+}
+
+/* COLLAGE SNAKE LAYOUT */
+.collage-container {
+    position: absolute;
+    top: 100px;
+    right: 0;
+    width: 35%;
+    /* Fixed width column on right */
+    height: 80%;
+}
+
+.circular-img {
+    position: absolute;
+    border-radius: 50%;
+    background-size: cover;
+    background-position: center;
+    border: 3px solid white;
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+}
+
+/* Positions for Snake Layout (Approximation based on SVG path) */
+/* Path: M200,730 C 50,650 350,550 200,450 S 50,250 200,150 S 350,50 200,20 */
+/* Mapping SVG coords (0-400 width, 0-750 height) to CSS % or pixels */
+/* Assuming container is approx 300px wide */
+.img-1 {
+    top: 20px;
+    left: 30%;
+    width: 100px;
+    height: 100px;
+}
+
+.img-2 {
+    top: 160px;
+    left: 5%;
+    width: 90px;
+    height: 90px;
+}
+
+.img-3 {
+    top: 290px;
+    left: 50%;
+    width: 110px;
+    height: 110px;
+}
+
+.img-4 {
+    top: 440px;
+    left: 10%;
+    width: 95px;
+    height: 95px;
+}
+
+.img-5 {
+    top: 580px;
+    left: 40%;
+    width: 100px;
+    height: 100px;
+}
+
+.dotted-line {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    z-index: -1;
+}
+
+.pin-icon {
+    position: absolute;
+    color: #55b7b0;
+    width: 24px;
+    height: 24px;
+}
+
+.pin-start {
+    top: 720px;
+    left: 50%;
+}
+
+/* Adjusted */
+.pin-end {
+    top: 20px;
+    left: 50%;
+}
+
+/* --- EXTRAS PAGES --- */
+.extra-page {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+}
+
+.extra-title {
+    color: #00bcd4;
+    font-size: 38px;
+    font-weight: 800;
+    margin-top: 40px;
+    margin-bottom: 5px;
+    text-transform: uppercase;
+}
+
+.extra-subtitle {
+    color: #ff5252;
+    font-size: 18px;
+    font-weight: 700;
+    margin-bottom: 20px;
+    text-transform: uppercase;
+}
+
+.price-value {
+    font-size: 45px;
+    font-weight: 800;
+    color: #000;
+    margin-bottom: 5px;
+}
+
+.price-detail {
+    font-size: 16px;
+    font-weight: 700;
+    color: #000;
+    margin-bottom: 30px;
+    text-transform: uppercase;
+}
+
+.info-list {
+    text-align: left;
+    width: 100%;
+    padding: 0 60px;
+    margin-bottom: 40px;
+}
+
+.info-list li {
+    font-size: 14px;
+    margin-bottom: 12px;
+    line-height: 1.5;
+    list-style: none;
+    position: relative;
+    padding-left: 20px;
+}
+
+.info-list li::before {
+    content: "•";
+    position: absolute;
+    left: 0;
+    font-weight: bold;
+    color: #55b7b0;
+}
+
+.section-header-red {
+    color: #ff5252;
+    font-size: 32px;
+    font-weight: 800;
+    text-align: left;
+    width: 100%;
+    padding: 0 60px;
+    margin-bottom: 20px;
+    text-transform: uppercase;
+}
+
+.train-subtitle {
+    color: #00bcd4;
+    font-size: 22px;
+    font-weight: 800;
+    text-align: left;
+    width: 100%;
+    padding: 0 60px;
+    margin-bottom: 15px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.img-collage {
+    display: flex;
+    width: 90%;
+    height: 250px;
+    margin-top: 20px;
+    gap: 5px;
+}
+
+.img-collage div {
+    flex: 1;
+    background-size: cover;
+    background-position: center;
+    border-radius: 8px;
+}
+
+/* Recom Grid */
+.recom-grid {
+    text-align: left;
+    width: 100%;
+    padding: 0 60px;
+    margin-top: 40px;
+}
+
+.recom-title {
+    color: #00bcd4;
+    font-size: 20px;
+    font-weight: 800;
+    margin-bottom: 10px;
+    text-transform: uppercase;
+}
+
+.recom-item {
+    font-size: 13px;
+    font-weight: 600;
+    /* reduced from 800 */
+    margin-bottom: 5px;
+    display: flex;
+    align-items: flex-start;
+    gap: 10px;
+    color: #2d3436;
+}
+
+.recom-item::before {
+    content: "•";
+    font-weight: 900;
+    color: #55b7b0;
+}
+
+.mask-parallelogram {
+    width: 400px;
+    height: 300px;
+    /* Reduced height to fit */
+    margin-top: 40px;
+    background-size: cover;
+    transform: skew(-15deg);
+    overflow: hidden;
+    border-radius: 20px;
+    box-shadow: 10px 10px 0px rgba(85, 183, 176, 0.2);
+}
+
+.mask-parallelogram div {
+    width: 100%;
+    height: 100%;
+    transform: skew(15deg) scale(1.2);
+    background-size: cover;
+    background-position: center;
+}
+
+.policy-section {
+    text-align: left;
+    width: 100%;
+    padding: 0 60px;
+    margin-bottom: 25px;
+}
+
+.policy-title {
+    font-weight: 800;
+    font-size: 16px;
+    margin-bottom: 5px;
+    color: #2d3436;
+    text-transform: uppercase;
+}
+
+.policy-text {
+    font-size: 13px;
+    line-height: 1.4;
+    color: #636e72;
+}
+
+.llama-circle {
+    width: 200px;
+    height: 200px;
+    border-radius: 50%;
+    background-image: url('https://images.unsplash.com/photo-1589923158776-cb4485d99fd6?auto=format&fit=crop&q=80&w=400');
+    background-size: cover;
+    background-position: center;
+    margin-top: 30px;
+    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+    border: 5px solid white;
+}
