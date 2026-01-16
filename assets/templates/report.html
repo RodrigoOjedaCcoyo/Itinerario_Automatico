@@ -13,22 +13,13 @@
         }
 
         /* Correcciones de emergencia para iconos */
-        .service-icon {
-            width: 32px !important;
-            height: 32px !important;
-            display: flex !important;
-        }
-
+        .service-icon,
         .service-icon svg {
             width: 32px !important;
             height: 32px !important;
         }
 
-        .pin-icon {
-            width: 45px !important;
-            height: 45px !important;
-        }
-
+        .pin-icon,
         .pin-icon svg {
             width: 45px !important;
             height: 45px !important;
@@ -92,6 +83,23 @@
             </li>
             {% endfor %}
         </ul>
+
+        {% if day.servicios_no %}
+        <h4 class="section-title">SERVICIOS QUE NO INCLUYE:</h4>
+        <ul class="services-list">
+            {% for s in day.servicios_no %}
+            <li class="service-item">
+                <div class="service-icon">
+                    <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                        stroke-linecap="round" stroke-linejoin="round">
+                        {{ s.svg | safe }}
+                    </svg>
+                </div>
+                <span class="service-text">{{ s.texto }}</span>
+            </li>
+            {% endfor %}
+        </ul>
+        {% endif %}
 
         <!-- COLLAGE DE IMÁGENES -->
         <div class="collage-container">
