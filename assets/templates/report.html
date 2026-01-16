@@ -4,17 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <title>Itinerario - {{ title_1 }} {{ title_2 }}</title>
-    {% if inline_css %}
-    <style>
-        {
-                {
-                inline_css | safe
-            }
-        }
-    </style>
-    {% else %}
     <link rel="stylesheet" href="{{ css_url }}">
-    {% endif %}
 </head>
 
 <body>
@@ -96,27 +86,22 @@
         </ul>
         {% endif %}
 
-        <!-- COLLAGE DE IMÁGENES (SNAKE) -->
         <div class="collage-container">
-            <!-- Pin de inicio -->
             <svg class="pin-icon pin-start" viewBox="0 0 24 24" fill="currentColor">
                 <path
                     d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5c-1.38 0-2.5-1.12-2.5-2.5s1.12-2.5 2.5-2.5 2.5 1.12 2.5 2.5-1.12 2.5-2.5 2.5z" />
             </svg>
 
-            <!-- Línea punteada SVG -->
             <svg class="dotted-line" viewBox="0 0 400 750" preserveAspectRatio="none">
                 <path
                     d="M200,730 C200,680 280,620 280,560 C280,500 120,440 120,380 C120,320 280,260 280,200 C280,140 200,80 200,20"
                     fill="none" stroke="#55b7b0" stroke-width="3" stroke-dasharray="10,8" stroke-linecap="round" />
             </svg>
 
-            <!-- Imágenes circulares (orden invertido para flujo visual) -->
             {% for img in day.images|reverse %}
             <div class="circular-img img-{{ loop.index }}" style="background-image: url('{{ img }}');"></div>
             {% endfor %}
 
-            <!-- Pin de fin -->
             <svg class="pin-icon pin-end" viewBox="0 0 24 24" fill="currentColor">
                 <path
                     d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5c-1.38 0-2.5-1.12-2.5-2.5s1.12-2.5 2.5-2.5 2.5 1.12 2.5 2.5-1.12 2.5-2.5 2.5z" />
@@ -125,7 +110,7 @@
     </div>
     {% endfor %}
 
-    <!-- PÁGINA DE PRECIOS -->
+    <!-- PÁGINAS DE EXTRAS (PRECIOS, ETC) -->
     <div class="page-container extra-page" style="page-break-after: always;">
         <div class="decor-top-right"></div>
         <div class="decor-bottom-left">
@@ -193,7 +178,6 @@
         </div>
     </div>
 
-    <!-- PÁGINA DE POLÍTICAS -->
     <div class="page-container extra-page">
         <div class="decor-top-right"></div>
         <div class="decor-bottom-left">
@@ -228,10 +212,8 @@
                 condiciones climáticas o modificaciones operativas fuera de nuestro control.</p>
         </div>
 
-        <!-- Imagen de llama decorativa -->
         <div class="llama-circle" style="background-image: url('{{ llama_img }}');"></div>
     </div>
-
 </body>
 
 </html>
