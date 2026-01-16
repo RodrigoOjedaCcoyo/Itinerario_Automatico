@@ -147,11 +147,7 @@ def generate_pdf(itinerary_data, output_filename="Itinerario_Generado.pdf"):
         'encoding': "UTF-8",
         'no-outline': None,
         'enable-local-file-access': None,
-        'disable-smart-shrinking': None, # Keep this to prevent random shrinking
-        'zoom': '1.0', # Ensure 1:1 scale
-        'viewport-size': '1280x1024', # Virtual viewport to force full width render logic if needed, or remove if causing issues. Let's try standard A4 pixel ratio.
-        # Actually, for full page background, smart shrinking disable is usually correct, but layout needs to be responsive or exact.
-        # Let's try removing viewport-size and sticking to basics but ensuring CSS is 100%
+        # 'disable-smart-shrinking': None, # Commented out to let wkhtmltopdf handle A4 fit automatically
         'quiet': '',
         'print-media-type': '' 
     }
