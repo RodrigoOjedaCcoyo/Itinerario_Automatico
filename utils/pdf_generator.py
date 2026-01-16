@@ -50,40 +50,47 @@ def obtener_imagenes_tour(nombre_carpeta):
         
     return imagenes[:5]
 
+import base64
+import mimetypes
+
+def image_to_base64(image_path):
+    """Convierte una imagen local a string Base64 para incrustar en HTML."""
+    path = Path(image_path)
+    if not path.exists():
+        return ""
+    
+    mime_type, _ = mimetypes.guess_type(path)
+    if not mime_type:
+        mime_type = 'image/png'
+        
+    try:
+        with open(path, "rb") as img_file:
+            b64_str = base64.b64encode(img_file.read()).decode('utf-8')
+        return f"data:{mime_type};base64,{b64_str}"
+    except Exception as e:
+        print(f"Error al convertir imagen {image_path}: {e}")
+        return ""
+
 def generate_pdf(itinerary_data, output_filename="Itinerario_Generado.pdf"):
     """
     Genera un PDF a partir de los datos del itinerario.
-    
-    Args:
-        itinerary_data (dict): Diccionario con toda la info:
-            {
-                'pasajero': str,
-                'fechas': str,
-                'duracion': str,
-                'cover_img': str, # path
-                'title_1': str,
-                'title_2': str,
-                'vendedor': str,
-                'celular': str,
-                'logo_url': str, # path
-                'precios': {'nac': {'monto': X}, 'ext': ...},
-                'days': [
-                    {
-                        'titulo': str,
-                        'descripcion': str,
-                        'highlights': [str],
-                        'servicios': [str], # incluye
-                        'servicios_no_incluye': [str],
-                        'carpeta_img': str
-                    }
-                ]
-            }
     """
     
     # 1. Prepare Environment
     env = jinja2.Environment(loader=jinja2.FileSystemLoader(str(TEMPLATE_DIR)))
     template = env.get_template('report.html')
     
+    # 1.5. Convert Critical Images to Base64 (Robustez para Cloud)
+    # Convertimos las imágenes principales si son rutas locales
+    if 'cover_img' in itinerary_data and os.path.exists(itinerary_data['cover_img']):
+        itinerary_data['cover_img'] = image_to_base64(itinerary_data['cover_img'])
+        
+    if 'logo_url' in itinerary_data and os.path.exists(itinerary_data['logo_url']):
+        itinerary_data['logo_url'] = image_to_base64(itinerary_data['logo_url'])
+        
+    if 'llama_img' in itinerary_data and os.path.exists(itinerary_data['llama_img']):
+        itinerary_data['llama_img'] = image_to_base64(itinerary_data['llama_img'])
+
     # 2. Prepare Data Enrichment (SVG, Images)
     enriched_days = []
     for day in itinerary_data['days']:
@@ -96,19 +103,26 @@ def generate_pdf(itinerary_data, output_filename="Itinerario_Generado.pdf"):
         for s in day.get('servicios_no_incluye', []):
             s_no.append({'text': s, 'svg': get_svg(s, 'default_out')})
             
-        # Process Images
-        imgs = obtener_imagenes_tour(day.get('carpeta_img', 'general'))
+        # Process Images (Convert to Base64 as well)
+        imgs_paths = obtener_imagenes_tour(day.get('carpeta_img', 'general'))
+        imgs_b64 = []
+        for img_p in imgs_paths:
+            if img_p.startswith('http'):
+                imgs_b64.append(img_p)
+            else:
+                imgs_b64.append(image_to_base64(img_p))
         
         day_new = day.copy()
         day_new['servicios_incluye_svg'] = s_incluye
         day_new['servicios_no_svg'] = s_no
-        day_new['images'] = imgs
+        day_new['images'] = imgs_b64
         enriched_days.append(day_new)
         
     itinerary_data['days'] = enriched_days
     
     # 3. Read CSS
     with open(CSS_FILE, 'r', encoding='utf-8') as f:
+        # Asegurar que el CSS sea seguro para inyección
         css_content = f.read()
     
     # 4. Render HTML
