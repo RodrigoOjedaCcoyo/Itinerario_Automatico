@@ -198,10 +198,12 @@ body {
 /* Collage Section */
 .collage-container {
     position: absolute;
-    bottom: 20px;
+    top: 80px;
+    /* SUBIMOS TODO EL LISTÓN */
     right: 10px;
     width: 400px;
-    height: 750px;
+    height: 850px;
+    /* Más alto para cubrir toda la página */
     z-index: 2;
 }
 
@@ -214,12 +216,12 @@ body {
 }
 
 .pin-start {
-    bottom: 0px;
+    bottom: 20px;
     left: 178px;
 }
 
 .pin-end {
-    top: 0px;
+    top: -10px;
     left: 178px;
 }
 
@@ -241,53 +243,48 @@ body {
     overflow: hidden;
 }
 
-/* Image Positions - SINCRONIZADAS CON EL CAMINO */
+/* Image Positions - DISTRIBUCIÓN EQUILIBRADA SUBIDA */
 .img-1 {
     width: 140px;
     height: 140px;
-    bottom: 20px;
-    right: 30px;
+    bottom: 80px;
+    right: 40px;
     left: auto;
     z-index: 10;
-    border-width: 4px;
 }
 
 .img-2 {
     width: 125px;
     height: 125px;
-    bottom: 180px;
-    left: 20px;
+    bottom: 250px;
+    left: 60px;
     z-index: 9;
-    border-width: 4px;
 }
 
 .img-3 {
     width: 135px;
     height: 135px;
-    top: 320px;
-    right: 20px;
+    top: 300px;
+    right: 50px;
     left: auto;
     z-index: 8;
-    border-width: 4px;
 }
 
 .img-4 {
-    width: 120px;
-    height: 120px;
-    top: 140px;
-    left: 30px;
+    width: 130px;
+    height: 130px;
+    top: 120px;
+    left: 40px;
     z-index: 9;
-    border-width: 4px;
 }
 
 .img-5 {
-    width: 150px;
-    height: 150px;
-    top: -20px;
-    right: 20px;
+    width: 155px;
+    height: 155px;
+    top: -30px;
+    right: 30px;
     left: auto;
     z-index: 10;
-    border-width: 4px;
 }
 
 /* --- COVER PAGE --- */
