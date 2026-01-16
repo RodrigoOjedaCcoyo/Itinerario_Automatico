@@ -147,8 +147,10 @@ def generate_pdf(itinerary_data, output_filename="Itinerario_Generado.pdf"):
         'encoding': "UTF-8",
         'no-outline': None,
         'enable-local-file-access': None,
-        'disable-smart-shrinking': '', # Disable smart shrinking to obey zoom
-        'zoom': '1.28', # Scale up fixed layout to fill A4
+        'disable-smart-shrinking': '', 
+        'zoom': '1.33', # 1.33 = 1280px / 960px approx ratio to fill A4 width on standard DPI
+        'dpi': '96',
+        'viewport-size': '1280x1024',
         'quiet': '',
         'print-media-type': '' 
     }
