@@ -198,7 +198,8 @@ body {
 /* Collage Section */
 .collage-container {
     position: absolute;
-    top: 50px;
+    top: 120px;
+    /* Bajamos el contenedor para más aire arriba */
     right: 15px;
     width: 400px;
     height: 850px;
@@ -212,12 +213,12 @@ body {
 
 .pin-start {
     bottom: -10px;
-    left: 200px;
+    left: 178px;
 }
 
 .pin-end {
     top: -20px;
-    left: 198px;
+    left: 178px;
 }
 
 .serpent-path-svg {
@@ -239,40 +240,40 @@ body {
     z-index: 5;
 }
 
-/* Image Positions - SINCRONIZADAS CON EL CAMINO "S" */
+/* Image Positions - SINCRONIZADAS CON "S" EXTREMA */
 .img-1 {
-    width: 150px;
-    height: 150px;
-    top: 50px;
-    right: 20px;
-}
-
-.img-2 {
-    width: 140px;
-    height: 140px;
-    top: 220px;
-    left: 60px;
-}
-
-.img-3 {
-    width: 145px;
-    height: 145px;
-    top: 410px;
+    width: 155px;
+    height: 155px;
+    top: 60px;
     right: 10px;
 }
 
+.img-2 {
+    width: 145px;
+    height: 145px;
+    top: 230px;
+    left: 30px;
+}
+
+.img-3 {
+    width: 150px;
+    height: 150px;
+    top: 420px;
+    right: 0px;
+}
+
 .img-4 {
-    width: 135px;
-    height: 135px;
-    top: 590px;
-    left: 80px;
+    width: 140px;
+    height: 140px;
+    top: 600px;
+    left: 50px;
 }
 
 .img-5 {
-    width: 160px;
-    height: 160px;
-    top: 730px;
-    right: 30px;
+    width: 165px;
+    height: 165px;
+    top: 740px;
+    right: 20px;
 }
 
 /* --- COVER PAGE --- */

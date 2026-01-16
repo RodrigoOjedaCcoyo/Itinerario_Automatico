@@ -49,18 +49,18 @@
         <div class="collage-container">
             <!-- Pin Superior -->
             <svg class="pin-icon pin-end" width="45" height="45" viewBox="0 0 24 24">
-                <circle cx="12" cy="12" r="10" fill="white" stroke="black" stroke-width="2" />
-                <circle cx="12" cy="12" r="4" fill="black" />
+                <circle cx="12" cy="12" r="10" fill="white" stroke="#2d3436" stroke-width="2" />
+                <circle cx="12" cy="12" r="4" fill="#2d3436" />
             </svg>
 
             <!-- Serpent Path (Background thick + dotted) -->
             <svg class="serpent-path-svg" width="400" height="850" viewBox="0 0 400 850" preserveAspectRatio="none">
-                <!-- Thick Background Path -->
-                <path d="M220,10 C220,80 350,150 350,250 C350,350 100,450 100,550 C100,650 220,720 220,820" fill="none"
-                    stroke="rgba(85, 183, 176, 0.15)" stroke-width="50" stroke-linecap="round" />
+                <!-- Thick Background Path - MÁS CURVATURA -->
+                <path d="M200,10 C200,100 390,150 390,300 C390,450 10,400 10,550 C10,700 200,750 200,840" fill="none"
+                    stroke="rgba(85, 183, 176, 0.15)" stroke-width="60" stroke-linecap="round" />
                 <!-- Dotted Line -->
-                <path d="M220,10 C220,80 350,150 350,250 C350,350 100,450 100,550 C100,650 220,720 220,820" fill="none"
-                    stroke="#55b7b0" stroke-width="3" stroke-dasharray="10,8" stroke-linecap="round" />
+                <path d="M200,10 C200,100 390,150 390,300 C390,450 10,400 10,550 C10,700 200,750 200,840" fill="none"
+                    stroke="#55b7b0" stroke-width="3" stroke-dasharray="10,12" stroke-linecap="round" />
             </svg>
 
             {% for img in day.images %}
