@@ -15,6 +15,9 @@
 body {
     margin: 0;
     padding: 0;
+    width: 210mm;
+    height: 297mm;
+    /* Force exact A4 height */
     background-color: white;
     font-family: var(--font-main);
     color: var(--color-text);
@@ -26,8 +29,11 @@ body {
 .page-container {
     width: 210mm;
     min-height: 297mm;
+    /* Ensure it fills height */
+    height: 297mm;
+    /* Force fill */
     background: white;
-    margin: 0 auto;
+    margin: 0;
     position: relative;
     padding: 40px 50px 100px 50px;
     box-sizing: border-box;
@@ -299,16 +305,17 @@ body {
     height: 297mm;
     background-size: cover !important;
     background-repeat: no-repeat !important;
-    background-position: center bottom;
+    background-position: center center;
+    /* Better centering */
     color: white;
     overflow: hidden;
+    margin: 0;
+    padding: 0;
 }
 
+/* REMOVED OVERLAY to fix "black stain" */
 .overlay {
-    position: absolute;
-    width: 100%;
-    height: 100%;
-    background: linear-gradient(to bottom, rgba(0, 0, 0, 0.1), rgba(0, 0, 0, 0.4));
+    display: none;
 }
 
 .pasajero-info {
