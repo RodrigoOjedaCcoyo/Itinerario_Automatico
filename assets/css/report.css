@@ -31,13 +31,12 @@ body {
 .page-container {
     width: 210mm;
     min-height: 297mm;
-    /* Ensure it fills height */
     height: 297mm;
-    /* Force fill */
     background: white;
     margin: 0;
     position: relative;
-    padding: 40px 50px 100px 50px;
+    padding: 0;
+    /* Remove padding entirely from container, handle inside or specific elements */
     box-sizing: border-box;
     overflow: hidden;
     page-break-after: always;
@@ -67,6 +66,9 @@ body {
     justify-content: center;
     z-index: 10;
     padding: 0;
+    margin-left: 50px;
+    /* Add margin to compensate */
+    margin-bottom: 40px;
 }
 
 .logo-container {
@@ -90,6 +92,9 @@ body {
 
 .day-header {
     color: var(--color-primary);
+    margin-top: 40px;
+    margin-left: 50px;
+    margin-right: 50px;
     margin-bottom: 30px;
     position: relative;
     z-index: 20;
@@ -116,7 +121,9 @@ body {
     font-size: 0.92rem;
     line-height: 1.6;
     color: var(--color-text);
-    max-width: 75%;
+    max-width: 65%;
+    /* Adjusted width */
+    margin-left: 50px;
     margin-bottom: 30px;
     font-weight: 400;
     position: relative;
@@ -127,6 +134,7 @@ body {
 .highlights-list {
     margin: 15px 0;
     padding-left: 20px;
+    margin-left: 50px;
     list-style: none;
     max-width: 95%;
     position: relative;
@@ -156,7 +164,7 @@ body {
     color: var(--color-primary);
     font-size: 1.3rem;
     font-weight: 800;
-    margin: 25px 0 15px 0;
+    margin: 25px 0 15px 50px;
     text-transform: uppercase;
     letter-spacing: 0.5px;
     max-width: 60%;
@@ -167,6 +175,7 @@ body {
 .services-list {
     list-style: none;
     padding-left: 20px;
+    margin-left: 50px;
     margin-bottom: 25px;
     max-width: 60%;
     position: relative;
