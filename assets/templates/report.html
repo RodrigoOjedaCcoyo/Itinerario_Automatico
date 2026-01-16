@@ -97,7 +97,7 @@
                     stroke-width="4" stroke-dasharray="12,12" fill="none" />
             </svg>
 
-            {% for img in day.images %}
+            {% for img in day.images|reverse %}
             <div class="circular-img img-{{ loop.index }}" style="background-image: url('{{ img }}');"></div>
             {% endfor %}
         </div>
