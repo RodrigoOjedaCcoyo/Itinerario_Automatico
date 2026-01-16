@@ -87,6 +87,9 @@ def generate_pdf(itinerary_data, output_filename="Itinerario_Generado.pdf"):
         
     if 'logo_url' in itinerary_data and os.path.exists(itinerary_data['logo_url']):
         itinerary_data['logo_url'] = image_to_base64(itinerary_data['logo_url'])
+
+    if 'logo_cover_url' in itinerary_data and os.path.exists(itinerary_data['logo_cover_url']):
+        itinerary_data['logo_cover_url'] = image_to_base64(itinerary_data['logo_cover_url'])
         
     if 'llama_img' in itinerary_data and os.path.exists(itinerary_data['llama_img']):
         itinerary_data['llama_img'] = image_to_base64(itinerary_data['llama_img'])

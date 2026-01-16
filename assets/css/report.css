@@ -1,4 +1,12 @@
-/* PDF REPORT STYLES - Consolidated */
+@import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@400;700;800&display=swap');
+
+:root {
+    --color-primary: #55b7b0;
+    --color-text: #2d3436;
+    --font-main: 'Montserrat', sans-serif;
+}
+
+/* --- BASE SETTINGS --- */
 @page {
     size: A4;
     margin: 0;
@@ -7,68 +15,293 @@
 body {
     margin: 0;
     padding: 0;
-    font-family: 'Arial', sans-serif;
-    color: #2d3436;
-    -webkit-print-color-adjust: exact;
-}
-
-/* --- COMMON UTILS --- */
-.page-container {
-    position: relative;
-    width: 210mm;
-    height: 297mm;
-    overflow: hidden;
     background-color: white;
+    font-family: var(--font-main);
+    color: var(--color-text);
+    -webkit-print-color-adjust: exact;
+    print-color-adjust: exact;
+}
+
+/* --- FROM Diseño.css (ITINERARY PAGES) --- */
+.page-container {
+    width: 210mm;
+    min-height: 297mm;
+    background: white;
+    margin: 0 auto;
+    position: relative;
+    padding: 40px 50px 100px 50px;
+    box-sizing: border-box;
+    overflow: hidden;
     page-break-after: always;
 }
 
-.page-break {
-    page-break-after: always;
-}
-
-/* --- DECORATIONS --- */
 .decor-top-right {
     position: absolute;
     top: -50px;
     right: -50px;
-    width: 150px;
-    height: 150px;
-    background-color: rgba(85, 183, 176, 0.1);
-    /* #55b7b0 */
+    width: 200px;
+    height: 200px;
+    background-color: var(--color-primary);
     border-radius: 50%;
-    z-index: 0;
+    z-index: 1;
 }
 
 .decor-bottom-left {
     position: absolute;
-    bottom: 0;
-    left: 0;
-    width: 100%;
-    height: 100px;
-    /* Adjust as needed */
+    bottom: -60px;
+    left: -60px;
+    width: 220px;
+    height: 220px;
+    background-color: var(--color-primary);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
     z-index: 10;
+    padding: 0;
 }
 
 .logo-container {
-    position: absolute;
-    bottom: 20px;
-    left: 20px;
-    width: 120px;
+    width: 90px;
+    height: 90px;
+    border: 3px solid white;
+    border-radius: 50%;
+    overflow: hidden;
+    background-color: var(--color-primary);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
 }
 
 .logo-container img {
     width: 100%;
+    height: 100%;
+    object-fit: cover;
 }
 
-/* --- PORTADA (COVER) --- */
-.cover-container {
+.day-header {
+    color: var(--color-primary);
+    margin-bottom: 30px;
     position: relative;
+    z-index: 20;
+}
+
+.day-header h2 {
+    font-size: 1.3rem;
+    font-weight: 800;
+    margin: 0;
+    line-height: 1.2;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.day-header h3 {
+    font-size: 1.3rem;
+    font-weight: 800;
+    margin: 5px 0 0 0;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.description {
+    font-size: 0.92rem;
+    line-height: 1.6;
+    color: var(--color-text);
+    max-width: 75%;
+    margin-bottom: 30px;
+    font-weight: 400;
+    position: relative;
+    z-index: 20;
+    text-align: justify;
+}
+
+.highlights-list {
+    margin: 15px 0;
+    padding-left: 20px;
+    list-style: none;
+    max-width: 95%;
+    position: relative;
+    z-index: 20;
+}
+
+.highlights-list li {
+    display: flex;
+    align-items: flex-start;
+    gap: 10px;
+    margin-bottom: 3px;
+    font-size: 0.92rem;
+    color: var(--color-text);
+    font-weight: 400;
+    line-height: 1.4;
+}
+
+.highlights-list li::before {
+    content: "•";
+    color: var(--color-primary);
+    /* Changed to primary based on design conventions */
+    font-weight: 800;
+    flex-shrink: 0;
+}
+
+.section-title {
+    color: var(--color-primary);
+    font-size: 1.3rem;
+    font-weight: 800;
+    margin: 25px 0 15px 0;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    max-width: 60%;
+    position: relative;
+    z-index: 20;
+}
+
+.services-list {
+    list-style: none;
+    padding-left: 20px;
+    margin-bottom: 25px;
+    max-width: 60%;
+    position: relative;
+    z-index: 20;
+}
+
+.service-item {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+    margin-bottom: 5px;
+}
+
+.service-icon {
+    width: 35px;
+    height: 35px;
+    flex-shrink: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.service-icon svg {
     width: 100%;
     height: 100%;
+    stroke: #333;
+}
+
+.service-text {
+    font-size: 0.92rem;
+    font-weight: 400;
+    color: var(--color-text);
+}
+
+/* Collage Section from Diseño.css / Estructura.html */
+.collage-container {
+    position: absolute;
+    bottom: 20px;
+    right: 10px;
+    width: 400px;
+    height: 750px;
+    z-index: 2;
+}
+
+.pin-icon {
+    position: absolute;
+    width: 45px;
+    height: 45px;
+    color: var(--color-primary);
+    z-index: 20;
+}
+
+.pin-start {
+    bottom: 0px;
+    left: 178px;
+}
+
+.pin-end {
+    top: 0px;
+    left: 178px;
+}
+
+.dotted-line {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    pointer-events: none;
+    z-index: 3;
+}
+
+.circular-img {
+    position: absolute;
+    border-radius: 50%;
+    border: 5px solid white;
+    box-shadow: 0 6px 15px rgba(0, 0, 0, 0.15);
+    background-size: cover;
+    background-position: center;
+    overflow: hidden;
+}
+
+/* Image Positions (Adjusted to match Diseño.css exactly) */
+.img-1 {
+    width: 150px;
+    height: 150px;
+    bottom: 40px;
+    /* From .img-5 in Ref (inverted order in template) */
+    left: 180px;
+    z-index: 10;
+    border-width: 3px;
+}
+
+.img-2 {
+    width: 120px;
+    height: 120px;
+    bottom: 170px;
+    /* From .img-4 in Ref */
+    left: 100px;
+    z-index: 9;
+    border-width: 3px;
+}
+
+.img-3 {
+    width: 140px;
+    height: 140px;
+    top: 250px;
+    /* Ref .img-3 */
+    left: 90px;
+    z-index: 8;
+    border-width: 3px;
+}
+
+.img-4 {
+    width: 130px;
+    height: 130px;
+    top: -80px;
+    /* Ref .img-2 */
+    right: 0px;
+    left: auto;
+    z-index: 9;
+    border-width: 3px;
+}
+
+.img-5 {
+    width: 150px;
+    height: 150px;
+    top: 50px;
+    /* Ref .img-1 */
+    left: 50px;
+    z-index: 8;
+    border-width: 3px;
+}
+
+
+/* --- FROM Portada.html (COVER PAGE) --- */
+.cover-container {
+    position: relative;
+    width: 210mm;
+    height: 297mm;
     background-size: cover !important;
     background-repeat: no-repeat !important;
     background-position: center bottom;
     color: white;
+    overflow: hidden;
 }
 
 .overlay {
@@ -76,6 +309,18 @@ body {
     width: 100%;
     height: 100%;
     background: linear-gradient(to bottom, rgba(0, 0, 0, 0.1), rgba(0, 0, 0, 0.4));
+}
+
+.pasajero-info {
+    position: absolute;
+    top: 40px;
+    right: 40px;
+    text-align: right;
+    color: white;
+    z-index: 20;
+    font-weight: bold;
+    text-shadow: 0 2px 4px rgba(0, 0, 0, 0.5);
+    font-family: var(--font-main);
 }
 
 .title-group {
@@ -113,6 +358,10 @@ body {
     z-index: 20;
 }
 
+.logo-bottom-cover img {
+    width: 100%;
+}
+
 .duration-box {
     position: absolute;
     bottom: 40px;
@@ -130,216 +379,26 @@ body {
     bottom: 0;
     width: 100%;
     height: 15px;
-    background-color: #55b7b0;
+    background-color: #00bcd4;
 }
 
-.pasajero-info {
-    position: absolute;
-    top: 40px;
-    right: 40px;
-    text-align: right;
-    color: white;
-    z-index: 20;
-    font-weight: bold;
-    text-shadow: 0 2px 4px rgba(0, 0, 0, 0.5);
-}
-
-/* --- DAY PAGE (ITINERARY) --- */
-.day-header {
-    margin-top: 40px;
-    margin-left: 40px;
-    margin-right: 40px;
-    border-bottom: 3px solid #55b7b0;
-    padding-bottom: 10px;
-}
-
-.day-header h2 {
-    color: #55b7b0;
-    font-size: 18px;
-    margin: 0;
-    text-transform: uppercase;
-    font-weight: 800;
-}
-
-.day-header h3 {
-    color: #2d3436;
-    font-size: 28px;
-    margin: 5px 0 0 0;
-    text-transform: uppercase;
-    font-weight: 900;
-}
-
-.description {
-    margin: 20px 40px;
-    font-size: 14px;
-    line-height: 1.5;
-    text-align: justify;
-    color: #636e72;
-    max-width: 60%;
-    /* Leave space for collage */
-}
-
-.highlights-list {
-    margin: 15px 0;
-    padding-left: 20px;
-    color: #55b7b0;
-    font-weight: bold;
-    font-size: 13px;
-}
-
-.highlights-list li {
-    margin-bottom: 5px;
-}
-
-.section-title {
-    margin: 20px 40px 10px 40px;
-    font-weight: 800;
-    color: #2d3436;
-    font-size: 14px;
-    text-transform: uppercase;
-    clear: left;
-    max-width: 60%;
-}
-
-.services-list {
-    margin: 0 40px;
-    display: flex;
-    flex-wrap: wrap;
-    gap: 10px;
-    max-width: 60%;
-}
-
-.service-item {
-    display: flex;
-    align-items: center;
-    gap: 5px;
-    background: #f1f2f6;
-    padding: 5px 10px;
-    border-radius: 15px;
-    font-size: 11px;
-    font-weight: 600;
-    color: #2d3436;
-}
-
-.service-icon svg {
-    width: 14px;
-    height: 14px;
-    color: #55b7b0;
-}
-
-/* COLLAGE SNAKE LAYOUT */
-.collage-container {
-    position: absolute;
-    top: 100px;
-    right: 0;
-    width: 35%;
-    /* Fixed width column on right */
-    height: 80%;
-}
-
-.circular-img {
-    position: absolute;
-    border-radius: 50%;
-    background-size: cover;
-    background-position: center;
-    border: 3px solid white;
-    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
-}
-
-/* Positions for Snake Layout (Approximation based on SVG path) */
-/* Path: M200,730 C 50,650 350,550 200,450 S 50,250 200,150 S 350,50 200,20 */
-/* Mapping SVG coords (0-400 width, 0-750 height) to CSS % or pixels */
-/* Assuming container is approx 300px wide */
-/* Image 1: Bottom Right (Start) */
-.img-1 {
-    width: 150px;
-    height: 150px;
-    top: 580px;
-    left: 40%;
-    z-index: 10;
-    border: 5px solid white;
-}
-
-/* Image 2: Middle Left */
-.img-2 {
-    width: 120px;
-    height: 120px;
-    top: 440px;
-    left: 10%;
-    z-index: 9;
-    border: 4px solid white;
-}
-
-/* Image 3: Center */
-.img-3 {
-    width: 140px;
-    height: 140px;
-    top: 290px;
-    left: 45%;
-    z-index: 8;
-    border: 5px solid white;
-}
-
-/* Image 4: Top Left */
-.img-4 {
-    width: 110px;
-    height: 110px;
-    top: 150px;
-    left: 5%;
-    z-index: 9;
-    border: 4px solid white;
-}
-
-/* Image 5: Top Right (End) */
-.img-5 {
-    width: 100px;
-    height: 100px;
-    top: 20px;
-    left: 35%;
-    z-index: 8;
-    border: 3px solid white;
-}
-
-.dotted-line {
-    position: absolute;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    z-index: -1;
-}
-
-.pin-icon {
-    position: absolute;
-    color: #55b7b0;
-    width: 24px;
-    height: 24px;
-}
-
-.pin-start {
-    top: 720px;
-    left: 50%;
-}
-
-/* Adjusted */
-.pin-end {
-    top: 20px;
-    left: 50%;
-}
-
-/* --- EXTRAS PAGES --- */
+/* --- FROM Extras.html --- */
 .extra-page {
     display: flex;
     flex-direction: column;
     align-items: center;
     text-align: center;
+    color: #2d3436;
 }
 
 .extra-title {
     color: #00bcd4;
     font-size: 28px;
-    margin-top: 80px;
-    margin-bottom: 40px;
+    /* Corrected to match user Ref tweak */
+    font-weight: 800;
+    margin-top: 20px;
+    margin-bottom: 5px;
+    text-transform: uppercase;
     line-height: 1.2;
 }
 
@@ -369,7 +428,7 @@ body {
 .info-list {
     text-align: left;
     width: 100%;
-    padding: 0 60px;
+    padding: 0 40px;
     margin-bottom: 40px;
 }
 
@@ -387,7 +446,8 @@ body {
     position: absolute;
     left: 0;
     font-weight: bold;
-    color: #55b7b0;
+    color: #2d3436;
+    /* Default black bullets in Ref Extras.html, but using dark grey */
 }
 
 .section-header-red {
@@ -396,7 +456,7 @@ body {
     font-weight: 800;
     text-align: left;
     width: 100%;
-    padding: 0 60px;
+    padding: 0 40px;
     margin-bottom: 20px;
     text-transform: uppercase;
 }
@@ -407,7 +467,7 @@ body {
     font-weight: 800;
     text-align: left;
     width: 100%;
-    padding: 0 60px;
+    padding: 0 40px;
     margin-bottom: 15px;
     display: flex;
     align-items: center;
@@ -426,15 +486,14 @@ body {
     flex: 1;
     background-size: cover;
     background-position: center;
-    border-radius: 8px;
 }
 
 /* Recom Grid */
 .recom-grid {
     text-align: left;
     width: 100%;
-    padding: 0 60px;
-    margin-top: 40px;
+    padding: 0 40px;
+    margin-top: 10px;
 }
 
 .recom-title {
@@ -447,8 +506,7 @@ body {
 
 .recom-item {
     font-size: 13px;
-    font-weight: 600;
-    /* reduced from 800 */
+    font-weight: 800;
     margin-bottom: 5px;
     display: flex;
     align-items: flex-start;
@@ -459,19 +517,16 @@ body {
 .recom-item::before {
     content: "•";
     font-weight: 900;
-    color: #55b7b0;
 }
 
 .mask-parallelogram {
-    width: 400px;
-    height: 300px;
-    /* Reduced height to fit */
+    width: 300px;
+    height: 400px;
     margin-top: 40px;
     background-size: cover;
     transform: skew(-15deg);
     overflow: hidden;
     border-radius: 20px;
-    box-shadow: 10px 10px 0px rgba(85, 183, 176, 0.2);
 }
 
 .mask-parallelogram div {
@@ -479,13 +534,12 @@ body {
     height: 100%;
     transform: skew(15deg) scale(1.2);
     background-size: cover;
-    background-position: center;
 }
 
 .policy-section {
     text-align: left;
     width: 100%;
-    padding: 0 60px;
+    padding: 0 40px;
     margin-bottom: 25px;
 }
 
@@ -493,24 +547,19 @@ body {
     font-weight: 800;
     font-size: 16px;
     margin-bottom: 5px;
-    color: #2d3436;
-    text-transform: uppercase;
 }
 
 .policy-text {
     font-size: 13px;
     line-height: 1.4;
-    color: #636e72;
 }
 
 .llama-circle {
-    width: 200px;
-    height: 200px;
+    width: 250px;
+    height: 250px;
     border-radius: 50%;
-    background-image: url('https://images.unsplash.com/photo-1589923158776-cb4485d99fd6?auto=format&fit=crop&q=80&w=400');
     background-size: cover;
     background-position: center;
     margin-top: 30px;
     box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
-    border: 5px solid white;
 }
