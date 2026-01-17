@@ -3,6 +3,7 @@
 :root {
     --color-primary: #55b7b0;
     --color-text: #2d3436;
+    /* Unified professional grey */
     --font-main: 'Montserrat', sans-serif;
 }
 
@@ -10,6 +11,7 @@ body {
     margin: 0;
     padding: 0;
     background-color: white;
+    /* Cambiado a blanco para el PDF */
     font-family: var(--font-main);
     -webkit-print-color-adjust: exact;
     print-color-adjust: exact;
@@ -23,6 +25,7 @@ body {
     margin: 0 auto;
     position: relative;
     padding: 40px 50px 100px 50px;
+    /* Extra bottom padding for safe zone */
     box-sizing: border-box;
     overflow: hidden;
     page-break-after: always;
@@ -45,10 +48,10 @@ body {
 /* DECORATIONS */
 .decor-top-right {
     position: absolute;
-    top: -80px;
-    right: -80px;
-    width: 250px;
-    height: 250px;
+    top: -50px;
+    right: -50px;
+    width: 200px;
+    height: 200px;
     background-color: var(--color-primary);
     border-radius: 50%;
     z-index: 1;
@@ -56,10 +59,10 @@ body {
 
 .decor-bottom-left {
     position: absolute;
-    bottom: -80px;
-    left: -80px;
-    width: 280px;
-    height: 280px;
+    bottom: -60px;
+    left: -60px;
+    width: 220px;
+    height: 220px;
     background-color: var(--color-primary);
     border-radius: 50%;
     display: flex;
@@ -88,6 +91,29 @@ body {
     object-fit: cover;
 }
 
+/* PASSENGER INFO STYLING */
+.passenger-info {
+    position: relative;
+    z-index: 30;
+    margin-bottom: 20px;
+    padding-bottom: 10px;
+    border-bottom: 1px solid #eee;
+    max-width: 70%;
+}
+
+.passenger-info p {
+    margin: 2px 0;
+    font-size: 0.85rem;
+    color: #666;
+    font-weight: 400;
+}
+
+.passenger-info strong {
+    color: var(--color-primary);
+    font-weight: 800;
+    letter-spacing: 0.5px;
+}
+
 /* HEADERS */
 .day-header {
     color: var(--color-primary);
@@ -96,12 +122,19 @@ body {
     z-index: 20;
 }
 
-.day-header h2,
-.day-header h3 {
+.day-header h2 {
     font-size: 1.3rem;
     font-weight: 800;
     margin: 0;
     line-height: 1.2;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.day-header h3 {
+    font-size: 1.3rem;
+    font-weight: 800;
+    margin: 5px 0 0 0;
     text-transform: uppercase;
     letter-spacing: 0.5px;
 }
@@ -119,7 +152,12 @@ body {
     text-align: justify;
 }
 
-/* HIGHLIGHTS */
+.description strong {
+    font-weight: 800;
+    color: #000;
+}
+
+/* HIGHLIGHTS SECTION */
 .highlights-list {
     margin: 15px 0;
     padding-left: 20px;
@@ -129,7 +167,7 @@ body {
     z-index: 20;
 }
 
-.highlights-list li {
+.highlight-item {
     display: flex;
     align-items: flex-start;
     gap: 10px;
@@ -140,10 +178,11 @@ body {
     line-height: 1.4;
 }
 
-.highlights-list li::before {
+.highlight-item::before {
     content: "•";
-    color: var(--color-primary);
+    color: var(--color-text);
     font-weight: 800;
+    flex-shrink: 0;
 }
 
 .section-title {
@@ -158,10 +197,10 @@ body {
     z-index: 20;
 }
 
-/* SERVICES */
+/* SERVICES LIST */
 .services-list {
     list-style: none;
-    padding-left: 0;
+    padding-left: 20px;
     margin-bottom: 25px;
     max-width: 60%;
     position: relative;
@@ -200,17 +239,15 @@ body {
 .collage-container {
     position: absolute;
     bottom: 20px;
-    /* Tal como pediste: más abajo */
-    right: 15px;
+    /* Tal como pediste: al fondo */
+    right: 10px;
     width: 400px;
-    height: 800px;
+    height: 750px;
     z-index: 2;
 }
 
 .pin-icon {
     position: absolute;
-    width: 45px;
-    height: 45px;
     z-index: 20;
 }
 
@@ -235,21 +272,21 @@ body {
 .circular-img {
     position: absolute;
     border-radius: 50%;
-    border: 6px solid white;
-    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.2);
+    border: 5px solid white;
+    box-shadow: 0 6px 15px rgba(0, 0, 0, 0.15);
     background-size: cover;
     background-position: center;
     overflow: hidden;
     z-index: 5;
 }
 
-/* Image Positions - SINCRONIZADAS CON LA ESTRUCTURA "S" */
 .img-1 {
     width: 150px;
     height: 150px;
     top: 50px;
     left: 50px;
     z-index: 8;
+    border-width: 3px;
 }
 
 .img-2 {
@@ -259,6 +296,7 @@ body {
     right: 0px;
     left: auto;
     z-index: 9;
+    border-width: 3px;
 }
 
 .img-3 {
@@ -266,7 +304,9 @@ body {
     height: 140px;
     top: 250px;
     left: 90px;
+    right: auto;
     z-index: 8;
+    border-width: 3px;
 }
 
 .img-4 {
@@ -274,7 +314,9 @@ body {
     height: 120px;
     bottom: 170px;
     left: 100px;
+    right: auto;
     z-index: 9;
+    border-width: 3px;
 }
 
 .img-5 {
@@ -283,9 +325,10 @@ body {
     bottom: 40px;
     left: 180px;
     z-index: 10;
+    border-width: 3px;
 }
 
-/* PORTADA */
+/* --- ESTILOS EXTRAS (PORTADA, PRECIOS, ETC) --- */
 .cover-container {
     position: relative;
     width: 210mm;
@@ -303,7 +346,7 @@ body {
     background: linear-gradient(to bottom, rgba(0, 0, 0, 0.1), rgba(0, 0, 0, 0.3));
 }
 
-.pasajero-info {
+.pasajero-cover-info {
     position: absolute;
     top: 40px;
     right: 40px;
@@ -311,6 +354,7 @@ body {
     z-index: 20;
     font-weight: bold;
     text-shadow: 0 2px 4px rgba(0, 0, 0, 0.5);
+    font-size: 1.1rem;
 }
 
 .title-group {
@@ -368,7 +412,6 @@ body {
     background-color: var(--color-primary);
 }
 
-/* EXTRAS */
 .extra-page {
     display: flex;
     flex-direction: column;
