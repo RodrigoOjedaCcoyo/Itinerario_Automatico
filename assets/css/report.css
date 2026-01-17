@@ -186,7 +186,8 @@ body {
 /* COLLAGE SECTION - EL SERPIENTE */
 .collage-container {
     position: absolute;
-    top: 50px;
+    top: 150px;
+    /* Bajamos el bloque completo */
     right: 0px;
     width: 380px;
     /* Más estrecho para no invadir las letras */
