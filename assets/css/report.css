@@ -155,10 +155,10 @@ body {
 
 .services-list {
     list-style: none;
-    padding-left: 0;
+    padding-left: 30px;
+    /* Sangría (Tab) para mejor presentación */
     margin-bottom: 30px;
     max-width: 62%;
-    /* Incrementado para consistencia */
     position: relative;
     z-index: 20;
 }
@@ -166,8 +166,10 @@ body {
 .service-item {
     display: flex;
     align-items: center;
-    gap: 12px;
-    margin-bottom: 8px;
+    gap: 18px;
+    /* Más espacio entre icono y texto */
+    margin-bottom: 15px;
+    /* Más espacio entre filas */
 }
 
 .service-icon {
