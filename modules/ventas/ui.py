@@ -5,7 +5,8 @@ from datetime import datetime
 from pathlib import Path
 from data.tours_db import tours_db, paquetes_db
 from utils.pdf_generator import generate_pdf
-from utils.supabase_db import save_itinerary, get_last_itinerary_by_name
+from utils.pdf_generator import generate_pdf
+from utils.supabase_db import save_itinerary_v2, get_last_itinerary_v2
 
 # --- CONSTANTS ---
 PACKAGES_FILE = 'paquetes_personalizados.json'
@@ -107,22 +108,20 @@ def render_ventas_ui():
         if nc2.button("🔍 Buscar"):
             if nombre:
                 with st.spinner("Buscando en registros..."):
-                    last_data = get_last_itinerary_by_name(nombre)
+                    last_data = get_last_itinerary_v2(nombre)
                     if last_data:
-                        # Auto-llenar campos
-                        st.session_state.f_vendedor = last_data.get("vendedor", "")
-                        st.session_state.f_celular = last_data.get("celular", "")
-                        st.session_state.f_fuente = last_data.get("fuente", "WhatsApp")
-                        st.session_state.f_estado = last_data.get("estado", "Frío")
-                        st.session_state.f_origen = last_data.get("categoria", "Nacional/Chileno")
+                        # Auto-llenar campos desde el nuevo esquema
+                        datos_completos = last_data.get("datos_render", {})
+                        st.session_state.f_vendedor = datos_completos.get("vendedor", "")
+                        st.session_state.f_celular = datos_completos.get("celular_cliente", "")
+                        st.session_state.f_fuente = datos_completos.get("fuente", "WhatsApp")
+                        st.session_state.f_estado = datos_completos.get("estado", "Frío")
+                        st.session_state.f_origen = datos_completos.get("categoria", "Nacional/Chileno")
                         
-                        # Recuperar último itinerario si existe
-                        datos_completos = last_data.get("datos", {})
                         if datos_completos and 'days' in datos_completos:
                              # Re-construir itinerario simplificado para el editor
                              new_it = []
                              for d in datos_completos['days']:
-                                 # Buscar el objeto original en tours_db por título para tener la estructura correcta
                                  t_original = next((t for t in tours_db if t['titulo'] == d['titulo']), None)
                                  if t_original:
                                      new_it.append(t_original.copy())
@@ -424,10 +423,10 @@ def render_ventas_ui():
 
                             # 2. Guardar en Supabase y obtener ID de vinculación
                             itinerary_id = None
-                            with st.spinner("Sincronizando con base de datos de Leads..."):
-                                itinerary_id = save_itinerary(full_itinerary_data)
+                            with st.spinner("Sincronizando con el Cerebro (Leads e Itinerario)..."):
+                                itinerary_id = save_itinerary_v2(full_itinerary_data)
                                 if itinerary_id:
-                                    st.toast("✅ Consulta registrada en el sistema de Leads", icon="📊")
+                                    st.toast("✅ Lead e Itinerario sincronizados", icon="🧠")
                             
                             # 3. Generar PDF
                             pdf_path = generate_pdf(full_itinerary_data)

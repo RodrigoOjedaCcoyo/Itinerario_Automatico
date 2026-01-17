@@ -18,43 +18,74 @@ def get_supabase_client() -> Client:
     except Exception:
         return None
 
-def save_itinerary(itinerary_data):
-    """Guarda un itinerario en la tabla 'itinerarios' mapeando campos clave."""
+def save_itinerary_v2(itinerary_data):
+    """
+    Guarda un itinerario en 'itinerario_digital' y sincroniza con 'lead'.
+    Versión adaptada al nuevo esquema maestro.
+    """
     supabase = get_supabase_client()
-    if not supabase: return False
+    if not supabase: return None
     
     try:
-        # Preparamos el registro mapeando los campos principales a columnas
-        # y guardando el resto en un campo JSON llamado 'datos'
-        record = {
-            "pasajero": itinerary_data.get("pasajero"),
-            "fechas": itinerary_data.get("fechas"),
-            "categoria": itinerary_data.get("categoria"),
-            "vendedor": itinerary_data.get("vendedor"),
-            "fuente": itinerary_data.get("fuente"),
-            "estado": itinerary_data.get("estado"),
-            "celular": itinerary_data.get("celular_cliente"),
-            "datos": itinerary_data
+        # 1. Primero manejamos el Lead (Buscamos por celular para evitar duplicados)
+        celular = itinerary_data.get("celular_cliente")
+        nombre = itinerary_data.get("pasajero")
+        vendedor_id = itinerary_data.get("id_vendedor", 1) # Default al primer vendedor si no hay ID
+        
+        # Intentar buscar lead existente por celular
+        lead_res = supabase.table("lead").select("id_lead").eq("numero_celular", celular).execute()
+        
+        id_lead = None
+        if lead_res.data:
+            id_lead = lead_res.data[0]["id_lead"]
+        else:
+            # Crear nuevo lead si no existe
+            new_lead = {
+                "numero_celular": celular,
+                "nombre_pasajero": nombre,
+                "id_vendedor": vendedor_id,
+                "red_social": itinerary_data.get("fuente"),
+                "estado_lead": itinerary_data.get("estado"),
+                "whatsapp": True if itinerary_data.get("fuente") == "WhatsApp" else False
+            }
+            res_nl = supabase.table("lead").insert(new_lead).execute()
+            if res_nl.data:
+                id_lead = res_nl.data[0]["id_lead"]
+
+        # 2. Guardar en itinerario_digital
+        it_digital = {
+            "id_lead": id_lead,
+            "id_vendedor": vendedor_id,
+            "nombre_pasajero_itinerario": nombre,
+            "datos_render": itinerary_data
         }
         
-        response = supabase.table("itinerarios").insert(record).execute()
-        if response.data:
-            return response.data[0].get("id")
+        res_it = supabase.table("itinerario_digital").insert(it_digital).execute()
+        
+        if res_it.data:
+            it_id = res_it.data[0]["id_itinerario_digital"]
+            
+            # 3. Actualizar el último itinerario en el Lead
+            if id_lead:
+                supabase.table("lead").update({"ultimo_itinerario_id": it_id}).eq("id_lead", id_lead).execute()
+                
+            return it_id
+            
         return None
     except Exception as e:
-        print(f"Error guardando en Supabase: {e}")
+        print(f"Error en Cerebro Supabase: {e}")
         return None
 
-def get_last_itinerary_by_name(name: str):
-    """Busca el último itinerario de un pasajero por nombre para auto-llenado."""
+def get_last_itinerary_v2(name: str):
+    """Busca el historial usando el nuevo esquema."""
     supabase = get_supabase_client()
     if not supabase or not name: return None
     
     try:
-        response = supabase.table("itinerarios")\
+        response = supabase.table("itinerario_digital")\
             .select("*")\
-            .ilike("pasajero", f"%{name}%")\
-            .order("created_at", descending=True)\
+            .ilike("nombre_pasajero_itinerario", f"%{name}%")\
+            .order("fecha_generacion", descending=True)\
             .limit(1)\
             .execute()
         
@@ -62,5 +93,5 @@ def get_last_itinerary_by_name(name: str):
             return response.data[0]
         return None
     except Exception as e:
-        print(f"Error buscando en Supabase: {e}")
+        print(f"Error consultando Cerebro: {e}")
         return None
