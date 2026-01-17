@@ -5,7 +5,7 @@ from datetime import datetime
 from pathlib import Path
 from data.tours_db import tours_db, paquetes_db
 from utils.pdf_generator import generate_pdf
-from utils.supabase_db import save_itinerary
+from utils.supabase_db import save_itinerary, get_last_itinerary_by_name
 
 # --- CONSTANTS ---
 PACKAGES_FILE = 'paquetes_personalizados.json'
@@ -84,6 +84,13 @@ def render_ventas_ui():
     if 'origen_previo' not in st.session_state:
         st.session_state.origen_previo = "Nacional/Chileno"
     
+    # Campos del formulario controlados
+    if 'f_vendedor' not in st.session_state: st.session_state.f_vendedor = ""
+    if 'f_celular' not in st.session_state: st.session_state.f_celular = ""
+    if 'f_fuente' not in st.session_state: st.session_state.f_fuente = "WhatsApp"
+    if 'f_estado' not in st.session_state: st.session_state.f_estado = "Frío"
+    if 'f_origen' not in st.session_state: st.session_state.f_origen = "Nacional/Chileno"
+    
     st.title("🏔️ Constructor de Itinerarios Premium")
     st.write("Interfaz exclusiva para el equipo de ventas de Viajes Cusco Perú.")
     
@@ -91,18 +98,54 @@ def render_ventas_ui():
     
     with col1:
         st.subheader("👤 Datos del Pasajero")
-        nombre = st.text_input("Nombre Completo del Cliente", placeholder="Ej: Juan Pérez")
         
+        nc1, nc2 = st.columns([3, 1])
+        nombre = nc1.text_input("Nombre Completo del Cliente", placeholder="Ej: Juan Pérez")
+        if nc2.button("🔍 Buscar"):
+            if nombre:
+                with st.spinner("Buscando en registros..."):
+                    last_data = get_last_itinerary_by_name(nombre)
+                    if last_data:
+                        # Auto-llenar campos
+                        st.session_state.f_vendedor = last_data.get("vendedor", "")
+                        st.session_state.f_celular = last_data.get("celular", "")
+                        st.session_state.f_fuente = last_data.get("fuente", "WhatsApp")
+                        st.session_state.f_estado = last_data.get("estado", "Frío")
+                        st.session_state.f_origen = last_data.get("categoria", "Nacional/Chileno")
+                        
+                        # Recuperar último itinerario si existe
+                        datos_completos = last_data.get("datos", {})
+                        if datos_completos and 'days' in datos_completos:
+                             # Re-construir itinerario simplificado para el editor
+                             new_it = []
+                             for d in datos_completos['days']:
+                                 # Buscar el objeto original en tours_db por título para tener la estructura correcta
+                                 t_original = next((t for t in tours_db if t['titulo'] == d['titulo']), None)
+                                 if t_original:
+                                     new_it.append(t_original.copy())
+                             st.session_state.itinerario = new_it
+                        
+                        st.success(f"¡Datos cargados para {nombre}!")
+                        st.rerun()
+                    else:
+                        st.warning("No se encontraron registros previos.")
+
         ld_col1, ld_col2 = st.columns(2)
-        origen_lead = ld_col1.selectbox("Fuente del Lead", ["WhatsApp", "Facebook Ads", "Instagram Ads", "Google Ads", "Web Site", "Recomendado", "Otros"])
-        estado_lead = ld_col2.radio("Estado del Lead", ["Frío", "Tibio", "Caliente"], horizontal=True)
+        fuente_list = ["WhatsApp", "Facebook Ads", "Instagram Ads", "Google Ads", "Web Site", "Recomendado", "Otros"]
+        idx_f = fuente_list.index(st.session_state.f_fuente) if st.session_state.f_fuente in fuente_list else 0
+        origen_lead = ld_col1.selectbox("Fuente del Lead", fuente_list, index=idx_f)
+        
+        estado_list = ["Frío", "Tibio", "Caliente"]
+        idx_e = estado_list.index(st.session_state.f_estado) if st.session_state.f_estado in estado_list else 0
+        estado_lead = ld_col2.radio("Estado del Lead", estado_list, index=idx_e, horizontal=True)
 
         cv1, cv2 = st.columns(2)
-        vendedor = cv1.text_input("Vendedor", placeholder="Nombre del Agente")
-        celular = cv2.text_input("Celular del Cliente", placeholder="Ej: +51 9XX XXX XXX")
+        vendedor = cv1.text_input("Vendedor", value=st.session_state.f_vendedor, placeholder="Nombre del Agente")
+        celular = cv2.text_input("Celular del Cliente", value=st.session_state.f_celular, placeholder="Ej: +51 9XX XXX XXX")
         
         t_col1, t_col2 = st.columns(2)
-        tipo_t = t_col1.radio("Origen", ["Nacional/Chileno", "Extranjero"])
+        idx_o = 0 if "Nacional" in st.session_state.f_origen else 1
+        tipo_t = t_col1.radio("Origen", ["Nacional/Chileno", "Extranjero"], index=idx_o)
         modo_s = t_col2.radio("Servicio", ["Sistema Pool", "Servicio Privado"])
         
         # Actualizar precios al cambiar origen

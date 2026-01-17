@@ -42,3 +42,23 @@ def save_itinerary(itinerary_data):
     except Exception as e:
         print(f"Error guardando en Supabase: {e}")
         return None
+
+def get_last_itinerary_by_name(name: str):
+    """Busca el último itinerario de un pasajero por nombre para auto-llenado."""
+    supabase = get_supabase_client()
+    if not supabase or not name: return None
+    
+    try:
+        response = supabase.table("itinerarios")\
+            .select("*")\
+            .ilike("pasajero", f"%{name}%")\
+            .order("created_at", descending=True)\
+            .limit(1)\
+            .execute()
+        
+        if response.data:
+            return response.data[0]
+        return None
+    except Exception as e:
+        print(f"Error buscando en Supabase: {e}")
+        return None
