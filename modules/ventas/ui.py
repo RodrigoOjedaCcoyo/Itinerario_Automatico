@@ -89,8 +89,11 @@ def render_ventas_ui():
     if 'f_celular' not in st.session_state: st.session_state.f_celular = ""
     if 'f_fuente' not in st.session_state: st.session_state.f_fuente = "WhatsApp"
     if 'f_estado' not in st.session_state: st.session_state.f_estado = "Frío"
-    if 'f_origen' not in st.session_state: st.session_state.f_origen = "Nacional/Chileno"
-    
+    # Verificar Conexión
+    from utils.supabase_db import get_supabase_client
+    if get_supabase_client() is None:
+        st.warning("⚠️ El sistema no está conectado a Supabase (El Cerebro). Configura el archivo .env para habilitar el seguimiento de leads.")
+
     st.title("🏔️ Constructor de Itinerarios Premium")
     st.write("Interfaz exclusiva para el equipo de ventas de Viajes Cusco Perú.")
     

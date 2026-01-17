@@ -11,10 +11,12 @@ SUPABASE_KEY = os.getenv("SUPABASE_KEY")
 
 def get_supabase_client() -> Client:
     """Inicializa y retorna el cliente de Supabase."""
-    if not SUPABASE_URL or not SUPABASE_KEY:
-        print("ADVERTENCIA: SUPABASE_URL o SUPABASE_KEY no configurados.")
+    if not SUPABASE_URL or "your-project" in str(SUPABASE_URL) or not SUPABASE_KEY or "your-anon-key" in str(SUPABASE_KEY):
         return None
-    return create_client(SUPABASE_URL, SUPABASE_KEY)
+    try:
+        return create_client(SUPABASE_URL, SUPABASE_KEY)
+    except Exception:
+        return None
 
 def save_itinerary(itinerary_data):
     """Guarda un itinerario en la tabla 'itinerarios' mapeando campos clave."""
