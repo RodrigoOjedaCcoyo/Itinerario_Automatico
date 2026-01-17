@@ -13,3 +13,6 @@ libxrandr2
 libgbm1
 libasound2
 libatspi2.0-0
+libwayland-client0
+libpango-1.0-0
+libpangocairo-1.0-0

@@ -2,6 +2,7 @@ import os
 import subprocess
 import sys
 import base64
+import json
 from pathlib import Path
 from jinja2 import Environment, FileSystemLoader
 
@@ -14,20 +15,22 @@ OUTPUT_FILENAME = "Itinerario_Ventas.pdf"
 def find_image(path):
     """Busca la imagen en la ruta dada o en carpetas comunes si no se encuentra."""
     if not path: return None
-    p = Path(path)
+    path_str = str(path)
+    p = Path(path_str)
     
     # 1. Probar ruta tal cual
     if p.exists(): return p
     
     # 2. Probar ruta relativa al BASE_DIR
-    p_rel = BASE_DIR / path.replace('\\', '/').split('/')[-1]
+    # Limpiamos la ruta de posibles prefijos de Windows si estamos en Linux
+    clean_filename = path_str.replace('\\', '/').split('/')[-1]
+    p_rel = BASE_DIR / clean_filename
     if p_rel.exists(): return p_rel
     
     # 3. Buscar en todo el proyecto por nombre de archivo
-    filename = os.path.basename(path)
     for root, dirs, files in os.walk(BASE_DIR):
-        if filename in files:
-            return Path(root) / filename
+        if clean_filename in files:
+            return Path(root) / clean_filename
             
     return None
 
@@ -35,7 +38,6 @@ def get_image_as_base64(path):
     """Convierte imagen a Base64 asegurando compatibilidad total."""
     img_path = find_image(path)
     if not img_path:
-        print(f"ADVERTENCIA: No se encontró la imagen: {path}")
         return ""
     try:
         ext = img_path.suffix[1:].lower()
@@ -47,7 +49,29 @@ def get_image_as_base64(path):
         print(f"Error procesando {path}: {e}")
         return ""
 
+def ensure_playwright_installed():
+    """Asegura que Playwright y Chromium estén instalados en el entorno actual."""
+    try:
+        # Intentar ejecutar playwright para ver si está instalado
+        subprocess.run(["playwright", "--version"], capture_output=True, check=True)
+    except (subprocess.CalledProcessError, FileNotFoundError):
+        print("Playwright no encontrado. Instalando...")
+        subprocess.run([sys.executable, "-m", "pip", "install", "playwright"], check=True)
+    
+    # Intentar instalar chromium si no existe
+    try:
+        print("Asegurando Chromium para Playwright...")
+        subprocess.run([sys.executable, "-m", "playwright", "install", "chromium"], check=True)
+        # En Linux (Streamlit Cloud), a veces se necesitan dependencias del sistema
+        if sys.platform == "linux":
+            subprocess.run([sys.executable, "-m", "playwright", "install-deps", "chromium"], check=False)
+    except Exception as e:
+        print(f"Aviso en instalación de Playwright: {e}")
+
 def generate_pdf(itinerary_data, output_filename=OUTPUT_FILENAME):
+    # Asegurar entorno Playwright
+    ensure_playwright_installed()
+    
     env = Environment(loader=FileSystemLoader(str(TEMPLATE_DIR)))
     template = env.get_template("report.html")
     
@@ -55,8 +79,7 @@ def generate_pdf(itinerary_data, output_filename=OUTPUT_FILENAME):
     css_content = ""
     if CSS_FILE.exists():
         with open(CSS_FILE, 'r', encoding='utf-8') as f:
-            # Escapar comillas para el script de JS
-            css_content = f.read().replace('"', '\\"').replace('\n', ' ')
+            css_content = f.read()
 
     # Convertir TODAS las imágenes a Base64
     itinerary_data['logo_url'] = get_image_as_base64(itinerary_data.get('logo_url'))
@@ -76,10 +99,14 @@ def generate_pdf(itinerary_data, output_filename=OUTPUT_FILENAME):
     output_path = BASE_DIR / output_filename
     script_path = BASE_DIR / "temp_pdf_script.py"
     
+    # Usamos json.dumps para pasar el CSS de forma segura al script
+    css_json = json.dumps(css_content)
+    
     # Script Playwright
     script_content = f'''
 import asyncio
 import sys
+import json
 from playwright.async_api import async_playwright
 
 async def main():
@@ -87,25 +114,31 @@ async def main():
         async with async_playwright() as p:
             browser = await p.chromium.launch(headless=True)
             page = await browser.new_page()
-            await page.goto(r'file:///{str(temp_html_path).replace(chr(92), "/")}', wait_until='load')
             
-            # Inyectar CSS
-            await page.add_style_tag(content="{css_content}")
+            html_file = r"{str(temp_html_path).replace(chr(92), '/')}"
+            await page.goto(f"file://{{html_file}}", wait_until='load', timeout=60000)
             
-            # Forzar iconos de nuevo (por si acaso)
-            await page.add_style_tag(content=".service-icon, .service-icon svg {{ width: 32px !important; height: 32px !important; }} .pin-icon, .pin-icon svg {{ width: 45px !important; height: 45px !important; }}")
+            # Inyectar CSS de forma segura
+            css_content = {css_json}
+            await page.add_style_tag(content=css_content)
             
-            await asyncio.sleep(3) # Esperar a que el navegador "digiera" el base64
+            # Forzamos estilos de iconos y pines
+            extra_css = ".service-icon, .service-icon svg {{ width: 35px !important; height: 35px !important; }} .pin-icon {{ width: 45px !important; height: 45px !important; }}"
+            await page.add_style_tag(content=extra_css)
+            
+            await asyncio.sleep(2)
+            
             await page.pdf(
-                path=r'{str(output_path).replace(chr(92), "/")}',
+                path=r"{str(output_path).replace(chr(92), '/')}",
                 format='A4',
                 print_background=True,
                 margin={{'top': '0', 'right': '0', 'bottom': '0', 'left': '0'}},
                 prefer_css_page_size=True
             )
             await browser.close()
+            print("PDF generado con éxito")
     except Exception as e:
-        print(f"ERROR: {{e}}", file=sys.stderr)
+        print(f"ERROR EN SCRIPT: {{e}}", file=sys.stderr)
         sys.exit(1)
 
 if __name__ == "__main__":
@@ -115,7 +148,17 @@ if __name__ == "__main__":
         f.write(script_content)
     
     try:
-        subprocess.run([sys.executable, str(script_path)], check=True, timeout=120)
+        # Ejecutar capturando errores
+        result = subprocess.run(
+            [sys.executable, str(script_path)], 
+            capture_output=True, 
+            text=True, 
+            timeout=180
+        )
+        if result.returncode != 0:
+            error_msg = result.stderr if result.stderr else result.stdout
+            raise Exception(f"Playwright falló: {error_msg}")
+            
     finally:
         if temp_html_path.exists(): temp_html_path.unlink()
         if script_path.exists(): script_path.unlink()
