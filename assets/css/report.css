@@ -107,7 +107,6 @@ body {
     line-height: 1.5;
     color: var(--color-text);
     max-width: 62%;
-    /* Incrementado para ocupar más espacio */
     margin-bottom: 20px;
     font-weight: 400;
     position: relative;
@@ -120,7 +119,6 @@ body {
     padding-left: 20px;
     list-style: none;
     max-width: 62%;
-    /* Incrementado */
     position: relative;
     z-index: 20;
 }
@@ -156,7 +154,6 @@ body {
 .services-list {
     list-style: none;
     padding-left: 30px;
-    /* Sangría (Tab) para mejor presentación */
     margin-bottom: 30px;
     max-width: 62%;
     position: relative;
@@ -193,9 +190,7 @@ body {
     position: absolute;
     top: 150px;
     right: -20px;
-    /* Un poco fuera para ganar espacio */
     width: 320px;
-    /* Reducido para ser menos invasivo */
     height: 850px;
     z-index: 2;
 }
@@ -211,7 +206,6 @@ body {
     position: absolute;
     z-index: 100;
     width: 35px;
-    /* Iconos más pequeños */
     height: 35px;
 }
 
@@ -236,7 +230,6 @@ body {
     z-index: 50;
 }
 
-/* POSICIONES REDUCIDAS */
 .img-1 {
     width: 115px;
     height: 115px;
@@ -307,17 +300,99 @@ body {
     margin-top: 5px;
 }
 
-/* EXTRAS */
-.extra-title {
-    color: var(--color-primary);
-    font-size: 32px;
-    font-weight: 800;
-    margin-bottom: 20px;
+/* EXTRAS Y PRECIOS DETALLADOS */
+.price-page-content {
+    padding: 20px 0;
+    text-align: center;
 }
 
-.price-value {
-    font-size: 50px;
+.price-main-title {
+    color: var(--color-primary);
+    font-size: 3rem;
+    font-weight: 800;
+    margin: 0;
+    text-transform: uppercase;
+    letter-spacing: 2px;
+}
+
+.price-person-label {
+    color: #ff5252;
+    font-size: 1.2rem;
+    font-weight: 700;
+    margin-top: -5px;
+    letter-spacing: 1px;
+}
+
+.price-amount-large {
+    font-size: 3.8rem;
     font-weight: 900;
-    color: #2d3436;
-    margin: 15px 0;
+    color: #000;
+    margin: 25px 0 10px 0;
+}
+
+.price-condition-small {
+    font-size: 1.1rem;
+    font-weight: 800;
+    color: #000;
+    line-height: 1.2;
+    text-transform: uppercase;
+}
+
+.price-bullet-list-small {
+    text-align: left;
+    margin: 30px 0;
+    padding-left: 0;
+    list-style: none;
+}
+
+.price-bullet-list-small li {
+    font-size: 0.9rem;
+    color: #333;
+    margin-bottom: 10px;
+    display: flex;
+    align-items: flex-start;
+    gap: 12px;
+    line-height: 1.4;
+}
+
+.price-bullet-list-small li::before {
+    content: "•";
+    color: #333;
+    font-weight: 900;
+}
+
+.important-header {
+    color: #ff5252;
+    font-size: 2.2rem;
+    font-weight: 800;
+    text-align: left;
+    margin: 40px 0 20px 0;
+    text-transform: uppercase;
+}
+
+.important-sub-title {
+    color: var(--color-primary);
+    font-size: 1.4rem;
+    font-weight: 800;
+    text-align: left;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 15px;
+}
+
+.price-bottom-grid {
+    display: flex;
+    justify-content: space-between;
+    gap: 12px;
+    margin-top: 40px;
+    width: 100%;
+}
+
+.price-bottom-img {
+    flex: 1;
+    height: 165px;
+    background-size: cover;
+    background-position: center;
+    border-radius: 2px;
 }
