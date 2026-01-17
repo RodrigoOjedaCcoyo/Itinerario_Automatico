@@ -5,6 +5,7 @@ from datetime import datetime
 from pathlib import Path
 from data.tours_db import tours_db, paquetes_db
 from utils.pdf_generator import generate_pdf
+from utils.supabase_db import save_itinerary
 
 # --- CONSTANTS ---
 PACKAGES_FILE = 'paquetes_personalizados.json'
@@ -129,6 +130,18 @@ def render_ventas_ui():
         fecha_fin = col_f2.date_input("Fecha Fin", datetime.now())
         rango_fechas = f"Del {fecha_inicio.strftime('%d/%m')} al {fecha_fin.strftime('%d/%m, %Y')}"
         
+        st.divider()
+        st.subheader("📊 Seguimiento de Leads")
+        l_col1, l_col2 = st.columns(2)
+        origen_lead = l_col1.selectbox("Fuente del Lead", ["WhatsApp", "Facebook Ads", "Instagram Ads", "Google Ads", "Web Site", "Recomendado", "Otros"])
+        campana = l_col2.text_input("Nombre de Campaña", placeholder="Ej: Promo Fiestas Patrias")
+        
+        s_col1, s_col2 = st.columns(2)
+        estado_lead = s_col1.radio("Estado Inicial", ["Frío", "Tibio", "Caliente"], horizontal=True)
+        fecha_proximo = s_col2.date_input("Próximo Seguimiento", datetime.now())
+        
+        sucursal = st.selectbox("Sucursal/Oficina", ["Cusco Principal", "Oficina Lima", "Ventas Remoto"])
+
         # Sidebar para paquetes guardados
         with st.sidebar:
             st.header("💾 Mis Paquetes Guardados")
@@ -344,7 +357,8 @@ def render_ventas_ui():
                             })
                         
                         try:
-                            pdf_path = generate_pdf({
+                            # 1. Preparar data completa
+                            full_itinerary_data = {
                                 'title_1': t1,
                                 'title_2': t2,
                                 'pasajero': nombre.upper(),
@@ -354,7 +368,12 @@ def render_ventas_ui():
                                 'duracion': f"{len(st.session_state.itinerario)}D-{max(0, len(st.session_state.itinerario)-1)}N",
                                 'cover_url': os.path.abspath(cover_img),
                                 'vendedor': vendedor,
-                                'celular': celular,
+                                'celular_cliente': celular,
+                                'fuente': origen_lead,
+                                'campana': campana,
+                                'estado': estado_lead,
+                                'proximo_contacto': str(fecha_proximo),
+                                'sucursal': sucursal,
                                 'logo_url': logo_path,
                                 'logo_cover_url': logo_path,
                                 'llama_img': os.path.abspath("Fondo.png"),
@@ -364,8 +383,22 @@ def render_ventas_ui():
                                     'can': {'monto': f"{total_can_pp:,.2f}"} if pasajeros_can > 0 else None,
                                 },
                                 'days': days_data
-                            })
+                            }
+
+                            # 2. Guardar en Supabase y obtener ID de vinculación
+                            itinerary_id = None
+                            with st.spinner("Sincronizando con base de datos de Leads..."):
+                                itinerary_id = save_itinerary(full_itinerary_data)
+                                if itinerary_id:
+                                    st.toast("✅ Consulta registrada en el sistema de Leads", icon="📊")
                             
+                            # 3. Generar PDF
+                            pdf_path = generate_pdf(full_itinerary_data)
+                            
+                            if itinerary_id:
+                                st.info(f"🔑 **CÓDIGO DE VINCULACIÓN:** `{itinerary_id}`")
+                                st.caption("Copia este ID y pégalo en el Registro de Venta para importar toda la información automáticamente.")
+
                             with open(pdf_path, "rb") as file:
                                 st.download_button(
                                     label="📥 Descargar PDF Final",
@@ -375,7 +408,7 @@ def render_ventas_ui():
                                 )
                             st.success(f"¡Itinerario listo para {nombre}!")
                         except Exception as e:
-                            st.error(f"Error generando PDF: {e}")
+                            st.error(f"Error procesando: {e}")
                 else:
                     st.warning("Asegúrate de poner el nombre del cliente y tener al menos un día en el plan.")
     

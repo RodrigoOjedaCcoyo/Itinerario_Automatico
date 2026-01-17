@@ -2,7 +2,7 @@
 temp_web_itinerario.html
 __pycache__/
 .venv/
-.env/
+.env
 temp_*/
 paquetes_personalizados.json
 
