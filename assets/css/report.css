@@ -3,7 +3,6 @@
 :root {
     --color-primary: #55b7b0;
     --color-text: #2d3436;
-    /* Unified professional grey */
     --font-main: 'Montserrat', sans-serif;
 }
 
@@ -11,7 +10,6 @@ body {
     margin: 0;
     padding: 0;
     background-color: white;
-    /* Cambiado a blanco para el PDF */
     font-family: var(--font-main);
     -webkit-print-color-adjust: exact;
     print-color-adjust: exact;
@@ -19,39 +17,28 @@ body {
 
 .page-container {
     width: 210mm;
-    min-height: 297mm;
     height: 297mm;
     background: white;
-    margin: 0 auto;
+    margin: 0;
     position: relative;
-    padding: 40px 50px 100px 50px;
-    /* Extra bottom padding for safe zone */
+    padding: 50px 60px;
     box-sizing: border-box;
     overflow: hidden;
     page-break-after: always;
 }
 
-@media print {
-    @page {
-        size: A4;
-        margin: 0;
-    }
-
-    .page-container {
-        margin: 0;
-        box-shadow: none;
-        width: 100%;
-        height: 100vh;
-    }
+@page {
+    size: A4;
+    margin: 0;
 }
 
-/* DECORATIONS */
+/* DECORACIONES - ARCOS GRANDES */
 .decor-top-right {
     position: absolute;
-    top: -50px;
-    right: -50px;
-    width: 200px;
-    height: 200px;
+    top: -100px;
+    right: -100px;
+    width: 320px;
+    height: 320px;
     background-color: var(--color-primary);
     border-radius: 50%;
     z-index: 1;
@@ -59,30 +46,29 @@ body {
 
 .decor-bottom-left {
     position: absolute;
-    bottom: -60px;
-    left: -60px;
-    width: 220px;
-    height: 220px;
+    bottom: -100px;
+    left: -100px;
+    width: 380px;
+    height: 380px;
     background-color: var(--color-primary);
     border-radius: 50%;
-    display: flex;
-    align-items: center;
-    justify-content: center;
     z-index: 10;
-    padding: 0;
 }
 
 .logo-container {
-    width: 90px;
-    height: 90px;
-    border: 3px solid white;
+    position: absolute;
+    bottom: 50px;
+    left: 50px;
+    width: 120px;
+    height: 120px;
+    border: 4px solid white;
     border-radius: 50%;
     overflow: hidden;
     background-color: var(--color-primary);
     display: flex;
     align-items: center;
     justify-content: center;
-    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
 }
 
 .logo-container img {
@@ -91,78 +77,46 @@ body {
     object-fit: cover;
 }
 
-/* PASSENGER INFO STYLING */
-.passenger-info {
-    position: relative;
-    z-index: 30;
-    margin-bottom: 20px;
-    padding-bottom: 10px;
-    border-bottom: 1px solid #eee;
-    max-width: 70%;
-}
-
-.passenger-info p {
-    margin: 2px 0;
-    font-size: 0.85rem;
-    color: #666;
-    font-weight: 400;
-}
-
-.passenger-info strong {
-    color: var(--color-primary);
-    font-weight: 800;
-    letter-spacing: 0.5px;
-}
-
 /* HEADERS */
 .day-header {
     color: var(--color-primary);
-    margin-bottom: 30px;
+    margin-bottom: 35px;
     position: relative;
     z-index: 20;
 }
 
 .day-header h2 {
-    font-size: 1.3rem;
+    font-size: 1.5rem;
     font-weight: 800;
     margin: 0;
-    line-height: 1.2;
     text-transform: uppercase;
-    letter-spacing: 0.5px;
 }
 
 .day-header h3 {
-    font-size: 1.3rem;
+    font-size: 1.5rem;
     font-weight: 800;
     margin: 5px 0 0 0;
     text-transform: uppercase;
-    letter-spacing: 0.5px;
 }
 
 /* CONTENT */
 .description {
-    font-size: 0.92rem;
+    font-size: 1rem;
     line-height: 1.6;
     color: var(--color-text);
-    max-width: 75%;
-    margin-bottom: 30px;
-    font-weight: 400;
+    max-width: 65%;
+    margin-bottom: 25px;
+    font-weight: 500;
     position: relative;
     z-index: 20;
     text-align: justify;
 }
 
-.description strong {
-    font-weight: 800;
-    color: #000;
-}
-
-/* HIGHLIGHTS SECTION */
 .highlights-list {
-    margin: 15px 0;
+    margin: 20px 0;
     padding-left: 20px;
     list-style: none;
-    max-width: 95%;
+    max-width: 65%;
     position: relative;
     z-index: 20;
 }
@@ -170,38 +124,32 @@ body {
 .highlight-item {
     display: flex;
     align-items: flex-start;
-    gap: 10px;
-    margin-bottom: 3px;
-    font-size: 0.92rem;
+    gap: 12px;
+    margin-bottom: 6px;
+    font-size: 1rem;
     color: var(--color-text);
-    font-weight: 400;
-    line-height: 1.4;
 }
 
 .highlight-item::before {
     content: "•";
     color: var(--color-text);
     font-weight: 800;
-    flex-shrink: 0;
 }
 
 .section-title {
     color: var(--color-primary);
     font-size: 1.3rem;
     font-weight: 800;
-    margin: 25px 0 15px 0;
+    margin: 35px 0 15px 0;
     text-transform: uppercase;
-    letter-spacing: 0.5px;
-    max-width: 60%;
     position: relative;
     z-index: 20;
 }
 
-/* SERVICES LIST */
 .services-list {
     list-style: none;
-    padding-left: 20px;
-    margin-bottom: 25px;
+    padding-left: 0;
+    margin-bottom: 30px;
     max-width: 60%;
     position: relative;
     z-index: 20;
@@ -210,300 +158,155 @@ body {
 .service-item {
     display: flex;
     align-items: center;
-    gap: 15px;
-    margin-bottom: 5px;
+    gap: 20px;
+    margin-bottom: 12px;
 }
 
 .service-icon {
-    width: 35px;
-    height: 35px;
+    width: 32px;
+    height: 32px;
     flex-shrink: 0;
-    display: flex;
-    align-items: center;
-    justify-content: center;
 }
 
 .service-icon svg {
     width: 100%;
     height: 100%;
-    stroke: #333;
+    stroke: #2d3436;
 }
 
 .service-text {
-    font-size: 0.92rem;
-    font-weight: 400;
+    font-size: 1rem;
+    font-weight: 500;
     color: var(--color-text);
 }
 
-/* COLLAGE SECTION */
+/* COLLAGE SECTION - EL SERPIENTE */
 .collage-container {
     position: absolute;
-    bottom: 20px;
-    /* Tal como pediste: al fondo */
-    right: 10px;
-    width: 400px;
-    height: 750px;
+    top: 50px;
+    right: 0px;
+    width: 450px;
+    height: 900px;
     z-index: 2;
-}
-
-.pin-icon {
-    position: absolute;
-    z-index: 20;
-}
-
-.pin-start {
-    bottom: 0px;
-    left: 178px;
-}
-
-.pin-end {
-    top: 0px;
-    left: 178px;
 }
 
 .serpent-path-svg {
     position: absolute;
     width: 100%;
     height: 100%;
-    pointer-events: none;
     z-index: 3;
+}
+
+.pin-icon {
+    position: absolute;
+    z-index: 100;
+    width: 45px;
+    height: 45px;
+}
+
+.pin-top {
+    top: 250px;
+    left: 290px;
+}
+
+.pin-bottom {
+    bottom: 20px;
+    left: 280px;
 }
 
 .circular-img {
     position: absolute;
     border-radius: 50%;
-    border: 5px solid white;
-    box-shadow: 0 6px 15px rgba(0, 0, 0, 0.15);
+    border: 6px solid white;
+    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
     background-size: cover;
     background-position: center;
     overflow: hidden;
-    z-index: 5;
+    z-index: 50;
 }
 
+/* POSICIONES EXACTAS SEGÚN IMAGEN */
 .img-1 {
-    width: 150px;
-    height: 150px;
-    top: 50px;
-    left: 50px;
-    z-index: 8;
-    border-width: 3px;
+    width: 160px;
+    height: 160px;
+    top: 210px;
+    right: 20px;
 }
 
 .img-2 {
-    width: 130px;
-    height: 130px;
-    top: -80px;
-    right: 0px;
-    left: auto;
-    z-index: 9;
-    border-width: 3px;
+    width: 145px;
+    height: 145px;
+    top: 380px;
+    left: 30px;
 }
 
 .img-3 {
-    width: 140px;
-    height: 140px;
-    top: 250px;
-    left: 90px;
-    right: auto;
-    z-index: 8;
-    border-width: 3px;
+    width: 155px;
+    height: 155px;
+    top: 560px;
+    right: 80px;
 }
 
 .img-4 {
-    width: 120px;
-    height: 120px;
-    bottom: 170px;
-    left: 100px;
-    right: auto;
-    z-index: 9;
-    border-width: 3px;
+    width: 140px;
+    height: 140px;
+    top: 740px;
+    left: 50px;
 }
 
 .img-5 {
-    width: 150px;
-    height: 150px;
-    bottom: 40px;
-    left: 180px;
-    z-index: 10;
-    border-width: 3px;
+    width: 170px;
+    height: 170px;
+    bottom: -20px;
+    right: 40px;
 }
 
-/* --- ESTILOS EXTRAS (PORTADA, PRECIOS, ETC) --- */
+/* PORTADA */
 .cover-container {
     position: relative;
     width: 210mm;
     height: 297mm;
     background-size: cover !important;
-    background-position: center bottom;
+    background-position: center;
     color: white;
     overflow: hidden;
 }
 
-.overlay {
-    position: absolute;
-    width: 100%;
-    height: 100%;
-    background: linear-gradient(to bottom, rgba(0, 0, 0, 0.1), rgba(0, 0, 0, 0.3));
-}
-
-.pasajero-cover-info {
-    position: absolute;
-    top: 40px;
-    right: 40px;
-    text-align: right;
-    z-index: 20;
-    font-weight: bold;
-    text-shadow: 0 2px 4px rgba(0, 0, 0, 0.5);
-    font-size: 1.1rem;
-}
-
 .title-group {
     position: absolute;
-    bottom: 28%;
+    bottom: 30%;
     left: 0;
     z-index: 10;
 }
 
 .title-peru {
-    background-color: #00bcd4;
-    padding: 6px 25px;
-    font-size: 32px;
+    background-color: var(--color-primary);
+    padding: 10px 40px;
+    font-size: 40px;
     font-weight: 900;
-    margin-bottom: 6px;
     text-transform: uppercase;
 }
 
 .title-mundo {
-    background-color: #00bcd4;
-    padding: 6px 25px;
-    font-size: 24px;
-    font-weight: 900;
-    text-transform: uppercase;
-}
-
-.logo-bottom-cover {
-    position: absolute;
-    bottom: 60px;
-    left: 20px;
-    width: 200px;
-    z-index: 20;
-}
-
-.logo-bottom-cover img {
-    width: 100%;
-}
-
-.duration-box {
-    position: absolute;
-    bottom: 40px;
-    right: 40px;
-    font-size: 70px;
-    font-weight: 900;
-    text-align: right;
-    line-height: 1;
-    z-index: 10;
-}
-
-.footer-line-cover {
-    position: absolute;
-    bottom: 0;
-    width: 100%;
-    height: 15px;
     background-color: var(--color-primary);
+    padding: 10px 40px;
+    font-size: 30px;
+    font-weight: 900;
+    text-transform: uppercase;
+    margin-top: 5px;
 }
 
-.extra-page {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    text-align: center;
-}
-
+/* EXTRAS */
 .extra-title {
-    color: #00bcd4;
-    font-size: 28px;
+    color: var(--color-primary);
+    font-size: 32px;
     font-weight: 800;
-    margin-top: 20px;
-    text-transform: uppercase;
-}
-
-.extra-subtitle {
-    color: #ff5252;
-    font-size: 18px;
-    font-weight: 700;
     margin-bottom: 20px;
-    text-transform: uppercase;
 }
 
 .price-value {
-    font-size: 45px;
-    font-weight: 800;
-    color: #000;
-}
-
-.price-detail {
-    font-size: 16px;
-    font-weight: 700;
-    color: #000;
-    margin-bottom: 30px;
-    text-transform: uppercase;
-}
-
-.recom-grid {
-    text-align: left;
-    width: 100%;
-    padding: 0 40px;
-    margin-top: 10px;
-}
-
-.recom-title {
-    color: #00bcd4;
-    font-size: 20px;
-    font-weight: 800;
-    margin-bottom: 10px;
-    text-transform: uppercase;
-}
-
-.recom-item {
-    font-size: 13px;
-    font-weight: 600;
-    margin-bottom: 5px;
-    display: flex;
-    align-items: flex-start;
-    gap: 10px;
-}
-
-.recom-item::before {
-    content: "•";
-    color: var(--color-primary);
+    font-size: 50px;
     font-weight: 900;
-}
-
-.policy-section {
-    text-align: left;
-    width: 100%;
-    padding: 0 40px;
-    margin-bottom: 25px;
-}
-
-.policy-title {
-    font-weight: 800;
-    font-size: 16px;
-    margin-bottom: 5px;
-    color: #00bcd4;
-}
-
-.policy-text {
-    font-size: 13px;
-    line-height: 1.4;
-}
-
-.llama-circle {
-    width: 200px;
-    height: 200px;
-    border-radius: 50%;
-    background-size: cover;
-    background-position: center;
-    margin-top: 30px;
-    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+    color: #2d3436;
+    margin: 15px 0;
 }

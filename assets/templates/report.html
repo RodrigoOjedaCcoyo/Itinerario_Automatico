@@ -3,38 +3,39 @@
 
 <head>
     <meta charset="UTF-8">
-    <title>Itinerario</title>
+    <title>Itinerario de Viaje</title>
 </head>
 
 <body>
     <!-- PORTADA -->
     <div class="cover-container" style="background-image: url('{{ cover_url }}'); page-break-after: always;">
         <div class="overlay"></div>
-        <div class="pasajero-cover-info">
+        <div class="pasajero-cover-info"
+            style="position: absolute; top: 50px; right: 50px; text-align: right; z-index: 50; font-size: 1.2rem; font-weight: 800; text-shadow: 0 2px 4px rgba(0,0,0,0.5);">
             {{ pasajero }}<br>
-            Del {{ fechas }}
+            {{ fechas }}
         </div>
         <div class="title-group">
             <div class="title-peru">{{ title_1 }}</div>
             <div class="title-mundo">{{ title_2 }}</div>
         </div>
-        <div class="logo-bottom-cover">
-            <img src="{{ logo_cover_url }}" alt="Logo">
+        <div class="logo-bottom-cover" style="position: absolute; bottom: 60px; left: 50px; width: 220px;">
+            <img src="{{ logo_cover_url }}" alt="Logo" style="width: 100%;">
         </div>
         <div class="duration-box">{{ duracion }}</div>
-        <div class="footer-line-cover"></div>
+        <div class="footer-line-cover"
+            style="position: absolute; bottom: 0; width: 100%; height: 20px; background: var(--color-primary);"></div>
     </div>
 
     <!-- PÁGINAS DE ITINERARIO -->
     {% for day in days %}
-    <div class="page-container" {% if not loop.last %}style="page-break-after: always;" {% endif %}>
+    <div class="page-container">
         <div class="decor-top-right"></div>
         <div class="decor-bottom-left">
             <div class="logo-container">
                 <img src="{{ logo_url }}" alt="Logo">
             </div>
         </div>
-
 
         <div class="day-header">
             <h2>DÍA {{ day.numero }}:</h2>
@@ -81,31 +82,33 @@
         </ul>
         {% endif %}
 
-        <!-- COLLAGE DE IMÁGENES CON EL CAMINO GRUESO -->
+        <!-- EL CAMINO SERPIENTE -->
         <div class="collage-container">
-            <!-- Pin Superior -->
-            <svg class="pin-icon pin-end" width="45" height="45" viewBox="0 0 24 24">
-                <circle cx="12" cy="12" r="10" fill="white" stroke="#2d3436" stroke-width="2" />
+            <!-- Pin Mapa Superior -->
+            <svg class="pin-icon pin-top" viewBox="0 0 24 24">
+                <circle cx="12" cy="12" r="10" fill="white" stroke="#2d3436" stroke-width="2.5" />
                 <circle cx="12" cy="12" r="4" fill="#2d3436" />
             </svg>
 
-            <!-- Serpent Path (Background thick + dotted) -->
-            <svg class="serpent-path-svg" width="400" height="750" viewBox="0 0 400 750" preserveAspectRatio="none">
-                <!-- Thick Background Path - MÁS CURVATURA -->
-                <path d="M200,10 C200,100 20,150 20,300 C20,450 380,450 380,600 C380,700 200,720 200,740" fill="none"
-                    stroke="rgba(85, 183, 176, 0.15)" stroke-width="60" stroke-linecap="round" />
-                <!-- Dotted Line -->
-                <path d="M200,10 C200,100 20,150 20,300 C20,450 380,450 380,600 C380,700 200,720 200,740" fill="none"
-                    stroke="#55b7b0" stroke-width="3" stroke-dasharray="10,12" stroke-linecap="round" />
+            <!-- SVG del Camino -->
+            <svg class="serpent-path-svg" viewBox="0 0 450 900" preserveAspectRatio="none">
+                <!-- Sombra/Fondo del camino -->
+                <path
+                    d="M310,270 C310,350 420,320 420,420 C420,520 20,480 20,580 C20,680 380,720 380,820 C380,920 300,900 300,980"
+                    fill="none" stroke="rgba(85, 183, 176, 0.15)" stroke-width="70" stroke-linecap="round" />
+                <!-- Línea Punteada -->
+                <path
+                    d="M310,270 C310,350 420,320 420,420 C420,520 20,480 20,580 C20,680 380,720 380,820 C380,920 300,900 300,980"
+                    fill="none" stroke="#55b7b0" stroke-width="3.5" stroke-dasharray="12,10" stroke-linecap="round" />
             </svg>
 
             {% for img in day.images %}
             <div class="circular-img img-{{ loop.index }}" style="background-image: url('{{ img }}');"></div>
             {% endfor %}
 
-            <!-- Pin Inferior -->
-            <svg class="pin-icon pin-start" width="45" height="45" viewBox="0 0 24 24">
-                <circle cx="12" cy="12" r="10" fill="white" stroke="#2d3436" stroke-width="2" />
+            <!-- Pin Mapa Inferior -->
+            <svg class="pin-icon pin-bottom" viewBox="0 0 24 24">
+                <circle cx="12" cy="12" r="10" fill="white" stroke="#2d3436" stroke-width="2.5" />
                 <circle cx="12" cy="12" r="4" fill="#2d3436" />
             </svg>
         </div>
@@ -113,56 +116,47 @@
     {% endfor %}
 
     <!-- PÁGINAS DE EXTRAS -->
-    <div class="page-container extra-page" style="page-break-after: always;">
+    <div class="page-container extra-page">
         <div class="decor-top-right"></div>
         <div class="decor-bottom-left">
-            <div class="logo-container">
-                <img src="{{ logo_url }}" alt="Logo">
-            </div>
+            <div class="logo-container" style="bottom: 50px; left: 50px;"><img src="{{ logo_url }}" alt="Logo"></div>
         </div>
-        <h2 class="extra-title">INVERSIÓN PARA<br>TU AVENTURA</h2>
+        <h2 class="extra-title" style="margin-top: 50px;">INVERSIÓN PARA TU AVENTURA</h2>
         {% if precios.nac %}
-        <div class="extra-title" style="margin-top: 30px;">PRECIO NACIONAL</div>
-        <div class="extra-subtitle">por persona</div>
-        <div class="price-value">S/ {{ precios.nac.monto }}</div>
+        <div class="price-box" style="margin-bottom: 40px;">
+            <div class="extra-subtitle" style="color: #ff5252; font-weight: 800; font-size: 1.2rem;">PRECIO NACIONAL
+            </div>
+            <div class="price-value">S/ {{ precios.nac.monto }}</div>
+            <div style="font-weight: 700;">POR PERSONA</div>
+        </div>
         {% endif %}
         {% if precios.ext %}
-        <div class="extra-title" style="margin-top: 30px;">PRECIO EXTRANJERO</div>
-        <div class="extra-subtitle">por persona</div>
-        <div class="price-value">$ {{ precios.ext.monto }}</div>
+        <div class="price-box">
+            <div class="extra-subtitle" style="color: #ff5252; font-weight: 800; font-size: 1.2rem;">PRECIO EXTRANJERO
+            </div>
+            <div class="price-value">$ {{ precios.ext.monto }}</div>
+            <div style="font-weight: 700;">POR PERSONA</div>
+        </div>
         {% endif %}
     </div>
 
     <!-- RECOMENDACIONES -->
-    <div class="page-container extra-page" style="page-break-after: always;">
-        <div class="decor-top-right"></div>
-        <div class="decor-bottom-left">
-            <div class="logo-container">
-                <img src="{{ logo_url }}" alt="Logo">
-            </div>
-        </div>
-        <h2 class="extra-title">RECOMENDACIONES<br>DE VIAJE</h2>
-        <div class="recom-grid">
-            <h4 class="recom-title">EQUIPAJE</h4>
-            <div class="recom-item">Llevar ropa cómoda y abrigada</div>
-            <div class="recom-item">Bloqueador solar y lentes de sol</div>
-            <div class="recom-item">Zapatos de trekking o cómodos</div>
-        </div>
-    </div>
-
     <div class="page-container extra-page">
         <div class="decor-top-right"></div>
         <div class="decor-bottom-left">
-            <div class="logo-container">
-                <img src="{{ logo_url }}" alt="Logo">
+            <div class="logo-container" style="bottom: 50px; left: 50px;"><img src="{{ logo_url }}" alt="Logo"></div>
+        </div>
+        <h2 class="extra-title" style="margin-top: 50px;">RECOMENDACIONES DE VIAJE</h2>
+        <div class="recom-grid" style="text-align: left; padding: 0 50px;">
+            <h4 style="color: var(--color-primary); font-size: 1.4rem; font-weight: 800;">¿QUÉ LLEVAR?</h4>
+            <div style="font-size: 1.1rem; line-height: 1.8;">
+                • Ropa cómoda y abrigadora<br>
+                • Bloqueador solar y lentes de sol<br>
+                • Zapatos de trekking o zapatillas cómodas<br>
+                • Poncho de lluvia (temporada)<br>
+                • Cámara fotográfica
             </div>
         </div>
-        <h2 class="extra-title">POLÍTICAS Y<br>CONDICIONES</h2>
-        <div class="policy-section">
-            <h4 class="policy-title">RESERVAS</h4>
-            <p class="policy-text">Depósito del 50% para confirmar.</p>
-        </div>
-        <div class="llama-circle" style="background-image: url('{{ llama_img }}');"></div>
     </div>
 </body>
 
