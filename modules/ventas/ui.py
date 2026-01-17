@@ -129,21 +129,17 @@ def render_ventas_ui():
         fecha_inicio = col_f1.date_input("Fecha Inicio", datetime.now())
         fecha_fin = col_f2.date_input("Fecha Fin", datetime.now())
         rango_fechas = f"Del {fecha_inicio.strftime('%d/%m')} al {fecha_fin.strftime('%d/%m, %Y')}"
-        
-        st.divider()
-        st.subheader("📊 Seguimiento de Leads")
-        l_col1, l_col2 = st.columns(2)
-        origen_lead = l_col1.selectbox("Fuente del Lead", ["WhatsApp", "Facebook Ads", "Instagram Ads", "Google Ads", "Web Site", "Recomendado", "Otros"])
-        campana = l_col2.text_input("Nombre de Campaña", placeholder="Ej: Promo Fiestas Patrias")
-        
-        s_col1, s_col2 = st.columns(2)
-        estado_lead = s_col1.radio("Estado Inicial", ["Frío", "Tibio", "Caliente"], horizontal=True)
-        fecha_proximo = s_col2.date_input("Próximo Seguimiento", datetime.now())
-        
-        sucursal = st.selectbox("Sucursal/Oficina", ["Cusco Principal", "Oficina Lima", "Ventas Remoto"])
 
-        # Sidebar para paquetes guardados
+        # Sidebar para paquetes y leads
         with st.sidebar:
+            st.header("📊 Seguimiento de Leads")
+            origen_lead = st.selectbox("Fuente del Lead", ["WhatsApp", "Facebook Ads", "Instagram Ads", "Google Ads", "Web Site", "Recomendado", "Otros"])
+            campana = st.text_input("Nombre de Campaña", placeholder="Ej: Promo Fiestas Patrias")
+            estado_lead = st.radio("Estado Inicial", ["Frío", "Tibio", "Caliente"], horizontal=True)
+            fecha_proximo = st.date_input("Próximo Seguimiento", datetime.now())
+            sucursal = st.selectbox("Sucursal/Oficina", ["Cusco Principal", "Oficina Lima", "Ventas Remoto"])
+            
+            st.divider()
             st.header("💾 Mis Paquetes Guardados")
             
             with st.expander("➕ Guardar Itinerario Actual", expanded=False):
