@@ -90,6 +90,7 @@ def render_ventas_ui():
     if 'f_celular' not in st.session_state: st.session_state.f_celular = ""
     if 'f_fuente' not in st.session_state: st.session_state.f_fuente = "WhatsApp"
     if 'f_estado' not in st.session_state: st.session_state.f_estado = "Frío"
+    if 'f_origen' not in st.session_state: st.session_state.f_origen = "Nacional/Chileno"
     # Verificar Conexión
     from utils.supabase_db import get_supabase_client
     if get_supabase_client() is None:
