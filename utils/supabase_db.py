@@ -30,9 +30,7 @@ def save_itinerary(itinerary_data):
             "categoria": itinerary_data.get("categoria"),
             "vendedor": itinerary_data.get("vendedor"),
             "fuente": itinerary_data.get("fuente"),
-            "campana": itinerary_data.get("campana"),
             "estado": itinerary_data.get("estado"),
-            "sucursal": itinerary_data.get("sucursal"),
             "celular": itinerary_data.get("celular_cliente"),
             "datos": itinerary_data
         }

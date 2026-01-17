@@ -93,6 +93,10 @@ def render_ventas_ui():
         st.subheader("👤 Datos del Pasajero")
         nombre = st.text_input("Nombre Completo del Cliente", placeholder="Ej: Juan Pérez")
         
+        ld_col1, ld_col2 = st.columns(2)
+        origen_lead = ld_col1.selectbox("Fuente del Lead", ["WhatsApp", "Facebook Ads", "Instagram Ads", "Google Ads", "Web Site", "Recomendado", "Otros"])
+        estado_lead = ld_col2.radio("Estado del Lead", ["Frío", "Tibio", "Caliente"], horizontal=True)
+
         cv1, cv2 = st.columns(2)
         vendedor = cv1.text_input("Vendedor", placeholder="Nombre del Agente")
         celular = cv2.text_input("Celular del Cliente", placeholder="Ej: +51 9XX XXX XXX")
@@ -130,17 +134,7 @@ def render_ventas_ui():
         fecha_fin = col_f2.date_input("Fecha Fin", datetime.now())
         rango_fechas = f"Del {fecha_inicio.strftime('%d/%m')} al {fecha_fin.strftime('%d/%m, %Y')}"
         
-        st.divider()
-        st.subheader("📊 Seguimiento de Leads")
-        l_col1, l_col2 = st.columns(2)
-        origen_lead = l_col1.selectbox("Fuente del Lead", ["WhatsApp", "Facebook Ads", "Instagram Ads", "Google Ads", "Web Site", "Recomendado", "Otros"])
-        campana = l_col2.text_input("Nombre de Campaña", placeholder="Ej: Promo Fiestas Patrias")
-        
-        s_col1, s_col2 = st.columns(2)
-        estado_lead = s_col1.radio("Estado Inicial", ["Frío", "Tibio", "Caliente"], horizontal=True)
-        fecha_proximo = s_col2.date_input("Próximo Seguimiento", datetime.now())
-        
-        sucursal = st.selectbox("Sucursal/Oficina", ["Cusco Principal", "Oficina Lima", "Ventas Remoto"])
+        rango_fechas = f"Del {fecha_inicio.strftime('%d/%m')} al {fecha_fin.strftime('%d/%m, %Y')}"
 
         # Sidebar para paquetes guardados
         with st.sidebar:
@@ -370,10 +364,7 @@ def render_ventas_ui():
                                 'vendedor': vendedor,
                                 'celular_cliente': celular,
                                 'fuente': origen_lead,
-                                'campana': campana,
                                 'estado': estado_lead,
-                                'proximo_contacto': str(fecha_proximo),
-                                'sucursal': sucursal,
                                 'logo_url': logo_path,
                                 'logo_cover_url': logo_path,
                                 'llama_img': os.path.abspath("Fondo.png"),
