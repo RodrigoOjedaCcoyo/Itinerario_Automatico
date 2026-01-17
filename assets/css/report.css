@@ -106,7 +106,8 @@ body {
     font-size: 0.95rem;
     line-height: 1.5;
     color: var(--color-text);
-    max-width: 52%;
+    max-width: 62%;
+    /* Incrementado para ocupar más espacio */
     margin-bottom: 20px;
     font-weight: 400;
     position: relative;
@@ -118,8 +119,8 @@ body {
     margin: 20px 0;
     padding-left: 20px;
     list-style: none;
-    max-width: 52%;
-    /* Reducido para evitar solapamiento */
+    max-width: 62%;
+    /* Incrementado */
     position: relative;
     z-index: 20;
 }
@@ -156,8 +157,8 @@ body {
     list-style: none;
     padding-left: 0;
     margin-bottom: 30px;
-    max-width: 52%;
-    /* Reducido para evitar solapamiento */
+    max-width: 62%;
+    /* Incrementado para consistencia */
     position: relative;
     z-index: 20;
 }
