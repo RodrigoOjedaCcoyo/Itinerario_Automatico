@@ -166,10 +166,8 @@ body {
 .service-item {
     display: flex;
     align-items: center;
-    gap: 18px;
-    /* Más espacio entre icono y texto */
-    margin-bottom: 15px;
-    /* Más espacio entre filas */
+    gap: 12px;
+    margin-bottom: 4px;
 }
 
 .service-icon {
