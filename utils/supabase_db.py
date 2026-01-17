@@ -21,38 +21,59 @@ def get_supabase_client() -> Client:
 def save_itinerary_v2(itinerary_data):
     """
     Guarda un itinerario en 'itinerario_digital' y sincroniza con 'lead'.
-    Versión adaptada al nuevo esquema maestro.
+    Versión adaptada al ESQUEMA MAESTRO FINAL.
     """
     supabase = get_supabase_client()
     if not supabase: return None
     
     try:
-        # 1. Primero manejamos el Lead (Buscamos por celular para evitar duplicados)
+        # 1. Resolver el id_vendedor por nombre
+        vendedor_nombre = itinerary_data.get("vendedor", "Vendedor General")
+        vendedor_res = supabase.table("vendedor").select("id_vendedor").ilike("nombre", f"%{vendedor_nombre}%").limit(1).execute()
+        
+        vendedor_id = 1 # Default
+        if vendedor_res.data:
+            vendedor_id = vendedor_res.data[0]["id_vendedor"]
+        else:
+            # Si no existe, creamos el vendedor para no romper la llave foránea
+            new_vend = {"nombre": vendedor_nombre}
+            res_v = supabase.table("vendedor").insert(new_vend).execute()
+            if res_v.data:
+                vendedor_id = res_v.data[0]["id_vendedor"]
+
+        # 2. Manejar el Lead
         celular = itinerary_data.get("celular_cliente")
         nombre = itinerary_data.get("pasajero")
-        vendedor_id = itinerary_data.get("id_vendedor", 1) # Default al primer vendedor si no hay ID
+        fuente = itinerary_data.get("fuente")
+        estado = itinerary_data.get("estado")
         
-        # Intentar buscar lead existente por celular
+        # Buscar lead existente
         lead_res = supabase.table("lead").select("id_lead").eq("numero_celular", celular).execute()
         
         id_lead = None
         if lead_res.data:
             id_lead = lead_res.data[0]["id_lead"]
+            # Actualizamos el estado del lead existente
+            supabase.table("lead").update({
+                "estado_lead": estado,
+                "id_vendedor": vendedor_id,
+                "nombre_pasajero": nombre
+            }).eq("id_lead", id_lead).execute()
         else:
-            # Crear nuevo lead si no existe
+            # Crear nuevo lead
             new_lead = {
                 "numero_celular": celular,
                 "nombre_pasajero": nombre,
                 "id_vendedor": vendedor_id,
-                "red_social": itinerary_data.get("fuente"),
-                "estado_lead": itinerary_data.get("estado"),
-                "whatsapp": True if itinerary_data.get("fuente") == "WhatsApp" else False
+                "red_social": fuente,
+                "estado_lead": estado,
+                "whatsapp": True if "WhatsApp" in fuente else False
             }
             res_nl = supabase.table("lead").insert(new_lead).execute()
             if res_nl.data:
                 id_lead = res_nl.data[0]["id_lead"]
 
-        # 2. Guardar en itinerario_digital
+        # 3. Guardar en itinerario_digital
         it_digital = {
             "id_lead": id_lead,
             "id_vendedor": vendedor_id,
@@ -65,7 +86,7 @@ def save_itinerary_v2(itinerary_data):
         if res_it.data:
             it_id = res_it.data[0]["id_itinerario_digital"]
             
-            # 3. Actualizar el último itinerario en el Lead
+            # 4. Actualizar el último itinerario en el Lead para seguimiento rápido
             if id_lead:
                 supabase.table("lead").update({"ultimo_itinerario_id": it_id}).eq("id_lead", id_lead).execute()
                 
@@ -73,7 +94,7 @@ def save_itinerary_v2(itinerary_data):
             
         return None
     except Exception as e:
-        print(f"Error en Cerebro Supabase: {e}")
+        print(f"Error detallado en Cerebro Supabase: {e}")
         return None
 
 def get_last_itinerary_v2(name: str):
