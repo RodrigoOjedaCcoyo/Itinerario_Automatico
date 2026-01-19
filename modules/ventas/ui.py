@@ -237,15 +237,15 @@ def render_ventas_ui():
                     st.session_state.itinerario = []
                     for t_n in pkg_final['tours']:
                         t_f = next((t for t in tours_db if t['titulo'] == t_n), None)
-                    if t_f:
-                        nuevo_t = t_f.copy()
-                        nuevo_t['costo_nac'] = t_f.get('costo_nacional', 0)
-                        nuevo_t['costo_ext'] = t_f.get('costo_extranjero', 0)
-                        if "MACHU PICCHU" in t_f['titulo'].upper():
-                            nuevo_t['costo_can'] = nuevo_t['costo_ext'] - 20
-                        else:
-                            nuevo_t['costo_can'] = nuevo_t['costo_ext']
-                        st.session_state.itinerario.append(nuevo_t)
+                        if t_f:
+                            nuevo_t = t_f.copy()
+                            nuevo_t['costo_nac'] = t_f.get('costo_nacional', 0)
+                            nuevo_t['costo_ext'] = t_f.get('costo_extranjero', 0)
+                            if "MACHU PICCHU" in t_f['titulo'].upper():
+                                nuevo_t['costo_can'] = nuevo_t['costo_ext'] - 20
+                            else:
+                                nuevo_t['costo_can'] = nuevo_t['costo_ext']
+                            st.session_state.itinerario.append(nuevo_t)
                 st.success("Itinerario cargado.")
                 st.rerun()
         
