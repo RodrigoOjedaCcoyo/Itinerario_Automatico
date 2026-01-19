@@ -104,10 +104,14 @@ def render_ventas_ui():
     st.write("Interfaz exclusiva para el equipo de ventas de Viajes Cusco Perú.")
     
     # 0. Cargar Catálogo desde Supabase (Cacheado en sesión)
-    if 'catalogo_tours' not in st.session_state or st.sidebar.button("🔄 Refrescar Catálogo"):
+    if not st.session_state.get('catalogo_tours') or st.sidebar.button("🔄 Refrescar Catálogo"):
         with st.spinner("Cargando catálogo desde el Cerebro..."):
             st.session_state.catalogo_tours = get_available_tours()
             st.session_state.catalogo_paquetes = get_available_packages()
+            if not st.session_state.catalogo_tours:
+                st.sidebar.error("⚠️ Catálogo vacío en Supabase. Ejecuta el script SQL.")
+            else:
+                st.sidebar.success(f"✅ {len(st.session_state.catalogo_tours)} tours cargados.")
     
     tours_db = st.session_state.catalogo_tours
     paquetes_db = st.session_state.catalogo_paquetes
@@ -231,12 +235,14 @@ def render_ventas_ui():
             dias_disponibles = [p['nombre'].split(" ")[-1] for p in pkgs_filtered]
             dia_sel = st.selectbox("Seleccione Duración", dias_disponibles)
             
-            if pkgs_filtered and st.button("🚀 Cargar Itinerario"):
+            if pkgs_filtered and st.button("🚀 Cargar Itinerario", use_container_width=True):
                 pkg_final = next((p for p in pkgs_filtered if dia_sel in p['nombre']), None)
                 if pkg_final:
-                    st.session_state.itinerario = []
+                    found_tours = []
+                    missing_tours = []
                     for t_n in pkg_final['tours']:
-                        t_f = next((t for t in tours_db if t['titulo'] == t_n), None)
+                        # Búsqueda robusta (sin espacios, sin mayúsculas/minúsculas)
+                        t_f = next((t for t in tours_db if t['titulo'].strip().upper() == t_n.strip().upper()), None)
                         if t_f:
                             nuevo_t = t_f.copy()
                             nuevo_t['costo_nac'] = t_f.get('costo_nacional', 0)
@@ -245,9 +251,20 @@ def render_ventas_ui():
                                 nuevo_t['costo_can'] = nuevo_t['costo_ext'] - 20
                             else:
                                 nuevo_t['costo_can'] = nuevo_t['costo_ext']
-                            st.session_state.itinerario.append(nuevo_t)
-                st.success("Itinerario cargado.")
-                st.rerun()
+                            found_tours.append(nuevo_t)
+                        else:
+                            missing_tours.append(t_n)
+                    
+                    if found_tours:
+                        st.session_state.itinerario = found_tours
+                        if missing_tours:
+                            st.warning(f"⚠️ Algunos tours no se encontraron: {', '.join(missing_tours)}")
+                        st.success(f"✅ Paquete '{pkg_final['nombre']}' cargado con {len(found_tours)} tours.")
+                        st.rerun()
+                    else:
+                        st.error("❌ No se encontró ningún tour válido para este paquete en la base de datos.")
+                else:
+                    st.error("❌ Error al identificar el paquete seleccionado.")
         
         st.subheader("📍 Agregar Tour Individual")
         tour_nombres = [t['titulo'] for t in tours_db]
