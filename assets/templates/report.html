@@ -39,8 +39,10 @@
         </div>
 
         <div class="day-header">
-            <div class="day-date">{{ day.fecha }}</div>
-            <h2>DÍA {{ day.numero }}:</h2>
+            <div class="day-date-row">
+                <span class="day-number">DÍA {{ day.numero }}:</span>
+                <span class="day-date">{{ day.fecha }}</span>
+            </div>
             <h3>{{ day.titulo }}</h3>
         </div>
 
@@ -277,13 +279,26 @@
         </div>
     </div>
     <style>
+        .day-date-row {
+            display: flex;
+            align-items: baseline;
+            gap: 15px;
+            margin-bottom: 5px;
+        }
+
+        .day-number {
+            font-size: 1.8rem;
+            color: var(--color-primary);
+            font-weight: 800;
+            margin: 0;
+            text-transform: uppercase;
+        }
+
         .day-date {
-            font-size: 1.1rem;
+            font-size: 1.2rem;
             color: var(--color-primary);
             font-weight: 700;
-            margin-bottom: 5px;
             letter-spacing: 1px;
-            text-transform: uppercase;
         }
     </style>
 </body>
