@@ -95,6 +95,7 @@ def render_ventas_ui():
     if 'f_fuente' not in st.session_state: st.session_state.f_fuente = "WhatsApp"
     if 'f_estado' not in st.session_state: st.session_state.f_estado = "Frío"
     if 'f_origen' not in st.session_state: st.session_state.f_origen = "Nacional/Chileno"
+    if 'f_categoria' not in st.session_state: st.session_state.f_categoria = "Cusco Tradicional"
     # Verificar Conexión
     from utils.supabase_db import get_supabase_client
     if get_supabase_client() is None:
@@ -232,7 +233,11 @@ def render_ventas_ui():
         st.divider()
         
         st.subheader("🎁 Cargar Paquete Sugerido")
-        cat_sel = st.selectbox("Elija Línea de Producto", ["-- Seleccione --", "Cusco Tradicional", "Perú para el Mundo"])
+        # Sincronizar selectbox con session_state
+        lineas = ["Cusco Tradicional", "Perú para el Mundo"]
+        idx_cat = lineas.index(st.session_state.f_categoria) if st.session_state.f_categoria in lineas else 0
+        cat_sel = st.selectbox("Elija Línea de Producto", lineas, index=idx_cat)
+        st.session_state.f_categoria = cat_sel
         
         if cat_sel != "-- Seleccione --":
             pkgs_filtered = [p for p in paquetes_db if cat_sel.upper() in p['nombre'].upper()]
@@ -261,6 +266,7 @@ def render_ventas_ui():
                     
                     if found_tours:
                         st.session_state.itinerario = found_tours
+                        st.session_state.f_categoria = cat_sel # Asegurar categoría al cargar
                         if missing_tours:
                             st.warning(f"⚠️ Algunos tours no se encontraron en el catálogo general: {', '.join(missing_tours)}")
                         st.success(f"✅ Paquete '{pkg_final['nombre']}' cargado con {len(found_tours)} tours.")
@@ -409,12 +415,14 @@ def render_ventas_ui():
             if c_btn1.button("🔥 GENERAR ITINERARIO PDF"):
                 if nombre and st.session_state.itinerario:
                     with st.spinner("Generando PDF con Edge..."):
-                        # Determinar portada y títulos
+                        # Determinar portada y títulos desde el ESTADO DE SESIÓN
                         cover_1 = "Captura de pantalla 2026-01-19 120326.png"  # Nuevo Perú para el Mundo
                         cover_2 = "Captura de pantalla 2026-01-19 120532.png"  # Nuevo Cusco Tradicional
                         fallback_cover = "Approaching-Salkantay-Mountain-peru.jpg"
                         
-                        if cat_sel == "Perú para el Mundo":
+                        target_cat = st.session_state.get('f_categoria', 'Cusco Tradicional')
+                        
+                        if target_cat == "Perú para el Mundo":
                             cover_img = cover_1 if os.path.exists(cover_1) else fallback_cover
                             t1, t2 = "PERÚ", "PARA EL MUNDO"
                         else:
