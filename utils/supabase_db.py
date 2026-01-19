@@ -116,3 +116,43 @@ def get_last_itinerary_v2(name: str):
     except Exception as e:
         print(f"Error consultando Cerebro: {e}")
         return None
+
+def get_available_tours():
+    """Obtiene el catálogo de tours desde Supabase."""
+    supabase = get_supabase_client()
+    if not supabase: return []
+    try:
+        res = supabase.table("tour").select("*").order("nombre").execute()
+        # Adaptar nombres de columnas al formato que espera la UI si es necesario
+        tours = []
+        for t in res.data:
+            tours.append({
+                "titulo": t["nombre"],
+                "descripcion": t["descripcion"],
+                "highlights": t.get("highlights", []),
+                "servicios": t.get("servicios_incluidos", []),
+                "servicios_no_incluye": t.get("servicios_no_incluidos", []),
+                "costo_nacional": float(t.get("precio_nacional", 0)),
+                "costo_extranjero": float(t.get("precio_base_usd", 0)),
+                "carpeta_img": t.get("carpeta_img", "general")
+            })
+        return tours
+    except Exception:
+        return []
+
+def get_available_packages():
+    """Obtiene el catálogo de paquetes desde Supabase."""
+    supabase = get_supabase_client()
+    if not supabase: return []
+    try:
+        res = supabase.table("paquete").select("*, paquete_tour(tour(nombre))").order("nombre").execute()
+        packages = []
+        for p in res.data:
+            tours_names = [pt["tour"]["nombre"] for pt in p.get("paquete_tour", [])]
+            packages.append({
+                "nombre": p["nombre"],
+                "tours": tours_names
+            })
+        return packages
+    except Exception:
+        return []

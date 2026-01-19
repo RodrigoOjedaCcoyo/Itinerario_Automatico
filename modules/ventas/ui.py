@@ -3,10 +3,13 @@ import os
 import json
 from datetime import datetime
 from pathlib import Path
-from data.tours_db import tours_db, paquetes_db
 from utils.pdf_generator import generate_pdf
-from utils.pdf_generator import generate_pdf
-from utils.supabase_db import save_itinerary_v2, get_last_itinerary_v2
+from utils.supabase_db import (
+    save_itinerary_v2, 
+    get_last_itinerary_v2, 
+    get_available_tours, 
+    get_available_packages
+)
 
 # --- CONSTANTS ---
 PACKAGES_FILE = 'paquetes_personalizados.json'
@@ -98,6 +101,15 @@ def render_ventas_ui():
 
     st.title("🏔️ Constructor de Itinerarios Premium")
     st.write("Interfaz exclusiva para el equipo de ventas de Viajes Cusco Perú.")
+    
+    # 0. Cargar Catálogo desde Supabase (Cacheado en sesión)
+    if 'catalogo_tours' not in st.session_state or st.sidebar.button("🔄 Refrescar Catálogo"):
+        with st.spinner("Cargando catálogo desde el Cerebro..."):
+            st.session_state.catalogo_tours = get_available_tours()
+            st.session_state.catalogo_paquetes = get_available_packages()
+    
+    tours_db = st.session_state.catalogo_tours
+    paquetes_db = st.session_state.catalogo_paquetes
     
     col1, col2 = st.columns([1, 2])
     
