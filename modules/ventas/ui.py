@@ -98,6 +98,7 @@ def render_ventas_ui():
     if 'f_origen' not in st.session_state: st.session_state.f_origen = "Nacional/Chileno"
     if 'f_categoria' not in st.session_state: st.session_state.f_categoria = "Cusco Tradicional"
     if 'f_tipo_cliente' not in st.session_state: st.session_state.f_tipo_cliente = "B2C"
+    if 'f_nota_precio' not in st.session_state: st.session_state.f_nota_precio = "INCLUYE TOUR Y ALOJAMIENTO"
     # Verificar Conexión
     from utils.supabase_db import get_supabase_client
     if get_supabase_client() is None:
@@ -420,6 +421,9 @@ def render_ventas_ui():
                 st.markdown(f"**$ {real_can:,.2f}**")
                 st.caption(f"({pasajeros_can} pas x $ {total_can_pp:,.2f} p/p)")
             
+            nota_p = st.text_input("📝 Nota de Precio (Aparece en el PDF)", value=st.session_state.f_nota_precio, placeholder="Ej: INCLUYE HOTEL EN HAB. DOBLE")
+            st.session_state.f_nota_precio = nota_p
+            
             st.divider()
             
             c_btn1, c_btn2 = st.columns(2)
@@ -500,6 +504,7 @@ def render_ventas_ui():
                                     'ext': {'monto': f"{total_ext_pp:,.2f}"} if pasajeros_ext > 0 else None,
                                     'can': {'monto': f"{total_can_pp:,.2f}"} if pasajeros_can > 0 else None,
                                 },
+                                'precio_nota': nota_p.upper(),
                                 'canal': st.session_state.f_tipo_cliente,
                                 'days': days_data
                             }

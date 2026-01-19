@@ -128,7 +128,7 @@
                 <h4>PROMOCIÓN<br>NACIONAL</h4>
                 <p>NACIONAL O CHILENO</p>
                 <div class="price-large-text">S/ {{ precios.nac.monto }} P.P</div>
-                <div class="price-status">TOTAL POR PERSONA</div>
+                <div class="price-status">{{ precio_nota }}</div>
             </div>
             {% endif %}
 
@@ -137,7 +137,7 @@
                 <h4>PROMOCIÓN<br>C.A.N.</h4>
                 <p>COLOMBIA, ECUADOR, BOLIVIA</p>
                 <div class="price-large-text">$ {{ precios.can.monto }} P.P</div>
-                <div class="price-status">TARIFA COMUNIDAD ANDINA</div>
+                <div class="price-status">{{ precio_nota }}</div>
             </div>
             {% endif %}
 
@@ -146,7 +146,7 @@
                 <h4>TARIFA<br>EXTRANJERA</h4>
                 <p>FOREIGNER RATE</p>
                 <div class="price-large-text">$ {{ precios.ext.monto }} P.P</div>
-                <div class="price-status">TOTAL POR PERSONA</div>
+                <div class="price-status">{{ precio_nota }}</div>
             </div>
             {% endif %}
         </div>
