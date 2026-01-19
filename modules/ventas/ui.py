@@ -251,6 +251,7 @@ def render_ventas_ui():
         
         st.subheader("📍 Agregar Tour Individual")
         tour_nombres = [t['titulo'] for t in tours_db]
+        tour_sel = st.selectbox("Seleccione un tour", ["-- Seleccione --"] + tour_nombres)
         if tour_sel != "-- Seleccione --" and st.button("Agregar Tour"):
             t_data = next((t for t in tours_db if t['titulo'] == tour_sel), None)
             if t_data:
