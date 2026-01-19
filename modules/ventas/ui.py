@@ -97,6 +97,7 @@ def render_ventas_ui():
     if 'f_estado' not in st.session_state: st.session_state.f_estado = "Frío"
     if 'f_origen' not in st.session_state: st.session_state.f_origen = "Nacional/Chileno"
     if 'f_categoria' not in st.session_state: st.session_state.f_categoria = "Cusco Tradicional"
+    if 'f_tipo_cliente' not in st.session_state: st.session_state.f_tipo_cliente = "B2C"
     # Verificar Conexión
     from utils.supabase_db import get_supabase_client
     if get_supabase_client() is None:
@@ -178,10 +179,14 @@ def render_ventas_ui():
         vendedor = cv1.selectbox("Vendedor", vendedores_db, index=idx_v if vendedores_db else 0)
         celular = cv2.text_input("Celular del Cliente", value=st.session_state.f_celular, placeholder="Ej: +51 9XX XXX XXX")
         
-        t_col1, t_col2 = st.columns(2)
+        t_col1, t_col2, t_col3 = st.columns(3)
         idx_o = 0 if "Nacional" in st.session_state.f_origen else 1
         tipo_t = t_col1.radio("Origen", ["Nacional/Chileno", "Extranjero"], index=idx_o)
         modo_s = t_col2.radio("Servicio", ["Sistema Pool", "Servicio Privado"])
+        
+        idx_t = 0 if st.session_state.f_tipo_cliente == "B2C" else 1
+        tipo_c = t_col3.radio("Canal", ["B2C (Directo)", "B2B (Agencia)"], index=idx_t)
+        st.session_state.f_tipo_cliente = "B2C" if "B2C" in tipo_c else "B2B"
         
         # Actualizar precios al cambiar origen
         if tipo_t != st.session_state.origen_previo:
