@@ -41,37 +41,40 @@ def save_itinerary_v2(itinerary_data):
             if res_v.data:
                 vendedor_id = res_v.data[0]["id_vendedor"]
 
-        # 2. Manejar el Lead
-        celular = itinerary_data.get("celular_cliente")
-        nombre = itinerary_data.get("pasajero")
-        fuente = itinerary_data.get("fuente")
-        estado = itinerary_data.get("estado")
-        
-        # Buscar lead existente
-        lead_res = supabase.table("lead").select("id_lead").eq("numero_celular", celular).execute()
-        
+        # 2. Manejar el Lead (SOLO SI ES B2C)
         id_lead = None
-        if lead_res.data:
-            id_lead = lead_res.data[0]["id_lead"]
-            # Actualizamos el estado del lead existente
-            supabase.table("lead").update({
-                "estado_lead": estado,
-                "id_vendedor": vendedor_id,
-                "nombre_pasajero": nombre
-            }).eq("id_lead", id_lead).execute()
-        else:
-            # Crear nuevo lead
-            new_lead = {
-                "numero_celular": celular,
-                "nombre_pasajero": nombre,
-                "id_vendedor": vendedor_id,
-                "red_social": fuente,
-                "estado_lead": estado,
-                "whatsapp": True if "WhatsApp" in fuente else False
-            }
-            res_nl = supabase.table("lead").insert(new_lead).execute()
-            if res_nl.data:
-                id_lead = res_nl.data[0]["id_lead"]
+        es_b2b = itinerary_data.get("canal") == "B2B"
+        nombre = itinerary_data.get("pasajero")
+        
+        if not es_b2b:
+            celular = itinerary_data.get("celular_cliente")
+            fuente = itinerary_data.get("fuente")
+            estado = itinerary_data.get("estado")
+            
+            # Buscar lead existente
+            lead_res = supabase.table("lead").select("id_lead").eq("numero_celular", celular).execute()
+            
+            if lead_res.data:
+                id_lead = lead_res.data[0]["id_lead"]
+                # Actualizamos el estado del lead existente
+                supabase.table("lead").update({
+                    "estado_lead": estado,
+                    "id_vendedor": vendedor_id,
+                    "nombre_pasajero": nombre
+                }).eq("id_lead", id_lead).execute()
+            else:
+                # Crear nuevo lead
+                new_lead = {
+                    "numero_celular": celular,
+                    "nombre_pasajero": nombre,
+                    "id_vendedor": vendedor_id,
+                    "red_social": fuente,
+                    "estado_lead": estado,
+                    "whatsapp": True if "WhatsApp" in fuente else False
+                }
+                res_nl = supabase.table("lead").insert(new_lead).execute()
+                if res_nl.data:
+                    id_lead = res_nl.data[0]["id_lead"]
 
         # 3. Guardar en itinerario_digital
         it_digital = {

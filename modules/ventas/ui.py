@@ -500,6 +500,7 @@ def render_ventas_ui():
                                     'ext': {'monto': f"{total_ext_pp:,.2f}"} if pasajeros_ext > 0 else None,
                                     'can': {'monto': f"{total_can_pp:,.2f}"} if pasajeros_can > 0 else None,
                                 },
+                                'canal': st.session_state.f_tipo_cliente,
                                 'days': days_data
                             }
 
