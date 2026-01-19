@@ -23,13 +23,13 @@ def migrate():
     supabase = get_supabase_client()
     if not supabase: return
 
-    print("🚀 Iniciando migración de datos al Cerebro...")
+    print("--- Iniciando migracion de datos al Cerebro ---")
 
     # 1. Migrar TOURS
     tours_map = {} # Para guardar correspondencia ID-Nombre para los paquetes
     
     for t in tours_db:
-        print(f"📦 Procesando tour: {t['titulo']}...")
+        print(f"Procesando tour: {t['titulo']}...")
         
         tour_data = {
             "nombre": t["titulo"],
@@ -47,11 +47,11 @@ def migrate():
         res = supabase.table("tour").upsert(tour_data, on_conflict="nombre").execute()
         if res.data:
             tours_map[t["titulo"]] = res.data[0]["id_tour"]
-            print(f"✅ Tour guardado: {t['titulo']}")
+            print(f"OK - Tour guardado: {t['titulo']}")
 
     # 2. Migrar PAQUETES
     for p in paquetes_db:
-        print(f"🎁 Procesando paquete: {p['nombre']}...")
+        print(f"Procesando paquete: {p['nombre']}...")
         
         paquete_data = {
             "nombre": p["nombre"],
@@ -65,7 +65,7 @@ def migrate():
         
         if res_p.data:
             id_paquete = res_p.data[0]["id_paquete"]
-            print(f"✅ Paquete guardado: {p['nombre']}")
+            print(f"OK - Paquete guardado: {p['nombre']}")
             
             # 3. Vincular Paquete con Tours (paquete_tour)
             # Primero limpiamos vínculos viejos para este paquete
@@ -83,9 +83,9 @@ def migrate():
             
             if vínculos:
                 supabase.table("paquete_tour").insert(vínculos).execute()
-                print(f"🔗 Vinculados {len(vínculos)} tours al paquete {p['nombre']}")
+                print(f"Vinculados {len(vínculos)} tours al paquete {p['nombre']}")
 
-    print("\n✨ ¡Migración completada con éxito!")
+    print("\n--- Migracion completada con exito ---")
 
 if __name__ == "__main__":
     migrate()

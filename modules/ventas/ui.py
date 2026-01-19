@@ -8,7 +8,8 @@ from utils.supabase_db import (
     save_itinerary_v2, 
     get_last_itinerary_v2, 
     get_available_tours, 
-    get_available_packages
+    get_available_packages,
+    populate_catalog
 )
 
 # --- CONSTANTS ---
@@ -230,11 +231,12 @@ def render_ventas_ui():
             dias_disponibles = [p['nombre'].split(" ")[-1] for p in pkgs_filtered]
             dia_sel = st.selectbox("Seleccione Duración", dias_disponibles)
             
-            if st.button("🚀 Cargar Itinerario"):
-                pkg_final = next(p for p in pkgs_filtered if dia_sel in p['nombre'])
-                st.session_state.itinerario = []
-                for t_n in pkg_final['tours']:
-                    t_f = next((t for t in tours_db if t['titulo'] == t_n), None)
+            if pkgs_filtered and st.button("🚀 Cargar Itinerario"):
+                pkg_final = next((p for p in pkgs_filtered if dia_sel in p['nombre']), None)
+                if pkg_final:
+                    st.session_state.itinerario = []
+                    for t_n in pkg_final['tours']:
+                        t_f = next((t for t in tours_db if t['titulo'] == t_n), None)
                     if t_f:
                         nuevo_t = t_f.copy()
                         nuevo_t['costo_nac'] = t_f.get('costo_nacional', 0)
@@ -249,10 +251,9 @@ def render_ventas_ui():
         
         st.subheader("📍 Agregar Tour Individual")
         tour_nombres = [t['titulo'] for t in tours_db]
-        tour_sel = st.selectbox("Seleccione un tour", ["-- Seleccione --"] + tour_nombres)
-        if st.button("Agregar Tour"):
-            if tour_sel != "-- Seleccione --":
-                t_data = next(t for t in tours_db if t['titulo'] == tour_sel)
+        if tour_sel != "-- Seleccione --" and st.button("Agregar Tour"):
+            t_data = next((t for t in tours_db if t['titulo'] == tour_sel), None)
+            if t_data:
                 nuevo_t = t_data.copy()
                 nuevo_t['costo_nac'] = t_data.get('costo_nacional', 0)
                 nuevo_t['costo_ext'] = t_data.get('costo_extranjero', 0)
@@ -334,6 +335,18 @@ def render_ventas_ui():
                         st.rerun()
                 
                 st.markdown('<div style="margin-top: -15px;"></div>', unsafe_allow_html=True)
+            
+            st.divider()
+            
+            with st.expander("⚙️ Configuración Avanzada", expanded=False):
+                st.caption("Usa esto solo si el catálogo está vacío.")
+                if st.button("📦 Cargar Catálogo Oficial"):
+                    with st.spinner("Poblando Base de Datos..."):
+                        if populate_catalog():
+                            st.success("Catálogo cargado correctamente.")
+                            st.rerun()
+                        else:
+                            st.error("Error al cargar el catálogo. Verifica el SQL Patch.")
             
             st.divider()
             
