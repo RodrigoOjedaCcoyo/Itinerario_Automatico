@@ -39,6 +39,7 @@
         </div>
 
         <div class="day-header">
+            <div class="day-date">{{ day.fecha }}</div>
             <h2>DÍA {{ day.numero }}:</h2>
             <h3>{{ day.titulo }}</h3>
         </div>
@@ -275,6 +276,16 @@
             <div class="llama-round-img" style="background-image: url('{{ llama_img }}');"></div>
         </div>
     </div>
+    <style>
+        .day-date {
+            font-size: 1.1rem;
+            color: var(--color-primary);
+            font-weight: 700;
+            margin-bottom: 5px;
+            letter-spacing: 1px;
+            text-transform: uppercase;
+        }
+    </style>
 </body>
 
 </html>

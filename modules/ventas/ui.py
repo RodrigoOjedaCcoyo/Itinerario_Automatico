@@ -1,7 +1,7 @@
 import streamlit as st
 import os
 import json
-from datetime import datetime
+from datetime import datetime, timedelta
 from pathlib import Path
 from utils.pdf_generator import generate_pdf
 from utils.supabase_db import (
@@ -187,11 +187,10 @@ def render_ventas_ui():
         total_pasajeros = n_adultos_nac + n_ninos_nac + n_adultos_ext + n_ninos_ext + n_adultos_can + n_ninos_can
         st.info(f"Total personas: {total_pasajeros}")
         
-        col_f1, col_f2 = st.columns(2)
-        fecha_inicio = col_f1.date_input("Fecha Inicio", datetime.now())
-        fecha_fin = col_f2.date_input("Fecha Fin", datetime.now())
-        rango_fechas = f"Del {fecha_inicio.strftime('%d/%m')} al {fecha_fin.strftime('%d/%m, %Y')}"
-        
+        fecha_inicio = st.date_input("📅 Fecha de Inicio del Viaje", datetime.now())
+        # Calculamos la fecha fin automáticamente basada en el número de días
+        num_dias = len(st.session_state.itinerario)
+        fecha_fin = fecha_inicio + timedelta(days=max(0, num_dias - 1))
         rango_fechas = f"Del {fecha_inicio.strftime('%d/%m')} al {fecha_fin.strftime('%d/%m, %Y')}"
 
         # Sidebar para paquetes guardados
@@ -286,9 +285,11 @@ def render_ventas_ui():
                 with c_content:
                     es_mp = "MACHU PICCHU" in tour['titulo'].upper()
                     
-                    header_text = f"DÍA {i+1}: {tour['titulo']} - (S/ {tour.get('costo_nac', 0)} | $ {tour.get('costo_ext', 0)})"
+                    current_date = fecha_inicio + timedelta(days=i)
+                    date_str = current_date.strftime('%d/%m/%Y')
+                    header_text = f"🗓️ {date_str} - DÍA {i+1}: {tour['titulo']} - (S/ {tour.get('costo_nac', 0)} | $ {tour.get('costo_ext', 0)})"
                     if es_mp:
-                        header_text = f"DÍA {i+1}: {tour['titulo']} - (S/ {tour.get('costo_nac', 0)} | $ {tour.get('costo_ext', 0)} | CAN $ {tour.get('costo_can', 0)})"
+                        header_text = f"🗓️ {date_str} - DÍA {i+1}: {tour['titulo']} - (S/ {tour.get('costo_nac', 0)} | $ {tour.get('costo_ext', 0)} | CAN $ {tour.get('costo_can', 0)})"
                     
                     with st.expander(header_text, expanded=False):
                         if es_mp:
@@ -398,8 +399,10 @@ def render_ventas_ui():
                                 svg_content = get_svg_icon(s, 'default_out')
                                 servicios_no_html.append({'texto': s, 'svg': svg_content})
                             
+                            current_date = fecha_inicio + timedelta(days=i)
                             days_data.append({
                                 'numero': i + 1,
+                                'fecha': current_date.strftime('%d / %m / %Y'),
                                 'titulo': tour['titulo'],
                                 'descripcion': tour.get('descripcion', ''),
                                 'highlights': tour.get('highlights', []),
