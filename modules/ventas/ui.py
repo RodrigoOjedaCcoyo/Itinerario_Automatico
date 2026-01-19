@@ -9,6 +9,7 @@ from utils.supabase_db import (
     get_last_itinerary_v2, 
     get_available_tours, 
     get_available_packages,
+    get_vendedores,
     populate_catalog
 )
 
@@ -105,21 +106,24 @@ def render_ventas_ui():
     st.write("Interfaz exclusiva para el equipo de ventas de Viajes Cusco Perú.")
     
     # 0. Cargar Catálogo desde Supabase (Cacheado en sesión)
-    if not st.session_state.get('catalogo_tours') or not st.session_state.get('catalogo_paquetes') or st.sidebar.button("🔄 Refrescar Catálogo"):
+    if not st.session_state.get('catalogo_tours') or not st.session_state.get('catalogo_paquetes') or not st.session_state.get('lista_vendedores') or st.sidebar.button("🔄 Refrescar Catálogo"):
         with st.spinner("Cargando catálogo desde el Cerebro..."):
             st.session_state.catalogo_tours = get_available_tours()
             st.session_state.catalogo_paquetes = get_available_packages()
+            st.session_state.lista_vendedores = get_vendedores()
             
             nt = len(st.session_state.catalogo_tours) if st.session_state.catalogo_tours else 0
             np = len(st.session_state.catalogo_paquetes) if st.session_state.catalogo_paquetes else 0
+            nv = len(st.session_state.lista_vendedores) if st.session_state.lista_vendedores else 0
             
             if nt == 0:
                 st.sidebar.error("⚠️ No hay tours en Supabase.")
             else:
-                st.sidebar.success(f"✅ {nt} tours y {np} paquetes listos.")
+                st.sidebar.success(f"✅ {nt} tours, {np} paquetes y {nv} vendedores listos.")
     
-    tours_db = st.session_state.catalogo_tours
-    paquetes_db = st.session_state.catalogo_paquetes
+    tours_db = st.session_state.get('catalogo_tours', [])
+    paquetes_db = st.session_state.get('catalogo_paquetes', [])
+    vendedores_db = st.session_state.get('lista_vendedores', [])
     
     col1, col2 = st.columns([1, 2])
     
@@ -165,7 +169,13 @@ def render_ventas_ui():
         estado_lead = ld_col2.radio("Estado del Lead", estado_list, index=idx_e, horizontal=True)
 
         cv1, cv2 = st.columns(2)
-        vendedor = cv1.text_input("Vendedor", value=st.session_state.f_vendedor, placeholder="Nombre del Agente")
+        # Buscar índice del vendedor actual
+        vendedor_actual = st.session_state.f_vendedor
+        idx_v = 0
+        if vendedor_actual in vendedores_db:
+            idx_v = vendedores_db.index(vendedor_actual)
+        
+        vendedor = cv1.selectbox("Vendedor", vendedores_db, index=idx_v if vendedores_db else 0)
         celular = cv2.text_input("Celular del Cliente", value=st.session_state.f_celular, placeholder="Ej: +51 9XX XXX XXX")
         
         t_col1, t_col2 = st.columns(2)

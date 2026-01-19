@@ -216,3 +216,14 @@ def get_available_packages():
     except Exception as e:
         st.error(f"❌ Error de conexión al cargar Paquetes: {e}")
         return []
+
+def get_vendedores():
+    """Obtiene la lista de vendedores activos desde Supabase."""
+    supabase = get_supabase_client()
+    if not supabase: return []
+    try:
+        res = supabase.table("vendedor").select("nombre").eq("estado", "ACTIVO").order("nombre").execute()
+        return [v["nombre"] for v in res.data]
+    except Exception as e:
+        print(f"Error cargando vendedores: {e}")
+        return []
