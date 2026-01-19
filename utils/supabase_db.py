@@ -180,19 +180,23 @@ def get_available_tours():
         # Adaptar nombres de columnas al formato que espera la UI si es necesario
         tours = []
         for t in res.data:
-            tours.append({
-                "titulo": t["nombre"],
-                "descripcion": t["descripcion"],
-                "highlights": t.get("highlights", []),
-                "servicios": t.get("servicios_incluidos", []),
-                "servicios_no_incluye": t.get("servicios_no_incluidos", []),
-                "costo_nacional": float(t.get("precio_nacional", 0)),
-                "costo_extranjero": float(t.get("precio_base_usd", 0)),
-                "carpeta_img": t.get("carpeta_img", "general")
-            })
+            try:
+                tours.append({
+                    "titulo": t.get("nombre", "Sin Nombre"),
+                    "descripcion": t.get("descripcion", ""),
+                    "highlights": t.get("highlights") if t.get("highlights") is not None else [],
+                    "servicios": t.get("servicios_incluidos") if t.get("servicios_incluidos") is not None else [],
+                    "servicios_no_incluye": t.get("servicios_no_incluidos") if t.get("servicios_no_incluidos") is not None else [],
+                    "costo_nacional": float(t.get("precio_nacional") or 0),
+                    "costo_extranjero": float(t.get("precio_base_usd") or 0),
+                    "carpeta_img": t.get("carpeta_img") or "general"
+                })
+            except Exception as e_row:
+                print(f"Error procesando fila de tour {t.get('nombre')}: {e_row}")
+                continue
         return tours
     except Exception as e:
-        print(f"Error cargando tours: {e}")
+        st.error(f"❌ Error de conexión al cargar Tours: {e}")
         return []
 
 def get_available_packages():
@@ -210,5 +214,5 @@ def get_available_packages():
             })
         return packages
     except Exception as e:
-        print(f"Error cargando paquetes: {e}")
+        st.error(f"❌ Error de conexión al cargar Paquetes: {e}")
         return []
