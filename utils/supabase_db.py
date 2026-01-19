@@ -191,7 +191,8 @@ def get_available_tours():
                 "carpeta_img": t.get("carpeta_img", "general")
             })
         return tours
-    except Exception:
+    except Exception as e:
+        print(f"Error cargando tours: {e}")
         return []
 
 def get_available_packages():
@@ -208,5 +209,6 @@ def get_available_packages():
                 "tours": tours_names
             })
         return packages
-    except Exception:
+    except Exception as e:
+        print(f"Error cargando paquetes: {e}")
         return []

@@ -104,14 +104,18 @@ def render_ventas_ui():
     st.write("Interfaz exclusiva para el equipo de ventas de Viajes Cusco Perú.")
     
     # 0. Cargar Catálogo desde Supabase (Cacheado en sesión)
-    if not st.session_state.get('catalogo_tours') or st.sidebar.button("🔄 Refrescar Catálogo"):
+    if not st.session_state.get('catalogo_tours') or not st.session_state.get('catalogo_paquetes') or st.sidebar.button("🔄 Refrescar Catálogo"):
         with st.spinner("Cargando catálogo desde el Cerebro..."):
             st.session_state.catalogo_tours = get_available_tours()
             st.session_state.catalogo_paquetes = get_available_packages()
-            if not st.session_state.catalogo_tours:
-                st.sidebar.error("⚠️ Catálogo vacío en Supabase. Ejecuta el script SQL.")
+            
+            nt = len(st.session_state.catalogo_tours) if st.session_state.catalogo_tours else 0
+            np = len(st.session_state.catalogo_paquetes) if st.session_state.catalogo_paquetes else 0
+            
+            if nt == 0:
+                st.sidebar.error("⚠️ No hay tours en Supabase.")
             else:
-                st.sidebar.success(f"✅ {len(st.session_state.catalogo_tours)} tours cargados.")
+                st.sidebar.success(f"✅ {nt} tours y {np} paquetes listos.")
     
     tours_db = st.session_state.catalogo_tours
     paquetes_db = st.session_state.catalogo_paquetes
@@ -258,11 +262,14 @@ def render_ventas_ui():
                     if found_tours:
                         st.session_state.itinerario = found_tours
                         if missing_tours:
-                            st.warning(f"⚠️ Algunos tours no se encontraron: {', '.join(missing_tours)}")
+                            st.warning(f"⚠️ Algunos tours no se encontraron en el catálogo general: {', '.join(missing_tours)}")
                         st.success(f"✅ Paquete '{pkg_final['nombre']}' cargado con {len(found_tours)} tours.")
                         st.rerun()
                     else:
-                        st.error("❌ No se encontró ningún tour válido para este paquete en la base de datos.")
+                        st.error(f"❌ Error: El paquete '{pkg_final['nombre']}' quiere cargar estos tours: {pkg_final['tours']}, pero ninguno coincide con los {len(tours_db)} tours que hay en la base de datos.")
+                        if st.button("🔧 Forzar Sincronización"):
+                            st.session_state.catalogo_tours = None
+                            st.rerun()
                 else:
                     st.error("❌ Error al identificar el paquete seleccionado.")
         
