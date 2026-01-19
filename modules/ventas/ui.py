@@ -410,15 +410,20 @@ def render_ventas_ui():
                 if nombre and st.session_state.itinerario:
                     with st.spinner("Generando PDF con Edge..."):
                         # Determinar portada y títulos
+                        cover_1 = "Captura de pantalla 2026-01-13 094212.png"
+                        cover_2 = "Captura de pantalla 2026-01-13 094056.png"
+                        fallback_cover = "Approaching-Salkantay-Mountain-peru.jpg"
+                        
                         if cat_sel == "Perú para el Mundo":
-                            cover_img = "Captura de pantalla 2026-01-13 094212.png"
+                            cover_img = cover_1 if os.path.exists(cover_1) else fallback_cover
                             t1, t2 = "PERÚ", "PARA EL MUNDO"
                         else:
-                            cover_img = "Captura de pantalla 2026-01-13 094056.png"
+                            cover_img = cover_2 if os.path.exists(cover_2) else fallback_cover
                             t1, t2 = "CUSCO", "TRADICIONAL"
                         
                         # Logo
-                        logo_path = os.path.abspath("Captura de pantalla 2026-01-05 102612.png")
+                        logo_orig = "Captura de pantalla 2026-01-05 102612.png"
+                        logo_path = os.path.abspath(logo_orig if os.path.exists(logo_orig) else "Fondo.png")
                         
                         # Preparar días con imágenes
                         days_data = []
