@@ -123,18 +123,32 @@
         <div class="price-person-label">POR PERSONA</div>
 
         <div class="price-grid-columns">
+            {% if precios.nac %}
             <div class="price-column">
-                <h4>TREN TURISTICO<br>PROMOCIÓN</h4>
-                <p>VIAJE SOLO PERUANO</p>
-                <div class="price-large-text">S/ {{ precios.nac.monto if precios.nac else '730.00' }} P.P</div>
-                <div class="price-status">(SIN HOTEL)</div>
+                <h4>PROMOCIÓN<br>NACIONAL</h4>
+                <p>NACIONAL O CHILENO</p>
+                <div class="price-large-text">S/ {{ precios.nac.monto }} P.P</div>
+                <div class="price-status">TOTAL POR PERSONA</div>
             </div>
+            {% endif %}
+
+            {% if precios.can %}
             <div class="price-column">
-                <h4>TREN TURISTICO<br>PROMOCIÓN</h4>
-                <p>VIAJE SOLO PERUANO</p>
-                <div class="price-large-text">S/ {{ precios.can.monto if precios.can else '885.00' }} P.P</div>
-                <div class="price-status">ESTA CON HOTEL<br>EN HABITACION DOBLE</div>
+                <h4>PROMOCIÓN<br>C.A.N.</h4>
+                <p>COLOMBIA, ECUADOR, BOLIVIA</p>
+                <div class="price-large-text">$ {{ precios.can.monto }} P.P</div>
+                <div class="price-status">TARIFA COMUNIDAD ANDINA</div>
             </div>
+            {% endif %}
+
+            {% if precios.ext %}
+            <div class="price-column">
+                <h4>TARIFA<br>EXTRANJERA</h4>
+                <p>FOREIGNER RATE</p>
+                <div class="price-large-text">$ {{ precios.ext.monto }} P.P</div>
+                <div class="price-status">TOTAL POR PERSONA</div>
+            </div>
+            {% endif %}
         </div>
 
         <ul class="bullet-list-std">
