@@ -163,7 +163,7 @@ def render_ventas_ui():
                     else:
                         st.warning("No se encontraron registros previos.")
 
-        ld_col1, ld_col2 = st.columns([1, 2])
+        ld_col1, ld_col2 = st.columns([1, 1])
         
         with ld_col1:
             # Canal
@@ -177,9 +177,10 @@ def render_ventas_ui():
             origen_lead = st.selectbox("Fuente del Lead", fuente_list, index=idx_f)
             
         with ld_col2:
+            st.markdown("<div style='height: 10px;'></div>", unsafe_allow_html=True) # Espaciado 
             estado_list = ["Frío", "Tibio", "Caliente"]
             idx_e = estado_list.index(st.session_state.f_estado) if st.session_state.f_estado in estado_list else 0
-            estado_lead = st.selectbox("Estado del Lead", estado_list, index=idx_e)
+            estado_lead = st.radio("Estado del Lead", estado_list, index=idx_e)
 
         cv1, cv2 = st.columns(2)
         # Buscar índice del vendedor actual
