@@ -15,6 +15,7 @@ CREATE EXTENSION IF NOT EXISTS "uuid-ossp";
 CREATE TABLE usuarios_app (
     id SERIAL PRIMARY KEY,
     email VARCHAR(255) UNIQUE NOT NULL,
+    password VARCHAR(255) NOT NULL, -- Nueva columna de seguridad
     rol VARCHAR(50) NOT NULL -- 'VENTAS', 'OPERACIONES', 'CONTABILIDAD', 'GERENCIA'
 );
 

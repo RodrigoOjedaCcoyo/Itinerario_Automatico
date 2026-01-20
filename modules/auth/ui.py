@@ -16,13 +16,14 @@ def render_login_ui():
     with col2:
         with st.form("login_form"):
             email = st.text_input("Correo Electrónico Autorizado", placeholder="tu_correo@agencia.com")
+            password = st.text_input("Contraseña", type="password", placeholder="••••••••")
             submit = st.form_submit_button("Ingresar al Portal", use_container_width=True)
             
             if submit:
-                if not email:
-                    st.error("Por favor, ingresa tu correo.")
+                if not email or not password:
+                    st.error("Por favor, ingresa tu correo y contraseña.")
                 else:
-                    user_data = verify_user(email.strip().lower())
+                    user_data = verify_user(email.strip().lower(), password)
                     if user_data:
                         st.session_state.authenticated = True
                         st.session_state.user_email = email

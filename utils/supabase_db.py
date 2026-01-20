@@ -231,14 +231,14 @@ def get_vendedores():
         print(f"Error cargando vendedores: {e}")
         return []
 
-def verify_user(email):
-    """Verifica si un email está autorizado en la tabla usuarios_app."""
+def verify_user(email, password):
+    """Verifica si un email y password están autorizados en la tabla usuarios_app."""
     supabase = get_supabase_client()
     if not supabase: return None
     try:
-        res = supabase.table("usuarios_app").select("*").eq("email", email).execute()
+        res = supabase.table("usuarios_app").select("*").eq("email", email).eq("password", password).execute()
         if res.data:
-            return res.data[0] # Retorna el dict con id, email y rol
+            return res.data[0] # Retorna el dict con id, email, password y rol
         return None
     except Exception:
         return None
