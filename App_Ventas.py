@@ -38,6 +38,7 @@ else:
             st.session_state.authenticated = False
             st.rerun()
         st.divider()
+        st.caption("v2.0 - Búsqueda Leads Activa 🟢")
 
     # Importar y renderizar el módulo de ventas
     from modules.ventas.ui import render_ventas_ui
