@@ -88,14 +88,14 @@ def render_ventas_ui():
     if 'itinerario' not in st.session_state:
         st.session_state.itinerario = []
     if 'origen_previo' not in st.session_state:
-        st.session_state.origen_previo = "Nacional/Chileno"
+        st.session_state.origen_previo = "Nacional"
     
     # Campos del formulario controlados
     if 'f_vendedor' not in st.session_state: st.session_state.f_vendedor = ""
     if 'f_celular' not in st.session_state: st.session_state.f_celular = ""
     if 'f_fuente' not in st.session_state: st.session_state.f_fuente = "WhatsApp"
     if 'f_estado' not in st.session_state: st.session_state.f_estado = "Frío"
-    if 'f_origen' not in st.session_state: st.session_state.f_origen = "Nacional/Chileno"
+    if 'f_origen' not in st.session_state: st.session_state.f_origen = "Nacional"
     if 'f_categoria' not in st.session_state: st.session_state.f_categoria = "Cusco Tradicional"
     if 'f_tipo_cliente' not in st.session_state: st.session_state.f_tipo_cliente = "B2C"
     if 'f_nota_precio' not in st.session_state: st.session_state.f_nota_precio = "INCLUYE TOUR Y ALOJAMIENTO"
@@ -147,7 +147,7 @@ def render_ventas_ui():
                         st.session_state.f_celular = datos_completos.get("celular_cliente", "")
                         st.session_state.f_fuente = datos_completos.get("fuente", "WhatsApp")
                         st.session_state.f_estado = datos_completos.get("estado", "Frío")
-                        st.session_state.f_origen = datos_completos.get("categoria", "Nacional/Chileno")
+                        st.session_state.f_origen = datos_completos.get("categoria", "Nacional")
                         
                         if datos_completos and 'days' in datos_completos:
                              # Re-construir itinerario simplificado para el editor
@@ -184,7 +184,7 @@ def render_ventas_ui():
         
         t_col1, t_col2, t_col3 = st.columns(3)
         idx_o = 0 if "Nacional" in st.session_state.f_origen else 1
-        tipo_t = t_col1.radio("Origen", ["Nacional/Chileno", "Extranjero"], index=idx_o)
+        tipo_t = t_col1.radio("Origen", ["Nacional", "Extranjero"], index=idx_o)
         modo_s = t_col2.radio("Servicio", ["Sistema Pool", "Servicio Privado"])
         
         idx_t = 0 if st.session_state.f_tipo_cliente == "B2C" else 1
