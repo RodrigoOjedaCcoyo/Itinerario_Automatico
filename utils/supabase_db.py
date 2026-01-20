@@ -115,6 +115,27 @@ def get_last_itinerary_v2(name: str):
         
         if response.data:
             return response.data[0]
+            
+        # Fallback: Si no hay itinerario, buscar en Leads
+        res_lead = supabase.table("lead")\
+            .select("*")\
+            .ilike("nombre_pasajero", f"%{name}%")\
+            .order("fecha_creacion", descending=True)\
+            .limit(1)\
+            .execute()
+            
+        if res_lead.data:
+            lead = res_lead.data[0]
+            # Construimos un objeto compatible con lo que espera la UI
+            return {
+                "datos_render": {
+                    "pasajero": lead.get("nombre_pasajero", ""),
+                    "celular_cliente": lead.get("numero_celular", ""),
+                    "fuente": lead.get("red_social", "Desconocido"),
+                    "estado": lead.get("estado_lead", "Nuevo")
+                }
+            }
+            
         return None
     except Exception as e:
         print(f"Error consultando Cerebro: {e}")
