@@ -132,8 +132,14 @@ def render_ventas_ui():
     with col1:
         st.subheader("👤 Datos del Pasajero")
         
-        nc1, nc2 = st.columns([5, 1])
+        nc1, nc2, nc3 = st.columns([4, 1, 2])
         nombre = nc1.text_input("Nombre Completo del Cliente", placeholder="Ej: Juan Pérez")
+        
+        # Selector de Canal (Movido aquí por solicitud)
+        idx_t = 0 if st.session_state.f_tipo_cliente == "B2C" else 1
+        tipo_c = nc3.radio("Canal", ["B2C (Directo)", "B2B (Agencia)"], index=idx_t)
+        st.session_state.f_tipo_cliente = "B2C" if "B2C" in tipo_c else "B2B"
+
         nc2.markdown("<div style='height: 28px;'></div>", unsafe_allow_html=True) # Espaciador para alinear con input
         if nc2.button("🔍", help="Buscar cliente"):
             if nombre:
@@ -182,14 +188,10 @@ def render_ventas_ui():
         vendedor = cv1.selectbox("Vendedor", vendedores_db, index=idx_v if vendedores_db else 0)
         celular = cv2.text_input("Celular del Cliente", value=st.session_state.f_celular, placeholder="Ej: +51 9XX XXX XXX")
         
-        t_col1, t_col2, t_col3 = st.columns(3)
+        t_col1, t_col2 = st.columns(2)
         idx_o = 0 if "Nacional" in st.session_state.f_origen else 1
         tipo_t = t_col1.radio("Origen", ["Nacional", "Extranjero"], index=idx_o)
         modo_s = t_col2.radio("Servicio", ["Sistema Pool", "Servicio Privado"])
-        
-        idx_t = 0 if st.session_state.f_tipo_cliente == "B2C" else 1
-        tipo_c = t_col3.radio("Canal", ["B2C (Directo)", "B2B (Agencia)"], index=idx_t)
-        st.session_state.f_tipo_cliente = "B2C" if "B2C" in tipo_c else "B2B"
         
         # Actualizar precios al cambiar origen
         if tipo_t != st.session_state.origen_previo:
