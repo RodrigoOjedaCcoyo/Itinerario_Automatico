@@ -232,13 +232,32 @@ def get_vendedores():
         return []
 
 def verify_user(email, password):
-    """Verifica si un email y password están autorizados en la tabla usuarios_app."""
+    """
+    Verifica credenciales usando el sistema de Autenticación OFICIAL de Supabase.
+    Luego busca el rol en la tabla usuarios_app.
+    """
     supabase = get_supabase_client()
     if not supabase: return None
+    
     try:
-        res = supabase.table("usuarios_app").select("*").eq("email", email).eq("password", password).execute()
-        if res.data:
-            return res.data[0] # Retorna el dict con id, email, password y rol
+        # 1. Intentar Login real en Supabase Auth
+        res_auth = supabase.auth.sign_in_with_password({"email": email, "password": password})
+        
+        if res_auth.user:
+            # 2. Si el login es exitoso, buscamos su ROL en nuestra tabla blanca
+            res_role = supabase.table("usuarios_app").select("rol").eq("email", email).execute()
+            
+            rol = "VENTAS" # Rol por defecto si no está en la tabla pero sí en Auth
+            if res_role.data:
+                rol = res_role.data[0]["rol"]
+            
+            return {
+                "email": res_auth.user.email,
+                "id": res_auth.user.id,
+                "rol": rol
+            }
         return None
-    except Exception:
+    except Exception as e:
+        # Si las credenciales son inválidas, Supabase lanzará una excepción
+        print(f"Error de Auth: {e}")
         return None

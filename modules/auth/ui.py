@@ -31,8 +31,8 @@ def render_login_ui():
                         st.success(f"¡Bienvenido, acceso concedido como {st.session_state.user_rol}!")
                         st.rerun()
                     else:
-                        st.error("Acceso denegado. Este correo no está en la lista blanca.")
-                        st.info("Contacta al administrador para que añada tu correo a la tabla `usuarios_app`.")
+                        st.error("Correo o Contraseña incorrectos.")
+                        st.info("Asegúrate de que el usuario esté creado en Supabase Auth y que la contraseña sea la correcta.")
 
     st.markdown("---")
     st.caption("Protegido por Supabase Auth & RLS")
