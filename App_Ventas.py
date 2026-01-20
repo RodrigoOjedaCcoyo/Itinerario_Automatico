@@ -22,7 +22,23 @@ def load_css():
 
 load_css()
 
-# Importar y renderizar el módulo de ventas
-from modules.ventas.ui import render_ventas_ui
+# --- SEGURIDAD ---
+if 'authenticated' not in st.session_state:
+    st.session_state.authenticated = False
 
-render_ventas_ui()
+if not st.session_state.authenticated:
+    from modules.auth.ui import render_login_ui
+    render_login_ui()
+else:
+    # Sidebar de Usuario Autenticado
+    with st.sidebar:
+        st.write(f"👤 **Usuario:** {st.session_state.user_email}")
+        st.write(f"🛡️ **Rol:** {st.session_state.user_rol}")
+        if st.button("Cerrar Sesión"):
+            st.session_state.authenticated = False
+            st.rerun()
+        st.divider()
+
+    # Importar y renderizar el módulo de ventas
+    from modules.ventas.ui import render_ventas_ui
+    render_ventas_ui()
