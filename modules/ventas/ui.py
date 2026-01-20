@@ -137,8 +137,9 @@ def render_ventas_ui():
         nc2.markdown("<div style='height: 28px;'></div>", unsafe_allow_html=True) # Espaciador para alinear con input
         if nc2.button("🔍", help="Buscar cliente"):
             if nombre:
-                with st.spinner("Buscando en registros..."):
-                    last_data = get_last_itinerary_v2(nombre)
+                nombre_clean = nombre.strip().upper() # Limpiamos espacios y estandarizamos
+                with st.spinner(f"Buscando a {nombre_clean}..."):
+                    last_data = get_last_itinerary_v2(nombre_clean)
                     if last_data:
                         # Auto-llenar campos desde el nuevo esquema
                         datos_completos = last_data.get("datos_render", {})

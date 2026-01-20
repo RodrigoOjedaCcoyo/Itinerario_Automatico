@@ -117,6 +117,7 @@ def get_last_itinerary_v2(name: str):
             return response.data[0]
             
         # Fallback: Si no hay itinerario, buscar en Leads
+        print(f"DEBUG: Intentando fallback en LEADS para: {name}")
         res_lead = supabase.table("lead")\
             .select("*")\
             .ilike("nombre_pasajero", f"%{name}%")\
