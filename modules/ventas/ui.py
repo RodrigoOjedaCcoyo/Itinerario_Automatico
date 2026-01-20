@@ -132,9 +132,10 @@ def render_ventas_ui():
     with col1:
         st.subheader("👤 Datos del Pasajero")
         
-        nc1, nc2 = st.columns([3, 1])
+        nc1, nc2 = st.columns([5, 1])
         nombre = nc1.text_input("Nombre Completo del Cliente", placeholder="Ej: Juan Pérez")
-        if nc2.button("🔍 Buscar"):
+        nc2.markdown("<div style='height: 28px;'></div>", unsafe_allow_html=True) # Espaciador para alinear con input
+        if nc2.button("🔍", help="Buscar cliente"):
             if nombre:
                 with st.spinner("Buscando en registros..."):
                     last_data = get_last_itinerary_v2(nombre)
