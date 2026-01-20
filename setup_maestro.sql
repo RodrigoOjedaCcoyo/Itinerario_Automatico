@@ -188,12 +188,12 @@ CREATE INDEX IF NOT EXISTS idx_venta_fecha ON venta(fecha_venta);
 DELETE FROM usuarios_app;
 DELETE FROM vendedor;
 
-INSERT INTO usuarios_app (email, rol) VALUES 
-('TU_CORREO_MAESTRO@gmail.com', 'GERENCIA'),
-('ventas@agencia.com', 'VENTAS'),
-('operaciones@agencia.com', 'OPERACIONES'),
-('contabilidad@agencia.com', 'CONTABILIDAD'),
-('gerencia@agencia.com', 'GERENCIA');
+INSERT INTO usuarios_app (email, password, rol) VALUES 
+('TU_CORREO_MAESTRO@gmail.com', '123', 'GERENCIA'),
+('ventas@agencia.com', '123', 'VENTAS'),
+('operaciones@agencia.com', '123', 'OPERACIONES'),
+('contabilidad@agencia.com', '123', 'CONTABILIDAD'),
+('gerencia@agencia.com', '123', 'GERENCIA');
 
 INSERT INTO vendedor (nombre, email) VALUES 
 ('Angel', 'angel@agencia.com'),
