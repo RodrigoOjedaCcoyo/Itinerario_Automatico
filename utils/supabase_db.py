@@ -100,7 +100,6 @@ def save_itinerary_v2(itinerary_data):
         print(f"Error detallado en Cerebro Supabase: {e}")
         return None
 
-import streamlit as st
 
 def get_last_itinerary_v3(name: str):
     """Busca el historial usando el nuevo esquema."""
@@ -169,7 +168,6 @@ def get_last_itinerary_v3(name: str):
         return None
     except Exception as e:
         print(f"Error consultando Cerebro: {e}")
-        st.error(f"🔥 Error Crítico en V3: {e}")
         return None
 
 def populate_catalog():
