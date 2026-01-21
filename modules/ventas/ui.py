@@ -163,6 +163,30 @@ def render_ventas_ui():
                         st.rerun()
                     else:
                         st.warning("No se encontraron registros previos.")
+                        
+                        # --- DIAGNÓSTICO EN VIVO ---
+                        st.divider()
+                        st.error("🕵️ DIAGNÓSTICO DE ERROR")
+                        st.write(f"Término buscado: '{nombre_clean}'")
+                        try:
+                            supabase = get_supabase_client()
+                            
+                            # Prueba 1: Acceso General
+                            st.write("Prueba 1: ¿Tengo permiso para ver la tabla 'cliente'?")
+                            test_all = supabase.table("cliente").select("nombre").limit(5).execute()
+                            if test_all.data:
+                                st.write("✅ SI. Veo estos clientes:", test_all.data)
+                            else:
+                                st.write("❌ NO. La tabla parece vacía o bloqueada por RLS.")
+                                
+                            # Prueba 2: Búsqueda Específica Raw
+                            st.write("Prueba 2: Búsqueda cruda")
+                            test_specific = supabase.table("cliente").select("*").ilike("nombre", f"%{nombre_clean}%").execute()
+                            st.write("Resultado:", test_specific.data)
+                            
+                        except Exception as e:
+                            st.error(f"Error Técnico: {e}")
+                        # ---------------------------
 
         ld_col1, ld_col2 = st.columns([1, 1])
         
