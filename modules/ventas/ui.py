@@ -6,7 +6,7 @@ from pathlib import Path
 from utils.pdf_generator import generate_pdf
 from utils.supabase_db import (
     save_itinerary_v2, 
-    get_last_itinerary_v2, 
+    get_last_itinerary_v3, 
     get_available_tours, 
     get_available_packages,
     get_vendedores,
