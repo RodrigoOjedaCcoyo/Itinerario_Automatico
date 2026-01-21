@@ -137,6 +137,30 @@ def get_last_itinerary_v2(name: str):
                 }
             }
             
+        # Doble Fallback: Si no hay lead, buscar en Clientes
+        print(f"DEBUG: Intentando fallback en CLIENTES para: {name}")
+        res_cliente = supabase.table("cliente")\
+            .select("*")\
+            .ilike("nombre", f"%{name}%")\
+            .limit(1)\
+            .execute()
+            
+        if res_cliente.data:
+            client = res_cliente.data[0]
+            pais = str(client.get("pais", "")).upper()
+            categoria = "Nacional" if "PERU" in pais or "PERÚ" in pais else "Extranjero"
+            
+            return {
+                "datos_render": {
+                    "pasajero": client.get("nombre", ""),
+                    "celular_cliente": "", # Cliente no tiene cel en esta tabla
+                    "fuente": "Base de Datos",
+                    "estado": "Cliente",
+                    "categoria": categoria,
+                    "tipo_cliente": client.get("tipo_cliente", "B2C")
+                }
+            }
+            
         return None
     except Exception as e:
         print(f"Error consultando Cerebro: {e}")
