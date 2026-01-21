@@ -111,7 +111,7 @@ def get_last_itinerary_v3(name: str):
         response = supabase.table("itinerario_digital")\
             .select("*")\
             .ilike("nombre_pasajero_itinerario", f"%{name}%")\
-            .order("fecha_generacion", descending=True)\
+            .order("fecha_generacion", desc=True)\
             .limit(1)\
             .execute()
         
@@ -123,7 +123,7 @@ def get_last_itinerary_v3(name: str):
         res_lead = supabase.table("lead")\
             .select("*")\
             .ilike("nombre_pasajero", f"%{name}%")\
-            .order("fecha_creacion", descending=True)\
+            .order("fecha_creacion", desc=True)\
             .limit(1)\
             .execute()
             
