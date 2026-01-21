@@ -100,7 +100,7 @@ def save_itinerary_v2(itinerary_data):
         print(f"Error detallado en Cerebro Supabase: {e}")
         return None
 
-def get_last_itinerary_v2(name: str):
+def get_last_itinerary_v3(name: str):
     """Busca el historial usando el nuevo esquema."""
     supabase = get_supabase_client()
     if not supabase or not name: return None

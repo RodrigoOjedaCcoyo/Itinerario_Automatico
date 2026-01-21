@@ -139,8 +139,8 @@ def render_ventas_ui():
             if nombre:
                 nombre_clean = nombre.strip().upper() # Limpiamos espacios y estandarizamos
                 with st.spinner(f"Buscando a {nombre_clean}..."):
-                    st.toast(f"🔎 Buscando '{nombre_clean}' en Base de Datos...", icon="🕵️")
-                    last_data = get_last_itinerary_v2(nombre_clean)
+                    st.toast(f"🔎 Buscando '{nombre_clean}' en Base de Datos (v3)...", icon="😎")
+                    last_data = get_last_itinerary_v3(nombre_clean)
                     if last_data:
                         # Auto-llenar campos desde el nuevo esquema
                         datos_completos = last_data.get("datos_render", {})
