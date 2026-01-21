@@ -100,6 +100,8 @@ def save_itinerary_v2(itinerary_data):
         print(f"Error detallado en Cerebro Supabase: {e}")
         return None
 
+import streamlit as st
+
 def get_last_itinerary_v3(name: str):
     """Busca el historial usando el nuevo esquema."""
     supabase = get_supabase_client()
@@ -117,7 +119,7 @@ def get_last_itinerary_v3(name: str):
             return response.data[0]
             
         # Fallback: Si no hay itinerario, buscar en Leads
-        print(f"DEBUG: Intentando fallback en LEADS para: {name}")
+        # print(f"DEBUG: Intentando fallback en LEADS para: {name}")
         res_lead = supabase.table("lead")\
             .select("*")\
             .ilike("nombre_pasajero", f"%{name}%")\
@@ -127,7 +129,6 @@ def get_last_itinerary_v3(name: str):
             
         if res_lead.data:
             lead = res_lead.data[0]
-            # Construimos un objeto compatible con lo que espera la UI
             return {
                 "datos_render": {
                     "pasajero": lead.get("nombre_pasajero", ""),
@@ -138,7 +139,7 @@ def get_last_itinerary_v3(name: str):
             }
             
         # Doble Fallback: Si no hay lead, buscar en Clientes
-        print(f"DEBUG: Intentando fallback en CLIENTES para: {name}")
+        # print(f"DEBUG: Intentando fallback en CLIENTES para: {name}")
         res_cliente = supabase.table("cliente")\
             .select("*")\
             .ilike("nombre", f"%{name}%")\
@@ -146,6 +147,7 @@ def get_last_itinerary_v3(name: str):
             .execute()
             
         if res_cliente.data:
+            # st.toast("✅ Cliente encontrado en DB Interna")
             client = res_cliente.data[0]
             pais = str(client.get("pais", "")).upper()
             categoria = "Nacional" if "PERU" in pais or "PERÚ" in pais else "Extranjero"
@@ -160,10 +162,14 @@ def get_last_itinerary_v3(name: str):
                     "tipo_cliente": client.get("tipo_cliente", "B2C")
                 }
             }
+        else:
+            # st.error(f"⚠️ Cliente '{name}' no encontrado en tabla 'cliente'")
+            pass
             
         return None
     except Exception as e:
         print(f"Error consultando Cerebro: {e}")
+        st.error(f"🔥 Error Crítico en V3: {e}")
         return None
 
 def populate_catalog():
