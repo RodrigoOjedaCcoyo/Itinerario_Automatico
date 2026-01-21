@@ -42,6 +42,12 @@
             <div class="day-date-row">
                 <span class="day-number">DÍA {{ day.numero }}:</span>
                 <span class="day-date">{{ day.fecha }}</span>
+                {% if day.hora_inicio %}
+                <span class="day-time"
+                    style="background: #f1f2f6; padding: 2px 8px; border-radius: 4px; font-size: 0.85rem; color: #2f3542; margin-left: 10px; font-weight: 600; vertical-align: middle;">
+                    🕒 {{ day.hora_inicio }}
+                </span>
+                {% endif %}
             </div>
             <h3>{{ day.titulo }}</h3>
         </div>

@@ -242,7 +242,8 @@ def get_available_tours():
                     "servicios_no_incluye": t.get("servicios_no_incluidos") if t.get("servicios_no_incluidos") is not None else [],
                     "costo_nacional": float(t.get("precio_nacional") or 0),
                     "costo_extranjero": float(t.get("precio_base_usd") or 0),
-                    "carpeta_img": t.get("carpeta_img") or "general"
+                    "carpeta_img": t.get("carpeta_img") or "general",
+                    "hora_inicio": t.get("hora_inicio") or "08:00 AM"
                 })
             except Exception as e_row:
                 print(f"Error procesando fila de tour {t.get('nombre')}: {e_row}")
