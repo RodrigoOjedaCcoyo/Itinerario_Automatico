@@ -365,15 +365,19 @@ def render_ventas_ui():
                             tour['costo_can'] = tour['costo_ext']
                         
                         st.divider()
-                        tour['descripcion'] = st.text_area(f"Descripción día {i+1}", tour.get('descripcion', ""), key=f"desc_{i}", height=100, disabled=es_pool)
+                        raw_desc = st.text_area(f"Descripción día {i+1}", tour.get('descripcion', ""), key=f"desc_{i}", height=100, disabled=es_pool)
                         
-                        # Contador de palabras
-                        words = [w for w in tour['descripcion'].split() if w.strip()]
-                        word_count = len(words)
-                        if word_count > 65:
-                            st.markdown(f'<p style="color: #ff4b4b; font-size: 0.8rem; margin-top: -15px;">⚠️ <b>{word_count}/65 palabras</b> - El texto es muy largo y podría verse mal en el PDF.</p>', unsafe_allow_html=True)
+                        # Lógica de bloqueo de palabras (máximo 65)
+                        all_words = raw_desc.split()
+                        if len(all_words) > 65:
+                            # Truncar el texto a las primeras 65 palabras
+                            tour['descripcion'] = " ".join(all_words[:65])
+                            st.markdown(f'<p style="color: #ff4b4b; font-size: 0.8rem; margin-top: -15px;">🚫 <b>LÍMITE ALCANZADO: 65/65 palabras</b>. No se puede escribir más para mantener el diseño premium.</p>', unsafe_allow_html=True)
+                            # Forzar el valor truncado si es necesario (el widget se actualizará en el siguiente rerun)
                         else:
-                            st.caption(f"📝 {word_count}/65 palabras (ideal para el diseño)")
+                            tour['descripcion'] = raw_desc
+                            words_count = len(all_words)
+                            st.caption(f"📝 {words_count}/65 palabras (ideal para el diseño)")
                         
                         col_ex1, col_ex2 = st.columns(2)
                         h_text = col_ex1.text_area(f"📍 Atractivos", "\n".join(tour.get('highlights', [])), key=f"h_{i}", height=120, disabled=es_pool)
