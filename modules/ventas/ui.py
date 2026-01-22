@@ -93,6 +93,28 @@ def render_ventas_ui():
             .stAppDeployButton {display: none;}
             [data-testid="stStatusWidget"] {visibility: hidden;}
             #stDecoration {display:none;}
+
+            /* Estilos para la grilla de pasajeros compacta */
+            .passenger-card {
+                background-color: #1e2130;
+                padding: 15px;
+                border-radius: 10px;
+                border: 1px solid #3d4156;
+                margin-bottom: 10px;
+            }
+            .passenger-title {
+                font-size: 0.9rem;
+                font-weight: bold;
+                margin-bottom: 10px;
+                color: #888eb0;
+                text-align: center;
+                border-bottom: 1px solid #3d4156;
+                padding-bottom: 5px;
+            }
+            div[data-testid="stNumberInput"] label {
+                font-size: 0.8rem;
+                color: #a0a0a0;
+            }
         </style>
     """, unsafe_allow_html=True)
     
@@ -220,26 +242,32 @@ def render_ventas_ui():
             st.session_state.origen_previo = tipo_t
             st.rerun()
         
-        st.markdown("#### 👥 Cantidad de Pasajeros")
+        st.markdown("#### 👥 Pasajeros")
         p_grid1, p_grid2, p_grid3 = st.columns(3)
+        
         with p_grid1:
-            st.caption("🇵🇪 NACIONALES")
-            n_adultos_nac = st.number_input("Adultos", min_value=0, value=1 if "Nacional" in tipo_t else 0, step=1, key="an_nac")
-            n_estud_nac = st.number_input("Estudiantes", min_value=0, value=0, step=1, key="es_nac")
-            n_pcd_nac = st.number_input("PcD (Discapacidad)", min_value=0, value=0, step=1, key="pcd_nac")
-            n_ninos_nac = st.number_input("Niños", min_value=0, value=0, step=1, key="ni_nac")
+            st.markdown('<div class="passenger-card"><div class="passenger-title">🇵🇪 NACIONALES</div>', unsafe_allow_html=True)
+            n_adultos_nac = st.number_input("Adul.", min_value=0, value=1 if "Nacional" in tipo_t else 0, step=1, key="an_nac", label_visibility="collapsed")
+            n_estud_nac = st.number_input("Estu.", min_value=0, value=0, step=1, key="es_nac", label_visibility="visible")
+            n_pcd_nac = st.number_input("PcD", min_value=0, value=0, step=1, key="pcd_nac", label_visibility="visible")
+            n_ninos_nac = st.number_input("Niño", min_value=0, value=0, step=1, key="ni_nac", label_visibility="visible")
+            st.markdown('</div>', unsafe_allow_html=True)
+
         with p_grid2:
-            st.caption("🌎 EXTRANJEROS")
-            n_adultos_ext = st.number_input("Adultos", min_value=0, value=1 if "Extranjero" in tipo_t else 0, step=1, key="an_ext")
-            n_estud_ext = st.number_input("Estudiantes", min_value=0, value=0, step=1, key="es_ext")
-            n_pcd_ext = st.number_input("PcD (Discapacidad)", min_value=0, value=0, step=1, key="pcd_ext")
-            n_ninos_ext = st.number_input("Niños", min_value=0, value=0, step=1, key="ni_ext")
+            st.markdown('<div class="passenger-card"><div class="passenger-title">🌎 EXTRANJEROS</div>', unsafe_allow_html=True)
+            n_adultos_ext = st.number_input("Adul.", min_value=0, value=1 if "Extranjero" in tipo_t else 0, step=1, key="an_ext", label_visibility="collapsed")
+            n_estud_ext = st.number_input("Estu.", min_value=0, value=0, step=1, key="es_ext", label_visibility="visible")
+            n_pcd_ext = st.number_input("PcD", min_value=0, value=0, step=1, key="pcd_ext", label_visibility="visible")
+            n_ninos_ext = st.number_input("Niño", min_value=0, value=0, step=1, key="ni_ext", label_visibility="visible")
+            st.markdown('</div>', unsafe_allow_html=True)
+
         with p_grid3:
-            st.caption("🤝 CAN")
-            n_adultos_can = st.number_input("Adultos", min_value=0, value=0, step=1, key="an_can")
-            n_estud_can = st.number_input("Estudiantes", min_value=0, value=0, step=1, key="es_can")
-            n_pcd_can = st.number_input("PcD (Discapacidad)", min_value=0, value=0, step=1, key="pcd_can")
-            n_ninos_can = st.number_input("Niños", min_value=0, value=0, step=1, key="ni_can")
+            st.markdown('<div class="passenger-card"><div class="passenger-title">🤝 CAN</div>', unsafe_allow_html=True)
+            n_adultos_can = st.number_input("Adul.", min_value=0, value=0, step=1, key="an_can", label_visibility="collapsed")
+            n_estud_can = st.number_input("Estu.", min_value=0, value=0, step=1, key="es_can", label_visibility="visible")
+            n_pcd_can = st.number_input("PcD", min_value=0, value=0, step=1, key="pcd_can", label_visibility="visible")
+            n_ninos_can = st.number_input("Niño", min_value=0, value=0, step=1, key="ni_can", label_visibility="visible")
+            st.markdown('</div>', unsafe_allow_html=True)
         
         total_pasajeros = (n_adultos_nac + n_estud_nac + n_pcd_nac + n_ninos_nac + 
                            n_adultos_ext + n_estud_ext + n_pcd_ext + n_ninos_ext + 
