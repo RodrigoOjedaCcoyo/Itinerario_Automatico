@@ -196,7 +196,7 @@ def render_ventas_ui():
         t_col1, t_col2 = st.columns(2)
         idx_o = 0 if "Nacional" in st.session_state.f_origen else 1
         tipo_t = t_col1.radio("Origen", ["Nacional", "Extranjero"], index=idx_o)
-        modo_s = t_col2.radio("Servicio", ["Sistema Pool", "Servicio Privado"])
+        # Se elimina el selector global modo_s (Sistema Pool / Privado)
         
         # Actualizar precios al cambiar origen
         if tipo_t != st.session_state.origen_previo:
@@ -327,7 +327,7 @@ def render_ventas_ui():
         total_ext_pp = 0
         total_can_pp = 0
         
-        es_pool = (modo_s == "Sistema Pool")
+        # El modo de edición ahora es individual por cada tour
         
         if not st.session_state.itinerario:
             st.info("El itinerario está vacío. Comienza cargando un paquete o un tour individual.")
@@ -349,45 +349,47 @@ def render_ventas_ui():
                         header_text = f"🗓️ {date_str} - DÍA {i+1}: {tour['titulo']} - (S/ {tour.get('costo_nac', 0)} | $ {tour.get('costo_ext', 0)} | CAN $ {tour.get('costo_can', 0)})"
                     
                     with st.expander(header_text, expanded=False):
+                        # Control de edición manual para este día específico
+                        modo_edicion = st.toggle("🔧 Modificar datos de este día", key=f"mod_edit_{i}")
+                        is_disabled = not modo_edicion
+                        
                         if es_mp:
                             col_t1, col_n, col_e, col_c, col_h = st.columns([1.5, 0.6, 0.6, 0.6, 0.6])
-                            tour['titulo'] = col_t1.text_input(f"Título día {i+1}", tour['titulo'], key=f"title_{i}", disabled=es_pool)
-                            tour['hora_inicio'] = col_h.text_input(f"⏰ Hora", value=tour.get('hora_inicio', '08:00 AM'), key=f"hi_{i}", disabled=es_pool)
-                            tour['costo_nac'] = col_n.number_input(f"Nac (S/)", value=float(tour.get('costo_nac', 0)), key=f"cn_{i}", disabled=es_pool)
-                            tour['costo_ext'] = col_e.number_input(f"Ext ($)", value=float(tour.get('costo_ext', 0)), key=f"ce_{i}", disabled=es_pool)
-                            tour['costo_can'] = col_c.number_input(f"CAN ($)", value=float(tour.get('costo_can', 0)), key=f"cc_{i}", disabled=es_pool)
+                            tour['titulo'] = col_t1.text_input(f"Título día {i+1}", tour['titulo'], key=f"title_{i}", disabled=is_disabled)
+                            tour['hora_inicio'] = col_h.text_input(f"⏰ Hora", value=tour.get('hora_inicio', '08:00 AM'), key=f"hi_{i}", disabled=is_disabled)
+                            tour['costo_nac'] = col_n.number_input(f"Nac (S/)", value=float(tour.get('costo_nac', 0)), key=f"cn_{i}", disabled=is_disabled)
+                            tour['costo_ext'] = col_e.number_input(f"Ext ($)", value=float(tour.get('costo_ext', 0)), key=f"ce_{i}", disabled=is_disabled)
+                            tour['costo_can'] = col_c.number_input(f"CAN ($)", value=float(tour.get('costo_can', 0)), key=f"cc_{i}", disabled=is_disabled)
                         else:
                             col_t1, col_n, col_e, col_h = st.columns([2, 0.8, 0.8, 0.8])
-                            tour['titulo'] = col_t1.text_input(f"Título día {i+1}", tour['titulo'], key=f"title_{i}", disabled=es_pool)
-                            tour['hora_inicio'] = col_h.text_input(f"⏰ Hora", value=tour.get('hora_inicio', '08:00 AM'), key=f"hi_{i}", disabled=es_pool)
-                            tour['costo_nac'] = col_n.number_input(f"Nac (S/)", value=float(tour.get('costo_nac', 0)), key=f"cn_{i}", disabled=es_pool)
-                            tour['costo_ext'] = col_e.number_input(f"Ext ($)", value=float(tour.get('costo_ext', 0)), key=f"ce_{i}", disabled=es_pool)
+                            tour['titulo'] = col_t1.text_input(f"Título día {i+1}", tour['titulo'], key=f"title_{i}", disabled=is_disabled)
+                            tour['hora_inicio'] = col_h.text_input(f"⏰ Hora", value=tour.get('hora_inicio', '08:00 AM'), key=f"hi_{i}", disabled=is_disabled)
+                            tour['costo_nac'] = col_n.number_input(f"Nac (S/)", value=float(tour.get('costo_nac', 0)), key=f"cn_{i}", disabled=is_disabled)
+                            tour['costo_ext'] = col_e.number_input(f"Ext ($)", value=float(tour.get('costo_ext', 0)), key=f"ce_{i}", disabled=is_disabled)
                             tour['costo_can'] = tour['costo_ext']
                         
                         st.divider()
-                        raw_desc = st.text_area(f"Descripción día {i+1}", tour.get('descripcion', ""), key=f"desc_{i}", height=100, disabled=es_pool)
+                        raw_desc = st.text_area(f"Descripción día {i+1}", tour.get('descripcion', ""), key=f"desc_{i}", height=100, disabled=is_disabled)
                         
-                        # Lógica de bloqueo de palabras (máximo 65)
+                        # Lógica de BLOQUEO de palabras (máximo 65) - Se mantiene como solicitó el usuario
                         all_words = raw_desc.split()
                         if len(all_words) > 65:
-                            # Truncar el texto a las primeras 65 palabras
                             tour['descripcion'] = " ".join(all_words[:65])
-                            st.markdown(f'<p style="color: #ff4b4b; font-size: 0.8rem; margin-top: -15px;">🚫 <b>LÍMITE ALCANZADO: 65/65 palabras</b>. No se puede escribir más para mantener el diseño premium.</p>', unsafe_allow_html=True)
-                            # Forzar el valor truncado si es necesario (el widget se actualizará en el siguiente rerun)
+                            st.markdown(f'<p style="color: #ff4b4b; font-size: 0.8rem; margin-top: -15px;">🚫 <b>LÍMITE ALCANZADO: 65/65 palabras</b>. El diseño premium está protegido.</p>', unsafe_allow_html=True)
                         else:
                             tour['descripcion'] = raw_desc
                             words_count = len(all_words)
                             st.caption(f"📝 {words_count}/65 palabras (ideal para el diseño)")
                         
                         col_ex1, col_ex2 = st.columns(2)
-                        h_text = col_ex1.text_area(f"📍 Atractivos", "\n".join(tour.get('highlights', [])), key=f"h_{i}", height=120, disabled=es_pool)
+                        h_text = col_ex1.text_area(f"📍 Atractivos", "\n".join(tour.get('highlights', [])), key=f"h_{i}", height=120, disabled=is_disabled)
                         tour['highlights'] = [line.strip() for line in h_text.split("\n") if line.strip()]
                         
-                        s_text = col_ex2.text_area(f"✅ Incluye", "\n".join(tour.get('servicios', [])), key=f"s_{i}", height=120, disabled=es_pool)
+                        s_text = col_ex2.text_area(f"✅ Incluye", "\n".join(tour.get('servicios', [])), key=f"s_{i}", height=120, disabled=is_disabled)
                         tour['servicios'] = [line.strip() for line in s_text.split("\n") if line.strip()]
                         
-                        if es_pool:
-                            st.caption("⚠️ Los detalles del servicio Pool no se pueden modificar.")
+                        if is_disabled:
+                            st.caption("💡 Haz clic en 'Modificar datos de este día' arriba para editar precios o textos.")
                 
                 with c_btns:
                     st.write('<div style="margin-top: 4px;"></div>', unsafe_allow_html=True)
