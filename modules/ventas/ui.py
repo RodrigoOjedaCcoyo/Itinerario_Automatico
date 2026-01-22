@@ -367,6 +367,14 @@ def render_ventas_ui():
                         st.divider()
                         tour['descripcion'] = st.text_area(f"Descripción día {i+1}", tour.get('descripcion', ""), key=f"desc_{i}", height=100, disabled=es_pool)
                         
+                        # Contador de palabras
+                        words = [w for w in tour['descripcion'].split() if w.strip()]
+                        word_count = len(words)
+                        if word_count > 65:
+                            st.markdown(f'<p style="color: #ff4b4b; font-size: 0.8rem; margin-top: -15px;">⚠️ <b>{word_count}/65 palabras</b> - El texto es muy largo y podría verse mal en el PDF.</p>', unsafe_allow_html=True)
+                        else:
+                            st.caption(f"📝 {word_count}/65 palabras (ideal para el diseño)")
+                        
                         col_ex1, col_ex2 = st.columns(2)
                         h_text = col_ex1.text_area(f"📍 Atractivos", "\n".join(tour.get('highlights', [])), key=f"h_{i}", height=120, disabled=es_pool)
                         tour['highlights'] = [line.strip() for line in h_text.split("\n") if line.strip()]
