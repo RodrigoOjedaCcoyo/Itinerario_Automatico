@@ -226,21 +226,24 @@ def render_ventas_ui():
             st.caption("🇵🇪 NACIONALES")
             n_adultos_nac = st.number_input("Adultos", min_value=0, value=1 if "Nacional" in tipo_t else 0, step=1, key="an_nac")
             n_estud_nac = st.number_input("Estudiantes", min_value=0, value=0, step=1, key="es_nac")
+            n_pcd_nac = st.number_input("PcD (Discapacidad)", min_value=0, value=0, step=1, key="pcd_nac")
             n_ninos_nac = st.number_input("Niños", min_value=0, value=0, step=1, key="ni_nac")
         with p_grid2:
             st.caption("🌎 EXTRANJEROS")
             n_adultos_ext = st.number_input("Adultos", min_value=0, value=1 if "Extranjero" in tipo_t else 0, step=1, key="an_ext")
             n_estud_ext = st.number_input("Estudiantes", min_value=0, value=0, step=1, key="es_ext")
+            n_pcd_ext = st.number_input("PcD (Discapacidad)", min_value=0, value=0, step=1, key="pcd_ext")
             n_ninos_ext = st.number_input("Niños", min_value=0, value=0, step=1, key="ni_ext")
         with p_grid3:
             st.caption("🤝 CAN")
             n_adultos_can = st.number_input("Adultos", min_value=0, value=0, step=1, key="an_can")
             n_estud_can = st.number_input("Estudiantes", min_value=0, value=0, step=1, key="es_can")
+            n_pcd_can = st.number_input("PcD (Discapacidad)", min_value=0, value=0, step=1, key="pcd_can")
             n_ninos_can = st.number_input("Niños", min_value=0, value=0, step=1, key="ni_can")
         
-        total_pasajeros = (n_adultos_nac + n_estud_nac + n_ninos_nac + 
-                           n_adultos_ext + n_estud_ext + n_ninos_ext + 
-                           n_adultos_can + n_estud_can + n_ninos_can)
+        total_pasajeros = (n_adultos_nac + n_estud_nac + n_pcd_nac + n_ninos_nac + 
+                           n_adultos_ext + n_estud_ext + n_pcd_ext + n_ninos_ext + 
+                           n_adultos_can + n_estud_can + n_pcd_can + n_ninos_can)
         st.info(f"Total personas: {total_pasajeros}")
         
         fecha_inicio = st.date_input("📅 Fecha de Inicio del Viaje", datetime.now())
@@ -456,16 +459,16 @@ def render_ventas_ui():
 
             st.divider()
             
-            pasajeros_nac = n_adultos_nac + n_estud_nac + n_ninos_nac
-            pasajeros_ext = n_adultos_ext + n_estud_ext + n_ninos_ext
-            pasajeros_can = n_adultos_can + n_estud_can + n_ninos_can
+            pasajeros_nac = n_adultos_nac + n_estud_nac + n_pcd_nac + n_ninos_nac
+            pasajeros_ext = n_adultos_ext + n_estud_ext + n_pcd_ext + n_ninos_ext
+            pasajeros_can = n_adultos_can + n_estud_can + n_pcd_can + n_ninos_can
             
             # --- LÓGICA DE DESCUENTOS AUTOMÁTICOS ---
-            # Nacionales: Niño -S/ 40, Estudiante -S/ 70
-            desc_nac = (n_ninos_nac * 40.0) + (n_estud_nac * 70.0)
-            # Extranjeros/CAN: Niño -$15, Estudiante -$20
-            desc_ext = (n_ninos_ext * 15.0) + (n_estud_ext * 20.0)
-            desc_can = (n_ninos_can * 15.0) + (n_estud_can * 20.0)
+            # Nacionales: Niño -S/ 40, Estudiante/PcD -S/ 70
+            desc_nac = (n_ninos_nac * 40.0) + (n_estud_nac * 70.0) + (n_pcd_nac * 70.0)
+            # Extranjeros/CAN: Niño -$15, Estudiante/PcD -$20
+            desc_ext = (n_ninos_ext * 15.0) + (n_estud_ext * 20.0) + (n_pcd_ext * 20.0)
+            desc_can = (n_ninos_can * 15.0) + (n_estud_can * 20.0) + (n_pcd_can * 20.0)
 
             real_nac = (total_nac_pp * pasajeros_nac) + extra_nac - desc_nac
             real_ext = (total_ext_pp * pasajeros_ext) + extra_ext - desc_ext
