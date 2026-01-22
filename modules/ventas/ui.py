@@ -428,12 +428,27 @@ def render_ventas_ui():
                             
                             if selected_note_key != "Ninguna":
                                 if col_n2.button("✨ Aplicar Nota", key=f"qn_btn_{i}"):
-                                    current_note = tour.get('nota_precio', "")
                                     new_note = quick_notes[selected_note_key]
-                                    if new_note not in current_note:
-                                        tour['nota_precio'] = (current_note + " " + new_note).strip()
-                                        st.toast(f"Nota '{selected_note_key}' añadida!", icon="✨")
-                                        st.rerun()
+                                    
+                                    # 1. Actualizar Nota Global (la que sale en el PDF)
+                                    current_gn = st.session_state.get('f_nota_precio', "")
+                                    if new_note not in current_gn:
+                                        st.session_state.f_nota_precio = (current_gn + " " + new_note).strip()
+                                    
+                                    # 2. Aplicar Descuento Automático si aplica
+                                    if "Niño" in selected_note_key:
+                                        # Descuento sugerido: S/ 40 por cada niño
+                                        desc = 40.0 * max(1, n_ninos_nac)
+                                        st.session_state.f_extra_nac -= desc
+                                        st.toast(f"¡Hecho! Nota añadida y descuento de S/ {desc} aplicado en Margen Nac.", icon="📉")
+                                    elif "Estudiante" in selected_note_key:
+                                        # Descuento sugerido: $ 20 (standard para Boleto Turístico)
+                                        st.session_state.f_extra_ext -= 20.0
+                                        st.toast("¡Hecho! Nota añadida y -$20 aplicados en Margen Ext.", icon="🎓")
+                                    else:
+                                        st.toast(f"Nota '{selected_note_key}' añadida al final!", icon="✨")
+                                    
+                                    st.rerun()
 
                             # Guía de Accesibilidad Visual
                             esfuerzo = "Moderado"
