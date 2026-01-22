@@ -220,26 +220,38 @@ def render_ventas_ui():
             st.session_state.origen_previo = tipo_t
             st.rerun()
         
-        st.markdown("#### 👥 Cantidad de Pasajeros")
-        p_col1, p_col2, p_col3 = st.columns(3)
-        with p_col1:
-            st.caption("🇵🇪 NACIONALES")
-            n_adultos_nac = st.number_input("Adultos", min_value=0, value=1 if "Nacional" in tipo_t else 0, step=1, key="an_nac")
-            n_estud_nac = st.number_input("Estudiantes", min_value=0, value=0, step=1, key="es_nac")
-            n_pcd_nac = st.number_input("PcD (Discapacidad)", min_value=0, value=0, step=1, key="pcd_nac")
-            n_ninos_nac = st.number_input("Niños", min_value=0, value=0, step=1, key="ni_nac")
-        with p_col2:
-            st.caption("🌎 EXTRANJEROS")
-            n_adultos_ext = st.number_input("Adultos", min_value=0, value=1 if "Extranjero" in tipo_t else 0, step=1, key="an_ext")
-            n_estud_ext = st.number_input("Estudiantes", min_value=0, value=0, step=1, key="es_ext")
-            n_pcd_ext = st.number_input("PcD (Discapacidad)", min_value=0, value=0, step=1, key="pcd_ext")
-            n_ninos_ext = st.number_input("Niños", min_value=0, value=0, step=1, key="ni_ext")
-        with p_col3:
-            st.caption("🤝 CAN")
-            n_adultos_can = st.number_input("Adultos", min_value=0, value=0, step=1, key="an_can")
-            n_estud_can = st.number_input("Estudiantes", min_value=0, value=0, step=1, key="es_can")
-            n_pcd_can = st.number_input("PcD (Discapacidad)", min_value=0, value=0, step=1, key="pcd_can")
-            n_ninos_can = st.number_input("Niños", min_value=0, value=0, step=1, key="ni_can")
+        st.markdown("#### 👥 Pasajeros")
+        # Mostrar columnas solo según el origen seleccionado para limpiar la UI
+        if tipo_t == "Nacional":
+            p_col1, p_col2 = st.columns([1, 2])
+            with p_col1:
+                st.caption("🇵🇪 NACIONALES")
+                n_adultos_nac = st.number_input("👤 Adultos", min_value=0, value=1, step=1, key="an_nac")
+                n_estud_nac = st.number_input("🎓 Estudiantes", min_value=0, value=0, step=1, key="es_nac")
+                n_pcd_nac = st.number_input("♿ PcD", min_value=0, value=0, step=1, key="pcd_nac")
+                n_ninos_nac = st.number_input("👶 Niños", min_value=0, value=0, step=1, key="ni_nac")
+            # Forzamos los otros a 0 para que no afecten cálculos
+            n_adultos_ext = n_estud_ext = n_pcd_ext = n_ninos_ext = 0
+            n_adultos_can = n_estud_can = n_pcd_can = n_ninos_can = 0
+            with p_col2: st.empty() # Espaciador
+        else:
+            p_col1, p_col2, p_col3 = st.columns([1, 1, 1])
+            with p_col1:
+                st.caption("🌎 EXTRANJEROS")
+                n_adultos_ext = st.number_input("👤 Adultos", min_value=0, value=1, step=1, key="an_ext")
+                n_estud_ext = st.number_input("🎓 Estudiantes", min_value=0, value=0, step=1, key="es_ext")
+                n_pcd_ext = st.number_input("♿ PcD", min_value=0, value=0, step=1, key="pcd_ext")
+                n_ninos_ext = st.number_input("👶 Niños", min_value=0, value=0, step=1, key="ni_ext")
+            with p_col2:
+                st.caption("🤝 COMUNIDAD ANDINA (CAN)")
+                n_adultos_can = st.number_input("👤 Adultos ", min_value=0, value=0, step=1, key="an_can")
+                n_estud_can = st.number_input("🎓 Estudiantes ", min_value=0, value=0, step=1, key="es_can")
+                n_pcd_can = st.number_input("♿ PcD ", min_value=0, value=0, step=1, key="pcd_can")
+                n_ninos_can = st.number_input("👶 Niños ", min_value=0, value=0, step=1, key="ni_can")
+            # Forzamos nacionales a 0
+            n_adultos_nac = n_estud_nac = n_pcd_nac = n_ninos_nac = 0
+            with p_col3: st.empty() # Espaciador
+
         
         total_pasajeros = (n_adultos_nac + n_estud_nac + n_pcd_nac + n_ninos_nac + 
                            n_adultos_ext + n_estud_ext + n_pcd_ext + n_ninos_ext + 
@@ -479,21 +491,21 @@ def render_ventas_ui():
                 st.markdown("### 🇵🇪 Nacionales")
                 st.markdown(f"## S/ {real_nac:,.2f}")
                 if desc_nac > 0:
-                    st.caption(f"📉 Incluye S/ {desc_nac:,.2f} de descuento")
+                    st.success(f"📉 Ahorro Aplicado: S/ {desc_nac:,.2f}")
                 st.caption(f"({pasajeros_nac} pas x S/ {total_nac_pp:,.2f} p/p)")
             
             with col_res2:
                 st.markdown("### 🌎 Extranjeros")
                 st.markdown(f"## $ {real_ext:,.2f}")
                 if desc_ext > 0:
-                    st.caption(f"📉 Incluye $ {desc_ext:,.2f} de descuento")
+                    st.success(f"📉 Ahorro Aplicado: $ {desc_ext:,.2f}")
                 st.caption(f"({pasajeros_ext} pas x $ {total_ext_pp:,.2f} p/p)")
             
             with col_res3:
                 st.markdown("### 🤝 CAN")
                 st.markdown(f"## $ {real_can:,.2f}")
                 if desc_can > 0:
-                    st.caption(f"📉 Incluye $ {desc_can:,.2f} de descuento")
+                    st.success(f"📉 Ahorro Aplicado: $ {desc_can:,.2f}")
                 st.caption(f"({pasajeros_can} pas x $ {total_can_pp:,.2f} p/p)")
             
             nota_p = st.text_input("📝 Nota de Precio (Aparece en el PDF)", value=st.session_state.f_nota_precio, placeholder="Ej: INCLUYE HOTEL EN HAB. DOBLE")
