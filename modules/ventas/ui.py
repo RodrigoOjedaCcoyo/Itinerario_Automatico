@@ -234,7 +234,7 @@ def render_ventas_ui():
             n_estud_ext = st.number_input("Estudiantes", min_value=0, value=0, step=1, key="es_ext")
             n_pcd_ext = st.number_input("PcD (Discapacidad)", min_value=0, value=0, step=1, key="pcd_ext")
             n_ninos_ext = st.number_input("Niños", min_value=0, value=0, step=1, key="ni_ext")
-        with p_grid3:
+        with p_col3:
             st.caption("🤝 CAN")
             n_adultos_can = st.number_input("Adultos", min_value=0, value=0, step=1, key="an_can")
             n_estud_can = st.number_input("Estudiantes", min_value=0, value=0, step=1, key="es_can")
