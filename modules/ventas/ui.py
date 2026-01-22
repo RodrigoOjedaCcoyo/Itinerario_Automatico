@@ -208,8 +208,8 @@ def render_ventas_ui():
         t_col1, t_col2 = st.columns(2)
         idx_o = 0 if "Nacional" in st.session_state.f_origen else 1
         tipo_t = t_col1.radio("Origen", ["Nacional", "Extranjero"], index=idx_o)
-        modo_s = t_col2.radio("Servicio", ["Sistema Pool", "Servicio Privado"])
-        # es_pool = (modo_s == "Sistema Pool") # Mantenemos modo_edicion individual, pero modo_s para el PDF
+        modo_s = "Sistema Pool" # Definimos por defecto para evitar errores en el PDF
+        # es_pool = (modo_s == "Sistema Pool") # Mantenemos modo_edicion individual
         
         # Actualizar precios al cambiar origen
         if tipo_t != st.session_state.origen_previo:
