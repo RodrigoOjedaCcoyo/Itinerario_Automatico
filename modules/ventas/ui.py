@@ -84,6 +84,18 @@ def obtener_imagenes_tour(nombre_carpeta):
 def render_ventas_ui():
     """Renderiza la interfaz de ventas"""
     
+    # Esconder elementos de Streamlit (Header, Menu, Footer)
+    st.markdown("""
+        <style>
+            [data-testid="stHeader"], header {visibility: hidden;}
+            #MainMenu {visibility: hidden;}
+            footer {visibility: hidden;}
+            .stAppDeployButton {display: none;}
+            [data-testid="stStatusWidget"] {visibility: hidden;}
+            #stDecoration {display:none;}
+        </style>
+    """, unsafe_allow_html=True)
+    
     # Estado de sesión
     if 'itinerario' not in st.session_state:
         st.session_state.itinerario = []
