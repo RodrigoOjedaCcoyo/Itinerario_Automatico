@@ -46,9 +46,6 @@ ICON_MAP = {
     'botiquín': '<rect x="3" y="5" width="18" height="14" rx="2"/><path d="M9 12h6"/><path d="M12 9v6"/>',
     'oxígeno': '<rect x="3" y="5" width="18" height="14" rx="2"/><path d="M9 12h6"/><path d="M12 9v6"/>',
     'propinas': '<line x1="12" y1="2" x2="12" y2="22"/><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/>',
-    'estudiante': '<path d="M22 10v6M2 10l10-5 10 5-10 5z"/><path d="M6 12v5c0 2 2 3 6 3s6-1 6-3v-5"/>',
-    'silla de ruedas': '<circle cx="12" cy="5" r="2"/><path d="M17.8 12h-3l-2.6 6.5c-.4 1-1.3 1.5-2.3 1.5H6"/><path d="M16 18c0 2.2-1.8 4-4 4s-4-1.8-4-4 1.8-4 4-4"/><path d="M12 12V8h4"/>',
-    'bebé': '<path d="M10 16a2 2 0 1 0 4 0 2 2 0 1 0-4 0"/><path d="M19 10l-4 4a2 2 0 0 1-2.8 0L9 11c-1-1-2.6-1-3.5 0l-3 3"/><path d="M7 18a2 2 0 1 0 0 4 2 2 0 0 0 0-4"/><path d="M17 18a2 2 0 1 0 0 4 2 2 0 0 0 0-4"/>',
     'default_in': '<polyline points="20 6 9 17 4 12"></polyline>',
     'default_out': '<line x1="5" y1="12" x2="19" y2="12"></line>'
 }
@@ -211,7 +208,8 @@ def render_ventas_ui():
         t_col1, t_col2 = st.columns(2)
         idx_o = 0 if "Nacional" in st.session_state.f_origen else 1
         tipo_t = t_col1.radio("Origen", ["Nacional", "Extranjero"], index=idx_o)
-        # Se elimina el selector global modo_s (Sistema Pool / Privado)
+        modo_s = t_col2.radio("Servicio", ["Sistema Pool", "Servicio Privado"])
+        # es_pool = (modo_s == "Sistema Pool") # Mantenemos modo_edicion individual, pero modo_s para el PDF
         
         # Actualizar precios al cambiar origen
         if tipo_t != st.session_state.origen_previo:
@@ -409,62 +407,6 @@ def render_ventas_ui():
                         
                         if is_disabled:
                             st.caption("💡 Haz clic en 'Modificar datos de este día' arriba para editar precios o textos.")
-                        else:
-                            # --- ASISTENTE DE VENTAS ESPECIALIZADO ---
-                            st.divider()
-                            st.markdown("##### 🪄 Asistente de Notas Rápidas")
-                            col_n1, col_n2 = st.columns([0.6, 0.4])
-                            
-                            quick_notes = {
-                                "Ninguna": "",
-                                "👶 Tarifa Niño": "Nota: Se aplica descuento por pasajero menor de edad (Niño).",
-                                "🎓 Tarifa Estudiante": "Nota: Tarifa especial aplicada presentando Carnet Universitario vigente.",
-                                "♿ Accesibilidad PcD": "Nota: Tour adaptado para personas con movilidad reducida/silla de ruedas.",
-                                "⚠️ Esfuerzo Alto": "Aviso: Este tour requiere buena condición física (Treking/Altitud).",
-                                "👶 Cuna/Infante": "Nota: Infante (0-2 años) viaja sin costo compartiendo servicios con padres."
-                            }
-                            
-                            selected_note_key = col_n1.selectbox("Selecciona una nota predefinida:", list(quick_notes.keys()), key=f"qn_sel_{i}")
-                            
-                            if selected_note_key != "Ninguna":
-                                if col_n2.button("✨ Aplicar Nota", key=f"qn_btn_{i}"):
-                                    new_note = quick_notes[selected_note_key]
-                                    
-                                    # 1. Actualizar Nota Global (la que sale en el PDF)
-                                    current_gn = st.session_state.get('f_nota_precio', "")
-                                    if new_note not in current_gn:
-                                        st.session_state.f_nota_precio = (current_gn + " " + new_note).strip()
-                                    
-                                    # 2. Aplicar Descuento Automático si aplica
-                                    if "Niño" in selected_note_key:
-                                        # Descuento sugerido: S/ 40 por cada niño
-                                        desc = 40.0 * max(1, n_ninos_nac)
-                                        st.session_state.f_extra_nac -= desc
-                                        st.toast(f"¡Hecho! Nota añadida y descuento de S/ {desc} aplicado en Margen Nac.", icon="📉")
-                                    elif "Estudiante" in selected_note_key:
-                                        # Descuento sugerido: $ 20 (standard para Boleto Turístico)
-                                        st.session_state.f_extra_ext -= 20.0
-                                        st.toast("¡Hecho! Nota añadida y -$20 aplicados en Margen Ext.", icon="🎓")
-                                    else:
-                                        st.toast(f"Nota '{selected_note_key}' añadida al final!", icon="✨")
-                                    
-                                    st.rerun()
-
-                            # Guía de Accesibilidad Visual
-                            esfuerzo = "Moderado"
-                            if "TREK" in tour['titulo'].upper() or "HUMANTAY" in tour['titulo'].upper() or "7 COLORES" in tour['titulo'].upper():
-                                effort_color = "🔴"
-                                esfuerzo = "Alto"
-                                st.warning("♿ **Aviso de Accesibilidad:** Este tour NO es recomendado para personas con movilidad reducida o problemas cardíacos.", icon="⚠️")
-                            elif "CITY TOUR" in tour['titulo'].upper() or "VALLE SAGRADO" in tour['titulo'].upper():
-                                effort_color = "🟢"
-                                esfuerzo = "Bajo"
-                                st.success("♿ **Aviso de Accesibilidad:** Este tour es apto para personas con movilidad reducida (con asistencia).", icon="✅")
-                            else:
-                                effort_color = "🟡"
-                                effort_color = "Apto para todos"
-                            
-                            st.caption(f"📊 Nivel de Esfuerzo Estimado: {effort_color} **{esfuerzo}**")
                 
                 with c_btns:
                     st.write('<div style="margin-top: 4px;"></div>', unsafe_allow_html=True)
