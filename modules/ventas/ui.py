@@ -111,6 +111,7 @@ def render_ventas_ui():
     if 'f_categoria' not in st.session_state: st.session_state.f_categoria = "Cusco Tradicional"
     if 'f_tipo_cliente' not in st.session_state: st.session_state.f_tipo_cliente = "B2C"
     if 'f_nota_precio' not in st.session_state: st.session_state.f_nota_precio = "INCLUYE TOUR Y ALOJAMIENTO"
+    if 'f_estrategia' not in st.session_state: st.session_state.f_estrategia = "Pocas opciones (2-3)"
     # Verificar Conexión
     from utils.supabase_db import get_supabase_client
     if get_supabase_client() is None:
@@ -159,7 +160,7 @@ def render_ventas_ui():
                         st.session_state.f_vendedor = datos_completos.get("vendedor", "")
                         st.session_state.f_celular = datos_completos.get("celular_cliente", "")
                         st.session_state.f_fuente = datos_completos.get("fuente", "WhatsApp")
-                        st.session_state.f_estado = datos_completos.get("estado", "Frío")
+                        st.session_state.f_estrategia = datos_completos.get("estrategia", "Pocas opciones (2-3)")
                         st.session_state.f_origen = datos_completos.get("categoria", "Nacional")
                         
                         if datos_completos and 'days' in datos_completos:
@@ -191,9 +192,10 @@ def render_ventas_ui():
             
         with ld_col2:
             st.markdown("<div style='height: 10px;'></div>", unsafe_allow_html=True) # Espaciado 
-            estado_list = ["Frío", "Tibio", "Caliente"]
-            idx_e = estado_list.index(st.session_state.f_estado) if st.session_state.f_estado in estado_list else 0
-            estado_lead = st.radio("Estado del Lead", estado_list, index=idx_e)
+            estrategias = ["Pocas opciones (2-3)", "Muchas opciones (Matriz 12)", "Precio General (Cierre)"]
+            idx_e = estrategias.index(st.session_state.f_estrategia) if st.session_state.f_estrategia in estrategias else 0
+            estrategia_v = st.radio("Estrategia de Venta", estrategias, index=idx_e)
+            st.session_state.f_estrategia = estrategia_v
 
         cv1, cv2 = st.columns(2)
         # Buscar índice del vendedor actual
@@ -489,6 +491,37 @@ def render_ventas_ui():
             st.session_state.f_extra_ext = extra_ext
             st.session_state.f_extra_can = extra_can
 
+            # --- CONFIGURACIÓN DE UPGRADES (HOTEL Y TREN) ---
+            u_h2, u_h3, u_h4 = 0, 0, 0
+            u_t_v, u_t_o = 0, 0
+            precio_cierre_over = None
+
+            if "Matriz" in estrategia_v or "Pocas" in estrategia_v:
+                with st.expander("🏨 Configuración de Upgrades (Hoteles y Trenes)", expanded=True):
+                    st.caption("Define el costo ADICIONAL por noche para hoteles y el total por el tren.")
+                    ch1, ch2, ch3 = st.columns(3)
+                    curr = "S/" if tipo_t == "Nacional" else "$"
+                    u_h2 = ch1.number_input(f"Hotel 2* ({curr}/noche)", value=float(st.session_state.get('u_h2', 40.0)), key="uh2")
+                    u_h3 = ch2.number_input(f"Hotel 3* ({curr}/noche)", value=float(st.session_state.get('u_h3', 70.0)), key="uh3")
+                    u_h4 = ch3.number_input(f"Hotel 4* ({curr}/noche)", value=float(st.session_state.get('u_h4', 110.0)), key="uh4")
+                    
+                    st.divider()
+                    ct1, ct2 = st.columns(2)
+                    u_t_v = ct1.number_input("Extra Tren Vistadome ($)", value=float(st.session_state.get('u_t_v', 90.0)), key="utv")
+                    u_t_o = ct2.number_input("Extra Tren Observatory ($)", value=float(st.session_state.get('u_t_o', 140.0)), key="uto")
+                    
+                    st.session_state.u_h2 = u_h2
+                    st.session_state.u_h3 = u_h3
+                    st.session_state.u_h4 = u_h4
+                    st.session_state.u_t_v = u_t_v
+                    st.session_state.u_t_o = u_t_o
+                    
+            elif "General" in estrategia_v:
+                with st.expander("🎯 Precio de Cierre Definitivo", expanded=True):
+                    curr_c = "S/" if tipo_t == "Nacional" else "$"
+                    precio_cierre_over = st.number_input(f"Monto Total Final ({curr_c})", value=0.0, help="Si dejas en 0, se usará el precio calculado automáticamente.")
+                    st.info("Este monto aparecerá como precio único y final en el PDF.")
+
             st.divider()
             
             pasajeros_nac = n_adultos_nac + n_estud_nac + n_pcd_nac + n_ninos_nac
@@ -591,19 +624,57 @@ def render_ventas_ui():
                         
                         try:
                             # 1. Preparar data completa
+                            num_noches = max(0, len(st.session_state.itinerario) - 1)
+                            curr_sym = "S/" if tipo_t == "Nacional" else "$"
+                            
+                            # Base Price calculation for the primary category
+                            if tipo_t == "Nacional":
+                                base_final = total_nac_pp + (extra_nac/max(1, pasajeros_nac))
+                            elif tipo_t == "Extranjero":
+                                base_final = total_ext_pp + (extra_ext/max(1, pasajeros_ext))
+                            else: # Mixto
+                                base_final = total_ext_pp + (extra_ext/max(1, pasajeros_ext))
+
+                            # Matrix Calculation
+                            def calc_m(base, extra_t, extra_h_n):
+                                return base + extra_t + (extra_h_n * num_noches)
+
+                            pricing_matrix = {
+                                'expedition': {
+                                    'sin': f"{calc_m(base_final, 0, 0):,.2f}",
+                                    'h2': f"{calc_m(base_final, 0, u_h2):,.2f}",
+                                    'h3': f"{calc_m(base_final, 0, u_h3):,.2f}",
+                                    'h4': f"{calc_m(base_final, 0, u_h4):,.2f}"
+                                },
+                                'vistadome': {
+                                    'sin': f"{calc_m(base_final, u_t_v, 0):,.2f}",
+                                    'h2': f"{calc_m(base_final, u_t_v, u_h2):,.2f}",
+                                    'h3': f"{calc_m(base_final, u_t_v, u_h3):,.2f}",
+                                    'h4': f"{calc_m(base_final, u_t_v, u_h4):,.2f}"
+                                },
+                                'observatory': {
+                                    'sin': f"{calc_m(base_final, u_t_o, 0):,.2f}",
+                                    'h2': f"{calc_m(base_final, u_t_o, u_h2):,.2f}",
+                                    'h3': f"{calc_m(base_final, u_t_o, u_h3):,.2f}",
+                                    'h4': f"{calc_m(base_final, u_t_o, u_h4):,.2f}"
+                                }
+                            }
+
                             full_itinerary_data = {
                                 'title_1': t1,
                                 'title_2': t2,
                                 'pasajero': nombre.upper(),
                                 'fechas': rango_fechas.upper(),
-                                'categoria': modo_s.upper(),
+                                'categoria': target_cat.upper(),
                                 'modo': modo_s.upper(),
-                                'duracion': f"{len(st.session_state.itinerario)}D-{max(0, len(st.session_state.itinerario)-1)}N",
+                                'estrategia': estrategia_v,
+                                'simbolo_moneda': curr_sym,
+                                'duracion': f"{len(st.session_state.itinerario)}D-{num_noches}N",
                                 'cover_url': os.path.abspath(cover_img),
                                 'vendedor': vendedor,
                                 'celular_cliente': celular,
                                 'fuente': origen_lead,
-                                'estado': estado_lead,
+                                'estado': "Cotización", # Valor fijo ya que usamos estrategia
                                 'logo_url': logo_path,
                                 'logo_cover_url': logo_path,
                                 'llama_img': os.path.abspath("Fondo.png"),
@@ -612,6 +683,8 @@ def render_ventas_ui():
                                     'ext': {'monto': f"{total_ext_pp + (extra_ext/max(1, pasajeros_ext)):,.2f}"} if pasajeros_ext > 0 else None,
                                     'can': {'monto': f"{total_can_pp + (extra_can/max(1, pasajeros_can)):,.2f}"} if pasajeros_can > 0 else None,
                                 },
+                                'precio_cierre': f"{precio_cierre_over:,.2f}" if (precio_cierre_over and precio_cierre_over > 0) else f"{base_final:,.2f}",
+                                'matriz': pricing_matrix,
                                 'precio_nota': nota_p.upper(),
                                 'canal': st.session_state.f_tipo_cliente,
                                 'days': days_data
