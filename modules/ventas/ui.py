@@ -371,14 +371,18 @@ def render_ventas_ui():
                         st.divider()
                         raw_desc = st.text_area(f"Descripción día {i+1}", tour.get('descripcion', ""), key=f"desc_{i}", height=100, disabled=is_disabled)
                         
-                        # Lógica de BLOQUEO de palabras (máximo 65) - Se mantiene como solicitó el usuario
+                        # Lógica de BLOQUEO TOTAL de palabras (máximo 65)
                         all_words = raw_desc.split()
-                        if len(all_words) > 65:
-                            tour['descripcion'] = " ".join(all_words[:65])
-                            st.markdown(f'<p style="color: #ff4b4b; font-size: 0.8rem; margin-top: -15px;">🚫 <b>LÍMITE ALCANZADO: 65/65 palabras</b>. El diseño premium está protegido.</p>', unsafe_allow_html=True)
+                        words_count = len(all_words)
+                        if words_count > 65:
+                            # Truncar y forzar actualización del widget
+                            truncated_text = " ".join(all_words[:65])
+                            tour['descripcion'] = truncated_text
+                            st.session_state[f"desc_{i}"] = truncated_text
+                            st.toast("⚠️ Límite de 65 palabras alcanzado. El texto se ha recortado para proteger el diseño.", icon="🚫")
+                            st.rerun()
                         else:
                             tour['descripcion'] = raw_desc
-                            words_count = len(all_words)
                             st.caption(f"📝 {words_count}/65 palabras (ideal para el diseño)")
                         
                         col_ex1, col_ex2 = st.columns(2)
