@@ -111,7 +111,7 @@ def render_ventas_ui():
     if 'f_categoria' not in st.session_state: st.session_state.f_categoria = "Cusco Tradicional"
     if 'f_tipo_cliente' not in st.session_state: st.session_state.f_tipo_cliente = "B2C"
     if 'f_nota_precio' not in st.session_state: st.session_state.f_nota_precio = "INCLUYE TOUR Y ALOJAMIENTO"
-    if 'f_estrategia' not in st.session_state: st.session_state.f_estrategia = "Pocas opciones (2-3)"
+    if 'f_estrategia' not in st.session_state: st.session_state.f_estrategia = "Opciones"
     if 'u_h2' not in st.session_state: st.session_state.u_h2 = 40.0
     if 'u_h3' not in st.session_state: st.session_state.u_h3 = 70.0
     if 'u_h4' not in st.session_state: st.session_state.u_h4 = 110.0
@@ -165,7 +165,7 @@ def render_ventas_ui():
                         st.session_state.f_vendedor = datos_completos.get("vendedor", "")
                         st.session_state.f_celular = datos_completos.get("celular_cliente", "")
                         st.session_state.f_fuente = datos_completos.get("fuente", "WhatsApp")
-                        st.session_state.f_estrategia = datos_completos.get("estrategia", "Pocas opciones (2-3)")
+                        st.session_state.f_estrategia = datos_completos.get("estrategia", "Opciones")
                         st.session_state.f_origen = datos_completos.get("categoria", "Nacional")
                         
                         if datos_completos and 'days' in datos_completos:
@@ -197,9 +197,9 @@ def render_ventas_ui():
             
         with ld_col2:
             st.markdown("<div style='height: 10px;'></div>", unsafe_allow_html=True) # Espaciado 
-            estrategias = ["Pocas opciones (2-3)", "Muchas opciones (Matriz 12)", "Precio General (Cierre)"]
+            estrategias = ["Opciones", "Matriz", "General"]
             idx_e = estrategias.index(st.session_state.f_estrategia) if st.session_state.f_estrategia in estrategias else 0
-            estrategia_v = st.radio("Estrategia de Venta", estrategias, index=idx_e)
+            estrategia_v = st.radio("Estrategia de Venta", estrategias, index=idx_e, horizontal=True)
             st.session_state.f_estrategia = estrategia_v
 
         cv1, cv2 = st.columns(2)
@@ -501,7 +501,7 @@ def render_ventas_ui():
             u_t_v, u_t_o = 0, 0
             precio_cierre_over = None
 
-            if "Matriz" in estrategia_v or "Pocas" in estrategia_v:
+            if estrategia_v in ["Matriz", "Opciones"]:
                 with st.expander("🏨 Configuración de Upgrades (Hoteles y Trenes)", expanded=True):
                     st.caption("Define el costo ADICIONAL por noche para hoteles y el total por el tren.")
                     ch1, ch2, ch3 = st.columns(3)
@@ -521,7 +521,7 @@ def render_ventas_ui():
                     st.session_state.u_t_v = u_t_v
                     st.session_state.u_t_o = u_t_o
                     
-            elif "General" in estrategia_v:
+            elif estrategia_v == "General":
                 with st.expander("🎯 Precio de Cierre Definitivo", expanded=True):
                     curr_c = "S/" if tipo_t == "Nacional" else "$"
                     precio_cierre_over = st.number_input(f"Monto Total Final ({curr_c})", value=0.0, help="Si dejas en 0, se usará el precio calculado automáticamente.")
