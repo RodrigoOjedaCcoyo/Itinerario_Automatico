@@ -424,31 +424,49 @@ def render_ventas_ui():
                         else:
                             st.error("Error al cargar el catálogo. Verifica el SQL Patch.")
             
+            st.markdown("#### 💰 Margen Extra / Ajuste Global (Opcional)")
+            ma1, ma2, ma3 = st.columns(3)
+            extra_nac = ma1.number_input("S/ Extra (Nac)", value=float(st.session_state.get('f_extra_nac', 0.0)), step=10.0)
+            extra_ext = ma2.number_input("$ Extra (Ext)", value=float(st.session_state.get('f_extra_ext', 0.0)), step=5.0)
+            extra_can = ma3.number_input("$ Extra (CAN)", value=float(st.session_state.get('f_extra_can', 0.0)), step=5.0)
+            st.session_state.f_extra_nac = extra_nac
+            st.session_state.f_extra_ext = extra_ext
+            st.session_state.f_extra_can = extra_can
+
             st.divider()
             
             pasajeros_nac = n_adultos_nac + n_ninos_nac
             pasajeros_ext = n_adultos_ext + n_ninos_ext
             pasajeros_can = n_adultos_can + n_ninos_can
             
-            real_nac = total_nac_pp * pasajeros_nac
-            real_ext = total_ext_pp * pasajeros_ext
-            real_can = total_can_pp * pasajeros_can
+            real_nac = (total_nac_pp * pasajeros_nac) + extra_nac
+            real_ext = (total_ext_pp * pasajeros_ext) + extra_ext
+            real_can = (total_can_pp * pasajeros_can) + extra_can
             
             col_res1, col_res2, col_res3 = st.columns(3)
             with col_res1:
                 st.markdown("### 🇵🇪 Nacionales")
-                st.markdown(f"**S/ {real_nac:,.2f}**")
-                st.caption(f"({pasajeros_nac} pas x S/ {total_nac_pp:,.2f} p/p)")
+                st.markdown(f"## S/ {real_nac:,.2f}")
+                if extra_nac > 0:
+                    st.caption(f"S/ {total_nac_pp * pasajeros_nac:,.2f} base + S/ {extra_nac:,.2f} extra")
+                else:
+                    st.caption(f"({pasajeros_nac} pas x S/ {total_nac_pp:,.2f} p/p)")
             
             with col_res2:
                 st.markdown("### 🌎 Extranjeros")
-                st.markdown(f"**$ {real_ext:,.2f}**")
-                st.caption(f"({pasajeros_ext} pas x $ {total_ext_pp:,.2f} p/p)")
+                st.markdown(f"## $ {real_ext:,.2f}")
+                if extra_ext > 0:
+                    st.caption(f"$ {total_ext_pp * pasajeros_ext:,.2f} base + $ {extra_ext:,.2f} extra")
+                else:
+                    st.caption(f"({pasajeros_ext} pas x $ {total_ext_pp:,.2f} p/p)")
             
             with col_res3:
                 st.markdown("### 🤝 CAN")
-                st.markdown(f"**$ {real_can:,.2f}**")
-                st.caption(f"({pasajeros_can} pas x $ {total_can_pp:,.2f} p/p)")
+                st.markdown(f"## $ {real_can:,.2f}")
+                if extra_can > 0:
+                    st.caption(f"$ {total_can_pp * pasajeros_can:,.2f} base + $ {extra_can:,.2f} extra")
+                else:
+                    st.caption(f"({pasajeros_can} pas x $ {total_can_pp:,.2f} p/p)")
             
             nota_p = st.text_input("📝 Nota de Precio (Aparece en el PDF)", value=st.session_state.f_nota_precio, placeholder="Ej: INCLUYE HOTEL EN HAB. DOBLE")
             st.session_state.f_nota_precio = nota_p
@@ -530,9 +548,9 @@ def render_ventas_ui():
                                 'logo_cover_url': logo_path,
                                 'llama_img': os.path.abspath("Fondo.png"),
                                 'precios': {
-                                    'nac': {'monto': f"{total_nac_pp:,.2f}"} if pasajeros_nac > 0 else None,
-                                    'ext': {'monto': f"{total_ext_pp:,.2f}"} if pasajeros_ext > 0 else None,
-                                    'can': {'monto': f"{total_can_pp:,.2f}"} if pasajeros_can > 0 else None,
+                                    'nac': {'monto': f"{total_nac_pp + (extra_nac/max(1, pasajeros_nac)):,.2f}"} if pasajeros_nac > 0 else None,
+                                    'ext': {'monto': f"{total_ext_pp + (extra_ext/max(1, pasajeros_ext)):,.2f}"} if pasajeros_ext > 0 else None,
+                                    'can': {'monto': f"{total_can_pp + (extra_can/max(1, pasajeros_can)):,.2f}"} if pasajeros_can > 0 else None,
                                 },
                                 'precio_nota': nota_p.upper(),
                                 'canal': st.session_state.f_tipo_cliente,
