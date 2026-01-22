@@ -485,7 +485,7 @@ def render_ventas_ui():
                                 'numero': i + 1,
                                 'fecha': current_date.strftime('%d / %m / %Y'),
                                 'titulo': tour['titulo'],
-                                'hora_inicio': tour.get('hora_inicio', '08:00 AM'),
+                                'hora_inicio': tour.get('hora_inicio') or '08:00 AM',
                                 'descripcion': tour.get('descripcion', ''),
                                 'highlights': tour.get('highlights', []),
                                 'servicios': servicios_html,
