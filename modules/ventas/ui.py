@@ -112,6 +112,11 @@ def render_ventas_ui():
     if 'f_tipo_cliente' not in st.session_state: st.session_state.f_tipo_cliente = "B2C"
     if 'f_nota_precio' not in st.session_state: st.session_state.f_nota_precio = "INCLUYE TOUR Y ALOJAMIENTO"
     if 'f_estrategia' not in st.session_state: st.session_state.f_estrategia = "Pocas opciones (2-3)"
+    if 'u_h2' not in st.session_state: st.session_state.u_h2 = 40.0
+    if 'u_h3' not in st.session_state: st.session_state.u_h3 = 70.0
+    if 'u_h4' not in st.session_state: st.session_state.u_h4 = 110.0
+    if 'u_t_v' not in st.session_state: st.session_state.u_t_v = 90.0
+    if 'u_t_o' not in st.session_state: st.session_state.u_t_o = 140.0
     # Verificar Conexión
     from utils.supabase_db import get_supabase_client
     if get_supabase_client() is None:

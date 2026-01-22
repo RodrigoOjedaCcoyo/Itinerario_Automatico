@@ -123,8 +123,101 @@
     </div>
     {% endfor %}
 
-    <!-- PÁGINA 1: PRECIOS (Imagen 1) -->
+    <!-- PÁGINA 1: PRECIOS EVOLUTIVOS -->
     <div class="page-container">
+
+        {% if estrategia == "Precio General (Cierre)" %}
+        <!-- NIVEL 3: PRECIO ÚNICO DE CIERRE -->
+        <div class="closing-card">
+            <h1>PRECIO TOTAL DEL PAQUETE</h1>
+            <div class="total-price">{{ simbolo_moneda }} {{ precio_cierre }}</div>
+            <div class="sub-label">COSTO POR PERSONA EN BASE DOBLE</div>
+            <p style="margin-top: 20px; color: #666; font-size: 0.9rem;">
+                Incluye todos los servicios, traslados, alojamiento y tours mencionados en este itinerario.
+            </p>
+        </div>
+
+        {% elif estrategia == "Muchas opciones (Matriz 12)" %}
+        <!-- NIVEL 2: MATRIZ DE 12 OPCIONES (TREN VS HOTEL) -->
+        <h1 class="price-main-title">PLIEGO DE OPCIONES</h1>
+        <div class="price-person-label">ELIGE TU NIVEL DE CONFORT</div>
+
+        <div class="matrix-container">
+            <!-- COLUMNA EXPEDITION -->
+            <div class="matrix-column">
+                <div class="matrix-header">
+                    <div class="cat-label">CATEGORÍA DE TREN</div>
+                    <div class="cat-name">EXPEDITION / VOYAGER</div>
+                </div>
+                <div class="matrix-cell">
+                    <div class="matrix-price">{{ simbolo_moneda }} {{ matriz.expedition.sin }} P.P</div>
+                    <div class="matrix-info">PQT SIN HOTEL</div>
+                </div>
+                <div class="matrix-cell">
+                    <div class="matrix-price">{{ simbolo_moneda }} {{ matriz.expedition.h2 }} P.P</div>
+                    <div class="matrix-info">PQT CON HOTEL 2**<br>BASE HAB. DOBLE</div>
+                </div>
+                <div class="matrix-cell">
+                    <div class="matrix-price">{{ simbolo_moneda }} {{ matriz.expedition.h3 }} P.P</div>
+                    <div class="matrix-info">PQT CON HOTEL 3***<br>BASE HAB. DOBLE</div>
+                </div>
+                <div class="matrix-cell">
+                    <div class="matrix-price">{{ simbolo_moneda }} {{ matriz.expedition.h4 }} P.P</div>
+                    <div class="matrix-info">PQT CON HOTEL 4****<br>BASE HAB. DOBLE</div>
+                </div>
+            </div>
+
+            <!-- COLUMNA VISTADOME -->
+            <div class="matrix-column">
+                <div class="matrix-header">
+                    <div class="cat-label">CATEGORÍA DE TREN</div>
+                    <div class="cat-name">VISTADOME / THE 360°</div>
+                </div>
+                <div class="matrix-cell">
+                    <div class="matrix-price">{{ simbolo_moneda }} {{ matriz.vistadome.sin }} P.P</div>
+                    <div class="matrix-info">PQT SIN HOTEL</div>
+                </div>
+                <div class="matrix-cell">
+                    <div class="matrix-price">{{ simbolo_moneda }} {{ matriz.vistadome.h2 }} P.P</div>
+                    <div class="matrix-info">PQT CON HOTEL 2**<br>BASE HAB. DOBLE</div>
+                </div>
+                <div class="matrix-cell">
+                    <div class="matrix-price">{{ simbolo_moneda }} {{ matriz.vistadome.h3 }} P.P</div>
+                    <div class="matrix-info">PQT CON HOTEL 3***<br>BASE HAB. DOBLE</div>
+                </div>
+                <div class="matrix-cell">
+                    <div class="matrix-price">{{ simbolo_moneda }} {{ matriz.vistadome.h4 }} P.P</div>
+                    <div class="matrix-info">PQT CON HOTEL 4****<br>BASE HAB. DOBLE</div>
+                </div>
+            </div>
+
+            <!-- COLUMNA OBSERVATORY -->
+            <div class="matrix-column">
+                <div class="matrix-header">
+                    <div class="cat-label">CATEGORÍA DE TREN</div>
+                    <div class="cat-name">VISTADOME OBSERVATORY</div>
+                </div>
+                <div class="matrix-cell">
+                    <div class="matrix-price">{{ simbolo_moneda }} {{ matriz.observatory.sin }} P.P</div>
+                    <div class="matrix-info">PQT SIN HOTEL</div>
+                </div>
+                <div class="matrix-cell">
+                    <div class="matrix-price">{{ simbolo_moneda }} {{ matriz.observatory.h2 }} P.P</div>
+                    <div class="matrix-info">PQT CON HOTEL 2**<br>BASE HAB. DOBLE</div>
+                </div>
+                <div class="matrix-cell">
+                    <div class="matrix-price">{{ simbolo_moneda }} {{ matriz.observatory.h3 }} P.P</div>
+                    <div class="matrix-info">PQT CON HOTEL 3***<br>BASE HAB. DOBLE</div>
+                </div>
+                <div class="matrix-cell">
+                    <div class="matrix-price">{{ simbolo_moneda }} {{ matriz.observatory.h4 }} P.P</div>
+                    <div class="matrix-info">PQT CON HOTEL 4****<br>BASE HAB. DOBLE</div>
+                </div>
+            </div>
+        </div>
+
+        {% else %}
+        <!-- NIVEL 1: POCAS OPCIONES / ESTÁNDAR (FORMATO ACTUAL) -->
         <h1 class="price-main-title">PRECIOS</h1>
         <div class="price-person-label">POR PERSONA</div>
 
@@ -156,37 +249,13 @@
             </div>
             {% endif %}
         </div>
+        {% endif %}
 
         <ul class="bullet-list-std">
             <li>Salidas confirmadas todos los días.</li>
-            <li>Tarifas exclusivas solo para Peruanos, una vez confirmado la categoría del tren confirmaremos los
-                horarios del tren.</li>
+            <li>Tarifas exclusivas solo para Peruanos (según categoría).</li>
             <li>Tarifa con alojamiento basado en habitaciones dobles, matrimoniales o triples.</li>
-            <li>Si desea habitaciones individuales deberá aumentar S/ 35 O US$ 10 por noche, categoría hostal.</li>
-            <li>Si desea habitaciones individuales deberá aumentar S/ 35 O US$ 10 por noche, categoría hotel 3***.
-            </li>
-        </ul>
-
-        <h2 class="important-header">IMPORTANTE</h2>
-        <div class="important-sub-title">
-            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"
-                stroke-linecap="round" stroke-linejoin="round">
-                <path d="M7 15v4m5-4v4m5-4v4M3 9a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2v10a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V9Z" />
-                <path d="M3 13h18" />
-                <path d="M8 5V3a1 1 0 0 1 1-1h6a1 1 0 0 1 1 1v2" />
-            </svg>
-            Tren Turístico - Voyager Inca Rail
-        </div>
-        <ul class="bullet-list-std">
-            <li>Podremos comprar tus boletos con anticipación desde ahora, no habrá estrés ni largas filas a tu
-                llegada.
-            </li>
-            <li>Viajas con asiento asignado, por lo que nadie va de pie.</li>
-            <li>Es un tren más cómodo, tanto para la ida como para el retorno, diseñado para brindar una experiencia
-                agradable al viajero.</li>
-            <li>La promoción no es válida en feriados y fiestas (navidad, año nuevo, inti raymi, fiestas patrias,
-                fiesta
-                de todos los santos 1-2 de noviembre).</li>
+            <li>Para habitaciones individuales (SGL), consultar suplemento por noche.</li>
         </ul>
 
         <div class="price-bottom-grid">
