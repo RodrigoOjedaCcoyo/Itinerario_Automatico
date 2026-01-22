@@ -206,8 +206,8 @@ def render_ventas_ui():
         celular = cv2.text_input("Celular del Cliente", value=st.session_state.f_celular, placeholder="Ej: +51 9XX XXX XXX")
         
         t_col1, t_col2 = st.columns(2)
-        idx_o = 0 if "Nacional" in st.session_state.f_origen else 1
-        tipo_t = t_col1.radio("Origen", ["Nacional", "Extranjero"], index=idx_o)
+        idx_o = 0 if "Nacional" in st.session_state.f_origen else (1 if "Extranjero" in st.session_state.f_origen else 2)
+        tipo_t = t_col1.radio("Origen", ["Nacional", "Extranjero", "Mixto"], index=idx_o)
         modo_s = "Sistema Pool" # Definimos por defecto para evitar errores en el PDF
         # es_pool = (modo_s == "Sistema Pool") # Mantenemos modo_edicion individual
         
@@ -234,7 +234,7 @@ def render_ventas_ui():
             n_adultos_ext = n_estud_ext = n_pcd_ext = n_ninos_ext = 0
             n_adultos_can = n_estud_can = n_pcd_can = n_ninos_can = 0
             with p_col2: st.empty() # Espaciador
-        else:
+        elif tipo_t == "Extranjero":
             p_col1, p_col2, p_col3 = st.columns([1, 1, 1])
             with p_col1:
                 st.caption("🌎 EXTRANJEROS")
@@ -251,6 +251,26 @@ def render_ventas_ui():
             # Forzamos nacionales a 0
             n_adultos_nac = n_estud_nac = n_pcd_nac = n_ninos_nac = 0
             with p_col3: st.empty() # Espaciador
+        else: # MODO MIXTO: Muestra TODO
+            p_col1, p_col2, p_col3 = st.columns(3)
+            with p_col1:
+                st.caption("🇵🇪 NACIONALES")
+                n_adultos_nac = st.number_input("👤 Adultos ", min_value=0, value=0, step=1, key="an_nac_m")
+                n_estud_nac = st.number_input("🎓 Estudiantes ", min_value=0, value=0, step=1, key="es_nac_m")
+                n_pcd_nac = st.number_input("♿ PcD ", min_value=0, value=0, step=1, key="pcd_nac_m")
+                n_ninos_nac = st.number_input("👶 Niños ", min_value=0, value=0, step=1, key="ni_nac_m")
+            with p_col2:
+                st.caption("🌎 EXTRANJEROS")
+                n_adultos_ext = st.number_input("👤 Adultos", min_value=0, value=0, step=1, key="an_ext_m")
+                n_estud_ext = st.number_input("🎓 Estudiantes", min_value=0, value=0, step=1, key="es_ext_m")
+                n_pcd_ext = st.number_input("♿ PcD", min_value=0, value=0, step=1, key="pcd_ext_m")
+                n_ninos_ext = st.number_input("👶 Niños", min_value=0, value=0, step=1, key="ni_ext_m")
+            with p_col3:
+                st.caption("🤝 CAN")
+                n_adultos_can = st.number_input("👤 Adultos  ", min_value=0, value=0, step=1, key="an_can_m")
+                n_estud_can = st.number_input("🎓 Estudiantes  ", min_value=0, value=0, step=1, key="es_can_m")
+                n_pcd_can = st.number_input("♿ PcD  ", min_value=0, value=0, step=1, key="pcd_can_m")
+                n_ninos_can = st.number_input("👶 Niños  ", min_value=0, value=0, step=1, key="ni_can_m")
 
         
         total_pasajeros = (n_adultos_nac + n_estud_nac + n_pcd_nac + n_ninos_nac + 
