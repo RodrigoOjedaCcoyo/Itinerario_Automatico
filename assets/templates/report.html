@@ -42,285 +42,297 @@
             <div class="day-date-row">
                 <span class="day-number">DÍA {{ day.numero }}:</span>
                 <span class="day-date">{{ day.fecha }}</span>
+                <h3>{{ day.titulo }}</h3>
                 {% if day.hora_inicio %}
-                <span class="day-time-badge"
-                    style="background: rgba(85, 183, 176, 0.1); border: 1.5px solid #55b7b0; color: #55b7b0; padding: 2px 10px; border-radius: 15px; font-size: 11px; margin-left: 10px; font-weight: 800; text-transform: uppercase; vertical-align: middle; display: inline-block;">
-                    🕒 INICIA: {{ day.hora_inicio }}
-                </span>
+                <div
+                    style="color: var(--color-primary); font-size: 0.95rem; font-weight: 700; margin-top: -5px; margin-bottom: 10px; text-transform: uppercase;">
+                    ⏰ INICIA: {{ day.hora_inicio }}
+                </div>
                 {% endif %}
             </div>
-            <h3>{{ day.titulo }}</h3>
+
+            <p class="description">{{ day.descripcion }}</p>
+
+            <ul class="highlights-list">
+                {% for h in day.highlights %}
+                <li class="highlight-item">{{ h }}</li>
+                {% endfor %}
+            </ul>
+
+            <h4 class="section-title">SERVICIOS QUE INCLUYE:</h4>
+            <ul class="services-list">
+                {% for s in day.servicios %}
+                <li class="service-item">
+                    <div class="service-icon">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                            stroke-linecap="round" stroke-linejoin="round">
+                            {{ s.svg | safe }}
+                        </svg>
+                    </div>
+                    <span class="service-text">{{ s.texto }}</span>
+                </li>
+                {% endfor %}
+            </ul>
+
+            {% if day.servicios_no %}
+            <h4 class="section-title">SERVICIOS QUE NO INCLUYE:</h4>
+            <ul class="services-list">
+                {% for s in day.servicios_no %}
+                <li class="service-item">
+                    <div class="service-icon">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                            stroke-linecap="round" stroke-linejoin="round">
+                            {{ s.svg | safe }}
+                        </svg>
+                    </div>
+                    <span class="service-text">{{ s.texto }}</span>
+                </li>
+                {% endfor %}
+            </ul>
+            {% endif %}
+
+            <!-- EL CAMINO SERPIENTE (Culebrita enpequeñecida) -->
+            <div class="collage-container">
+                <!-- Pin Mapa Superior -->
+                <svg class="pin-icon pin-top" viewBox="0 0 24 24">
+                    <circle cx="12" cy="12" r="10" fill="white" stroke="#2d3436" stroke-width="2.5" />
+                    <circle cx="12" cy="12" r="4" fill="#2d3436" />
+                </svg>
+
+                <!-- SVG del Camino - MÁS PEQUEÑO SEGÚN PEDIDO -->
+                <svg class="serpent-path-svg" viewBox="0 0 320 850" preserveAspectRatio="none">
+                    <path
+                        d="M160,100 C160,150 290,180 290,280 C290,380 30,320 30,420 C30,520 290,480 290,580 C290,680 160,720 160,820"
+                        fill="none" stroke="rgba(85, 183, 176, 0.15)" stroke-width="50" stroke-linecap="round" />
+                    <path
+                        d="M160,100 C160,150 290,180 290,280 C290,380 30,320 30,420 C30,520 290,480 290,580 C290,680 160,720 160,820"
+                        fill="none" stroke="#55b7b0" stroke-width="3" stroke-dasharray="10,12" stroke-linecap="round" />
+                </svg>
+
+                {% for img in day.images %}
+                <div class="circular-img img-{{ loop.index }}" style="background-image: url('{{ img }}');"></div>
+                {% endfor %}
+
+                <!-- Pin Mapa Inferior -->
+                <svg class="pin-icon pin-bottom" viewBox="0 0 24 24">
+                    <circle cx="12" cy="12" r="10" fill="white" stroke="#2d3436" stroke-width="2.5" />
+                    <circle cx="12" cy="12" r="4" fill="#2d3436" />
+                </svg>
+            </div>
         </div>
+        {% endfor %}
 
-        <p class="description">{{ day.descripcion }}</p>
+        <!-- PÁGINA 1: PRECIOS (Imagen 1) -->
+        <div class="page-container">
+            <h1 class="price-main-title">PRECIOS</h1>
+            <div class="price-person-label">POR PERSONA</div>
 
-        <ul class="highlights-list">
-            {% for h in day.highlights %}
-            <li class="highlight-item">{{ h }}</li>
-            {% endfor %}
-        </ul>
-
-        <h4 class="section-title">SERVICIOS QUE INCLUYE:</h4>
-        <ul class="services-list">
-            {% for s in day.servicios %}
-            <li class="service-item">
-                <div class="service-icon">
-                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
-                        stroke-linejoin="round">
-                        {{ s.svg | safe }}
-                    </svg>
+            <div class="price-grid-columns">
+                {% if precios.nac %}
+                <div class="price-column">
+                    <h4>PROMOCIÓN<br>NACIONAL</h4>
+                    <p>NACIONAL O CHILENO</p>
+                    <div class="price-large-text">S/ {{ precios.nac.monto }} P.P</div>
+                    <div class="price-status">{{ precio_nota }}</div>
                 </div>
-                <span class="service-text">{{ s.texto }}</span>
-            </li>
-            {% endfor %}
-        </ul>
+                {% endif %}
 
-        {% if day.servicios_no %}
-        <h4 class="section-title">SERVICIOS QUE NO INCLUYE:</h4>
-        <ul class="services-list">
-            {% for s in day.servicios_no %}
-            <li class="service-item">
-                <div class="service-icon">
-                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
-                        stroke-linejoin="round">
-                        {{ s.svg | safe }}
-                    </svg>
+                {% if precios.can %}
+                <div class="price-column">
+                    <h4>PROMOCIÓN<br>C.A.N.</h4>
+                    <p>COLOMBIA, ECUADOR, BOLIVIA</p>
+                    <div class="price-large-text">$ {{ precios.can.monto }} P.P</div>
+                    <div class="price-status">{{ precio_nota }}</div>
                 </div>
-                <span class="service-text">{{ s.texto }}</span>
-            </li>
-            {% endfor %}
-        </ul>
-        {% endif %}
+                {% endif %}
 
-        <!-- EL CAMINO SERPIENTE (Culebrita enpequeñecida) -->
-        <div class="collage-container">
-            <!-- Pin Mapa Superior -->
-            <svg class="pin-icon pin-top" viewBox="0 0 24 24">
-                <circle cx="12" cy="12" r="10" fill="white" stroke="#2d3436" stroke-width="2.5" />
-                <circle cx="12" cy="12" r="4" fill="#2d3436" />
-            </svg>
-
-            <!-- SVG del Camino - MÁS PEQUEÑO SEGÚN PEDIDO -->
-            <svg class="serpent-path-svg" viewBox="0 0 320 850" preserveAspectRatio="none">
-                <path
-                    d="M160,100 C160,150 290,180 290,280 C290,380 30,320 30,420 C30,520 290,480 290,580 C290,680 160,720 160,820"
-                    fill="none" stroke="rgba(85, 183, 176, 0.15)" stroke-width="50" stroke-linecap="round" />
-                <path
-                    d="M160,100 C160,150 290,180 290,280 C290,380 30,320 30,420 C30,520 290,480 290,580 C290,680 160,720 160,820"
-                    fill="none" stroke="#55b7b0" stroke-width="3" stroke-dasharray="10,12" stroke-linecap="round" />
-            </svg>
-
-            {% for img in day.images %}
-            <div class="circular-img img-{{ loop.index }}" style="background-image: url('{{ img }}');"></div>
-            {% endfor %}
-
-            <!-- Pin Mapa Inferior -->
-            <svg class="pin-icon pin-bottom" viewBox="0 0 24 24">
-                <circle cx="12" cy="12" r="10" fill="white" stroke="#2d3436" stroke-width="2.5" />
-                <circle cx="12" cy="12" r="4" fill="#2d3436" />
-            </svg>
-        </div>
-    </div>
-    {% endfor %}
-
-    <!-- PÁGINA 1: PRECIOS (Imagen 1) -->
-    <div class="page-container">
-        <h1 class="price-main-title">PRECIOS</h1>
-        <div class="price-person-label">POR PERSONA</div>
-
-        <div class="price-grid-columns">
-            {% if precios.nac %}
-            <div class="price-column">
-                <h4>PROMOCIÓN<br>NACIONAL</h4>
-                <p>NACIONAL O CHILENO</p>
-                <div class="price-large-text">S/ {{ precios.nac.monto }} P.P</div>
-                <div class="price-status">{{ precio_nota }}</div>
+                {% if precios.ext %}
+                <div class="price-column">
+                    <h4>TARIFA<br>EXTRANJERA</h4>
+                    <p>FOREIGNER RATE</p>
+                    <div class="price-large-text">$ {{ precios.ext.monto }} P.P</div>
+                    <div class="price-status">{{ precio_nota }}</div>
+                </div>
+                {% endif %}
             </div>
-            {% endif %}
 
-            {% if precios.can %}
-            <div class="price-column">
-                <h4>PROMOCIÓN<br>C.A.N.</h4>
-                <p>COLOMBIA, ECUADOR, BOLIVIA</p>
-                <div class="price-large-text">$ {{ precios.can.monto }} P.P</div>
-                <div class="price-status">{{ precio_nota }}</div>
+            <ul class="bullet-list-std">
+                <li>Salidas confirmadas todos los días.</li>
+                <li>Tarifas exclusivas solo para Peruanos, una vez confirmado la categoría del tren confirmaremos los
+                    horarios del tren.</li>
+                <li>Tarifa con alojamiento basado en habitaciones dobles, matrimoniales o triples.</li>
+                <li>Si desea habitaciones individuales deberá aumentar S/ 35 O US$ 10 por noche, categoría hostal.</li>
+                <li>Si desea habitaciones individuales deberá aumentar S/ 35 O US$ 10 por noche, categoría hotel 3***.
+                </li>
+            </ul>
+
+            <h2 class="important-header">IMPORTANTE</h2>
+            <div class="important-sub-title">
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"
+                    stroke-linecap="round" stroke-linejoin="round">
+                    <path
+                        d="M7 15v4m5-4v4m5-4v4M3 9a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2v10a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V9Z" />
+                    <path d="M3 13h18" />
+                    <path d="M8 5V3a1 1 0 0 1 1-1h6a1 1 0 0 1 1 1v2" />
+                </svg>
+                Tren Turístico - Voyager Inca Rail
             </div>
-            {% endif %}
+            <ul class="bullet-list-std">
+                <li>Podremos comprar tus boletos con anticipación desde ahora, no habrá estrés ni largas filas a tu
+                    llegada.
+                </li>
+                <li>Viajas con asiento asignado, por lo que nadie va de pie.</li>
+                <li>Es un tren más cómodo, tanto para la ida como para el retorno, diseñado para brindar una experiencia
+                    agradable al viajero.</li>
+                <li>La promoción no es válida en feriados y fiestas (navidad, año nuevo, inti raymi, fiestas patrias,
+                    fiesta
+                    de todos los santos 1-2 de noviembre).</li>
+            </ul>
 
-            {% if precios.ext %}
-            <div class="price-column">
-                <h4>TARIFA<br>EXTRANJERA</h4>
-                <p>FOREIGNER RATE</p>
-                <div class="price-large-text">$ {{ precios.ext.monto }} P.P</div>
-                <div class="price-status">{{ precio_nota }}</div>
-            </div>
-            {% endif %}
-        </div>
-
-        <ul class="bullet-list-std">
-            <li>Salidas confirmadas todos los días.</li>
-            <li>Tarifas exclusivas solo para Peruanos, una vez confirmado la categoría del tren confirmaremos los
-                horarios del tren.</li>
-            <li>Tarifa con alojamiento basado en habitaciones dobles, matrimoniales o triples.</li>
-            <li>Si desea habitaciones individuales deberá aumentar S/ 35 O US$ 10 por noche, categoría hostal.</li>
-            <li>Si desea habitaciones individuales deberá aumentar S/ 35 O US$ 10 por noche, categoría hotel 3***.</li>
-        </ul>
-
-        <h2 class="important-header">IMPORTANTE</h2>
-        <div class="important-sub-title">
-            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"
-                stroke-linecap="round" stroke-linejoin="round">
-                <path d="M7 15v4m5-4v4m5-4v4M3 9a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2v10a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V9Z" />
-                <path d="M3 13h18" />
-                <path d="M8 5V3a1 1 0 0 1 1-1h6a1 1 0 0 1 1 1v2" />
-            </svg>
-            Tren Turístico - Voyager Inca Rail
-        </div>
-        <ul class="bullet-list-std">
-            <li>Podremos comprar tus boletos con anticipación desde ahora, no habrá estrés ni largas filas a tu llegada.
-            </li>
-            <li>Viajas con asiento asignado, por lo que nadie va de pie.</li>
-            <li>Es un tren más cómodo, tanto para la ida como para el retorno, diseñado para brindar una experiencia
-                agradable al viajero.</li>
-            <li>La promoción no es válida en feriados y fiestas (navidad, año nuevo, inti raymi, fiestas patrias, fiesta
-                de todos los santos 1-2 de noviembre).</li>
-        </ul>
-
-        <div class="price-bottom-grid">
-            <div class="price-bottom-img"
-                style="background-image: url('{{ days[0].images[0] if days|length > 0 else cover_url }}');"></div>
-            <div class="price-bottom-img"
-                style="background-image: url('{{ days[0].images[1] if days|length > 0 and days[0].images|length > 1 else cover_url }}');">
-            </div>
-            <div class="price-bottom-img"
-                style="background-image: url('{{ days[0].images[2] if days|length > 0 and days[0].images|length > 2 else cover_url }}');">
+            <div class="price-bottom-grid">
+                <div class="price-bottom-img"
+                    style="background-image: url('{{ days[0].images[0] if days|length > 0 else cover_url }}');"></div>
+                <div class="price-bottom-img"
+                    style="background-image: url('{{ days[0].images[1] if days|length > 0 and days[0].images|length > 1 else cover_url }}');">
+                </div>
+                <div class="price-bottom-img"
+                    style="background-image: url('{{ days[0].images[2] if days|length > 0 and days[0].images|length > 2 else cover_url }}');">
+                </div>
             </div>
         </div>
-    </div>
 
-    <!-- PÁGINA 2: IMPORTANTE - COMPARATIVO TRENES (Imagen 2) -->
-    <div class="page-container">
-        <h2 class="important-header" style="margin-top: 0;">IMPORTANTE</h2>
+        <!-- PÁGINA 2: IMPORTANTE - COMPARATIVO TRENES (Imagen 2) -->
+        <div class="page-container">
+            <h2 class="important-header" style="margin-top: 0;">IMPORTANTE</h2>
 
-        <div class="important-sub-title">
-            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"
-                stroke-linecap="round" stroke-linejoin="round">
-                <path d="M7 15v4m5-4v4m5-4v4M3 9a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2v10a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V9Z" />
-                <path d="M3 13h18" />
-                <path d="M8 5V3a1 1 0 0 1 1-1h6a1 1 0 0 1 1 1v2" />
-            </svg>
-            Tren Local
-        </div>
-        <ul class="bullet-list-std">
-            <li>Requiere hacer cola entre 3 a 6 horas, dependiendo de la demanda del día.</li>
-            <li>No cuenta con reserva de asiento; podrías viajar de pie durante gran parte del trayecto.</li>
-            <li>Es un servicio básico, pensado principalmente para residentes locales.</li>
-        </ul>
+            <div class="important-sub-title">
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"
+                    stroke-linecap="round" stroke-linejoin="round">
+                    <path
+                        d="M7 15v4m5-4v4m5-4v4M3 9a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2v10a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V9Z" />
+                    <path d="M3 13h18" />
+                    <path d="M8 5V3a1 1 0 0 1 1-1h6a1 1 0 0 1 1 1v2" />
+                </svg>
+                Tren Local
+            </div>
+            <ul class="bullet-list-std">
+                <li>Requiere hacer cola entre 3 a 6 horas, dependiendo de la demanda del día.</li>
+                <li>No cuenta con reserva de asiento; podrías viajar de pie durante gran parte del trayecto.</li>
+                <li>Es un servicio básico, pensado principalmente para residentes locales.</li>
+            </ul>
 
-        <div class="important-sub-title">
-            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"
-                stroke-linecap="round" stroke-linejoin="round">
-                <path d="M7 15v4m5-4v4m5-4v4M3 9a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2v10a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V9Z" />
-                <path d="M3 13h18" />
-                <path d="M8 5V3a1 1 0 0 1 1-1h6a1 1 0 0 1 1 1v2" />
-            </svg>
-            Tren Turístico - Promoción para peruanos
-        </div>
-        <ul class="bullet-list-std">
-            <li>Puedes comprar con anticipación desde ahora, sin estrés ni largas filas.</li>
-            <li>Viajas con asiento asignado, por lo que nadie va de pie.</li>
-            <li>Es un tren más cómodo, con salidas nocturnas tanto para la ida como para el retorno, diseñado para
-                brindar una experiencia agradable al viajero.</li>
-            <li>Sujeto a disponibilidad.</li>
-            <li>La promoción no es válida en feriados y fiestas (navidad, año nuevo, inti raymi, fiestas patrias, fiesta
-                de todos los santos 1-2 de noviembre).</li>
-        </ul>
+            <div class="important-sub-title">
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"
+                    stroke-linecap="round" stroke-linejoin="round">
+                    <path
+                        d="M7 15v4m5-4v4m5-4v4M3 9a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2v10a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V9Z" />
+                    <path d="M3 13h18" />
+                    <path d="M8 5V3a1 1 0 0 1 1-1h6a1 1 0 0 1 1 1v2" />
+                </svg>
+                Tren Turístico - Promoción para peruanos
+            </div>
+            <ul class="bullet-list-std">
+                <li>Puedes comprar con anticipación desde ahora, sin estrés ni largas filas.</li>
+                <li>Viajas con asiento asignado, por lo que nadie va de pie.</li>
+                <li>Es un tren más cómodo, con salidas nocturnas tanto para la ida como para el retorno, diseñado para
+                    brindar una experiencia agradable al viajero.</li>
+                <li>Sujeto a disponibilidad.</li>
+                <li>La promoción no es válida en feriados y fiestas (navidad, año nuevo, inti raymi, fiestas patrias,
+                    fiesta
+                    de todos los santos 1-2 de noviembre).</li>
+            </ul>
 
-        <div class="important-sub-title">
-            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"
-                stroke-linecap="round" stroke-linejoin="round">
-                <path d="M7 15v4m5-4v4m5-4v4M3 9a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2v10a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V9Z" />
-                <path d="M3 13h18" />
-                <path d="M8 5V3a1 1 0 0 1 1-1h6a1 1 0 0 1 1 1v2" />
-            </svg>
-            Tren Turístico - Tarifa Regular
-        </div>
-        <ul class="bullet-list-std">
-            <li>Puedes comprar con anticipación desde ahora, evitando filas y asegurando tu espacio.</li>
-            <li>Viajas con asiento asignado, garantizando comodidad durante todo el trayecto.</li>
-            <li>Es un tren más confortable, con salidas diurnas en ambos sentidos, ideales para disfrutar de mejores
-                vistas del valle.</li>
-        </ul>
+            <div class="important-sub-title">
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"
+                    stroke-linecap="round" stroke-linejoin="round">
+                    <path
+                        d="M7 15v4m5-4v4m5-4v4M3 9a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2v10a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V9Z" />
+                    <path d="M3 13h18" />
+                    <path d="M8 5V3a1 1 0 0 1 1-1h6a1 1 0 0 1 1 1v2" />
+                </svg>
+                Tren Turístico - Tarifa Regular
+            </div>
+            <ul class="bullet-list-std">
+                <li>Puedes comprar con anticipación desde ahora, evitando filas y asegurando tu espacio.</li>
+                <li>Viajas con asiento asignado, garantizando comodidad durante todo el trayecto.</li>
+                <li>Es un tren más confortable, con salidas diurnas en ambos sentidos, ideales para disfrutar de mejores
+                    vistas del valle.</li>
+            </ul>
 
-        <h3 class="summary-red">En resumen:</h3>
-        <div class="summary-item">👉 El tren local es más económico, pero implica largas esperas, posibles incomodidades
-            y menos control sobre tu viaje.</div>
-        <div class="summary-item">👉 El tren turístico ofrece seguridad, comodidad y una experiencia más agradable desde
-            el inicio hasta el final del viaje.</div>
-    </div>
-
-    <!-- PÁGINA 3: INFORMACIÓN DE COMPRA (Imagen 0) -->
-    <div class="page-container">
-        <h1 class="purchase-title">INFORMACIÓN DE COMPRA DEL PAQUETE TURÍSTICO</h1>
-
-        <div class="purchase-section">
-            <h4>Reserva:</h4>
-            <p>La reserva del paquete turístico es con el 50%. El costo restante se abona llegando a Perú, 50%.</p>
+            <h3 class="summary-red">En resumen:</h3>
+            <div class="summary-item">👉 El tren local es más económico, pero implica largas esperas, posibles
+                incomodidades
+                y menos control sobre tu viaje.</div>
+            <div class="summary-item">👉 El tren turístico ofrece seguridad, comodidad y una experiencia más agradable
+                desde
+                el inicio hasta el final del viaje.</div>
         </div>
 
-        <div class="purchase-section">
-            <p><strong>IMPORTANTE:</strong> Niño de 2 años puede viajar con sus papás en los tours sin costo, pero
-                comparten asiento en el tour y cama en el hotel.</p>
-            <p>No incluye IGV.</p>
+        <!-- PÁGINA 3: INFORMACIÓN DE COMPRA (Imagen 0) -->
+        <div class="page-container">
+            <h1 class="purchase-title">INFORMACIÓN DE COMPRA DEL PAQUETE TURÍSTICO</h1>
+
+            <div class="purchase-section">
+                <h4>Reserva:</h4>
+                <p>La reserva del paquete turístico es con el 50%. El costo restante se abona llegando a Perú, 50%.</p>
+            </div>
+
+            <div class="purchase-section">
+                <p><strong>IMPORTANTE:</strong> Niño de 2 años puede viajar con sus papás en los tours sin costo, pero
+                    comparten asiento en el tour y cama en el hotel.</p>
+                <p>No incluye IGV.</p>
+            </div>
+
+            <div class="purchase-section">
+                <h4>Método de pago:</h4>
+                <p>Contamos con todos los métodos de pagos del mercado. Depósito o trasferencia a la cuenta de la
+                    empresa.
+                    Incluido en los métodos los pago los impuestos y cargos de depósito.</p>
+            </div>
+
+            <div class="purchase-section">
+                <h4>ANULACIÓN DEL PAQUETE TURÍSTICO:</h4>
+                <p>La anulación se debe realizar con anticipación. Ingreso a Machupicchu, no hay cambio ni devoluciones,
+                    solo en casos excepcionales hay cambios como desastres naturales o paralizaciones. Tren turístico y
+                    los
+                    Hoteles cobran penalidades por los cambios, solo en casos excepcionales hay cambios como desastres
+                    naturales o paralizaciones. Menor a 15 días antes de su llegada, No hay devolución.</p>
+            </div>
+
+            <div class="purchase-section">
+                <h4>OTRAS CONDICIONES:</h4>
+                <p>La reserva de hoteles está sujeta a disponibilidad de espacios. Podemos también organizarle un
+                    itinerario
+                    de viaje de acuerdo a sus requerimientos. Para mayor información y consultas puede escribirnos.</p>
+            </div>
+
+            <div class="llama-round-container">
+                <div class="llama-round-img" style="background-image: url('{{ llama_img }}');"></div>
+            </div>
         </div>
+        <style>
+            .day-date-row {
+                display: flex;
+                align-items: baseline;
+                gap: 15px;
+                margin-bottom: 5px;
+            }
 
-        <div class="purchase-section">
-            <h4>Método de pago:</h4>
-            <p>Contamos con todos los métodos de pagos del mercado. Depósito o trasferencia a la cuenta de la empresa.
-                Incluido en los métodos los pago los impuestos y cargos de depósito.</p>
-        </div>
+            .day-number {
+                font-size: 1.8rem;
+                color: var(--color-primary);
+                font-weight: 800;
+                margin: 0;
+                text-transform: uppercase;
+            }
 
-        <div class="purchase-section">
-            <h4>ANULACIÓN DEL PAQUETE TURÍSTICO:</h4>
-            <p>La anulación se debe realizar con anticipación. Ingreso a Machupicchu, no hay cambio ni devoluciones,
-                solo en casos excepcionales hay cambios como desastres naturales o paralizaciones. Tren turístico y los
-                Hoteles cobran penalidades por los cambios, solo en casos excepcionales hay cambios como desastres
-                naturales o paralizaciones. Menor a 15 días antes de su llegada, No hay devolución.</p>
-        </div>
-
-        <div class="purchase-section">
-            <h4>OTRAS CONDICIONES:</h4>
-            <p>La reserva de hoteles está sujeta a disponibilidad de espacios. Podemos también organizarle un itinerario
-                de viaje de acuerdo a sus requerimientos. Para mayor información y consultas puede escribirnos.</p>
-        </div>
-
-        <div class="llama-round-container">
-            <div class="llama-round-img" style="background-image: url('{{ llama_img }}');"></div>
-        </div>
-    </div>
-    <style>
-        .day-date-row {
-            display: flex;
-            align-items: baseline;
-            gap: 15px;
-            margin-bottom: 5px;
-        }
-
-        .day-number {
-            font-size: 1.8rem;
-            color: var(--color-primary);
-            font-weight: 800;
-            margin: 0;
-            text-transform: uppercase;
-        }
-
-        .day-date {
-            font-size: 1.2rem;
-            color: var(--color-primary);
-            font-weight: 700;
-            letter-spacing: 1px;
-        }
-    </style>
+            .day-date {
+                font-size: 1.2rem;
+                color: var(--color-primary);
+                font-weight: 700;
+                letter-spacing: 1px;
+            }
+        </style>
 </body>
 
 </html>
