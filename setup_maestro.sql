@@ -61,7 +61,8 @@ CREATE TABLE tour (
     servicios_incluidos JSONB DEFAULT '[]'::jsonb,   -- Default para evitar NoneType
     servicios_no_incluidos JSONB DEFAULT '[]'::jsonb,-- Default para evitar NoneType
     precio_nacional DECIMAL(10,2),
-    carpeta_img TEXT
+    carpeta_img TEXT,
+    hora_inicio VARCHAR(20) DEFAULT '08:00 AM'
 );
 
 CREATE TABLE paquete (
@@ -117,6 +118,7 @@ CREATE TABLE venta_tour (
     precio_applied DECIMAL(10,2),
     costo_applied DECIMAL(10,2),
     cantidad_pasajeros INTEGER DEFAULT 1,
+    hora_inicio VARCHAR(20) DEFAULT '08:00 AM',
     observaciones TEXT,
     id_itinerario_dia_index INTEGER,
     PRIMARY KEY (id_venta, n_linea)
