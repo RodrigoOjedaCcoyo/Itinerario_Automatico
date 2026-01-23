@@ -580,8 +580,8 @@ def render_ventas_ui():
                 if nombre and st.session_state.itinerario:
                     with st.spinner("Generando PDF con Edge..."):
                         # Determinar portada y títulos desde el ESTADO DE SESIÓN
-                        cover_1 = "Captura de pantalla 2026-01-19 120326.png"  # Nuevo Perú para el Mundo
-                        cover_2 = "Captura de pantalla 2026-01-19 120532.png"  # Nuevo Cusco Tradicional
+                        cover_1 = os.path.join("assets", "images", "covers", "peru_mundo.png")
+                        cover_2 = os.path.join("assets", "images", "covers", "cusco_tradicional.png")
                         fallback_cover = "Approaching-Salkantay-Mountain-peru.jpg"
                         
                         target_cat = st.session_state.get('f_categoria', 'Cusco Tradicional')
