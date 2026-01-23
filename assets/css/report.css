@@ -413,7 +413,7 @@ body {
 
 .price-bottom-img {
     flex: 1;
-    height: 160px;
+    height: 250px;
     background-size: cover;
     background-position: center;
 }
