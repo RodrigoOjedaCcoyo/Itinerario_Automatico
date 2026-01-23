@@ -35,14 +35,13 @@ body {
 /* DECORACIONES - ARCOS GRANDES */
 .decor-top-right {
     position: absolute;
-    top: -50px;
-    right: -50px;
-    width: 200px;
-    height: 200px;
+    top: -60px;
+    right: -60px;
+    width: 220px;
+    height: 220px;
     background-color: var(--color-primary);
     border-radius: 50%;
     z-index: 1;
-    opacity: 0.15;
 }
 
 .decor-bottom-left {
@@ -54,7 +53,6 @@ body {
     background-color: var(--color-primary);
     border-radius: 50%;
     z-index: 1;
-    opacity: 0.15;
 }
 
 .logo-container {
