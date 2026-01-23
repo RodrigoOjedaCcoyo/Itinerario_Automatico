@@ -685,9 +685,9 @@ def render_ventas_ui():
                                 'logo_cover_url': logo_path,
                                 'llama_img': os.path.abspath("Fondo.png"),
                                 'precios': {
-                                    'nac': {'monto': f"{total_nac_pp + (extra_nac/max(1, pasajeros_nac)):,.2f}"} if pasajeros_nac > 0 else None,
-                                    'ext': {'monto': f"{total_ext_pp + (extra_ext/max(1, pasajeros_ext)):,.2f}"} if pasajeros_ext > 0 else None,
-                                    'can': {'monto': f"{total_can_pp + (extra_can/max(1, pasajeros_can)):,.2f}"} if pasajeros_can > 0 else None,
+                                    'nac': {'monto': f"{total_nac_pp + (extra_nac/max(1, pasajeros_nac)):,.2f}"} if (total_nac_pp > 0) else None,
+                                    'ext': {'monto': f"{total_ext_pp + (extra_ext/max(1, pasajeros_ext)):,.2f}"} if (total_ext_pp > 0) else None,
+                                    'can': {'monto': f"{total_can_pp + (extra_can/max(1, pasajeros_can)):,.2f}"} if (total_can_pp > 0) else None,
                                 },
                                 'precio_cierre': f"{precio_cierre_over:,.2f}" if (precio_cierre_over and precio_cierre_over > 0) else f"{base_final:,.2f}",
                                 'matriz': pricing_matrix,
