@@ -11,8 +11,9 @@
     <div class="cover-container" style="background-image: url('{{ cover_url }}'); page-break-after: always;">
         <div class="cover-gradient"></div>
 
-        <!-- LOGO DISCRETO ARRIBA -->
-        <div class="logo-bottom-luxury">
+        <!-- LOGO COMO SELLO ELEGANTE EN LA ESQUINA -->
+        <div class="logo-cover-seal"
+            style="position: absolute; top: 40px; left: 40px; width: 80px; z-index: 20; opacity: 0.8;">
             <img src="{{ logo_url }}" alt="Logo" style="width: 100%;">
         </div>
 
@@ -29,11 +30,6 @@
         <div class="cover-footer-info">
             <div class="cover-dates">{{ fechas }}</div>
             <div class="cover-duration-badge">{{ duracion }}</div>
-
-            <!-- LOGO COMO FIRMA ELEGANTE AL FINAL -->
-            <div class="logo-signature-luxury" style="margin-top: 30px; width: 100px; opacity: 0.8;">
-                <img src="{{ logo_url }}" alt="Logo" style="width: 100%;">
-            </div>
         </div>
     </div>
 
