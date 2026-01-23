@@ -477,24 +477,21 @@ def render_ventas_ui():
             
             st.divider()
             
-            with st.expander("⚙️ Configuración Avanzada", expanded=False):
-                st.caption("Usa esto solo si el catálogo está vacío.")
-                if st.button("📦 Cargar Catálogo Oficial"):
-                    with st.spinner("Poblando Base de Datos..."):
-                        if populate_catalog():
-                            st.success("Catálogo cargado correctamente.")
-                            st.rerun()
-                        else:
-                            st.error("Error al cargar el catálogo. Verifica el SQL Patch.")
             
             st.markdown("#### 💰 Margen Extra / Ajuste Global (Opcional)")
-            ma1, ma2, ma3 = st.columns(3)
+            ma1, ma2, ma3, ma4 = st.columns(4)
             extra_nac = ma1.number_input("S/ Extra (Nac)", value=float(st.session_state.get('f_extra_nac', 0.0)), step=10.0)
             extra_ext = ma2.number_input("$ Extra (Ext)", value=float(st.session_state.get('f_extra_ext', 0.0)), step=5.0)
             extra_can = ma3.number_input("$ Extra (CAN)", value=float(st.session_state.get('f_extra_can', 0.0)), step=5.0)
+            
+            # Cálculo automático base de noches
+            auto_noches = max(0, len(st.session_state.itinerario) - 1)
+            num_noches = ma4.number_input("🌙 Noches Hotel", value=int(st.session_state.get('f_num_noches', auto_noches)), min_value=0, step=1)
+            
             st.session_state.f_extra_nac = extra_nac
             st.session_state.f_extra_ext = extra_ext
             st.session_state.f_extra_can = extra_can
+            st.session_state.f_num_noches = num_noches
 
             # --- CONFIGURACIÓN DE UPGRADES (HOTEL Y TREN) ---
             u_h2, u_h3, u_h4 = 0, 0, 0
@@ -630,7 +627,8 @@ def render_ventas_ui():
                         
                         try:
                             # 1. Preparar data completa
-                            num_noches = max(0, len(st.session_state.itinerario) - 1)
+                            # USAR EL VALOR MANUAL DE NOCHES RECIÉN DEFINIDO
+                            # num_noches ya fue definido arriba en la UI
                             curr_sym = "S/" if tipo_t == "Nacional" else "$"
                             
                             # Base Price calculation for the primary category
