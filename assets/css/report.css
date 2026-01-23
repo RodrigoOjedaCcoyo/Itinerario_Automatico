@@ -363,14 +363,6 @@ body {
     border-radius: 30px;
 }
 
-.logo-bottom-luxury {
-    position: absolute;
-    top: 60px;
-    width: 120px;
-    z-index: 10;
-    opacity: 0.9;
-}
-
 /* EXTRAS Y PRECIOS DETALLADOS */
 .price-page-content {
     padding: 0;
