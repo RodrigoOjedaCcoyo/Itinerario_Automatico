@@ -257,11 +257,20 @@ def get_available_tours():
                 elif isinstance(raw_highlights_db, dict) and "itinerario" in raw_highlights_db:
                     rich_itinerary = raw_highlights_db["itinerario"]
                 
-                # Si encontramos texto enriquecido, lo usamos. Si es muy largo, la UI lo truncará, pero el PDF lo tendrá completo.
+                # Si encontramos texto enriquecido, lo usamos
                 if rich_itinerary:
-                    # Limpiamos un poco el formato del string si viene con saltos raros o comillas dobles escapadas extra
-                    desc = rich_itinerary.replace("\\n", "\n").replace('""', '"').strip()
-                
+                    import re
+                    # 1. Limpieza básica de caracteres
+                    cleaned = rich_itinerary.replace("\\n", "\n").replace('""', '"').strip()
+                    # 2. Eliminar el título entre corchetes ej: [Titulo]
+                    cleaned = re.sub(r'^\[.*?\]\s*', '', cleaned)
+                    # 3. Eliminar prefix común "La Experiencia:" o "The Experience:"
+                    cleaned = re.sub(r'^(La Experiencia|The Experience):\s*', '', cleaned, flags=re.IGNORECASE)
+                    # 4. Eliminar comillas envolventes si quedaron (ej: "Texto")
+                    cleaned = cleaned.strip('"').strip()
+                    
+                    desc = cleaned
+
                 # 4. Formatear Hora
                 raw_hora = t.get("hora_inicio")
                 formatted_hora = "08:00 AM"

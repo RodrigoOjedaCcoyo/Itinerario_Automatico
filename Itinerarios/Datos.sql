@@ -1595,3 +1595,94 @@ INSERT INTO tour (
   '2026-01-01 00:00:00-05',
   TRUE
 );
+
+-- =================================================================================
+-- PAQUETE: PERÚ PARA EL MUNDO (8 Días / 7 Noches)
+-- =================================================================================
+DO 
+DECLARE
+    p_id INTEGER;
+    t_id INTEGER;
+BEGIN
+    -- 1. Limpiar versiones previas del paquete para evitar duplicados
+    DELETE FROM paquete WHERE nombre = 'PERÚ PARA EL MUNDO 8D/7N';
+
+    -- 2. Crear el Paquete Maestro
+    INSERT INTO paquete (nombre, descripcion, dias, noches, precio_sugerido, temporada, destino_principal, activo)
+    VALUES ('PERÚ PARA EL MUNDO 8D/7N', 'Recorrido completo desde la costa de Lima y Paracas hasta el corazón de los Andes en Cusco.', 8, 7, 0.00, 'TODO EL AÑO', 'PERÚ', TRUE)
+    RETURNING id_paquete INTO p_id;
+
+    -- 3. Asignar Tours (Orden secuencial)
+    
+    -- DÍA 1: LIMA
+    SELECT id_tour INTO t_id FROM tour WHERE nombre = 'CITY TOUR LIMA COLONIAL Y MODERNA' LIMIT 1;
+    IF t_id IS NOT NULL THEN INSERT INTO paquete_tour (id_paquete, id_tour, orden, dia_del_paquete) VALUES (p_id, t_id, 1, 1); END IF;
+
+    -- DÍA 2: PARACAS Y HUACACHINA
+    SELECT id_tour INTO t_id FROM tour WHERE nombre = 'PARACAS Y HUACACHINA PULL' LIMIT 1;
+    IF t_id IS NOT NULL THEN INSERT INTO paquete_tour (id_paquete, id_tour, orden, dia_del_paquete) VALUES (p_id, t_id, 2, 2); END IF;
+
+    -- DÍA 3: CUSCO CIUDAD
+    SELECT id_tour INTO t_id FROM tour WHERE nombre = 'CITY TOUR CUSCO PULL' LIMIT 1;
+    IF t_id IS NOT NULL THEN INSERT INTO paquete_tour (id_paquete, id_tour, orden, dia_del_paquete) VALUES (p_id, t_id, 3, 3); END IF;
+
+    -- DÍA 4: VALLE SAGRADO
+    SELECT id_tour INTO t_id FROM tour WHERE nombre = 'VALLE SAGRADO VIP PULL' LIMIT 1;
+    IF t_id IS NOT NULL THEN INSERT INTO paquete_tour (id_paquete, id_tour, orden, dia_del_paquete) VALUES (p_id, t_id, 4, 4); END IF;
+
+    -- DÍA 5: MACHU PICCHU
+    SELECT id_tour INTO t_id FROM tour WHERE nombre = 'MACHU PICCHU FULL DAY PULL' LIMIT 1;
+    IF t_id IS NOT NULL THEN INSERT INTO paquete_tour (id_paquete, id_tour, orden, dia_del_paquete) VALUES (p_id, t_id, 5, 5); END IF;
+
+    -- DÍA 6: LAGUNA HUMANTAY
+    SELECT id_tour INTO t_id FROM tour WHERE nombre = 'LAGUNA HUMANTAY PULL' LIMIT 1;
+    IF t_id IS NOT NULL THEN INSERT INTO paquete_tour (id_paquete, id_tour, orden, dia_del_paquete) VALUES (p_id, t_id, 6, 6); END IF;
+
+    -- DÍA 7: MONTAÑA DE COLORES
+    SELECT id_tour INTO t_id FROM tour WHERE nombre = 'MONTAÑA DE COLORES PULL' LIMIT 1;
+    IF t_id IS NOT NULL THEN INSERT INTO paquete_tour (id_paquete, id_tour, orden, dia_del_paquete) VALUES (p_id, t_id, 7, 7); END IF;
+
+    -- DÍA 8: SALIDA
+    SELECT id_tour INTO t_id FROM tour WHERE nombre = 'DIA LIBRE Y SALIDA AL AEROPUERTO' LIMIT 1;
+    IF t_id IS NOT NULL THEN INSERT INTO paquete_tour (id_paquete, id_tour, orden, dia_del_paquete) VALUES (p_id, t_id, 8, 8); END IF;
+
+END $$;
+-- =================================================================================
+-- PAQUETE: CUSCO TRADICIONAL (5 Días / 4 Noches)
+-- =================================================================================
+DO 
+DECLARE
+    p_id INTEGER;
+    t_id INTEGER;
+BEGIN
+    -- 1. Limpiar versiones previas
+    DELETE FROM paquete WHERE nombre = 'CUSCO TRADICIONAL 5D/4N';
+
+    -- 2. Crear el Paquete
+    INSERT INTO paquete (nombre, descripcion, dias, noches, precio_sugerido, temporada, destino_principal, activo)
+    VALUES ('CUSCO TRADICIONAL 5D/4N', 'Lo esencial de la Capital Imperial: Arqueología, Valles Sagrados y la Maravilla del Mundo.', 5, 4, 0.00, 'TODO EL AÑO', 'CUSCO', TRUE)
+    RETURNING id_paquete INTO p_id;
+
+    -- 3. Asignar Tours
+    
+    -- DÍA 1: CITY TOUR
+    SELECT id_tour INTO t_id FROM tour WHERE nombre = 'CITY TOUR CUSCO PULL' LIMIT 1;
+    IF t_id IS NOT NULL THEN INSERT INTO paquete_tour (id_paquete, id_tour, orden, dia_del_paquete) VALUES (p_id, t_id, 1, 1); END IF;
+
+    -- DÍA 2: VALLE SAGRADO
+    SELECT id_tour INTO t_id FROM tour WHERE nombre = 'VALLE SAGRADO VIP PULL' LIMIT 1;
+    IF t_id IS NOT NULL THEN INSERT INTO paquete_tour (id_paquete, id_tour, orden, dia_del_paquete) VALUES (p_id, t_id, 2, 2); END IF;
+
+    -- DÍA 3: MACHU PICCHU
+    SELECT id_tour INTO t_id FROM tour WHERE nombre = 'MACHU PICCHU FULL DAY PULL' LIMIT 1;
+    IF t_id IS NOT NULL THEN INSERT INTO paquete_tour (id_paquete, id_tour, orden, dia_del_paquete) VALUES (p_id, t_id, 3, 3); END IF;
+
+    -- DÍA 4: HUMANTAY
+    SELECT id_tour INTO t_id FROM tour WHERE nombre = 'LAGUNA HUMANTAY PULL' LIMIT 1;
+    IF t_id IS NOT NULL THEN INSERT INTO paquete_tour (id_paquete, id_tour, orden, dia_del_paquete) VALUES (p_id, t_id, 4, 4); END IF;
+
+    -- DÍA 5: MONTAÑA DE COLORES
+    SELECT id_tour INTO t_id FROM tour WHERE nombre = 'MONTAÑA DE COLORES PULL' LIMIT 1;
+    IF t_id IS NOT NULL THEN INSERT INTO paquete_tour (id_paquete, id_tour, orden, dia_del_paquete) VALUES (p_id, t_id, 5, 5); END IF;
+
+END ;
