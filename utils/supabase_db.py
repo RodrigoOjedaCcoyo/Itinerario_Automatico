@@ -310,10 +310,18 @@ def get_available_packages():
     supabase = get_supabase_client()
     if not supabase: return []
     try:
-        res = supabase.table("paquete").select("*, paquete_tour(tour(nombre))").order("nombre").execute()
+        # Recuperamos 'orden' además del nombre del tour para poder ordenar
+        res = supabase.table("paquete").select("*, paquete_tour(orden, tour(nombre))").order("nombre").execute()
         packages = []
         for p in res.data:
-            tours_names = [pt["tour"]["nombre"] for pt in p.get("paquete_tour", [])]
+            # Obtenemos la lista cruda de relaciones
+            raw_tours = p.get("paquete_tour", [])
+            # Ordenamos por la columna 'orden' para respetar la secuencia del itinerario
+            raw_tours.sort(key=lambda x: x.get("orden", 999))
+            
+            # Extraemos solo los nombres ya ordenados
+            tours_names = [pt["tour"]["nombre"] for pt in raw_tours if pt.get("tour")]
+            
             packages.append({
                 "nombre": p["nombre"],
                 "tours": tours_names
