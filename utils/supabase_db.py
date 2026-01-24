@@ -201,22 +201,64 @@ def populate_catalog():
 #         print(f"Error en poblacion: {e}")
 #         return False
 
+
+def extract_json_list(data, keys_priority):
+    """Helper para extraer listas de estructuras JSON variadas."""
+    if not data: return []
+    if isinstance(data, list): return data
+    if isinstance(data, dict):
+        for k in keys_priority:
+            if k in data and isinstance(data[k], list):
+                return data[k]
+        # Fallback: devolver valores si es una lista plana disfrazada
+        return []
+    return []
+
 def get_available_tours():
     """Obtiene el catálogo de tours desde Supabase."""
     supabase = get_supabase_client()
     if not supabase: return []
     try:
+        # Intentamos seleccionar 'atractivos' explícitamente si existe
+        res = supabase.table("tour").select("*, atractivos").order("nombre").execute()
+    except Exception:
+        # Fallback si la columna 'atractivos' no existe
         res = supabase.table("tour").select("*").order("nombre").execute()
-        # Adaptar nombres de columnas al formato que espera la UI si es necesario
-        tours = []
+
+    tours = []
+    if res.data:
         for t in res.data:
             try:
+                # 1. Parsear Atractivos (UI highlights) desde 'atractivos' o fallback a 'highlights'
+                raw_atractivos = t.get("atractivos")
+                # Si no hay columna atractivos, a veces se guardó en highlights["lugares"]
+                raw_highlights_db = t.get("highlights")
+                
+                final_highlights = []
+                # Prioridad 1: Columna atractivos
+                if raw_atractivos:
+                    final_highlights = extract_json_list(raw_atractivos, ["Lo que visitarás", "lugares", "atractivos"])
+                
+                # Prioridad 2: Buscar dentro de highlights si falló lo anterior
+                if not final_highlights and raw_highlights_db:
+                    final_highlights = extract_json_list(raw_highlights_db, ["Lo que visitarás", "lugares"])
+                
+                # 2. Parsear Servicios
+                servicios_in = extract_json_list(t.get("servicios_incluidos"), ["incluye", "servicios"])
+                servicios_out = extract_json_list(t.get("servicios_no_incluidos"), ["no_incluye", "no_incluidos"])
+
+                # 3. Enriquecer descripción con 'itinerario' si existe en highlights
+                desc = t.get("descripcion", "")
+                if isinstance(raw_highlights_db, dict) and "itinerario" in raw_highlights_db:
+                    # Opcional: Podríamos adjuntarlo, pero por ahora respetamos la descripción corta
+                    pass
+
                 tours.append({
                     "titulo": t.get("nombre", "Sin Nombre"),
-                    "descripcion": t.get("descripcion", ""),
-                    "highlights": t.get("highlights") if t.get("highlights") is not None else [],
-                    "servicios": t.get("servicios_incluidos") if t.get("servicios_incluidos") is not None else [],
-                    "servicios_no_incluye": t.get("servicios_no_incluidos") if t.get("servicios_no_incluidos") is not None else [],
+                    "descripcion": desc,
+                    "highlights": final_highlights,
+                    "servicios": servicios_in,
+                    "servicios_no_incluye": servicios_out,
                     "costo_nacional": float(t.get("precio_nacional") or 0),
                     "costo_extranjero": float(t.get("precio_base_usd") or 0),
                     "carpeta_img": t.get("carpeta_img") or "general",
@@ -225,10 +267,8 @@ def get_available_tours():
             except Exception as e_row:
                 print(f"Error procesando fila de tour {t.get('nombre')}: {e_row}")
                 continue
-        return tours
-    except Exception as e:
-        st.error(f"❌ Error de conexión al cargar Tours: {e}")
-        return []
+    return tours
+
 
 def get_available_packages():
     """Obtiene el catálogo de paquetes desde Supabase."""
