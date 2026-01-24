@@ -311,7 +311,8 @@ def get_available_packages():
     if not supabase: return []
     try:
         # Recuperamos 'orden' además del nombre del tour para poder ordenar
-        res = supabase.table("paquete").select("*, paquete_tour(orden, tour(nombre))").order("nombre").execute()
+        # Filtramos solo paquetes activos
+        res = supabase.table("paquete").select("*, paquete_tour(orden, tour(nombre))").eq("activo", True).order("nombre").execute()
         packages = []
         for p in res.data:
             # Obtenemos la lista cruda de relaciones
