@@ -489,31 +489,41 @@ def render_ventas_ui():
             u_t_v, u_t_o = 0, 0
             precio_cierre_over = None
 
-            if estrategia_v in ["Matriz", "Opciones"]:
-                with st.expander("🏨 Configuración de Upgrades (Hoteles y Trenes)", expanded=True):
-                    st.caption("Define el costo ADICIONAL por noche para hoteles y el total por el tren.")
-                    ch1, ch2, ch3 = st.columns(3)
-                    curr = "S/" if tipo_t == "Nacional" else "$"
-                    u_h2 = ch1.number_input(f"Hotel 2* ({curr}/noche)", value=float(st.session_state.get('u_h2', 40.0)), key="uh2")
-                    u_h3 = ch2.number_input(f"Hotel 3* ({curr}/noche)", value=float(st.session_state.get('u_h3', 70.0)), key="uh3")
-                    u_h4 = ch3.number_input(f"Hotel 4* ({curr}/noche)", value=float(st.session_state.get('u_h4', 110.0)), key="uh4")
+            with st.expander("🏨 Configuración de Costos de Upgrades", expanded=(estrategia_v in ["Matriz", "Opciones"])):
+                st.caption("Define el costo ADICIONAL por noche para hoteles y el total por el tren (se usa para cálculos automáticos).")
+                ch1, ch2, ch3 = st.columns(3)
+                curr = "S/" if tipo_t == "Nacional" else "$"
+                u_h2 = ch1.number_input(f"Hotel 2* ({curr}/noche)", value=float(st.session_state.get('u_h2', 40.0)), key="uh2")
+                u_h3 = ch2.number_input(f"Hotel 3* ({curr}/noche)", value=float(st.session_state.get('u_h3', 70.0)), key="uh3")
+                u_h4 = ch3.number_input(f"Hotel 4* ({curr}/noche)", value=float(st.session_state.get('u_h4', 110.0)), key="uh4")
+                
+                st.divider()
+                ct1, ct2 = st.columns(2)
+                u_t_v = ct1.number_input("Extra Tren Vistadome ($)", value=float(st.session_state.get('u_t_v', 90.0)), key="utv")
+                u_t_o = ct2.number_input("Extra Tren Observatory ($)", value=float(st.session_state.get('u_t_o', 140.0)), key="uto")
+                
+                st.session_state.u_h2 = u_h2
+                st.session_state.u_h3 = u_h3
+                st.session_state.u_h4 = u_h4
+                st.session_state.u_t_v = u_t_v
+                st.session_state.u_t_o = u_t_o
+
+            sel_hotel_gen = "Sin Hotel"
+            sel_tren_gen = "Expedition"
+
+            if estrategia_v == "General":
+                with st.container(border=True):
+                    st.markdown("🎯 **Configuración del Paquete (Modo General)**")
+                    cg1, cg2 = st.columns(2)
+                    sel_hotel_gen = cg1.selectbox("Categoría de Hotel", ["Sin Hotel", "Hotel 2*", "Hotel 3*", "Hotel 4*"], key="sel_h_gen")
+                    sel_tren_gen = cg2.selectbox("Tipo de Tren", ["Expedition", "Vistadome", "Observatory"], key="sel_t_gen")
                     
-                    st.divider()
-                    ct1, ct2 = st.columns(2)
-                    u_t_v = ct1.number_input("Extra Tren Vistadome ($)", value=float(st.session_state.get('u_t_v', 90.0)), key="utv")
-                    u_t_o = ct2.number_input("Extra Tren Observatory ($)", value=float(st.session_state.get('u_t_o', 140.0)), key="uto")
-                    
-                    st.session_state.u_h2 = u_h2
-                    st.session_state.u_h3 = u_h3
-                    st.session_state.u_h4 = u_h4
-                    st.session_state.u_t_v = u_t_v
-                    st.session_state.u_t_o = u_t_o
-                    
-            elif estrategia_v == "General":
-                with st.expander("🎯 Precio de Cierre Definitivo", expanded=True):
                     curr_c = "S/" if tipo_t == "Nacional" else "$"
-                    precio_cierre_over = st.number_input(f"Monto Total Final ({curr_c})", value=0.0, help="Si dejas en 0, se usará el precio calculado automáticamente.")
-                    st.info("Este monto aparecerá como precio único y final en el PDF.")
+                    precio_cierre_over = st.number_input(f"Monto Total Final Manual ({curr_c})", value=0.0, help="Si dejas en 0, se usará el precio calculado automáticamente con los upgrades seleccionados.")
+                    if precio_cierre_over > 0:
+                        st.info(f"Se usará {curr_c} {precio_cierre_over:,.2f} como precio final en el PDF.")
+                    else:
+                        st.caption("Se calculará el precio base + upgrades seleccionados.")
 
             st.divider()
             
@@ -624,11 +634,23 @@ def render_ventas_ui():
                             
                             # Base Price calculation for the primary category
                             if tipo_t == "Nacional":
-                                base_final = total_nac_pp + (extra_nac/max(1, pasajeros_nac))
+                                base_raw = total_nac_pp + (extra_nac/max(1, pasajeros_nac))
                             elif tipo_t == "Extranjero":
-                                base_final = total_ext_pp + (extra_ext/max(1, pasajeros_ext))
+                                base_raw = total_ext_pp + (extra_ext/max(1, pasajeros_ext))
                             else: # Mixto
-                                base_final = total_ext_pp + (extra_ext/max(1, pasajeros_ext))
+                                base_raw = total_ext_pp + (extra_ext/max(1, pasajeros_ext))
+
+                            # Aplicar Upgrades si estamos en modo General
+                            base_final = base_raw
+                            if estrategia_v == "General":
+                                # Sumar Hotel
+                                if sel_hotel_gen == "Hotel 2*": base_final += (u_h2 * num_noches)
+                                elif sel_hotel_gen == "Hotel 3*": base_final += (u_h3 * num_noches)
+                                elif sel_hotel_gen == "Hotel 4*": base_final += (u_h4 * num_noches)
+                                
+                                # Sumar Tren
+                                if sel_tren_gen == "Vistadome": base_final += u_t_v
+                                elif sel_tren_gen == "Observatory": base_final += u_t_o
 
                             # Matrix Calculation
                             def calc_m(base, extra_t, extra_h_n):
