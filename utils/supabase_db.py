@@ -247,11 +247,37 @@ def get_available_tours():
                 servicios_in = extract_json_list(t.get("servicios_incluidos"), ["incluye", "servicios"])
                 servicios_out = extract_json_list(t.get("servicios_no_incluidos"), ["no_incluye", "no_incluidos"])
 
-                # 3. Enriquecer descripción con 'itinerario' si existe en highlights
+                # 3. Enriquecer descripción con 'itinerario' si existe
                 desc = t.get("descripcion", "")
-                if isinstance(raw_highlights_db, dict) and "itinerario" in raw_highlights_db:
-                    # Opcional: Podríamos adjuntarlo, pero por ahora respetamos la descripción corta
-                    pass
+                rich_itinerary = ""
+                
+                # Intentar sacar el texto del itinerario/experiencia de los JSONs
+                if isinstance(raw_atractivos, dict) and "itinerario" in raw_atractivos:
+                    rich_itinerary = raw_atractivos["itinerario"]
+                elif isinstance(raw_highlights_db, dict) and "itinerario" in raw_highlights_db:
+                    rich_itinerary = raw_highlights_db["itinerario"]
+                
+                # Si encontramos texto enriquecido, lo usamos. Si es muy largo, la UI lo truncará, pero el PDF lo tendrá completo.
+                if rich_itinerary:
+                    # Limpiamos un poco el formato del string si viene con saltos raros o comillas dobles escapadas extra
+                    desc = rich_itinerary.replace("\\n", "\n").replace('""', '"').strip()
+                
+                # 4. Formatear Hora
+                raw_hora = t.get("hora_inicio")
+                formatted_hora = "08:00 AM"
+                if raw_hora:
+                    try:
+                        # Si viene como timestamp ISO '2026-01-01 08:00:00-05'
+                        if "T" in str(raw_hora) or "-" in str(raw_hora):
+                            # Intento simple de parserDate
+                            from dateutil import parser
+                            dt = parser.parse(str(raw_hora))
+                            formatted_hora = dt.strftime("%I:%M %p")
+                        else:
+                            # Asumimos que ya es string corto o time
+                             formatted_hora = str(raw_hora)
+                    except:
+                        formatted_hora = str(raw_hora)
 
                 tours.append({
                     "titulo": t.get("nombre", "Sin Nombre"),
@@ -262,7 +288,7 @@ def get_available_tours():
                     "costo_nacional": float(t.get("precio_nacional") or 0),
                     "costo_extranjero": float(t.get("precio_base_usd") or 0),
                     "carpeta_img": t.get("carpeta_img") or "general",
-                    "hora_inicio": t.get("hora_inicio") or "08:00 AM"
+                    "hora_inicio": formatted_hora
                 })
             except Exception as e_row:
                 print(f"Error procesando fila de tour {t.get('nombre')}: {e_row}")
