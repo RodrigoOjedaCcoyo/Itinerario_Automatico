@@ -433,19 +433,11 @@ def render_ventas_ui():
                         
                         st.divider()
                         
-                        # Lógica de validación previa para evitar StreamlitAPIException
                         desc_key = f"desc_{i}"
-                        if desc_key in st.session_state:
-                            val_desc = st.session_state[desc_key]
-                            words_list = val_desc.split()
-                            if len(words_list) > 65:
-                                st.session_state[desc_key] = " ".join(words_list[:65])
-                                st.toast("⚠️ Límite de 65 palabras alcanzado. El texto se ha recortado para proteger el diseño.", icon="🚫")
-                        
                         raw_desc = st.text_area(f"Descripción día {i+1}", tour.get('descripcion', ""), key=desc_key, height=100, disabled=is_disabled)
                         tour['descripcion'] = raw_desc
                         words_count = len(raw_desc.split())
-                        st.caption(f"📝 {words_count}/65 palabras (ideal para el diseño)")
+                        st.caption(f"📝 {words_count} palabras")
                         
                         col_ex1, col_ex2 = st.columns(2)
                         h_text = col_ex1.text_area(f"📍 Atractivos", "\n".join(tour.get('highlights', [])), key=f"h_{i}", height=120, disabled=is_disabled)
