@@ -432,21 +432,20 @@ def render_ventas_ui():
                             tour['costo_can'] = tour['costo_ext']
                         
                         st.divider()
-                        raw_desc = st.text_area(f"Descripción día {i+1}", tour.get('descripcion', ""), key=f"desc_{i}", height=100, disabled=is_disabled)
                         
-                        # Lógica de BLOQUEO TOTAL de palabras (máximo 65)
-                        all_words = raw_desc.split()
-                        words_count = len(all_words)
-                        if words_count > 65:
-                            # Truncar y forzar actualización del widget
-                            truncated_text = " ".join(all_words[:65])
-                            tour['descripcion'] = truncated_text
-                            st.session_state[f"desc_{i}"] = truncated_text
-                            st.toast("⚠️ Límite de 65 palabras alcanzado. El texto se ha recortado para proteger el diseño.", icon="🚫")
-                            st.rerun()
-                        else:
-                            tour['descripcion'] = raw_desc
-                            st.caption(f"📝 {words_count}/65 palabras (ideal para el diseño)")
+                        # Lógica de validación previa para evitar StreamlitAPIException
+                        desc_key = f"desc_{i}"
+                        if desc_key in st.session_state:
+                            val_desc = st.session_state[desc_key]
+                            words_list = val_desc.split()
+                            if len(words_list) > 65:
+                                st.session_state[desc_key] = " ".join(words_list[:65])
+                                st.toast("⚠️ Límite de 65 palabras alcanzado. El texto se ha recortado para proteger el diseño.", icon="🚫")
+                        
+                        raw_desc = st.text_area(f"Descripción día {i+1}", tour.get('descripcion', ""), key=desc_key, height=100, disabled=is_disabled)
+                        tour['descripcion'] = raw_desc
+                        words_count = len(raw_desc.split())
+                        st.caption(f"📝 {words_count}/65 palabras (ideal para el diseño)")
                         
                         col_ex1, col_ex2 = st.columns(2)
                         h_text = col_ex1.text_area(f"📍 Atractivos", "\n".join(tour.get('highlights', [])), key=f"h_{i}", height=120, disabled=is_disabled)
