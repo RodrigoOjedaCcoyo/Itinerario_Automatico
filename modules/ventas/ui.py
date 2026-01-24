@@ -210,7 +210,7 @@ def render_ventas_ui():
             idx_v = vendedores_db.index(vendedor_actual)
         
         vendedor = cv1.selectbox("Vendedor", vendedores_db, index=idx_v if vendedores_db else 0)
-        celular = cv2.text_input("Celular del Cliente", value=st.session_state.f_celular, placeholder="Ej: +51 9XX XXX XXX")
+        celular = cv2.text_input("Celular del Cliente *", value=st.session_state.f_celular, placeholder="Ej: +51 9XX XXX XXX")
         
         t_col1, t_col2 = st.columns(2)
         idx_o = 0 if "Nacional" in st.session_state.f_origen else (1 if "Extranjero" in st.session_state.f_origen else 2)
@@ -565,7 +565,7 @@ def render_ventas_ui():
                 st.rerun()
             
             if c_btn1.button("🔥 GENERAR ITINERARIO PDF"):
-                if nombre and st.session_state.itinerario:
+                if nombre and celular and st.session_state.itinerario:
                     with st.spinner("Generando PDF con Edge..."):
                         # Determinar portada y títulos desde el ESTADO DE SESIÓN
                         base_dir = os.getcwd()
@@ -710,7 +710,7 @@ def render_ventas_ui():
                         except Exception as e:
                             st.error(f"Error procesando: {e}")
                 else:
-                    st.warning("Asegúrate de poner el nombre del cliente y tener al menos un día en el plan.")
+                    st.warning("⚠️ Asegúrate de poner el Nombre, el Celular y tener al menos un tour en el plan.")
     
     # Pie de página
     st.markdown("---")
