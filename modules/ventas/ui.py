@@ -7,7 +7,7 @@ from pathlib import Path
 from utils.pdf_generator import generate_pdf
 from utils.supabase_db import (
     save_itinerary_v2, 
-    get_last_itinerary_v3, 
+    get_last_itinerary_by_phone, 
     get_available_tours, 
     get_available_packages,
     get_vendedores,
@@ -191,7 +191,6 @@ def render_ventas_ui():
         if cel2.button("🔍", key="search_phone"):
             if celular:
                 with st.spinner("Buscando por celular..."):
-                    from utils.supabase_db import get_last_itinerary_by_phone
                     last_data = get_last_itinerary_by_phone(celular)
                     if last_data:
                         datos_completos = last_data.get("datos_render", {})
