@@ -299,8 +299,16 @@ def get_available_tours():
                     "highlights": final_highlights,
                     "servicios": servicios_in,
                     "servicios_no_incluye": servicios_out,
-                    "costo_nacional": float(t.get("precio_nacional") or 0),
-                    "costo_extranjero": float(t.get("precio_base_usd") or 0),
+                    "costo_nacional": float(t.get("precio_adulto_nacional") or t.get("precio_nacional") or 0),
+                    "costo_extranjero": float(t.get("precio_adulto_extranjero") or t.get("precio_base_usd") or 0),
+                    "costo_can": float(t.get("precio_adulto_can") or 0),
+                    # Precios detallados por categoría
+                    "costo_nac_est": float(t.get("precio_estudiante_nacional") or 0),
+                    "costo_nac_nino": float(t.get("precio_nino_nacional") or 0),
+                    "costo_ext_est": float(t.get("precio_estudiante_extranjero") or 0),
+                    "costo_ext_nino": float(t.get("precio_nino_extranjero") or 0),
+                    "costo_can_est": float(t.get("precio_estudiante_can") or 0),
+                    "costo_can_nino": float(t.get("precio_nino_can") or 0),
                     "carpeta_img": t.get("carpeta_img") or "general",
                     "hora_inicio": formatted_hora
                 })
