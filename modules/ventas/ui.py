@@ -285,11 +285,18 @@ def render_ventas_ui():
                            n_adultos_can + n_estud_can + n_pcd_can + n_ninos_can)
         st.info(f"Total personas: {total_pasajeros}")
         
-        fecha_inicio = st.date_input("📅 Fecha de Inicio del Viaje", datetime.now())
+        col_date1, col_date2 = st.columns([2, 1])
+        fecha_inicio = col_date1.date_input("📅 Fecha de Inicio del Viaje", datetime.now())
+        usa_fechas = col_date2.checkbox("¿Ver fechas?", value=st.session_state.get('f_usa_fechas', True), key="f_usa_fechas", help="Si se desactiva, el PDF dirá 'DÍA 1' en lugar de fechas exactas.")
+        
         # Calculamos la fecha fin automáticamente basada en el número de días
         num_dias = len(st.session_state.itinerario)
         fecha_fin = fecha_inicio + timedelta(days=max(0, num_dias - 1))
-        rango_fechas = f"Del {fecha_inicio.strftime('%d/%m')} al {fecha_fin.strftime('%d/%m, %Y')}"
+        # Rango para la portada
+        if usa_fechas:
+            rango_fechas = f"Del {fecha_inicio.strftime('%d/%m')} al {fecha_fin.strftime('%d/%m, %Y')}"
+        else:
+            rango_fechas = f"{num_dias} DÍAS / {max(0, num_dias-1)} NOCHES"
 
         # Sidebar para paquetes guardados
         with st.sidebar:
@@ -445,6 +452,9 @@ def render_ventas_ui():
                         
                         s_text = col_ex2.text_area(f"✅ Incluye", "\n".join(tour.get('servicios', [])), key=f"s_{i}", height=120, disabled=is_disabled)
                         tour['servicios'] = [line.strip() for line in s_text.split("\n") if line.strip()]
+
+                        sn_text = st.text_area(f"❌ No Incluye", "\n".join(tour.get('servicios_no_incluye', [])), key=f"sn_{i}", height=80, disabled=is_disabled)
+                        tour['servicios_no_incluye'] = [line.strip() for line in sn_text.split("\n") if line.strip()]
                         
                         if is_disabled:
                             st.caption("💡 Haz clic en 'Modificar datos de este día' arriba para editar precios o textos.")
@@ -616,7 +626,7 @@ def render_ventas_ui():
                             current_date = fecha_inicio + timedelta(days=i)
                             days_data.append({
                                 'numero': i + 1,
-                                'fecha': current_date.strftime('%d / %m / %Y'),
+                                'fecha': current_date.strftime('%d / %m / %Y') if usa_fechas else "",
                                 'titulo': tour['titulo'],
                                 'hora_inicio': tour.get('hora_inicio') or '08:00 AM',
                                 'descripcion': tour.get('descripcion', ''),
@@ -682,11 +692,12 @@ def render_ventas_ui():
                                 'title_2': t2,
                                 'pasajero': nombre.upper(),
                                 'fechas': rango_fechas.upper(),
+                                'usa_fechas': usa_fechas,
                                 'categoria': target_cat.upper(),
                                 'modo': modo_s.upper(),
                                 'estrategia': estrategia_v,
                                 'simbolo_moneda': curr_sym,
-                                'duracion': f"{len(st.session_state.itinerario)}D-{num_noches}N",
+                                'duracion': f"{len(st.session_state.itinerario)}D / {num_noches}N",
                                 'cover_url': os.path.abspath(cover_img),
                                 'vendedor': vendedor,
                                 'celular_cliente': celular,

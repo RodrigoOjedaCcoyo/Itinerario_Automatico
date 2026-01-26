@@ -29,7 +29,9 @@
 
         <div class="cover-footer-info">
             <div class="cover-dates">{{ fechas }}</div>
+            {% if usa_fechas %}
             <div class="cover-duration-badge">{{ duracion }}</div>
+            {% endif %}
         </div>
     </div>
 
@@ -45,7 +47,9 @@
         <div class="day-header">
             <div class="day-date-row">
                 <span class="day-number">DÍA {{ day.numero }}:</span>
+                {% if day.fecha %}
                 <span class="day-date">{{ day.fecha }}</span>
+                {% endif %}
                 {% if day.hora_inicio %}
                 <span class="day-time-badge"
                     style="background: rgba(85, 183, 176, 0.1); border: 1.5px solid #55b7b0; color: #55b7b0; padding: 2px 10px; border-radius: 15px; font-size: 11px; margin-left: 10px; font-weight: 800; text-transform: uppercase; vertical-align: middle; display: inline-block;">
