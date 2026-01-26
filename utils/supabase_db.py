@@ -102,15 +102,20 @@ def save_itinerary_v2(itinerary_data):
         return None
 
 
-def get_last_itinerary_v3(name: str):
-    """Busca el historial usando el nuevo esquema."""
+def get_last_itinerary_by_phone(phone: str):
+    """Busca el historial usando el número de celular."""
     supabase = get_supabase_client()
-    if not supabase or not name: return None
+    if not supabase or not phone: return None
+    
+    # Limpiar el teléfono de espacios para la búsqueda
+    phone_clean = phone.strip()
     
     try:
+        # 1. Buscar en itinerario_digital (datos_render -> celular_cliente)
+        # Nota: Como es un JSONB, el filtro exacto depende de la estructura
         response = supabase.table("itinerario_digital")\
             .select("*")\
-            .ilike("nombre_pasajero_itinerario", f"%{name}%")\
+            .ilike("datos_render->>celular_cliente", f"%{phone_clean}%")\
             .order("fecha_generacion", desc=True)\
             .limit(1)\
             .execute()

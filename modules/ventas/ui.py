@@ -151,37 +151,8 @@ def render_ventas_ui():
     with col1:
         st.subheader("👤 Datos del Pasajero")
         
-        nc1, nc2 = st.columns([5, 1])
-        nombre = nc1.text_input("Nombre Completo del Cliente", placeholder="Ej: Juan Pérez")
-        nc2.markdown("<div style='height: 28px;'></div>", unsafe_allow_html=True) # Espaciador para alinear con input
-        if nc2.button("🔍", help="Buscar cliente"):
-            if nombre:
-                nombre_clean = nombre.strip().upper() # Limpiamos espacios y estandarizamos
-                with st.spinner(f"Buscando a {nombre_clean}..."):
-                    st.toast(f"🔎 Buscando '{nombre_clean}' en Base de Datos (v3)...", icon="😎")
-                    last_data = get_last_itinerary_v3(nombre_clean)
-                    if last_data:
-                        # Auto-llenar campos desde el nuevo esquema
-                        datos_completos = last_data.get("datos_render", {})
-                        st.session_state.f_vendedor = datos_completos.get("vendedor", "")
-                        st.session_state.f_celular = datos_completos.get("celular_cliente", "")
-                        st.session_state.f_fuente = datos_completos.get("fuente", "WhatsApp")
-                        st.session_state.f_estrategia = datos_completos.get("estrategia", "Opciones")
-                        st.session_state.f_origen = datos_completos.get("categoria", "Nacional")
-                        
-                        if datos_completos and 'days' in datos_completos:
-                             # Re-construir itinerario simplificado para el editor
-                             new_it = []
-                             for d in datos_completos['days']:
-                                 t_original = next((t for t in tours_db if t['titulo'] == d['titulo']), None)
-                                 if t_original:
-                                     new_it.append(t_original.copy())
-                             st.session_state.itinerario = new_it
-                        
-                        st.success(f"¡Datos cargados para {nombre}!")
-                        st.rerun()
-                    else:
-                        st.warning("No se encontraron registros previos.")
+        nombre = st.text_input("Nombre Completo del Cliente", value=st.session_state.get('f_nombre', ''), placeholder="Ej: Juan Pérez")
+        st.session_state.f_nombre = nombre
 
         ld_col1, ld_col2 = st.columns([1, 1])
         
@@ -211,7 +182,37 @@ def render_ventas_ui():
             idx_v = vendedores_db.index(vendedor_actual)
         
         vendedor = cv1.selectbox("Vendedor", vendedores_db, index=idx_v if vendedores_db else 0)
-        celular = cv2.text_input("Celular del Cliente *", value=st.session_state.f_celular, placeholder="Ej: +51 9XX XXX XXX")
+        
+        cel1, cel2 = cv2.columns([4, 1])
+        celular = cel1.text_input("Celular del Cliente *", value=st.session_state.f_celular, placeholder="Ej: 9XX XXX XXX")
+        st.session_state.f_celular = celular
+        
+        cel2.markdown("<div style='height: 28px;'></div>", unsafe_allow_html=True)
+        if cel2.button("🔍", key="search_phone"):
+            if celular:
+                with st.spinner("Buscando por celular..."):
+                    from utils.supabase_db import get_last_itinerary_by_phone
+                    last_data = get_last_itinerary_by_phone(celular)
+                    if last_data:
+                        datos_completos = last_data.get("datos_render", {})
+                        st.session_state.f_nombre = datos_completos.get("pasajero", "")
+                        st.session_state.f_vendedor = datos_completos.get("vendedor", "")
+                        st.session_state.f_fuente = datos_completos.get("fuente", "WhatsApp")
+                        st.session_state.f_estrategia = datos_completos.get("estrategia", "Opciones")
+                        st.session_state.f_origen = datos_completos.get("categoria", "Nacional")
+                        
+                        if datos_completos and 'days' in datos_completos:
+                             new_it = []
+                             for d in datos_completos['days']:
+                                 t_original = next((t for t in tours_db if t['titulo'] == d['titulo']), None)
+                                 if t_original:
+                                     new_it.append(t_original.copy())
+                             st.session_state.itinerario = new_it
+                        
+                        st.success(f"¡Datos cargados!")
+                        st.rerun()
+                    else:
+                        st.warning("No se encontraron registros previos.")
         
         t_col1, t_col2 = st.columns(2)
         idx_o = 0 if "Nacional" in st.session_state.f_origen else (1 if "Extranjero" in st.session_state.f_origen else 2)
