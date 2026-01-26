@@ -347,15 +347,25 @@ def render_ventas_ui():
                     missing_tours = []
                     for t_n in pkg_final['tours']:
                         # Búsqueda robusta (sin espacios, sin mayúsculas/minúsculas)
-                        t_f = next((t for t in tours_db if t['titulo'].strip().upper() == t_n.strip().upper()), None)
                         if t_f:
                             nuevo_t = t_f.copy()
-                            nuevo_t['costo_nac'] = t_f.get('costo_nacional', 0)
-                            nuevo_t['costo_ext'] = t_f.get('costo_extranjero', 0)
+                            cn = float(t_f.get('costo_nacional', 0))
+                            ce = float(t_f.get('costo_extranjero', 0))
+                            nuevo_t['costo_nac'] = cn
+                            nuevo_t['costo_nac_est'] = cn - 70.0
+                            nuevo_t['costo_nac_nino'] = cn - 40.0
+                            nuevo_t['costo_ext'] = ce
+                            nuevo_t['costo_ext_est'] = ce - 20.0
+                            nuevo_t['costo_ext_nino'] = ce - 15.0
+
                             if "MACHU PICCHU" in t_f['titulo'].upper():
-                                nuevo_t['costo_can'] = nuevo_t['costo_ext'] - 20
+                                cc = ce - 20.0
                             else:
-                                nuevo_t['costo_can'] = nuevo_t['costo_ext']
+                                cc = ce
+                            
+                            nuevo_t['costo_can'] = cc
+                            nuevo_t['costo_can_est'] = cc - 20.0
+                            nuevo_t['costo_can_nino'] = cc - 15.0
                             
                             # ID único para persistencia de widgets
                             if 'id' not in nuevo_t:
@@ -387,12 +397,23 @@ def render_ventas_ui():
             t_data = next((t for t in tours_db if t['titulo'] == tour_sel), None)
             if t_data:
                 nuevo_t = t_data.copy()
-                nuevo_t['costo_nac'] = t_data.get('costo_nacional', 0)
-                nuevo_t['costo_ext'] = t_data.get('costo_extranjero', 0)
+                cn = float(t_data.get('costo_nacional', 0))
+                ce = float(t_data.get('costo_extranjero', 0))
+                nuevo_t['costo_nac'] = cn
+                nuevo_t['costo_nac_est'] = cn - 70.0
+                nuevo_t['costo_nac_nino'] = cn - 40.0
+                nuevo_t['costo_ext'] = ce
+                nuevo_t['costo_ext_est'] = ce - 20.0
+                nuevo_t['costo_ext_nino'] = ce - 15.0
+
                 if "MACHU PICCHU" in t_data['titulo'].upper():
-                    nuevo_t['costo_can'] = nuevo_t['costo_ext'] - 20
+                    cc = ce - 20.0
                 else:
-                    nuevo_t['costo_can'] = nuevo_t['costo_ext']
+                    cc = ce
+                
+                nuevo_t['costo_can'] = cc
+                nuevo_t['costo_can_est'] = cc - 20.0
+                nuevo_t['costo_can_nino'] = cc - 15.0
                 
                 # ID único para persistencia de widgets
                 nuevo_t['id'] = str(uuid.uuid4())
@@ -451,6 +472,23 @@ def render_ventas_ui():
                             tour['costo_ext'] = col_e.number_input(f"Ext ($)", value=float(tour.get('costo_ext', 0)), key=f"ce_{tour_id}", disabled=is_disabled)
                             tour['costo_can'] = tour['costo_ext']
                         
+                        # --- NUEVO: Tarifas por Categoría ---
+                        with st.expander("👥 Editar Tarifas por Categoría (Estudiantes/Niños)", expanded=False):
+                            st.caption("Ajusta los precios específicos para este tour. Los cambios se reflejarán en el cálculo total.")
+                            ec1, ec2, ec3 = st.columns(3)
+                            # Nacionales
+                            ec1.markdown("**🇵🇪 Nac**")
+                            tour['costo_nac_est'] = ec1.number_input(f"Estud/PcD (S/)", value=float(tour.get('costo_nac_est', tour['costo_nac']-70)), key=f"cn_e_{tour_id}", disabled=is_disabled)
+                            tour['costo_nac_nino'] = ec1.number_input(f"Niño (S/)", value=float(tour.get('costo_nac_nino', tour['costo_nac']-40)), key=f"cn_n_{tour_id}", disabled=is_disabled)
+                            # Extranjeros
+                            ec2.markdown("**🌎 Ext**")
+                            tour['costo_ext_est'] = ec2.number_input(f"Estud/PcD ($)", value=float(tour.get('costo_ext_est', tour['costo_ext']-20)), key=f"ce_e_{tour_id}", disabled=is_disabled)
+                            tour['costo_ext_nino'] = ec2.number_input(f"Niño ($)", value=float(tour.get('costo_ext_nino', tour['costo_ext']-15)), key=f"ce_n_{tour_id}", disabled=is_disabled)
+                            # CAN
+                            ec3.markdown("**🤝 CAN**")
+                            tour['costo_can_est'] = ec3.number_input(f"Estud/PcD ($)", value=float(tour.get('costo_can_est', tour['costo_can']-20)), key=f"cc_e_{tour_id}", disabled=is_disabled)
+                            tour['costo_can_nino'] = ec3.number_input(f"Niño ($)", value=float(tour.get('costo_can_nino', tour['costo_can']-15)), key=f"cc_n_{tour_id}", disabled=is_disabled)
+
                         st.divider()
                         
                         desc_key = f"desc_{tour_id}"
@@ -561,38 +599,52 @@ def render_ventas_ui():
             pasajeros_ext = n_adultos_ext + n_estud_ext + n_pcd_ext + n_ninos_ext
             pasajeros_can = n_adultos_can + n_estud_can + n_pcd_can + n_ninos_can
             
-            # --- LÓGICA DE DESCUENTOS AUTOMÁTICOS ---
-            # Nacionales: Niño -S/ 40, Estudiante/PcD -S/ 70
-            desc_nac = (n_ninos_nac * 40.0) + (n_estud_nac * 70.0) + (n_pcd_nac * 70.0)
-            # Extranjeros/CAN: Niño -$15, Estudiante/PcD -$20
-            desc_ext = (n_ninos_ext * 15.0) + (n_estud_ext * 20.0) + (n_pcd_ext * 20.0)
-            desc_can = (n_ninos_can * 15.0) + (n_estud_can * 20.0) + (n_pcd_can * 20.0)
+            # --- NUEVA LÓGICA DE CÁLCULO DETALLADO ---
+            # Inicializar acumuladores por categoría
+            total_nac = 0.0
+            total_ext = 0.0
+            total_can = 0.0
 
-            real_nac = (total_nac_pp * pasajeros_nac) + extra_nac - desc_nac
-            real_ext = (total_ext_pp * pasajeros_ext) + extra_ext - desc_ext
-            real_can = (total_can_pp * pasajeros_can) + extra_can - desc_can
+            for t in st.session_state.itinerario:
+                # Nacionales
+                total_nac += (t.get('costo_nac', 0) * n_adultos_nac)
+                total_nac += (t.get('costo_nac_est', t.get('costo_nac', 0)-70) * (n_estud_nac + n_pcd_nac))
+                total_nac += (t.get('costo_nac_nino', t.get('costo_nac', 0)-40) * n_ninos_nac)
+                
+                # Extranjeros
+                total_ext += (t.get('costo_ext', 0) * n_adultos_ext)
+                total_ext += (t.get('costo_ext_est', t.get('costo_ext', 0)-20) * (n_estud_ext + n_pcd_ext))
+                total_ext += (t.get('costo_ext_nino', t.get('costo_ext', 0)-15) * n_ninos_ext)
+
+                # CAN
+                total_can += (t.get('costo_can', 0) * n_adultos_can)
+                total_can += (t.get('costo_can_est', t.get('costo_can', 0)-20) * (n_estud_can + n_pcd_can))
+                total_can += (t.get('costo_can_nino', t.get('costo_can', 0)-15) * n_ninos_can)
+
+            real_nac = total_nac + extra_nac
+            real_ext = total_ext + extra_ext
+            real_can = total_can + extra_can
             
+            # Para mostrar en la UI los precios promedio por persona (opcional, para referencia)
+            avg_nac_pp = total_nac / max(1, pasajeros_nac)
+            avg_ext_pp = total_ext / max(1, pasajeros_ext)
+            avg_can_pp = total_can / max(1, pasajeros_can)
+
             col_res1, col_res2, col_res3 = st.columns(3)
             with col_res1:
                 st.markdown("### 🇵🇪 Nacionales")
                 st.markdown(f"## S/ {real_nac:,.2f}")
-                if desc_nac > 0:
-                    st.success(f"📉 Ahorro Aplicado: S/ {desc_nac:,.2f}")
-                st.caption(f"({pasajeros_nac} pas x S/ {total_nac_pp:,.2f} p/p)")
+                st.caption(f"({pasajeros_nac} pas - Promedio: S/ {avg_nac_pp:,.2f})")
             
             with col_res2:
                 st.markdown("### 🌎 Extranjeros")
                 st.markdown(f"## $ {real_ext:,.2f}")
-                if desc_ext > 0:
-                    st.success(f"📉 Ahorro Aplicado: $ {desc_ext:,.2f}")
-                st.caption(f"({pasajeros_ext} pas x $ {total_ext_pp:,.2f} p/p)")
+                st.caption(f"({pasajeros_ext} pas - Promedio: $ {avg_ext_pp:,.2f})")
             
             with col_res3:
                 st.markdown("### 🤝 CAN")
                 st.markdown(f"## $ {real_can:,.2f}")
-                if desc_can > 0:
-                    st.success(f"📉 Ahorro Aplicado: $ {desc_can:,.2f}")
-                st.caption(f"({pasajeros_can} pas x $ {total_can_pp:,.2f} p/p)")
+                st.caption(f"({pasajeros_can} pas - Promedio: $ {avg_can_pp:,.2f})")
             
             nota_p = st.text_input("📝 Nota de Precio (Aparece en el PDF)", value=st.session_state.f_nota_precio, placeholder="Ej: INCLUYE HOTEL EN HAB. DOBLE")
             st.session_state.f_nota_precio = nota_p
@@ -629,7 +681,16 @@ def render_ventas_ui():
                         # Preparar días con imágenes
                         days_data = []
                         for i, tour in enumerate(st.session_state.itinerario):
+                            titulo_actual = tour.get('titulo', '').upper()
                             carpeta = tour.get('carpeta_img', 'general')
+                            
+                            # SINCRONIZACIÓN INTELIGENTE: 
+                            # Si el usuario cambió el título manualmente, intentamos buscar la carpeta correcta
+                            if tours_db:
+                                match_t = next((t for t in tours_db if t['titulo'].upper() == titulo_actual), None)
+                                if match_t:
+                                    carpeta = match_t.get('carpeta_img', carpeta)
+
                             imgs = obtener_imagenes_tour(carpeta)
                             
                             # Preparar servicios con iconos SVG
