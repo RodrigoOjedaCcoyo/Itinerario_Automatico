@@ -731,7 +731,7 @@ def render_ventas_ui():
                                 'precio_cierre': f"{precio_cierre_over:,.2f}" if (precio_cierre_over and precio_cierre_over > 0) else f"{base_final:,.2f}",
                                 'matriz': pricing_matrix,
                                 'precio_nota': nota_p.upper(),
-                                'canal': st.session_state.f_tipo_cliente,
+                                'canal': st.session_state.get('f_tipo_cliente', 'B2C'),
                                 'days': days_data
                             }
 

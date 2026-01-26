@@ -32,13 +32,15 @@ if not st.session_state.authenticated:
 else:
     # Sidebar de Usuario Autenticado
     with st.sidebar:
-        st.write(f"👤 **Usuario:** {st.session_state.user_email}")
-        st.write(f"🛡️ **Rol:** {st.session_state.user_rol}")
+        user_email = st.session_state.get("user_email", "desconocido")
+        user_rol = st.session_state.get("user_rol", "VENTAS")
+        st.write(f"👤 **Usuario:** {user_email}")
+        st.write(f"🛡️ **Rol:** {user_rol}")
         if st.button("Cerrar Sesión"):
             st.session_state.authenticated = False
             st.rerun()
         st.divider()
-        st.caption("v2.2 - Fix Busqueda Clientes 🟢")
+        st.caption("v2.3 - Estabilidad Reforzada 🟢")
 
     # Importar y renderizar el módulo de ventas
     from modules.ventas.ui import render_ventas_ui
