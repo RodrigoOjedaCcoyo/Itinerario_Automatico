@@ -448,9 +448,10 @@ def render_ventas_ui():
                     
                     current_date = fecha_inicio + timedelta(days=i)
                     date_str = current_date.strftime('%d/%m/%Y')
-                    header_text = f"🗓️ {date_str} - DÍA {i+1}: {tour['titulo']} - (S/ {tour.get('costo_nac', 0)} | $ {tour.get('costo_ext', 0)})"
+                    header_icon = "⭐" if modo_s == "B2B" else "📍" 
+                    header_text = f"✨ {date_str} - DÍA {i+1}: {tour['titulo']} - (S/ {tour.get('costo_nac', 0)} | $ {tour.get('costo_ext', 0)})"
                     if es_mp:
-                        header_text = f"🗓️ {date_str} - DÍA {i+1}: {tour['titulo']} - (S/ {tour.get('costo_nac', 0)} | $ {tour.get('costo_ext', 0)} | CAN $ {tour.get('costo_can', 0)})"
+                        header_text = f"✨ {date_str} - DÍA {i+1}: {tour['titulo']} - (S/ {tour.get('costo_nac', 0)} | $ {tour.get('costo_ext', 0)} | CAN $ {tour.get('costo_can', 0)})"
                     
                     with st.expander(header_text, expanded=False):
                         # Control de edición manual para este día específico
@@ -472,22 +473,27 @@ def render_ventas_ui():
                             tour['costo_ext'] = col_e.number_input(f"Ext ($)", value=float(tour.get('costo_ext', 0)), key=f"ce_{tour_id}", disabled=is_disabled)
                             tour['costo_can'] = tour['costo_ext']
                         
-                        # --- NUEVO: Tarifas por Categoría ---
-                        with st.expander("👥 Editar Tarifas por Categoría (Estudiantes/Niños)", expanded=False):
-                            st.caption("Ajusta los precios específicos para este tour. Los cambios se reflejarán en el cálculo total.")
-                            ec1, ec2, ec3 = st.columns(3)
-                            # Nacionales
-                            ec1.markdown("**🇵🇪 Nac**")
-                            tour['costo_nac_est'] = ec1.number_input(f"Estud/PcD (S/)", value=float(tour.get('costo_nac_est', tour['costo_nac']-70)), key=f"cn_e_{tour_id}", disabled=is_disabled)
-                            tour['costo_nac_nino'] = ec1.number_input(f"Niño (S/)", value=float(tour.get('costo_nac_nino', tour['costo_nac']-40)), key=f"cn_n_{tour_id}", disabled=is_disabled)
-                            # Extranjeros
-                            ec2.markdown("**🌎 Ext**")
-                            tour['costo_ext_est'] = ec2.number_input(f"Estud/PcD ($)", value=float(tour.get('costo_ext_est', tour['costo_ext']-20)), key=f"ce_e_{tour_id}", disabled=is_disabled)
-                            tour['costo_ext_nino'] = ec2.number_input(f"Niño ($)", value=float(tour.get('costo_ext_nino', tour['costo_ext']-15)), key=f"ce_n_{tour_id}", disabled=is_disabled)
-                            # CAN
-                            ec3.markdown("**🤝 CAN**")
-                            tour['costo_can_est'] = ec3.number_input(f"Estud/PcD ($)", value=float(tour.get('costo_can_est', tour['costo_can']-20)), key=f"cc_e_{tour_id}", disabled=is_disabled)
-                            tour['costo_can_nino'] = ec3.number_input(f"Niño ($)", value=float(tour.get('costo_can_nino', tour['costo_can']-15)), key=f"cc_n_{tour_id}", disabled=is_disabled)
+                        # --- MEJORA: Tarifas por Categoría (Ahora más visible) ---
+                        if modo_edicion:
+                            with st.container(border=True):
+                                st.markdown("##### 👥 Edición de Tarifas por Categoría (Estudiantes/Niños)")
+                                ec1, ec2, ec3 = st.columns(3)
+                                # Nacionales
+                                ec1.markdown("**🇵🇪 Nac**")
+                                tour['costo_nac_est'] = ec1.number_input(f"Estud/PcD (S/)", value=float(tour.get('costo_nac_est', tour['costo_nac']-70)), key=f"cn_e_{tour_id}")
+                                tour['costo_nac_nino'] = ec1.number_input(f"Niño (S/)", value=float(tour.get('costo_nac_nino', tour['costo_nac']-40)), key=f"cn_n_{tour_id}")
+                                # Extranjeros
+                                ec2.markdown("**🌎 Ext**")
+                                tour['costo_ext_est'] = ec2.number_input(f"Estud/PcD ($)", value=float(tour.get('costo_ext_est', tour['costo_ext']-20)), key=f"ce_e_{tour_id}")
+                                tour['costo_ext_nino'] = ec2.number_input(f"Niño ($)", value=float(tour.get('costo_ext_nino', tour['costo_ext']-15)), key=f"ce_n_{tour_id}")
+                                # CAN
+                                ec3.markdown("**🤝 CAN**")
+                                tour['costo_can_est'] = ec3.number_input(f"Estud/PcD ($)", value=float(tour.get('costo_can_est', tour['costo_can']-20)), key=f"cc_e_{tour_id}")
+                                tour['costo_can_nino'] = ec3.number_input(f"Niño ($)", value=float(tour.get('costo_can_nino', tour['costo_can']-15)), key=f"cc_n_{tour_id}")
+                        else:
+                            with st.expander("👥 Ver Tarifas por Categoría"):
+                                st.write(f"**Nac:** Estud S/ {tour.get('costo_nac_est',0)} | Niño S/ {tour.get('costo_nac_nino',0)}")
+                                st.write(f"**Ext:** Estud $ {tour.get('costo_ext_est',0)} | Niño $ {tour.get('costo_ext_nino',0)}")
 
                         st.divider()
                         
