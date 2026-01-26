@@ -417,6 +417,9 @@ def render_ventas_ui():
                 total_ext_pp += tour.get('costo_ext', 0)
                 total_can_pp += tour.get('costo_can', 0)
                 
+                tour_id = tour.get('id', str(uuid.uuid4()))
+                tour['id'] = tour_id # Asegurar que esté guardado
+                
                 c_content, c_btns = st.columns([0.88, 0.12])
                 
                 with c_content:
@@ -430,40 +433,40 @@ def render_ventas_ui():
                     
                     with st.expander(header_text, expanded=False):
                         # Control de edición manual para este día específico
-                        modo_edicion = st.toggle("🔧 Modificar datos de este día", key=f"mod_edit_{i}")
+                        modo_edicion = st.toggle("🔧 Modificar datos de este día", key=f"mod_edit_{tour_id}")
                         is_disabled = not modo_edicion
                         
                         if es_mp:
                             col_t1, col_n, col_e, col_c, col_h = st.columns([1.5, 0.6, 0.6, 0.6, 0.6])
-                            tour['titulo'] = col_t1.text_input(f"Título día {i+1}", tour['titulo'], key=f"title_{i}", disabled=is_disabled)
-                            tour['hora_inicio'] = col_h.text_input(f"⏰ Hora", value=tour.get('hora_inicio', '08:00 AM'), key=f"hi_{i}", disabled=is_disabled)
-                            tour['costo_nac'] = col_n.number_input(f"Nac (S/)", value=float(tour.get('costo_nac', 0)), key=f"cn_{i}", disabled=is_disabled)
-                            tour['costo_ext'] = col_e.number_input(f"Ext ($)", value=float(tour.get('costo_ext', 0)), key=f"ce_{i}", disabled=is_disabled)
-                            tour['costo_can'] = col_c.number_input(f"CAN ($)", value=float(tour.get('costo_can', 0)), key=f"cc_{i}", disabled=is_disabled)
+                            tour['titulo'] = col_t1.text_input(f"Título día {i+1}", tour['titulo'], key=f"title_{tour_id}", disabled=is_disabled)
+                            tour['hora_inicio'] = col_h.text_input(f"⏰ Hora", value=tour.get('hora_inicio', '08:00 AM'), key=f"hi_{tour_id}", disabled=is_disabled)
+                            tour['costo_nac'] = col_n.number_input(f"Nac (S/)", value=float(tour.get('costo_nac', 0)), key=f"cn_{tour_id}", disabled=is_disabled)
+                            tour['costo_ext'] = col_e.number_input(f"Ext ($)", value=float(tour.get('costo_ext', 0)), key=f"ce_{tour_id}", disabled=is_disabled)
+                            tour['costo_can'] = col_c.number_input(f"CAN ($)", value=float(tour.get('costo_can', 0)), key=f"cc_{tour_id}", disabled=is_disabled)
                         else:
                             col_t1, col_n, col_e, col_h = st.columns([2, 0.8, 0.8, 0.8])
-                            tour['titulo'] = col_t1.text_input(f"Título día {i+1}", tour['titulo'], key=f"title_{i}", disabled=is_disabled)
-                            tour['hora_inicio'] = col_h.text_input(f"⏰ Hora", value=tour.get('hora_inicio', '08:00 AM'), key=f"hi_{i}", disabled=is_disabled)
-                            tour['costo_nac'] = col_n.number_input(f"Nac (S/)", value=float(tour.get('costo_nac', 0)), key=f"cn_{i}", disabled=is_disabled)
-                            tour['costo_ext'] = col_e.number_input(f"Ext ($)", value=float(tour.get('costo_ext', 0)), key=f"ce_{i}", disabled=is_disabled)
+                            tour['titulo'] = col_t1.text_input(f"Título día {i+1}", tour['titulo'], key=f"title_{tour_id}", disabled=is_disabled)
+                            tour['hora_inicio'] = col_h.text_input(f"⏰ Hora", value=tour.get('hora_inicio', '08:00 AM'), key=f"hi_{tour_id}", disabled=is_disabled)
+                            tour['costo_nac'] = col_n.number_input(f"Nac (S/)", value=float(tour.get('costo_nac', 0)), key=f"cn_{tour_id}", disabled=is_disabled)
+                            tour['costo_ext'] = col_e.number_input(f"Ext ($)", value=float(tour.get('costo_ext', 0)), key=f"ce_{tour_id}", disabled=is_disabled)
                             tour['costo_can'] = tour['costo_ext']
                         
                         st.divider()
                         
-                        desc_key = f"desc_{i}"
+                        desc_key = f"desc_{tour_id}"
                         raw_desc = st.text_area(f"Descripción día {i+1}", tour.get('descripcion', ""), key=desc_key, height=100, disabled=is_disabled)
                         tour['descripcion'] = raw_desc
                         words_count = len(raw_desc.split())
                         st.caption(f"📝 {words_count} palabras")
                         
                         col_ex1, col_ex2 = st.columns(2)
-                        h_text = col_ex1.text_area(f"📍 Atractivos", "\n".join(tour.get('highlights', [])), key=f"h_{i}", height=120, disabled=is_disabled)
+                        h_text = col_ex1.text_area(f"📍 Atractivos", "\n".join(tour.get('highlights', [])), key=f"h_{tour_id}", height=120, disabled=is_disabled)
                         tour['highlights'] = [line.strip() for line in h_text.split("\n") if line.strip()]
                         
-                        s_text = col_ex2.text_area(f"✅ Incluye", "\n".join(tour.get('servicios', [])), key=f"s_{i}", height=120, disabled=is_disabled)
+                        s_text = col_ex2.text_area(f"✅ Incluye", "\n".join(tour.get('servicios', [])), key=f"s_{tour_id}", height=120, disabled=is_disabled)
                         tour['servicios'] = [line.strip() for line in s_text.split("\n") if line.strip()]
 
-                        sn_text = st.text_area(f"❌ No Incluye", "\n".join(tour.get('servicios_no_incluye', [])), key=f"sn_{i}", height=80, disabled=is_disabled)
+                        sn_text = st.text_area(f"❌ No Incluye", "\n".join(tour.get('servicios_no_incluye', [])), key=f"sn_{tour_id}", height=80, disabled=is_disabled)
                         tour['servicios_no_incluye'] = [line.strip() for line in sn_text.split("\n") if line.strip()]
                         
                         if is_disabled:
