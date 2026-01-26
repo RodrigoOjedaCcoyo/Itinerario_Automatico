@@ -347,6 +347,7 @@ def render_ventas_ui():
                     missing_tours = []
                     for t_n in pkg_final['tours']:
                         # Búsqueda robusta (sin espacios, sin mayúsculas/minúsculas)
+                        t_f = next((t for t in tours_db if t['titulo'].strip().upper() == t_n.strip().upper()), None)
                         if t_f:
                             nuevo_t = t_f.copy()
                             cn = float(t_f.get('costo_nacional', 0))
