@@ -1,5 +1,6 @@
 import streamlit as st
 import os
+import uuid
 import json
 from datetime import datetime, timedelta
 from pathlib import Path
@@ -355,6 +356,11 @@ def render_ventas_ui():
                                 nuevo_t['costo_can'] = nuevo_t['costo_ext'] - 20
                             else:
                                 nuevo_t['costo_can'] = nuevo_t['costo_ext']
+                            
+                            # ID único para persistencia de widgets
+                            if 'id' not in nuevo_t:
+                                nuevo_t['id'] = str(uuid.uuid4())
+                                
                             found_tours.append(nuevo_t)
                         else:
                             missing_tours.append(t_n)
@@ -387,6 +393,10 @@ def render_ventas_ui():
                     nuevo_t['costo_can'] = nuevo_t['costo_ext'] - 20
                 else:
                     nuevo_t['costo_can'] = nuevo_t['costo_ext']
+                
+                # ID único para persistencia de widgets
+                nuevo_t['id'] = str(uuid.uuid4())
+                
                 st.session_state.itinerario.append(nuevo_t)
                 st.rerun()
     
@@ -464,20 +474,22 @@ def render_ventas_ui():
                     # Usamos columnas para el control de orden y borrado
                     b_col1, b_col2 = st.columns([2, 1])
                     
-                    # Selector de posición numérica
+                    # Selector de posición numérica con KEY ESTABLE (usando ID único)
+                    tour_id = tour.get('id', str(i))
                     new_pos = b_col1.number_input("Orden", 
                                                  min_value=1, 
                                                  max_value=len(st.session_state.itinerario), 
                                                  value=i+1, 
-                                                 key=f"new_pos_{i}",
-                                                 on_change=None) # Podríamos usar on_change pero el flujo actual usa rerun
+                                                 key=f"new_pos_{tour_id}")
                     
                     # Si el número cambia, movemos el tour
                     if new_pos != i+1:
-                        st.session_state.itinerario.insert(new_pos-1, st.session_state.itinerario.pop(i))
+                        # Extraer el tour y reinsertarlo en la nueva posición
+                        item = st.session_state.itinerario.pop(i)
+                        st.session_state.itinerario.insert(new_pos-1, item)
                         st.rerun()
 
-                    if b_col2.button("🗑️", key=f"del_{i}"):
+                    if b_col2.button("🗑️", key=f"del_{tour_id}"):
                         st.session_state.itinerario.pop(i)
                         st.rerun()
                 
