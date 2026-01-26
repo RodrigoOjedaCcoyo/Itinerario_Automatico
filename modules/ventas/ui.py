@@ -177,7 +177,7 @@ def render_ventas_ui():
         # El vendedor se obtiene automáticamente de la sesión
         vendedor = st.session_state.get("vendedor_name", "Anonimo")
         
-        cel1, cel2 = cv2.columns([4, 1])
+        cel1, cel2 = st.columns([4, 1])
         celular = cel1.text_input("Celular del Cliente *", value=st.session_state.f_celular, placeholder="Ej: 9XX XXX XXX")
         st.session_state.f_celular = celular
         
