@@ -461,16 +461,23 @@ def render_ventas_ui():
                 
                 with c_btns:
                     st.write('<div style="margin-top: 4px;"></div>', unsafe_allow_html=True)
-                    b1, b2, b3 = st.columns(3)
-                    if b1.button("🔼", key=f"up_{i}"):
-                        if i > 0:
-                            st.session_state.itinerario.insert(i-1, st.session_state.itinerario.pop(i))
-                            st.rerun()
-                    if b2.button("🔽", key=f"down_{i}"):
-                        if i < len(st.session_state.itinerario)-1:
-                            st.session_state.itinerario.insert(i+1, st.session_state.itinerario.pop(i))
-                            st.rerun()
-                    if b3.button("🗑️", key=f"del_{i}"):
+                    # Usamos columnas para el control de orden y borrado
+                    b_col1, b_col2 = st.columns([2, 1])
+                    
+                    # Selector de posición numérica
+                    new_pos = b_col1.number_input("Orden", 
+                                                 min_value=1, 
+                                                 max_value=len(st.session_state.itinerario), 
+                                                 value=i+1, 
+                                                 key=f"new_pos_{i}",
+                                                 on_change=None) # Podríamos usar on_change pero el flujo actual usa rerun
+                    
+                    # Si el número cambia, movemos el tour
+                    if new_pos != i+1:
+                        st.session_state.itinerario.insert(new_pos-1, st.session_state.itinerario.pop(i))
+                        st.rerun()
+
+                    if b_col2.button("🗑️", key=f"del_{i}"):
                         st.session_state.itinerario.pop(i)
                         st.rerun()
                 
