@@ -118,6 +118,11 @@ def render_ventas_ui():
     if 'u_h4' not in st.session_state: st.session_state.u_h4 = 110.0
     if 'u_t_v' not in st.session_state: st.session_state.u_t_v = 90.0
     if 'u_t_o' not in st.session_state: st.session_state.u_t_o = 140.0
+    # Inicialización de Ajuste Global
+    if 'f_extra_nac' not in st.session_state: st.session_state.f_extra_nac = 0.0
+    if 'f_extra_ext' not in st.session_state: st.session_state.f_extra_ext = 0.0
+    if 'f_extra_can' not in st.session_state: st.session_state.f_extra_can = 0.0
+    if 'f_num_noches' not in st.session_state: st.session_state.f_num_noches = 0
     # Verificar Conexión
     from utils.supabase_db import get_supabase_client
     if get_supabase_client() is None:
@@ -540,18 +545,18 @@ def render_ventas_ui():
             
             st.markdown("#### 💰 Margen Extra / Ajuste Global (Opcional)")
             ma1, ma2, ma3, ma4 = st.columns(4)
-            extra_nac = ma1.number_input("S/ Extra (Nac)", value=float(st.session_state.get('f_extra_nac', 0.0)), step=10.0)
-            extra_ext = ma2.number_input("$ Extra (Ext)", value=float(st.session_state.get('f_extra_ext', 0.0)), step=5.0)
-            extra_can = ma3.number_input("$ Extra (CAN)", value=float(st.session_state.get('f_extra_can', 0.0)), step=5.0)
+            # Usar keys permite que el valor se mantenga estable aunque la app se refresque por otras razones
+            extra_nac = ma1.number_input("S/ Extra (Nac)", step=10.0, key="f_extra_nac")
+            extra_ext = ma2.number_input("$ Extra (Ext)", step=5.0, key="f_extra_ext")
+            extra_can = ma3.number_input("$ Extra (CAN)", step=5.0, key="f_extra_can")
             
-            # Cálculo automático base de noches
+            # Cálculo automático base de noches si el valor es 0 o el estado no existe
             auto_noches = max(0, len(st.session_state.itinerario) - 1)
-            num_noches = ma4.number_input("🌙 Noches Hotel", value=int(st.session_state.get('f_num_noches', auto_noches)), min_value=0, step=1)
-            
-            st.session_state.f_extra_nac = extra_nac
-            st.session_state.f_extra_ext = extra_ext
-            st.session_state.f_extra_can = extra_can
-            st.session_state.f_num_noches = num_noches
+            # Solo forzar auto_noches si el usuario no ha tocado el campo (valor en 0)
+            if st.session_state.f_num_noches == 0 and auto_noches > 0:
+                st.session_state.f_num_noches = auto_noches
+
+            num_noches = ma4.number_input("🌙 Noches Hotel", min_value=0, step=1, key="f_num_noches")
 
             # --- CONFIGURACIÓN DE UPGRADES (HOTEL Y TREN) ---
             u_h2, u_h3, u_h4 = 0, 0, 0
