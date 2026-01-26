@@ -28,7 +28,8 @@ def render_login_ui():
                         st.session_state.authenticated = True
                         st.session_state.user_email = email
                         st.session_state.user_rol = user_data.get("rol", "VENTAS")
-                        st.success(f"¡Bienvenido, acceso concedido como {st.session_state.user_rol}!")
+                        st.session_state.vendedor_name = user_data.get("nombre", "Vendedor")
+                        st.success(f"¡Bienvenido {st.session_state.vendedor_name}!")
                         st.rerun()
                     else:
                         st.error("Correo o Contraseña incorrectos.")

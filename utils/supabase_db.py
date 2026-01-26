@@ -370,16 +370,17 @@ def verify_user(email, password):
         
         if res_auth.user:
             # 2. Si el login es exitoso, buscamos su ROL en nuestra tabla blanca
-            res_role = supabase.table("usuarios_app").select("rol").eq("email", email).execute()
-            
-            rol = "VENTAS" # Rol por defecto si no está en la tabla pero sí en Auth
-            if res_role.data:
-                rol = res_role.data[0]["rol"]
-            
+            # 3. Buscamos el NOMBRE real en la tabla vendedor
+            res_vendedor = supabase.table("vendedor").select("nombre").eq("email", email).execute()
+            nombre = email.split('@')[0].capitalize()
+            if res_vendedor.data:
+                nombre = res_vendedor.data[0]["nombre"]
+
             return {
                 "email": res_auth.user.email,
                 "id": res_auth.user.id,
-                "rol": rol
+                "rol": rol,
+                "nombre": nombre
             }
         return None
     except Exception as e:

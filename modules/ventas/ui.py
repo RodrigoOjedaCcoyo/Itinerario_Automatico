@@ -174,14 +174,8 @@ def render_ventas_ui():
             estrategia_v = st.radio("Estrategia de Venta", estrategias, index=idx_e, horizontal=True)
             st.session_state.f_estrategia = estrategia_v
 
-        cv1, cv2 = st.columns(2)
-        # Buscar índice del vendedor actual
-        vendedor_actual = st.session_state.f_vendedor
-        idx_v = 0
-        if vendedor_actual in vendedores_db:
-            idx_v = vendedores_db.index(vendedor_actual)
-        
-        vendedor = cv1.selectbox("Vendedor", vendedores_db, index=idx_v if vendedores_db else 0)
+        # El vendedor se obtiene automáticamente de la sesión
+        vendedor = st.session_state.get("vendedor_name", "Anonimo")
         
         cel1, cel2 = cv2.columns([4, 1])
         celular = cel1.text_input("Celular del Cliente *", value=st.session_state.f_celular, placeholder="Ej: 9XX XXX XXX")
