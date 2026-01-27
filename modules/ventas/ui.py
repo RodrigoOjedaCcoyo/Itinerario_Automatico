@@ -669,7 +669,7 @@ def render_ventas_ui():
                         base_dir = os.getcwd()
                         cover_1 = os.path.join(base_dir, "assets", "images", "covers", "peru_mundo.jpg")
                         cover_2 = os.path.join(base_dir, "assets", "images", "covers", "cusco_tradicional.jpg")
-                        fallback_cover = os.path.join(base_dir, "Approaching-Salkantay-Mountain-peru.jpg")
+                        fallback_cover = os.path.join(base_dir, "assets", "images", "fallback_cover.jpg")
                         
                         target_cat = st.session_state.get('f_categoria', 'Cusco Tradicional')
                         
@@ -682,7 +682,7 @@ def render_ventas_ui():
                         
                         # Logo
                         logo_orig = "Captura de pantalla 2026-01-05 102612.png"
-                        logo_path = os.path.abspath(logo_orig if os.path.exists(logo_orig) else "Fondo.png")
+                        logo_path = os.path.abspath(logo_orig if os.path.exists(logo_orig) else os.path.join("assets", "images", "logo_background.png"))
                         
                         # Preparar días con imágenes
                         days_data = []
@@ -792,7 +792,7 @@ def render_ventas_ui():
                                 'estado': "Cotización", # Valor fijo ya que usamos estrategia
                                 'logo_url': logo_path,
                                 'logo_cover_url': logo_path,
-                                'llama_img': os.path.abspath("Fondo.png"),
+                                'llama_img': os.path.abspath(os.path.join("assets", "images", "logo_background.png")),
                                 'precios': {
                                     'nac': {'monto': f"{total_nac_pp + (extra_nac/max(1, pasajeros_nac)):,.2f}"} if (total_nac_pp > 0) else None,
                                     'ext': {'monto': f"{total_ext_pp + (extra_ext/max(1, pasajeros_ext)):,.2f}"} if (total_ext_pp > 0) else None,
