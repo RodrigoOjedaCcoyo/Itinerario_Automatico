@@ -146,12 +146,16 @@
             <div class="price-person-label">RESUMEN DE RESERVA</div>
 
             <div class="closing-premium-card">
-                <h1 style="color: #000; font-size: 1.5rem; margin-bottom: 5px;">PRECIO TOTAL FINAL</h1>
+                <h1 style="color: #000; font-size: 1.5rem; margin-bottom: 5px;">PRECIO TOTAL GRUPO</h1>
                 <div class="total-price" style="font-size: 3.5rem; font-weight: 900; color: var(--color-primary);">{{
                     simbolo_moneda }} {{ precio_cierre }}</div>
-                <div class="sub-label" style="font-size: 0.8rem; font-weight: 700; color: #666;">COSTO TOTAL POR PERSONA
-                    EN
-                    HABITACIÓN DOBLE</div>
+                <div class="sub-label" style="font-size: 0.9rem; font-weight: 700; color: #666; margin-bottom: 10px;">
+                    PARA {{ total_pasajeros }} PASAJEROS
+                </div>
+                <div class="per-person-breakdown"
+                    style="padding: 5px 15px; background: #f8f9fa; border-radius: 8px; display: inline-block; font-size: 0.8rem; color: #555; border: 1px solid #eee;">
+                    Inversión por persona: <strong>{{ simbolo_moneda }} {{ precio_cierre_pp }}</strong>
+                </div>
 
                 <div class="selection-summary">
                     <div class="summary-point">
@@ -340,21 +344,25 @@
                 style="display: flex; justify-content: center; gap: 50px; margin-top: 30px;">
                 {% if precios.nac %}
                 <div class="price-column" style="text-align: center;">
-                    <h4 style="font-size: 1rem; color: #ff5252; margin-bottom: 5px;">PROMOCIÓN<br>NACIONAL</h4>
-                    <div class="price-large-text" style="font-size: 3rem; font-weight: 900; color: #000;">S/ {{
-                        precios.nac.monto }}</div>
-                    <div class="price-status" style="color: var(--color-primary); font-weight: 800; font-size: 0.8rem;">
-                        TARIFA PROMOCIONAL</div>
+                    <h4 style="font-size: 0.9rem; color: #ff5252; margin-bottom: 5px;">TOTAL NACIONAL</h4>
+                    <div class="price-large-text" style="font-size: 2.2rem; font-weight: 900; color: #000;">S/ {{
+                        precios.nac.total }}</div>
+                    <div style="font-size: 0.8rem; color: #666;">(S/ {{ precios.nac.monto }} p/p)</div>
+                    <div class="price-status"
+                        style="color: var(--color-primary); font-weight: 800; font-size: 0.7rem; margin-top: 5px;">
+                        {{ total_pasajeros }} PASAJEROS</div>
                 </div>
                 {% endif %}
 
                 {% if precios.ext %}
                 <div class="price-column" style="text-align: center;">
-                    <h4 style="font-size: 1rem; color: #ff5252; margin-bottom: 5px;">PROMOCIÓN<br>EXTRANJERA</h4>
-                    <div class="price-large-text" style="font-size: 3rem; font-weight: 900; color: #000;">$ {{
-                        precios.ext.monto }}</div>
-                    <div class="price-status" style="color: var(--color-primary); font-weight: 800; font-size: 0.8rem;">
-                        QUICK QUOTE</div>
+                    <h4 style="font-size: 0.9rem; color: #ff5252; margin-bottom: 5px;">TOTAL EXTRANJERO</h4>
+                    <div class="price-large-text" style="font-size: 2.2rem; font-weight: 900; color: #000;">$ {{
+                        precios.ext.total }}</div>
+                    <div style="font-size: 0.8rem; color: #666;">($ {{ precios.ext.monto }} p/p)</div>
+                    <div class="price-status"
+                        style="color: var(--color-primary); font-weight: 800; font-size: 0.7rem; margin-top: 5px;">
+                        {{ total_pasajeros }} PASAJEROS</div>
                 </div>
                 {% endif %}
             </div>
