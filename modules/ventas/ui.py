@@ -115,6 +115,8 @@ def render_ventas_ui():
     if 'f_categoria' not in st.session_state: st.session_state.f_categoria = "Cusco Tradicional"
     if 'f_tipo_cliente' not in st.session_state: st.session_state.f_tipo_cliente = "B2C"
     if 'f_nota_precio' not in st.session_state: st.session_state.f_nota_precio = "INCLUYE TOUR Y ALOJAMIENTO"
+    if 'f_monto_adelanto' not in st.session_state: st.session_state.f_monto_adelanto = 0.0
+    if 'f_monto_pendiente' not in st.session_state: st.session_state.f_monto_pendiente = 0.0
     if 'f_estrategia' not in st.session_state: st.session_state.f_estrategia = "Opciones"
     if 'u_h2' not in st.session_state: st.session_state.u_h2 = 40.0
     if 'u_h3' not in st.session_state: st.session_state.u_h3 = 70.0
@@ -889,8 +891,8 @@ def render_ventas_ui():
                                 'total_pasajeros': pasajeros_nac + pasajeros_ext + pasajeros_can,
                                 'precio_cierre': f"{precio_cierre_over:,.2f}" if (precio_cierre_over and precio_cierre_over > 0) else f"{real_nac if tipo_t == 'Nacional' else real_ext:,.2f}",
                                 'precio_cierre_pp': f"{(precio_cierre_over/max(1, pasajeros_nac + pasajeros_ext + pasajeros_can)):,.2f}" if (precio_cierre_over and precio_cierre_over > 0) else f"{base_final:,.2f}",
-                                'monto_adelanto': f"{monto_pagado:,.2f}",
-                                'monto_pendiente': f"{saldo_pendiente:,.2f}",
+                                'monto_adelanto': f"{st.session_state.get('f_monto_adelanto', 0.0):,.2f}",
+                                'monto_pendiente': f"{st.session_state.get('f_monto_pendiente', 0.0):,.2f}",
                                 'matriz': pricing_matrix,
                                 'precio_nota': nota_p.upper(),
                                 'canal': st.session_state.get('f_tipo_cliente', 'B2C'),
