@@ -14,7 +14,8 @@ from utils.supabase_db import (
     populate_catalog,
     save_custom_package,
     get_custom_packages,
-    delete_custom_package
+    delete_custom_package,
+    get_service_templates
 )
 
 # --- ELIMINADAS FUNCIONES DE PERSISTENCIA LOCAL (AHORA ES CLOUD) ---
@@ -66,6 +67,22 @@ def obtener_imagenes_tour(nombre_carpeta):
         imagenes.append("https://via.placeholder.com/400x300?text=Foto+Tour")
         
     return imagenes[:5]
+
+def crear_dia_base(titulo="Día Personalizado", desc="", servicios=None, icons=None):
+    """Crea la estructura base para un día manual o personalizado."""
+    return {
+        "id": str(uuid.uuid4()),
+        "titulo": titulo,
+        "descripcion": desc,
+        "highlights": [titulo],
+        "servicios": servicios if servicios else ["Asistencia personalizada"],
+        "servicios_no_incluye": ["Gastos extras", "Propinas"],
+        "costo_nac": 0.0,
+        "costo_ext": 0.0,
+        "costo_can": 0.0,
+        "hora_inicio": "08:00 AM",
+        "carpeta_img": "general"
+    }
 
 # --- UI PRINCIPAL ---
 def render_ventas_ui():
@@ -431,6 +448,41 @@ def render_ventas_ui():
                 
                 st.session_state.itinerario.append(nuevo_t)
                 st.rerun()
+        
+        st.subheader("✨ Servicios Rápidos / Personalizados")
+        
+        c_p1, c_p2 = st.columns([1, 1])
+        
+        with c_p1:
+            if st.button("➕ Agregar Día en Blanco", use_container_width=True, help="Añade un día vacío para que escribas lo que quieras."):
+                nuevo_d = crear_dia_base()
+                st.session_state.itinerario.append(nuevo_d)
+                # Activar edición para el nuevo día
+                st.session_state[f"mod_edit_{nuevo_d['id']}"] = True
+                st.rerun()
+        
+        with c_p2:
+            db_templates = get_service_templates()
+            quick_opt_map = {t['titulo']: t for t in db_templates}
+            quick_names = ["-- Seleccione Plantilla --"] + list(quick_opt_map.keys())
+            
+            q_sel = st.selectbox("Plantillas Rápidas", quick_names, label_visibility="collapsed")
+            
+            if q_sel != "-- Seleccione Plantilla --":
+                if st.button("⚡ Aplicar Plantilla", use_container_width=True):
+                    template_data = quick_opt_map[q_sel]
+                    
+                    nuevo_d = crear_dia_base(
+                        titulo=template_data['titulo'],
+                        desc=template_data.get('descripcion', "")
+                    )
+                    # Opcional: Si la plantilla tiene precios, podrías asignarlos aquí
+                    nuevo_d['costo_nac'] = float(template_data.get('costo_nac', 0.0))
+                    nuevo_d['costo_ext'] = float(template_data.get('costo_ext', 0.0))
+                    
+                    st.session_state.itinerario.append(nuevo_d)
+                    st.session_state[f"mod_edit_{nuevo_d['id']}"] = True
+                    st.rerun()
     
     with col2:
         st.subheader("📋 Plan de Viaje Actual")

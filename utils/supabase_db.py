@@ -450,3 +450,15 @@ def delete_custom_package(id_paquete: str):
     except Exception as e:
         print(f"Error eliminando paquete cloud: {e}")
         return False
+
+def get_service_templates():
+    """Obtiene las plantillas de servicios rápidos desde la base de datos."""
+    supabase = get_supabase_client()
+    if not supabase: return []
+    
+    try:
+        res = supabase.table("plantilla_servicio").select("*").order("titulo").execute()
+        return res.data
+    except Exception as e:
+        print(f"Error cargando plantillas de servicio: {e}")
+        return []
