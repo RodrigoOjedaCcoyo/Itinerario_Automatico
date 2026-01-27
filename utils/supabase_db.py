@@ -7,8 +7,21 @@ import streamlit as st
 load_dotenv()
 
 # Configuración de Supabase
-SUPABASE_URL = os.getenv("SUPABASE_URL")
-SUPABASE_KEY = os.getenv("SUPABASE_KEY")
+# Prioridad: st.secrets (Streamlit Cloud) > os.getenv (Local .env)
+def get_config_var(name, default=None):
+    # Intentar en st.secrets (formato jerárquico como en la imagen del usuario [supabase])
+    try:
+        if name == "SUPABASE_URL":
+            return st.secrets["supabase"].get("URL") or st.secrets.get("SUPABASE_URL")
+        if name == "SUPABASE_KEY":
+            # Soporta tanto SUPABASE_KEY como ANON_KEY (que es lo que puso el usuario)
+            return st.secrets["supabase"].get("ANON_KEY") or st.secrets["supabase"].get("SUPABASE_KEY") or st.secrets.get("SUPABASE_KEY")
+    except:
+        pass
+    return os.getenv(name, default)
+
+SUPABASE_URL = get_config_var("SUPABASE_URL")
+SUPABASE_KEY = get_config_var("SUPABASE_KEY")
 
 def get_supabase_client() -> Client:
     """Inicializa y retorna el cliente de Supabase."""
