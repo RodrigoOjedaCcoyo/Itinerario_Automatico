@@ -662,6 +662,22 @@ def render_ventas_ui():
                     else:
                         st.caption("Se calculará el precio base + upgrades seleccionados.")
 
+                    # --- NUEVA SECCIÓN: ADELANTO Y SALDO ---
+                    st.markdown("---")
+                    ca1, ca2 = st.columns(2)
+                    monto_total_ref = precio_cierre_over if precio_cierre_over > 0 else (real_nac if tipo_t == "Nacional" else real_ext)
+                    
+                    monto_pagado = ca1.number_input(f"💰 Monto Pagado/Adelanto ({curr_c})", 
+                                                   value=st.session_state.f_monto_adelanto, 
+                                                   min_value=0.0,
+                                                   step=10.0,
+                                                   key="input_adelanto")
+                    st.session_state.f_monto_adelanto = monto_pagado
+                    
+                    saldo_pendiente = max(0.0, monto_total_ref - monto_pagado)
+                    ca2.metric("Saldo Pendiente", f"{curr_c} {saldo_pendiente:,.2f}")
+                    st.session_state.f_monto_pendiente = saldo_pendiente
+
             st.divider()
             
             pasajeros_nac = n_adultos_nac + n_estud_nac + n_pcd_nac + n_ninos_nac
