@@ -157,6 +157,26 @@
                     Inversión por persona: <strong>{{ simbolo_moneda }} {{ precio_cierre_pp }}</strong>
                 </div>
 
+                {% if monto_adelanto != "0.00" %}
+                <div class="payment-summary"
+                    style="margin-top: 15px; display: flex; justify-content: center; gap: 20px;">
+                    <div style="text-align: center;">
+                        <span
+                            style="display: block; font-size: 0.7rem; color: #888; text-transform: uppercase; font-weight: 700;">Monto
+                            Adelantado</span>
+                        <strong style="font-size: 1.1rem; color: #2ecc71;">{{ simbolo_moneda }} {{ monto_adelanto
+                            }}</strong>
+                    </div>
+                    <div style="text-align: center; border-left: 1px solid #eee; padding-left: 20px;">
+                        <span
+                            style="display: block; font-size: 0.7rem; color: #888; text-transform: uppercase; font-weight: 700;">Saldo
+                            Pendiente</span>
+                        <strong style="font-size: 1.1rem; color: #e74c3c;">{{ simbolo_moneda }} {{ monto_pendiente
+                            }}</strong>
+                    </div>
+                </div>
+                {% endif %}
+
                 <div class="selection-summary">
                     <div class="summary-point">
                         <span>DESTINO</span>
