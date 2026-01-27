@@ -11,27 +11,13 @@ from utils.supabase_db import (
     get_available_tours, 
     get_available_packages,
     get_vendedores,
-    populate_catalog
+    populate_catalog,
+    save_custom_package,
+    get_custom_packages,
+    delete_custom_package
 )
 
-# --- CONSTANTS ---
-PACKAGES_FILE = 'paquetes_personalizados.json'
-
-# --- FUNCIONES DE PERSISTENCIA ---
-def guardar_paquete(nombre, itinerario):
-    data = {}
-    if os.path.exists(PACKAGES_FILE):
-        with open(PACKAGES_FILE, 'r', encoding='utf-8') as f:
-            data = json.load(f)
-    data[nombre] = itinerario
-    with open(PACKAGES_FILE, 'w', encoding='utf-8') as f:
-        json.dump(data, f, ensure_ascii=False, indent=4)
-
-def cargar_paquetes():
-    if os.path.exists(PACKAGES_FILE):
-        with open(PACKAGES_FILE, 'r', encoding='utf-8') as f:
-            return json.load(f)
-    return {}
+# --- ELIMINADAS FUNCIONES DE PERSISTENCIA LOCAL (AHORA ES CLOUD) ---
 
 # --- DICCIONARIO DE ICONOS SVG ---
 ICON_MAP = {
@@ -150,6 +136,56 @@ def render_ventas_ui():
     tours_db = st.session_state.get('catalogo_tours', [])
     paquetes_db = st.session_state.get('catalogo_paquetes', [])
     vendedores_db = st.session_state.get('lista_vendedores', [])
+
+    # SIDEBAR: PAQUETES CLOUD (Mejorado y Visible)
+    with st.sidebar:
+        st.header("☁️ Mis Paquetes en la Nube")
+        
+        with st.expander("✨ Guardar Itinerario Actual", expanded=True):
+            nombre_p = st.text_input("Nombre del paquete", key="cloud_pkg_name", placeholder="Ej: Machu Picchu VIP 3D")
+            es_pub = st.toggle("Compartir con el equipo", value=True, help="Si se activa, otros vendedores podrán ver y usar este paquete.")
+            if st.button("💾 Guardar en la Nube", use_container_width=True):
+                if nombre_p and st.session_state.itinerario:
+                    with st.spinner("Guardando..."):
+                        success = save_custom_package(nombre_p, st.session_state.itinerario, st.session_state.get("user_email"), es_pub)
+                        if success:
+                            st.success(f"¡'{nombre_p}' guardado exitosamente!")
+                            st.rerun()
+                        else:
+                            st.error("Hubo un error al guardar en la nube.")
+                else:
+                    st.warning("Escribe un nombre y agrega tours primero.")
+        
+        st.divider()
+        
+        cloud_pkgs = get_custom_packages()
+        if cloud_pkgs:
+            st.subheader("📂 Paquetes del Equipo")
+            for cp in cloud_pkgs:
+                with st.container(border=True):
+                    col_p1, col_p2 = st.columns([4, 1])
+                    with col_p1:
+                        st.markdown(f"**{cp['nombre']}**")
+                        st.caption(f"Por: {cp['creado_por'].split('@')[0] if cp['creado_por'] else 'Anon'}")
+                    with col_p2:
+                        # Botón cargar
+                        if st.button("🚀", key=f"load_{cp['id_paquete_personalizado']}", help="Cargar este paquete"):
+                            st.session_state.itinerario = cp['itinerario']
+                            st.success(f"Cargado: {cp['nombre']}")
+                            st.rerun()
+                        # Botón eliminar (solo si es el creador o admin)
+                        is_owner = cp['creado_por'] == st.session_state.get("user_email")
+                        is_admin = st.session_state.get("user_rol") == "ADMIN"
+                        if is_owner or is_admin:
+                            if st.button("🗑️", key=f"del_{cp['id_paquete_personalizado']}", help="Eliminar paquete"):
+                                if delete_custom_package(cp['id_paquete_personalizado']):
+                                    st.success("Paquete eliminado.")
+                                    st.rerun()
+        else:
+            st.caption("No hay paquetes guardados en la nube aún.")
+        
+        st.divider()
+
     
     col1, col2 = st.columns([1, 2])
     
@@ -298,32 +334,7 @@ def render_ventas_ui():
         else:
             rango_fechas = f"{num_dias} DÍAS / {max(0, num_dias-1)} NOCHES"
 
-        # Sidebar para paquetes guardados
-        with st.sidebar:
-            st.header("💾 Mis Paquetes Guardados")
-            
-            with st.expander("➕ Guardar Itinerario Actual", expanded=False):
-                nombre_p = st.text_input("Nombre de tu paquete", placeholder="Ej: Machu Picchu VIP 3D")
-                if st.button("💾 Confirmar Guardado"):
-                    if nombre_p and st.session_state.itinerario:
-                        guardar_paquete(nombre_p, st.session_state.itinerario)
-                        st.success(f"¡'{nombre_p}' guardado!")
-                        st.rerun()
-                    else:
-                        st.warning("Ponle un nombre y agrega tours primero.")
-            
-            st.divider()
-            
-            paquetes_c = cargar_paquetes()
-            if paquetes_c:
-                p_sel = st.selectbox("📂 Selecciona uno de tus paquetes", ["-- Seleccione --"] + list(paquetes_c.keys()))
-                if p_sel != "-- Seleccione --":
-                    if st.button("🚀 Cargar mi Paquete"):
-                        st.session_state.itinerario = paquetes_c[p_sel]
-                        st.success(f"Paquete '{p_sel}' cargado.")
-                        st.rerun()
-            else:
-                st.caption("No tienes paquetes guardados aún.")
+        # --- ELIMINADA SECCIÓN ANTIGUA DE PAQUETES LOCALES ---
         
         st.divider()
         

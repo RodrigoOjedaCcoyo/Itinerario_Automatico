@@ -405,3 +405,48 @@ def verify_user(email, password):
         # Si las credenciales son inválidas, Supabase lanzará una excepción
         print(f"Error de Auth: {e}")
         return None
+
+# --- FUNCIONES DE PAQUETES PERSONALIZADOS (CLOUD) ---
+
+def save_custom_package(nombre: str, itinerario: list, user_email: str, es_publico: bool = True):
+    """Guarda un itinerario personalizado en Supabase."""
+    supabase = get_supabase_client()
+    if not supabase: return False
+    
+    try:
+        data = {
+            "nombre": nombre,
+            "itinerario": itinerario,
+            "creado_por": user_email,
+            "es_publico": es_publico
+        }
+        res = supabase.table("paquete_personalizado").insert(data).execute()
+        return len(res.data) > 0
+    except Exception as e:
+        print(f"Error guardando paquete cloud: {e}")
+        return False
+
+def get_custom_packages():
+    """Obtiene la lista de paquetes personalizados guardados en la nube."""
+    supabase = get_supabase_client()
+    if not supabase: return []
+    
+    try:
+        # Por ahora traemos todos los públicos
+        res = supabase.table("paquete_personalizado").select("*").eq("es_publico", True).order("created_at", desc=True).execute()
+        return res.data
+    except Exception as e:
+        print(f"Error listando paquetes cloud: {e}")
+        return []
+
+def delete_custom_package(id_paquete: str):
+    """Elimina un paquete personalizado de la nube."""
+    supabase = get_supabase_client()
+    if not supabase: return False
+    
+    try:
+        res = supabase.table("paquete_personalizado").delete().eq("id_paquete_personalizado", id_paquete).execute()
+        return len(res.data) > 0
+    except Exception as e:
+        print(f"Error eliminando paquete cloud: {e}")
+        return False
