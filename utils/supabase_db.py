@@ -125,7 +125,6 @@ def get_last_itinerary_by_phone(phone: str):
     
     try:
         # 1. Buscar en itinerario_digital (datos_render -> celular_cliente)
-        # Nota: Como es un JSONB, el filtro exacto depende de la estructura
         response = supabase.table("itinerario_digital")\
             .select("*")\
             .ilike("datos_render->>celular_cliente", f"%{phone_clean}%")\
@@ -136,11 +135,14 @@ def get_last_itinerary_by_phone(phone: str):
         if response.data:
             return response.data[0]
             
-        # Fallback: Si no hay itinerario, buscar en Leads
-        # print(f"DEBUG: Intentando fallback en LEADS para: {name}")
+        # Limpiar aún más para fallbacks (solo dígitos)
+        phone_digits = "".join(filter(str.isdigit, phone_clean))
+        search_term = f"%{phone_digits}%" if len(phone_digits) > 5 else f"%{phone_clean}%"
+
+        # Fallback 1: Buscar en la tabla 'lead'
         res_lead = supabase.table("lead")\
             .select("*")\
-            .ilike("nombre_pasajero", f"%{name}%")\
+            .or_(f"numero_celular.ilike.{search_term},numero_celular.ilike.%{phone_clean}%")\
             .order("fecha_creacion", desc=True)\
             .limit(1)\
             .execute()
@@ -156,11 +158,10 @@ def get_last_itinerary_by_phone(phone: str):
                 }
             }
             
-        # Doble Fallback: Si no hay lead, buscar en Clientes
-        # print(f"DEBUG: Intentando fallback en CLIENTES para: {name}")
+        # Doble Fallback: Buscar en 'cliente' (algunos tienen el número en su perfil)
         res_cliente = supabase.table("cliente")\
             .select("*")\
-            .ilike("nombre", f"%{name}%")\
+            .ilike("nombre", f"%{phone_clean}%")\
             .limit(1)\
             .execute()
             

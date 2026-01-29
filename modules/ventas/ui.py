@@ -257,12 +257,27 @@ def render_ventas_ui():
                         if datos_completos and 'days' in datos_completos:
                              new_it = []
                              for d in datos_completos['days']:
-                                 t_original = next((t for t in tours_db if t['titulo'] == d['titulo']), None)
-                                 if t_original:
-                                     new_it.append(t_original.copy())
+                                 # 1. Intentar buscar en el catálogo oficial
+                                 t_catalog = next((t for t in tours_db if t.get('titulo') == d.get('titulo')), None)
+                                 
+                                 if t_catalog:
+                                     new_it.append(t_catalog.copy())
+                                 else:
+                                     # 2. Si no está en el catálogo, es un Día Personalizado (Custom Day)
+                                     # Lo reconstruimos con la data que viene del PDF/Render
+                                     custom_day = crear_dia_base(
+                                         titulo=d.get('titulo', 'Día Cargado'),
+                                         desc=d.get('descripcion', ''),
+                                         servicios=[s['texto'] for s in d.get('servicios', [])] if isinstance(d.get('servicios'), list) else []
+                                     )
+                                     # Mapear otros campos si existen
+                                     custom_day['highlights'] = d.get('highlights', [])
+                                     custom_day['hora_inicio'] = d.get('hora_inicio', '08:00 AM')
+                                     new_it.append(custom_day)
+                                     
                              st.session_state.itinerario = new_it
                         
-                        st.success(f"¡Datos cargados!")
+                        st.success(f"¡Datos de {st.session_state.f_nombre} cargados!")
                         st.rerun()
                     else:
                         st.warning("No se encontraron registros previos.")
