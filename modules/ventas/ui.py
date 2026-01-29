@@ -45,6 +45,32 @@ def get_svg_icon(text, default_key='default_in'):
             return svg
     return ICON_MAP[default_key]
 
+def format_tour_time(raw_time):
+    """Convierte un string de tiempo técnico (ej. 08:00:00) a un formato amigable (ej. 08:00 AM)"""
+    if not raw_time:
+        return "08:00 AM"
+    
+    raw_str = str(raw_time).strip()
+    if ':' in raw_str:
+        try:
+            parts = raw_str.split(':')
+            h = int(parts[0])
+            m = int(parts[1]) if len(parts) > 1 else 0
+            
+            # Si ya tiene AM o PM, lo dejamos tal cual
+            if 'AM' in raw_str.upper() or 'PM' in raw_str.upper():
+                return raw_str
+                
+            if h >= 12:
+                h_12 = h - 12 if h > 12 else 12
+                return f"{h_12:02d}:{m:02d} PM"
+            else:
+                h_12 = h if h > 0 else 12
+                return f"{h_12:02d}:{m:02d} AM"
+        except:
+            return raw_str
+    return raw_str
+
 def obtener_imagenes_tour(nombre_carpeta):
     """Obtiene las imágenes de un tour desde la carpeta assets/img/tours/"""
     base_path = Path(os.getcwd()) / 'assets' / 'img' / 'tours' / nombre_carpeta
@@ -587,6 +613,7 @@ def render_ventas_ui():
                         desc_key = f"desc_{tour_id}"
                         raw_desc = st.text_area(f"Descripción día {i+1}", tour.get('descripcion', ""), key=desc_key, height=100, disabled=is_disabled)
                         tour['descripcion'] = raw_desc
+                        st.caption("💡 **Tips:** `**Negrita**`, `*Cursiva*`, `[Enter]` para nuevo párrafo.")
                         words_count = len(raw_desc.split())
                         st.caption(f"📝 {words_count} palabras")
                         
@@ -816,7 +843,7 @@ def render_ventas_ui():
                                 'numero': i + 1,
                                 'fecha': current_date.strftime('%d / %m / %Y') if usa_fechas else "",
                                 'titulo': tour['titulo'],
-                                'hora_inicio': tour.get('hora_inicio') or '08:00 AM',
+                                'hora_inicio': format_tour_time(tour.get('hora_inicio', '08:00 AM')),
                                 'descripcion': tour.get('descripcion', ''),
                                 'servicios': servicios_html,
                                 'servicios_no': servicios_no_html,

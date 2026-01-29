@@ -60,7 +60,7 @@
             <h3>{{ day.titulo }}</h3>
         </div>
 
-        <p class="description">{{ day.descripcion }}</p>
+        <div class="description">{{ day.descripcion | safe }}</div>
 
         <h4 class="section-title">SERVICIOS QUE INCLUYE:</h4>
         <ul class="services-list">

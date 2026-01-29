@@ -3,6 +3,10 @@ import subprocess
 import sys
 import base64
 import json
+try:
+    import markdown
+except ImportError:
+    markdown = None
 from pathlib import Path
 from jinja2 import Environment, FileSystemLoader
 
@@ -89,6 +93,9 @@ def generate_pdf(itinerary_data, output_filename=OUTPUT_FILENAME):
 
     for day in itinerary_data.get('days', []):
         day['images'] = [get_image_as_base64(img) for img in day.get('images', [])]
+        # Convertir descripción de Markdown a HTML si el import fue exitoso
+        if markdown and day.get('descripcion'):
+            day['descripcion'] = markdown.markdown(day['descripcion'], extensions=['nl2br'])
 
     html_content = template.render(**itinerary_data)
     

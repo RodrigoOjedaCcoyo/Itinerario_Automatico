@@ -107,13 +107,17 @@ body {
     font-size: 0.95rem;
     line-height: 1.5;
     color: var(--color-text);
-    max-width: 62%;
+    max-width: 70%;
     margin-bottom: 20px;
     font-weight: 400;
     white-space: pre-line;
     position: relative;
     z-index: 20;
-    text-align: left;
+    text-align: justify;
+}
+
+.description p {
+    margin: 0 0 10px 0;
 }
 
 .highlights-list {
@@ -157,7 +161,7 @@ body {
     list-style: none;
     padding-left: 30px;
     margin-bottom: 30px;
-    max-width: 62%;
+    max-width: 70%;
     position: relative;
     z-index: 20;
 }
