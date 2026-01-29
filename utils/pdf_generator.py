@@ -91,11 +91,21 @@ def generate_pdf(itinerary_data, output_filename=OUTPUT_FILENAME):
     itinerary_data['cover_url'] = get_image_as_base64(itinerary_data.get('cover_url'))
     itinerary_data['llama_img'] = get_image_as_base64(itinerary_data.get('llama_img'))
 
+    # Intentar importar markdown aquí por si se instaló después del arranque
+    global markdown
+    if markdown is None:
+        try:
+            import markdown as md
+            markdown = md
+        except ImportError:
+            pass
+
     for day in itinerary_data.get('days', []):
         day['images'] = [get_image_as_base64(img) for img in day.get('images', [])]
         # Convertir descripción de Markdown a HTML si el import fue exitoso
         if markdown and day.get('descripcion'):
-            day['descripcion'] = markdown.markdown(day['descripcion'], extensions=['nl2br'])
+            # Usamos una conversión más robusta
+            day['descripcion'] = markdown.markdown(str(day['descripcion']), extensions=['nl2br', 'sane_lists'])
 
     html_content = template.render(**itinerary_data)
     
