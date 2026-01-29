@@ -62,12 +62,6 @@
 
         <p class="description">{{ day.descripcion }}</p>
 
-        <ul class="highlights-list">
-            {% for h in day.highlights %}
-            <li class="highlight-item">{{ h }}</li>
-            {% endfor %}
-        </ul>
-
         <h4 class="section-title">SERVICIOS QUE INCLUYE:</h4>
         <ul class="services-list">
             {% for s in day.servicios %}

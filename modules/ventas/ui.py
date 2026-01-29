@@ -265,7 +265,6 @@ def render_ventas_ui():
                                      "id": d.get('id_original', str(uuid.uuid4())),
                                      "titulo": d.get('titulo', 'Día Cargado'),
                                      "descripcion": d.get('descripcion', ''),
-                                     "highlights": d.get('highlights', []),
                                      # Convertir servicios de [{texto, svg}] a lista simple de textos
                                      "servicios": [s['texto'] for s in d.get('servicios', [])] if isinstance(d.get('servicios'), list) and d.get('servicios') and isinstance(d.get('servicios')[0], dict) else d.get('servicios', []),
                                      "servicios_no_incluye": d.get('servicios_no_incluye', [s['texto'] for s in d.get('servicios_no', [])] if d.get('servicios_no') else []),
@@ -591,11 +590,9 @@ def render_ventas_ui():
                         words_count = len(raw_desc.split())
                         st.caption(f"📝 {words_count} palabras")
                         
-                        col_ex1, col_ex2 = st.columns(2)
-                        h_text = col_ex1.text_area(f"📍 Atractivos", "\n".join(tour.get('highlights', [])), key=f"h_{tour_id}", height=120, disabled=is_disabled)
-                        tour['highlights'] = [line.strip() for line in h_text.split("\n") if line.strip()]
+                        # Atractivos eliminados por pedido del usuario - Simplificación
                         
-                        s_text = col_ex2.text_area(f"✅ Incluye", "\n".join(tour.get('servicios', [])), key=f"s_{tour_id}", height=120, disabled=is_disabled)
+                        s_text = st.text_area(f"✅ Incluye", "\n".join(tour.get('servicios', [])), key=f"s_{tour_id}", height=120, disabled=is_disabled)
                         tour['servicios'] = [line.strip() for line in s_text.split("\n") if line.strip()]
 
                         sn_text = st.text_area(f"❌ No Incluye", "\n".join(tour.get('servicios_no_incluye', [])), key=f"sn_{tour_id}", height=80, disabled=is_disabled)
@@ -821,7 +818,6 @@ def render_ventas_ui():
                                 'titulo': tour['titulo'],
                                 'hora_inicio': tour.get('hora_inicio') or '08:00 AM',
                                 'descripcion': tour.get('descripcion', ''),
-                                'highlights': tour.get('highlights', []),
                                 'servicios': servicios_html,
                                 'servicios_no': servicios_no_html,
                                 'images': imgs,
