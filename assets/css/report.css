@@ -110,6 +110,7 @@ body {
     max-width: 62%;
     margin-bottom: 20px;
     font-weight: 400;
+    white-space: pre-line;
     position: relative;
     z-index: 20;
     text-align: left;
