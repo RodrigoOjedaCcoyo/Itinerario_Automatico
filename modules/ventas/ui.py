@@ -257,23 +257,31 @@ def render_ventas_ui():
                         if datos_completos and 'days' in datos_completos:
                              new_it = []
                              for d in datos_completos['days']:
-                                 # 1. Intentar buscar en el catálogo oficial
+                                 # 1. Intentar buscar metadatos en el catálogo oficial (como la carpeta_img)
                                  t_catalog = next((t for t in tours_db if t.get('titulo') == d.get('titulo')), None)
                                  
-                                 if t_catalog:
-                                     new_it.append(t_catalog.copy())
-                                 else:
-                                     # 2. Si no está en el catálogo, es un Día Personalizado (Custom Day)
-                                     # Lo reconstruimos con la data que viene del PDF/Render
-                                     custom_day = crear_dia_base(
-                                         titulo=d.get('titulo', 'Día Cargado'),
-                                         desc=d.get('descripcion', ''),
-                                         servicios=[s['texto'] for s in d.get('servicios', [])] if isinstance(d.get('servicios'), list) else []
-                                     )
-                                     # Mapear otros campos si existen
-                                     custom_day['highlights'] = d.get('highlights', [])
-                                     custom_day['hora_inicio'] = d.get('hora_inicio', '08:00 AM')
-                                     new_it.append(custom_day)
+                                 # 2. Reconstruir con PRIORIDAD a lo guardado en el PDF (lo que el vendedor editó)
+                                 tour_obj = {
+                                     "id": d.get('id_original', str(uuid.uuid4())),
+                                     "titulo": d.get('titulo', 'Día Cargado'),
+                                     "descripcion": d.get('descripcion', ''),
+                                     "highlights": d.get('highlights', []),
+                                     # Convertir servicios de [{texto, svg}] a lista simple de textos
+                                     "servicios": [s['texto'] for s in d.get('servicios', [])] if isinstance(d.get('servicios'), list) and d.get('servicios') and isinstance(d.get('servicios')[0], dict) else d.get('servicios', []),
+                                     "servicios_no_incluye": d.get('servicios_no_incluye', [s['texto'] for s in d.get('servicios_no', [])] if d.get('servicios_no') else []),
+                                     "costo_nac": float(d.get('costo_nac', 0)),
+                                     "costo_ext": float(d.get('costo_ext', 0)),
+                                     "costo_can": float(d.get('costo_can', 0)),
+                                     "costo_nac_est": float(d.get('costo_nac_est', float(d.get('costo_nac', 0))-70)),
+                                     "costo_nac_nino": float(d.get('costo_nac_nino', float(d.get('costo_nac', 0))-40)),
+                                     "costo_ext_est": float(d.get('costo_ext_est', float(d.get('costo_ext', 0))-20)),
+                                     "costo_ext_nino": float(d.get('costo_ext_nino', float(d.get('costo_ext', 0))-15)),
+                                     "costo_can_est": float(d.get('costo_can_est', float(d.get('costo_can', 0))-20)),
+                                     "costo_can_nino": float(d.get('costo_can_nino', float(d.get('costo_can', 0))-15)),
+                                     "hora_inicio": d.get('hora_inicio', '08:00 AM'),
+                                     "carpeta_img": t_catalog.get('carpeta_img', 'general') if t_catalog else 'general'
+                                 }
+                                 new_it.append(tour_obj)
                                      
                              st.session_state.itinerario = new_it
                         
@@ -816,7 +824,19 @@ def render_ventas_ui():
                                 'highlights': tour.get('highlights', []),
                                 'servicios': servicios_html,
                                 'servicios_no': servicios_no_html,
-                                'images': imgs
+                                'images': imgs,
+                                # --- PERSISTENCIA DE DATOS DE EDICIÓN ---
+                                'costo_nac': tour.get('costo_nac', 0),
+                                'costo_ext': tour.get('costo_ext', 0),
+                                'costo_can': tour.get('costo_can', 0),
+                                'costo_nac_est': tour.get('costo_nac_est', 0),
+                                'costo_nac_nino': tour.get('costo_nac_nino', 0),
+                                'costo_ext_est': tour.get('costo_ext_est', 0),
+                                'costo_ext_nino': tour.get('costo_ext_nino', 0),
+                                'costo_can_est': tour.get('costo_can_est', 0),
+                                'costo_can_nino': tour.get('costo_can_nino', 0),
+                                'servicios_no_incluye': tour.get('servicios_no_incluye', []),
+                                'id_original': tour.get('id', '')
                             })
                         
                         try:
