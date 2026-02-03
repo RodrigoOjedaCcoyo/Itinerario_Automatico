@@ -399,6 +399,22 @@ def render_ventas_ui():
                            n_adultos_can + n_estud_can + n_pcd_can + n_ninos_can)
         st.info(f"Total personas: {total_pasajeros}")
         
+        # --- NUEVA SECCIÓN: DISTRIBUCIÓN DE HABITACIONES ---
+        with st.expander("🛏️ Distribución de Habitaciones", expanded=total_pasajeros > 0):
+            st.caption("Define cómo se distribuirá el grupo en las habitaciones.")
+            rd1, rd2, rd3, rd4 = st.columns(4)
+            n_sgl = rd1.number_input("Simple (1p)", min_value=0, value=int(st.session_state.get('f_n_sgl', 0)), step=1, key="f_n_sgl")
+            n_dbl = rd2.number_input("Double/Mat (2p)", min_value=0, value=int(st.session_state.get('f_n_dbl', 0)), step=1, key="f_n_dbl")
+            n_tpl = rd3.number_input("Triple (3p)", min_value=0, value=int(st.session_state.get('f_n_tpl', 0)), step=1, key="f_n_tpl")
+            n_cua = rd4.number_input("Cuádruple (4p)", min_value=0, value=int(st.session_state.get('f_n_cua', 0)), step=1, key="f_n_cua")
+            
+            pax_en_habitaciones = (n_sgl * 1) + (n_dbl * 2) + (n_tpl * 3) + (n_cua * 4)
+            if pax_en_habitaciones != total_pasajeros:
+                st.warning(f"⚠️ La distribución ({pax_en_habitaciones} pax) no coincide con el total de pasajeros ({total_pasajeros} pax).")
+            else:
+                st.success(f"✅ Distribución correcta para {total_pasajeros} pasajeros.")
+        
+        
         col_date1, col_date2 = st.columns([2, 1])
         fecha_inicio = col_date1.date_input("📅 Fecha de Inicio del Viaje", datetime.now())
         usa_fechas = col_date2.checkbox("¿Ver fechas?", value=st.session_state.get('f_usa_fechas', True), key="f_usa_fechas", help="Si se desactiva, el PDF dirá 'DÍA 1' en lugar de fechas exactas.")
@@ -687,15 +703,37 @@ def render_ventas_ui():
             precio_cierre_over = None
 
             with st.expander("🏨 Configuración de Costos de Upgrades", expanded=(estrategia_v in ["Matriz", "Opciones"])):
-                st.caption("Define el costo ADICIONAL por noche para hoteles y el total por el tren (se usa para cálculos automáticos).")
-                ch1, ch2, ch3 = st.columns(3)
+                st.caption("Define el costo por persona/noche según el tipo de habitación para cada categoría.")
+                
                 curr = "S/" if tipo_t == "Nacional" else "$"
                 
-                # Inicializamos para evitar UnboundLocalError
-                precio_cierre_over = 0.0
-                u_h2 = ch1.number_input(f"Hotel 2* ({curr}/noche)", value=float(st.session_state.get('u_h2', 40.0)), key="uh2")
-                u_h3 = ch2.number_input(f"Hotel 3* ({curr}/noche)", value=float(st.session_state.get('u_h3', 70.0)), key="uh3")
-                u_h4 = ch3.number_input(f"Hotel 4* ({curr}/noche)", value=float(st.session_state.get('u_h4', 110.0)), key="uh4")
+                # Definir Pestañas por Categoría para que sea más limpio
+                tab2, tab3, tab4 = st.tabs(["Hotel 2*", "Hotel 3*", "Hotel 4*"])
+                
+                with tab2:
+                    c2_1, c2_2, c2_3, c2_4 = st.columns(4)
+                    u_h2_sgl = c2_1.number_input(f"Simple ({curr})", value=float(st.session_state.get('u_h2_sgl', 60.0)), key="uh2_sgl")
+                    u_h2_dbl = c2_2.number_input(f"Double ({curr})", value=float(st.session_state.get('u_h2_dbl', 40.0)), key="uh2_dbl")
+                    u_h2_tpl = c2_3.number_input(f"Triple ({curr})", value=float(st.session_state.get('u_h2_tpl', 35.0)), key="uh2_tpl")
+                    u_h2_cua = c2_4.number_input(f"Cuádruple ({curr})", value=float(st.session_state.get('u_h2_cua', 30.0)), key="uh2_cua")
+                
+                with tab3:
+                    c3_1, c3_2, c3_3, c3_4 = st.columns(4)
+                    u_h3_sgl = c3_1.number_input(f"Simple ({curr})", value=float(st.session_state.get('u_h3_sgl', 100.0)), key="uh3_sgl", help="Costo por persona en SGL")
+                    u_h3_dbl = c3_2.number_input(f"Double ({curr})", value=float(st.session_state.get('u_h3_dbl', 70.0)), key="uh3_dbl")
+                    u_h3_tpl = c3_3.number_input(f"Triple ({curr})", value=float(st.session_state.get('u_h3_tpl', 65.0)), key="uh3_tpl")
+                    u_h3_cua = c3_4.number_input(f"Cuádruple ({curr})", value=float(st.session_state.get('u_h3_cua', 60.0)), key="uh3_cua")
+
+                with tab4:
+                    c4_1, c4_2, c4_3, c4_4 = st.columns(4)
+                    u_h4_sgl = c4_1.number_input(f"Simple ({curr})", value=float(st.session_state.get('u_h4_sgl', 180.0)), key="uh4_sgl")
+                    u_h4_dbl = c4_2.number_input(f"Double ({curr})", value=float(st.session_state.get('u_h4_dbl', 110.0)), key="uh4_dbl")
+                    u_h4_tpl = c4_3.number_input(f"Triple ({curr})", value=float(st.session_state.get('u_h4_tpl', 100.0)), key="uh4_tpl")
+                    u_h4_cua = c4_4.number_input(f"Cuádruple ({curr})", value=float(st.session_state.get('u_h4_cua', 90.0)), key="uh4_cua")
+
+                st.session_state.u_h2_sgl = u_h2_sgl; st.session_state.u_h2_dbl = u_h2_dbl; st.session_state.u_h2_tpl = u_h2_tpl; st.session_state.u_h2_cua = u_h2_cua
+                st.session_state.u_h3_sgl = u_h3_sgl; st.session_state.u_h3_dbl = u_h3_dbl; st.session_state.u_h3_tpl = u_h3_tpl; st.session_state.u_h3_cua = u_h3_cua
+                st.session_state.u_h4_sgl = u_h4_sgl; st.session_state.u_h4_dbl = u_h4_dbl; st.session_state.u_h4_tpl = u_h4_tpl; st.session_state.u_h4_cua = u_h4_cua
                 
                 st.divider()
                 ct1, ct2 = st.columns(2)
@@ -757,9 +795,23 @@ def render_ventas_ui():
             calc_upgrades = 0.0
             calc_tren = 0.0
             if estrategia_v == "General":
-                calc_upgrades = (u_h2 * num_noches) if sel_hotel_gen == "Hotel 2*" else \
-                                (u_h3 * num_noches) if sel_hotel_gen == "Hotel 3*" else \
-                                (u_h4 * num_noches) if sel_hotel_gen == "Hotel 4*" else 0
+                # 🏨 Cálculo ponderado de Hotel según distribución de habitaciones
+                if sel_hotel_gen != "Sin Hotel":
+                    # Mapeo de tarifas según categoría seleccionada (2*, 3*, 4*)
+                    cat_code = sel_hotel_gen.split(" ")[1].replace("*", "") # "2", "3" o "4"
+                    t_sgl = st.session_state.get(f'u_h{cat_code}_sgl', 0.0)
+                    t_dbl = st.session_state.get(f'u_h{cat_code}_dbl', 0.0)
+                    t_tpl = st.session_state.get(f'u_h{cat_code}_tpl', 0.0)
+                    t_cua = st.session_state.get(f'u_h{cat_code}_cua', 0.0)
+                    
+                    # Costo total del grupo = sum(pax * tarifa_pp) * num_noches
+                    total_hotel_grupo = (n_sgl * 1 * t_sgl + 
+                                         n_dbl * 2 * t_dbl + 
+                                         n_tpl * 3 * t_tpl + 
+                                         n_cua * 4 * t_cua) * num_noches
+                    
+                    # El 'upgrade' por persona que entra al cálculo general es el promedio ponderado
+                    calc_upgrades = total_hotel_grupo / max(1, total_pasajeros)
                 
                 calc_tren = u_t_v if sel_tren_gen == "Vistadome" else \
                             u_t_o if sel_tren_gen == "Observatory" else 0
