@@ -700,7 +700,7 @@ def render_ventas_ui():
             # --- CONFIGURACIÓN DE UPGRADES (HOTEL Y TREN) ---
             u_h2, u_h3, u_h4 = 0, 0, 0
             u_t_v, u_t_o = 0, 0
-            precio_cierre_over = None
+            precio_cierre_over = 0.0
 
             with st.expander("🏨 Configuración de Costos de Upgrades", expanded=(estrategia_v in ["Matriz", "Opciones"])):
                 st.caption("Define el costo por persona/noche según el tipo de habitación para cada categoría.")
