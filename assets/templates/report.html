@@ -125,7 +125,7 @@
     </div>
     {% endfor %}
 
-    <!-- PÁGINA DE PRECIOS -->
+    <!-- PÁGINA DE PRECIOS DETALLADA (RESTAURADA) -->
     <div class="page-container" style="display: flex; flex-direction: column; justify-content: center;">
         <div class="decor-top-right"></div>
         <div class="decor-bottom-left"></div>
@@ -134,24 +134,48 @@
         </div>
         <div class="pricing-centering-wrapper">
             {% if estrategia == "General" %}
-            <h1 class="price-main-title">Propuesta Económica</h1>
+            <h1 class="price-main-title">CONFIRMACIÓN DE VIAJE</h1>
             <div class="price-person-label">RESUMEN DE RESERVA</div>
+
             <div class="closing-premium-card">
                 {% if manual_override %}
-                <h1 style="color: #000; font-size: 1.5rem; margin-bottom: 10px;">INVERSIÓN TOTAL</h1>
+                <h1 style="color: #000; font-size: 1.5rem; margin-bottom: 5px;">PRECIO TOTAL GRUPO</h1>
                 <div class="total-price" style="font-size: 3.5rem; font-weight: 900; color: var(--color-primary);">{{
                     simbolo_moneda }} {{ manual_override }}</div>
+                <div class="per-person-breakdown"
+                    style="padding: 5px 15px; background: #f8f9fa; border-radius: 8px; display: inline-block; font-size: 0.8rem; color: #555; border: 1px solid #eee;">
+                    Monto Final Acordado
+                </div>
                 {% else %}
                 {% for p in precios_cierre %}
                 <div class="price-block" style="margin-bottom: 25px;">
-                    <h1 style="color: #000; font-size: 1.2rem; font-weight: 800;">{{ p.label }}</h1>
+                    <h1 style="color: #000; font-size: 1.2rem; margin-bottom: 2px; font-weight: 800;">{{ p.label }}</h1>
                     <div class="total-price" style="font-size: 3rem; font-weight: 900; color: var(--color-primary);">{{
                         p.simbolo }} {{ p.monto_total }}</div>
-                    <div style="font-size: 0.8rem; color: #666; font-weight: 600;">INVERSIÓN P/P: {{ p.simbolo }} {{
-                        p.monto_pp }}</div>
+                    <div class="per-person-breakdown"
+                        style="margin-top: 5px; padding: 3px 12px; background: #f8f9fa; border-radius: 6px; display: inline-block; font-size: 0.75rem; color: #666; font-weight: 600;">
+                        Inversión por persona: {{ p.simbolo }} {{ p.monto_pp }}
+                    </div>
                 </div>
                 {% endfor %}
                 {% endif %}
+
+                <div class="selection-summary" style="margin-top: 30px;">
+                    <div class="summary-point">
+                        <span>DESTINO</span>
+                        <strong>{{ categoria }}</strong>
+                    </div>
+                    <div class="summary-point">
+                        <span>DURACIÓN</span>
+                        <strong>{{ duracion }}</strong>
+                    </div>
+                    <div class="summary-point">
+                        <span>ESTADO</span>
+                        <strong>GARANTIZADO</strong>
+                    </div>
+                </div>
+
+                <div class="validity-tag" style="margin-top: 30px;">OFERTA VÁLIDA POR LAS PRÓXIMAS 48 HORAS</div>
             </div>
             {% elif estrategia == "Matriz" %}
             <h1 class="price-main-title">Cuadro Comparativo</h1>
@@ -270,7 +294,7 @@
         </table>
     </div>
     {% else %}
-    <!-- ANEXO EXTRANJERO - PÁGINA 1: TRENES PREMIUM GALLERY -->
+    <!-- ANEXO EXTRANJERO - PÁGINA 1: GALERÍA DE TRENES PREMIUM -->
     <div class="page-container premium-appendix-page">
         <div class="decor-top-right"></div>
         <div class="decor-bottom-left"></div>
@@ -278,7 +302,7 @@
             <img src="{{ logo_url }}" alt="Logo">
         </div>
 
-        <h1 class="premium-title-main">The Train Experience</h1>
+        <h1 class="premium-title-main">Experiencia en Tren</h1>
 
         <table class="experience-card-table">
             <tr>
@@ -286,8 +310,8 @@
                 <td class="experience-card-text">
                     <h2 class="experience-card-title">EXPEDITION & VOYAGER</h2>
                     <p class="experience-card-desc">
-                        Designed for modern travelers, these services offer comfort and large panoramic windows
-                        to witness the breathtaking Andean landscapes on your way to Machu Picchu.
+                        Diseñados para viajeros modernos, estos servicios ofrecen comodidad y amplios ventanales
+                        panorámicos para ser testigo de los impresionantes paisajes andinos en su camino a Machu Picchu.
                     </p>
                 </td>
             </tr>
@@ -296,10 +320,10 @@
         <table class="experience-card-table">
             <tr>
                 <td class="experience-card-text" style="padding-left: 0; padding-right: 30px; text-align: right;">
-                    <h2 class="experience-card-title">VISTADOME & THE 360</h2>
+                    <h2 class="experience-card-title">VISTADOME & THE 360°</h2>
                     <p class="experience-card-desc">
-                        An immersive travel experience with panoramic views from every angle.
-                        Includes live cultural entertainment and gourmet snacks served at your seat.
+                        Una experiencia de viaje inmersiva con vistas panorámicas desde todos los ángulos.
+                        Incluye entretenimiento cultural en vivo y snacks gourmet servidos en su asiento.
                     </p>
                 </td>
                 <td style="width: 40%;"><img src="{{ train_vis_img }}" class="experience-card-img"></td>
@@ -310,17 +334,17 @@
             <tr>
                 <td style="width: 40%;"><img src="{{ train_obs_img }}" class="experience-card-img"></td>
                 <td class="experience-card-text">
-                    <h2 class="experience-card-title">THE OBSERVATORY LUXE</h2>
+                    <h2 class="experience-card-title">VISTADOME OBSERVATORY</h2>
                     <p class="experience-card-desc">
-                        Ultra-exclusive service featuring an open-air observatory car and live music.
-                        The pinnacle of train travel in Latin America, combining luxury with tradition.
+                        Servicio ultra-exclusivo que cuenta con un vagón observatorio al aire libre y música en vivo.
+                        El punto máximo del viaje en tren en los Andes, combinando lujo con tradición.
                     </p>
                 </td>
             </tr>
         </table>
     </div>
 
-    <!-- ANEXO EXTRANJERO - PÁGINA 2: INTERNATIONAL CONTRACT -->
+    <!-- ANEXO EXTRANJERO - PÁGINA 2: CONTRATO INTERNACIONAL -->
     <div class="page-container premium-appendix-page">
         <div class="decor-top-right"></div>
         <div class="decor-bottom-left"></div>
@@ -328,36 +352,37 @@
             <img src="{{ logo_url }}" alt="Logo">
         </div>
 
-        <h1 class="premium-title-main">Booking Details</h1>
+        <h1 class="premium-title-main">Detalles de Reserva</h1>
 
         <table class="booking-guide-table">
             <tr>
-                <td class="booking-guide-header" colspan="2">RESERVATION POLICIES</td>
+                <td class="booking-guide-header" colspan="2">POLÍTICAS DE RESERVACIÓN</td>
             </tr>
             <tr>
                 <td class="booking-guide-cell" style="width: 50%;">
-                    <strong>CONFIRMATION</strong><br>
-                    A 50% deposit is required to secure all services. The remaining balance must be paid in USD or PEN
-                    upon arrival.
+                    <strong>CONFIRMACIÓN</strong><br>
+                    Se requiere un depósito del 50% para asegurar todos los servicios. El saldo restante debe pagarse en
+                    USD o PEN a su llegada.
                 </td>
                 <td class="booking-guide-cell">
-                    <strong>PASSPORT DATA</strong><br>
-                    Precise passport details are mandatory for issuing train and site tickets. Changes post-issuance are
-                    not permitted.
+                    <strong>DATOS DE PASAPORTE</strong><br>
+                    Los datos precisos del pasaporte son obligatorios para la emisión de boletos de tren y sitios
+                    arqueológicos.
                 </td>
             </tr>
             <tr>
-                <td class="booking-guide-header" colspan="2">SPECIAL DISCOUNTS & CREDITS</td>
+                <td class="booking-guide-header" colspan="2">DESCUENTOS ESPECIALES Y CRÉDITOS</td>
             </tr>
             <tr>
                 <td class="booking-guide-cell">
-                    <strong>CHILDREN & YOUTH</strong><br>
-                    - USD 80 discount for kids (3-11)<br>
-                    - USD 60 discount for youth (12-17)
+                    <strong>NIÑOS Y JÓVENES</strong><br>
+                    - Descuento de $80 para niños (3-11 años)<br>
+                    - Descuento de $60 para jóvenes (12-17 años)
                 </td>
                 <td class="booking-guide-cell">
-                    <strong>COMMUNITY PASS</strong><br>
-                    USD 20 credit for citizens of the Andean Community (CAN) upon presentation of valid ID.
+                    <strong>COMUNIDAD ANDINA</strong><br>
+                    Crédito de $20 para ciudadanos de la Comunidad Andina (CAN) previa presentación de identificación
+                    válida.
                 </td>
             </tr>
         </table>
@@ -368,10 +393,11 @@
                     <img src="{{ llama_purchase_img }}" class="premium-llama-footer">
                 </td>
                 <td style="vertical-align: middle; padding-left: 30px;">
-                    <h3 style="color: var(--color-primary); margin: 0;">Journey with Professionalism</h3>
+                    <h3 style="color: var(--color-primary); margin: 0;">Viaje con Profesionalismo</h3>
                     <p style="font-size: 0.9rem; color: #666;">
-                        Our expert team handles every detail so you can focus on the magic of the Andes.
-                        We look forward to hosting your unforgettable Peruvian adventure.
+                        Nuestro equipo de expertos maneja cada detalle para que usted pueda concentrarse en la magia de
+                        los Andes.
+                        Esperamos ser los anfitriones de su inolvidable aventura peruana.
                     </p>
                 </td>
             </tr>
