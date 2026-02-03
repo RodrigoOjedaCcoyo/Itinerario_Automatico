@@ -402,12 +402,14 @@ def render_ventas_ui():
         # --- NUEVA SECCIÓN: DISTRIBUCIÓN DE HABITACIONES ---
         with st.expander("🛏️ Distribución de Habitaciones", expanded=total_pasajeros > 0):
             st.caption("Define cómo se distribuirá el grupo en las habitaciones.")
-            rd1, rd2, rd3, rd4, rd5 = st.columns(5)
-            n_sgl = rd1.number_input("Simple (1p)", min_value=0, value=int(st.session_state.get('f_n_sgl', 0)), step=1, key="f_n_sgl")
-            n_dbl = rd2.number_input("Doble Twin (2p)", min_value=0, value=int(st.session_state.get('f_n_dbl', 0)), step=1, key="f_n_dbl")
-            n_mat = rd3.number_input("Matrimonial (2p)", min_value=0, value=int(st.session_state.get('f_n_mat', 0)), step=1, key="f_n_mat")
-            n_tpl = rd4.number_input("Triple (3p)", min_value=0, value=int(st.session_state.get('f_n_tpl', 0)), step=1, key="f_n_tpl")
-            n_cua = rd5.number_input("Cuádruple (4p)", min_value=0, value=int(st.session_state.get('f_n_cua', 0)), step=1, key="f_n_cua")
+            rdr1_1, rdr1_2, rdr1_3 = st.columns(3)
+            n_sgl = rdr1_1.number_input("Simple (1p)", min_value=0, value=int(st.session_state.get('f_n_sgl', 0)), step=1, key="f_n_sgl")
+            n_dbl = rdr1_2.number_input("Doble Twin (2p)", min_value=0, value=int(st.session_state.get('f_n_dbl', 0)), step=1, key="f_n_dbl")
+            n_mat = rdr1_3.number_input("Matrimonial (2p)", min_value=0, value=int(st.session_state.get('f_n_mat', 0)), step=1, key="f_n_mat")
+            
+            rdr2_1, rdr2_2, _ = st.columns(3)
+            n_tpl = rdr2_1.number_input("Triple (3p)", min_value=0, value=int(st.session_state.get('f_n_tpl', 0)), step=1, key="f_n_tpl")
+            n_cua = rdr2_2.number_input("Cuádruple (4p)", min_value=0, value=int(st.session_state.get('f_n_cua', 0)), step=1, key="f_n_cua")
             
             pax_en_habitaciones = (n_sgl * 1) + (n_dbl * 2) + (n_mat * 2) + (n_tpl * 3) + (n_cua * 4)
             if pax_en_habitaciones != total_pasajeros:
@@ -712,42 +714,53 @@ def render_ventas_ui():
                 tab2, tab3, tab4 = st.tabs(["Hotel 2*", "Hotel 3*", "Hotel 4*"])
                 
                 with tab2:
-                    c2_1, c2_2, c2_3, c2_4, c2_5 = st.columns(5)
-                    u_h2_sgl = c2_1.number_input(f"Simple ({curr})", value=float(st.session_state.get('u_h2_sgl', 60.0)), key="uh2_sgl")
-                    u_h2_dbl = c2_2.number_input(f"Doble ({curr})", value=float(st.session_state.get('u_h2_dbl', 40.0)), key="uh2_dbl")
-                    u_h2_mat = c2_3.number_input(f"Matrim. ({curr})", value=float(st.session_state.get('u_h2_mat', 40.0)), key="uh2_mat")
-                    u_h2_tpl = c2_4.number_input(f"Triple ({curr})", value=float(st.session_state.get('u_h2_tpl', 35.0)), key="uh2_tpl")
-                    u_h2_cua = c2_5.number_input(f"Cuádruple ({curr})", value=float(st.session_state.get('u_h2_cua', 30.0)), key="uh2_cua")
+                    cc2_1, cc2_2, cc2_3 = st.columns(3)
+                    u_h2_sgl = cc2_1.number_input(f"Simple ({curr})", value=float(st.session_state.get('u_h2_sgl', 60.0)), key="uh2_sgl")
+                    u_h2_dbl = cc2_2.number_input(f"Doble ({curr})", value=float(st.session_state.get('u_h2_dbl', 40.0)), key="uh2_dbl")
+                    u_h2_mat = cc2_3.number_input(f"Matrim. ({curr})", value=float(st.session_state.get('u_h2_mat', 40.0)), key="uh2_mat")
+                    cc2_4, cc2_5, _ = st.columns(3)
+                    u_h2_tpl = cc2_4.number_input(f"Triple ({curr})", value=float(st.session_state.get('u_h2_tpl', 35.0)), key="uh2_tpl")
+                    u_h2_cua = cc2_5.number_input(f"Cuádruple ({curr})", value=float(st.session_state.get('u_h2_cua', 30.0)), key="uh2_cua")
                 
                 with tab3:
-                    c3_1, c3_2, c3_3, c3_4, c3_5 = st.columns(5)
-                    u_h3_sgl = c3_1.number_input(f"Simple ({curr})", value=float(st.session_state.get('u_h3_sgl', 100.0)), key="uh3_sgl", help="Costo por persona en SGL")
-                    u_h3_dbl = c3_2.number_input(f"Doble ({curr})", value=float(st.session_state.get('u_h3_dbl', 70.0)), key="uh3_dbl")
-                    u_h3_mat = c3_3.number_input(f"Matrim. ({curr})", value=float(st.session_state.get('u_h3_mat', 70.0)), key="uh3_mat")
-                    u_h3_tpl = c3_4.number_input(f"Triple ({curr})", value=float(st.session_state.get('u_h3_tpl', 65.0)), key="uh3_tpl")
-                    u_h3_cua = c3_5.number_input(f"Cuádruple ({curr})", value=float(st.session_state.get('u_h3_cua', 60.0)), key="uh3_cua")
+                    cc3_1, cc3_2, cc3_3 = st.columns(3)
+                    u_h3_sgl = cc3_1.number_input(f"Simple ({curr})", value=float(st.session_state.get('u_h3_sgl', 100.0)), key="uh3_sgl")
+                    u_h3_dbl = cc3_2.number_input(f"Doble ({curr})", value=float(st.session_state.get('u_h3_dbl', 70.0)), key="uh3_dbl")
+                    u_h3_mat = cc3_3.number_input(f"Matrim. ({curr})", value=float(st.session_state.get('u_h3_mat', 70.0)), key="uh3_mat")
+                    cc3_4, cc3_5, _ = st.columns(3)
+                    u_h3_tpl = cc3_4.number_input(f"Triple ({curr})", value=float(st.session_state.get('u_h3_tpl', 65.0)), key="uh3_tpl")
+                    u_h3_cua = cc3_5.number_input(f"Cuádruple ({curr})", value=float(st.session_state.get('u_h3_cua', 60.0)), key="uh3_cua")
 
                 with tab4:
-                    c4_1, c4_2, c4_3, c4_4 = st.columns(4)
-                    u_h4_sgl = c4_1.number_input(f"Simple ({curr})", value=float(st.session_state.get('u_h4_sgl', 180.0)), key="uh4_sgl")
-                    u_h4_dbl = c4_2.number_input(f"Double ({curr})", value=float(st.session_state.get('u_h4_dbl', 110.0)), key="uh4_dbl")
-                    u_h4_tpl = c4_3.number_input(f"Triple ({curr})", value=float(st.session_state.get('u_h4_tpl', 100.0)), key="uh4_tpl")
-                    u_h4_cua = c4_4.number_input(f"Cuádruple ({curr})", value=float(st.session_state.get('u_h4_cua', 90.0)), key="uh4_cua")
+                    cc4_1, cc4_2, cc4_3 = st.columns(3)
+                    u_h4_sgl = cc4_1.number_input(f"Simple ({curr})", value=float(st.session_state.get('u_h4_sgl', 180.0)), key="uh4_sgl")
+                    u_h4_dbl = cc4_2.number_input(f"Doble ({curr})", value=float(st.session_state.get('u_h4_dbl', 110.0)), key="uh4_dbl")
+                    u_h4_mat = cc4_3.number_input(f"Matrim. ({curr})", value=float(st.session_state.get('u_h4_mat', 110.0)), key="uh4_mat")
+                    cc4_4, cc4_5, _ = st.columns(3)
+                    u_h4_tpl = cc4_4.number_input(f"Triple ({curr})", value=float(st.session_state.get('u_h4_tpl', 100.0)), key="uh4_tpl")
+                    u_h4_cua = cc4_5.number_input(f"Cuádruple ({curr})", value=float(st.session_state.get('u_h4_cua', 90.0)), key="uh4_cua")
 
-                st.session_state.u_h2_sgl = u_h2_sgl; st.session_state.u_h2_dbl = u_h2_dbl; st.session_state.u_h2_tpl = u_h2_tpl; st.session_state.u_h2_cua = u_h2_cua
-                st.session_state.u_h3_sgl = u_h3_sgl; st.session_state.u_h3_dbl = u_h3_dbl; st.session_state.u_h3_tpl = u_h3_tpl; st.session_state.u_h3_cua = u_h3_cua
-                st.session_state.u_h4_sgl = u_h4_sgl; st.session_state.u_h4_dbl = u_h4_dbl; st.session_state.u_h4_tpl = u_h4_tpl; st.session_state.u_h4_cua = u_h4_cua
+                st.session_state.u_h2_sgl = u_h2_sgl; st.session_state.u_h2_dbl = u_h2_dbl; st.session_state.u_h2_mat = u_h2_mat; st.session_state.u_h2_tpl = u_h2_tpl; st.session_state.u_h2_cua = u_h2_cua
+                st.session_state.u_h3_sgl = u_h3_sgl; st.session_state.u_h3_dbl = u_h3_dbl; st.session_state.u_h3_mat = u_h3_mat; st.session_state.u_h3_tpl = u_h3_tpl; st.session_state.u_h3_cua = u_h3_cua
+                st.session_state.u_h4_sgl = u_h4_sgl; st.session_state.u_h4_dbl = u_h4_dbl; st.session_state.u_h4_mat = u_h4_mat; st.session_state.u_h4_tpl = u_h4_tpl; st.session_state.u_h4_cua = u_h4_cua
                 
                 st.divider()
-                ct1, ct2 = st.columns(2)
+                st.markdown("🚅 **Suplementos de Tren**")
+                ct1, ct2, ct3 = st.columns(3)
                 u_t_v = ct1.number_input("Extra Tren Vistadome ($)", value=float(st.session_state.get('u_t_v', 90.0)), key="utv")
                 u_t_o = ct2.number_input("Extra Tren Observatory ($)", value=float(st.session_state.get('u_t_o', 140.0)), key="uto")
+                
+                # Tren Local solo para Nacionales
+                u_t_local = 0.0
+                if tipo_t == "Nacional":
+                    u_t_local = ct3.number_input("Costo Tren Local (S/)", value=float(st.session_state.get('u_t_local', 0.0)), key="utlocal", help="Costo fijo o diferencia por persona para el Tren Local")
                 
                 st.session_state.u_h2 = u_h2
                 st.session_state.u_h3 = u_h3
                 st.session_state.u_h4 = u_h4
                 st.session_state.u_t_v = u_t_v
                 st.session_state.u_t_o = u_t_o
+                st.session_state.u_t_local = u_t_local
 
             sel_hotel_gen = "Sin Hotel"
             sel_tren_gen = "Expedition"
@@ -757,7 +770,12 @@ def render_ventas_ui():
                     st.markdown("🎯 **Configuración del Paquete (Modo General)**")
                     cg1, cg2 = st.columns(2)
                     sel_hotel_gen = cg1.selectbox("Categoría de Hotel", ["Sin Hotel", "Hotel 2*", "Hotel 3*", "Hotel 4*"], key="sel_h_gen")
-                    sel_tren_gen = cg2.selectbox("Tipo de Tren", ["Expedition", "Vistadome", "Observatory"], key="sel_t_gen")
+                    
+                    opciones_tren = ["Expedition", "Vistadome", "Observatory"]
+                    if tipo_t == "Nacional":
+                        opciones_tren.insert(0, "Tren Local")
+                    
+                    sel_tren_gen = cg2.selectbox("Tipo de Tren", opciones_tren, key="sel_t_gen")
                     
                     curr_c = "S/" if tipo_t == "Nacional" else "$"
                     precio_cierre_over = st.number_input(f"Monto Total Final Manual ({curr_c})", value=0.0, help="Si dejas en 0, se usará el precio calculado automáticamente con los upgrades seleccionados.")
@@ -794,9 +812,11 @@ def render_ventas_ui():
                 c_ad_nac = 0; c_es_nac = 0; c_pc_nac = 0; c_ni_nac = 0
                 m_extra_nac = 0.0
 
-            # 🎯 CÁLCULO DE UPGRADES
+            # Lógica de Upgrades
             calc_upgrades = 0.0
             calc_tren = 0.0
+            tc = 3.8 # Tipo de cambio base para el sistema
+            
             if estrategia_v == "General":
                 # 🏨 Cálculo ponderado de Hotel según distribución de habitaciones
                 if sel_hotel_gen != "Sin Hotel":
@@ -804,20 +824,28 @@ def render_ventas_ui():
                     cat_code = sel_hotel_gen.split(" ")[1].replace("*", "") # "2", "3" o "4"
                     t_sgl = st.session_state.get(f'u_h{cat_code}_sgl', 0.0)
                     t_dbl = st.session_state.get(f'u_h{cat_code}_dbl', 0.0)
+                    t_mat = st.session_state.get(f'u_h{cat_code}_mat', 0.0)
                     t_tpl = st.session_state.get(f'u_h{cat_code}_tpl', 0.0)
                     t_cua = st.session_state.get(f'u_h{cat_code}_cua', 0.0)
                     
                     # Costo total del grupo = sum(pax * tarifa_pp) * num_noches
                     total_hotel_grupo = (n_sgl * 1 * t_sgl + 
                                          n_dbl * 2 * t_dbl + 
+                                         n_mat * 2 * t_mat +
                                          n_tpl * 3 * t_tpl + 
                                          n_cua * 4 * t_cua) * num_noches
                     
                     # El 'upgrade' por persona que entra al cálculo general es el promedio ponderado
                     calc_upgrades = total_hotel_grupo / max(1, total_pasajeros)
                 
-                calc_tren = u_t_v if sel_tren_gen == "Vistadome" else \
-                            u_t_o if sel_tren_gen == "Observatory" else 0
+                if sel_tren_gen == "Tren Local":
+                    calc_tren = u_t_local
+                elif sel_tren_gen == "Vistadome":
+                    calc_tren = (u_t_v * tc) if tipo_t == "Nacional" else u_t_v
+                elif sel_tren_gen == "Observatory":
+                    calc_tren = (u_t_o * tc) if tipo_t == "Nacional" else u_t_o
+                else:
+                    calc_tren = 0
             
             # --- NUEVA LÓGICA DE CÁLCULO DETALLADO ---
             # Inicializar acumuladores por categoría
@@ -857,19 +885,19 @@ def render_ventas_ui():
 
             col_res1, col_res2, col_res3 = st.columns(3)
             with col_res1:
-                st.markdown("### 🇵🇪 Nacionales")
+                st.markdown("### 🇵🇪 Nacional")
                 st.markdown(f"## S/ {real_nac:,.2f}")
-                st.caption(f"({pasajeros_nac} pas - Promedio: S/ {avg_nac_pp:,.2f})")
+                st.caption(f"**{pasajeros_nac}** pasajeros | Prom: **S/ {avg_nac_pp:,.2f}**")
             
             with col_res2:
-                st.markdown("### 🌎 Extranjeros")
-                st.markdown(f"## $ {real_ext:,.2f}")
-                st.caption(f"({pasajeros_ext} pas - Promedio: $ {avg_ext_pp:,.2f})")
+                st.markdown("### 🌎 Extranjero")
+                st.markdown(f"## USD {real_ext:,.2f}")
+                st.caption(f"**{pasajeros_ext}** pasajeros | Prom: **USD {avg_ext_pp:,.2f}**")
             
             with col_res3:
                 st.markdown("### 🤝 CAN")
-                st.markdown(f"## $ {real_can:,.2f}")
-                st.caption(f"({pasajeros_can} pas - Promedio: $ {avg_can_pp:,.2f})")
+                st.markdown(f"## USD {real_can:,.2f}")
+                st.caption(f"**{pasajeros_can}** pasajeros | Prom: **USD {avg_can_pp:,.2f}**")
             
             # --- SECCIÓN FINANCIERA (MOVIDA AQUÍ PARA EVITAR ERRORES DE ORDEN) ---
             st.divider()
@@ -1041,26 +1069,90 @@ def render_ventas_ui():
                             def calc_m(base, extra_t, extra_h_n):
                                 return base + extra_t + (extra_h_n * num_noches)
 
-                            pricing_matrix = {
-                                'expedition': {
-                                    'sin': f"{calc_m(base_final, 0, 0):,.2f}",
-                                    'h2': f"{calc_m(base_final, 0, u_h2):,.2f}",
-                                    'h3': f"{calc_m(base_final, 0, u_h3):,.2f}",
-                                    'h4': f"{calc_m(base_final, 0, u_h4):,.2f}"
-                                },
-                                'vistadome': {
-                                    'sin': f"{calc_m(base_final, u_t_v, 0):,.2f}",
-                                    'h2': f"{calc_m(base_final, u_t_v, u_h2):,.2f}",
-                                    'h3': f"{calc_m(base_final, u_t_v, u_h3):,.2f}",
-                                    'h4': f"{calc_m(base_final, u_t_v, u_h4):,.2f}"
-                                },
-                                'observatory': {
-                                    'sin': f"{calc_m(base_final, u_t_o, 0):,.2f}",
-                                    'h2': f"{calc_m(base_final, u_t_o, u_h2):,.2f}",
-                                    'h3': f"{calc_m(base_final, u_t_o, u_h3):,.2f}",
-                                    'h4': f"{calc_m(base_final, u_t_o, u_h4):,.2f}"
+                            pricing_matrix = {}
+
+
+                            if tipo_t == "Nacional":
+
+
+                                pricing_matrix['tren_local'] = {
+
+
+                                    'sin': f"{calc_m(base_final, u_t_local, 0):,.2f}",
+
+
+                                    'h2': f"{calc_m(base_final, u_t_local, u_h2):,.2f}",
+
+
+                                    'h3': f"{calc_m(base_final, u_t_local, u_h3):,.2f}",
+
+
+                                    'h4': f"{calc_m(base_final, u_t_local, u_h4):,.2f}"
+
+
                                 }
-                            }
+
+
+
+                            pricing_matrix.update({
+
+
+                                'expedition': {
+
+
+                                    'sin': f"{calc_m(base_final, 0, 0):,.2f}",
+
+
+                                    'h2': f"{calc_m(base_final, 0, u_h2):,.2f}",
+
+
+                                    'h3': f"{calc_m(base_final, 0, u_h3):,.2f}",
+
+
+                                    'h4': f"{calc_m(base_final, 0, u_h4):,.2f}"
+
+
+                                },
+
+
+                                'vistadome': {
+
+
+                                    'sin': f"{calc_m(base_final, u_t_v * (tc if tipo_t == 'Nacional' else 1), 0):,.2f}",
+
+
+                                    'h2': f"{calc_m(base_final, u_t_v * (tc if tipo_t == 'Nacional' else 1), u_h2):,.2f}",
+
+
+                                    'h3': f"{calc_m(base_final, u_t_v * (tc if tipo_t == 'Nacional' else 1), u_h3):,.2f}",
+
+
+                                    'h4': f"{calc_m(base_final, u_t_v * (tc if tipo_t == 'Nacional' else 1), u_h4):,.2f}"
+
+
+                                },
+
+
+                                'observatory': {
+
+
+                                    'sin': f"{calc_m(base_final, u_t_o * (tc if tipo_t == 'Nacional' else 1), 0):,.2f}",
+
+
+                                    'h2': f"{calc_m(base_final, u_t_o * (tc if tipo_t == 'Nacional' else 1), u_h2):,.2f}",
+
+
+                                    'h3': f"{calc_m(base_final, u_t_o * (tc if tipo_t == 'Nacional' else 1), u_h3):,.2f}",
+
+
+                                    'h4': f"{calc_m(base_final, u_t_o * (tc if tipo_t == 'Nacional' else 1), u_h4):,.2f}"
+
+
+                                }
+
+
+                            })
+
 
                             full_itinerary_data = {
                                 'title_1': t1,
