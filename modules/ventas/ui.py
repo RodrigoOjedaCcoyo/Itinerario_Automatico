@@ -1013,17 +1013,17 @@ def render_ventas_ui():
                                     nota_breakdown = ""
                                     if pasajeros_ext > 0 and pasajeros_can > 0:
                                         monto_pp_val = "Ver desglose abajo"
-                                        nota_breakdown = f"Incluye {pasajeros_ext} pas. Extranjero (${b_ext:,.2f} c/u) y {pasajeros_can} pas. CAN (${b_can:,.2f} c/u)"
+                                        nota_breakdown = f"Incluye {pasajeros_ext} pas. Extranjero (USD {b_ext:,.2f} c/u) y {pasajeros_can} pas. CAN (USD {b_can:,.2f} c/u)"
                                     elif pasajeros_ext > 0:
-                                        monto_pp_val = f"$ {b_ext:,.2f}"
+                                        monto_pp_val = f"USD {b_ext:,.2f}"
                                         nota_breakdown = ""
                                     else:
-                                        monto_pp_val = f"$ {b_can:,.2f}"
+                                        monto_pp_val = f"USD {b_can:,.2f}"
                                         nota_breakdown = ""
 
                                     precios_cierre_list.append({
                                         'label': 'TOTAL EXTRANJEROS / CAN',
-                                        'simbolo': '$',
+                                        'simbolo': 'USD',
                                         'monto_total': f"{total_combinado:,.2f}",
                                         'monto_pp': monto_pp_val,
                                         'nota': nota_breakdown
