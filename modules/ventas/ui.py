@@ -316,8 +316,8 @@ def render_ventas_ui():
                         st.warning("No se encontraron registros previos.")
         
         t_col1, t_col2 = st.columns(2)
-        idx_o = 0 if "Nacional" in st.session_state.f_origen else (1 if "Extranjero" in st.session_state.f_origen else 2)
-        tipo_t = t_col1.radio("Origen", ["Nacional", "Extranjero", "Mixto"], index=idx_o)
+        idx_o = 0 if "Nacional" in st.session_state.f_origen else 1
+        tipo_t = t_col1.radio("Origen", ["Nacional", "Extranjero"], index=idx_o)
         modo_s = "Sistema Pool" # Definimos por defecto para evitar errores en el PDF
         # es_pool = (modo_s == "Sistema Pool") # Mantenemos modo_edicion individual
         
@@ -330,57 +330,45 @@ def render_ventas_ui():
             st.session_state.origen_previo = tipo_t
             st.rerun()
         
-        st.markdown("#### 👥 Pasajeros")
-        # Mostrar columnas solo según el origen seleccionado para limpiar la UI
-        if tipo_t == "Nacional":
-            p_col1, p_col2 = st.columns([1, 2])
-            with p_col1:
-                st.caption("🇵🇪 NACIONALES")
-                n_adultos_nac = st.number_input("👤 Adultos", min_value=0, value=1, step=1, key="an_nac")
-                n_estud_nac = st.number_input("🎓 Estudiantes", min_value=0, value=0, step=1, key="es_nac")
-                n_pcd_nac = st.number_input("♿ PcD", min_value=0, value=0, step=1, key="pcd_nac")
-                n_ninos_nac = st.number_input("👶 Niños", min_value=0, value=0, step=1, key="ni_nac")
-            # Forzamos los otros a 0 para que no afecten cálculos
-            n_adultos_ext = n_estud_ext = n_pcd_ext = n_ninos_ext = 0
-            n_adultos_can = n_estud_can = n_pcd_can = n_ninos_can = 0
-            with p_col2: st.empty() # Espaciador
-        elif tipo_t == "Extranjero":
-            p_col1, p_col2, p_col3 = st.columns([1, 1, 1])
-            with p_col1:
-                st.caption("🌎 EXTRANJEROS")
-                n_adultos_ext = st.number_input("👤 Adultos", min_value=0, value=1, step=1, key="an_ext")
-                n_estud_ext = st.number_input("🎓 Estudiantes", min_value=0, value=0, step=1, key="es_ext")
-                n_pcd_ext = st.number_input("♿ PcD", min_value=0, value=0, step=1, key="pcd_ext")
-                n_ninos_ext = st.number_input("👶 Niños", min_value=0, value=0, step=1, key="ni_ext")
-            with p_col2:
-                st.caption("🤝 COMUNIDAD ANDINA (CAN)")
-                n_adultos_can = st.number_input("👤 Adultos ", min_value=0, value=0, step=1, key="an_can")
-                n_estud_can = st.number_input("🎓 Estudiantes ", min_value=0, value=0, step=1, key="es_can")
-                n_pcd_can = st.number_input("♿ PcD ", min_value=0, value=0, step=1, key="pcd_can")
-                n_ninos_can = st.number_input("👶 Niños ", min_value=0, value=0, step=1, key="ni_can")
-            # Forzamos nacionales a 0
-            n_adultos_nac = n_estud_nac = n_pcd_nac = n_ninos_nac = 0
-            with p_col3: st.empty() # Espaciador
-        else: # MODO MIXTO: Muestra TODO
-            p_col1, p_col2, p_col3 = st.columns(3)
-            with p_col1:
-                st.caption("🇵🇪 NACIONALES")
-                n_adultos_nac = st.number_input("👤 Adultos ", min_value=0, value=0, step=1, key="an_nac_m")
-                n_estud_nac = st.number_input("🎓 Estudiantes ", min_value=0, value=0, step=1, key="es_nac_m")
-                n_pcd_nac = st.number_input("♿ PcD ", min_value=0, value=0, step=1, key="pcd_nac_m")
-                n_ninos_nac = st.number_input("👶 Niños ", min_value=0, value=0, step=1, key="ni_nac_m")
-            with p_col2:
-                st.caption("🌎 EXTRANJEROS")
-                n_adultos_ext = st.number_input("👤 Adultos", min_value=0, value=0, step=1, key="an_ext_m")
-                n_estud_ext = st.number_input("🎓 Estudiantes", min_value=0, value=0, step=1, key="es_ext_m")
-                n_pcd_ext = st.number_input("♿ PcD", min_value=0, value=0, step=1, key="pcd_ext_m")
-                n_ninos_ext = st.number_input("👶 Niños", min_value=0, value=0, step=1, key="ni_ext_m")
-            with p_col3:
-                st.caption("🤝 CAN")
-                n_adultos_can = st.number_input("👤 Adultos  ", min_value=0, value=0, step=1, key="an_can_m")
-                n_estud_can = st.number_input("🎓 Estudiantes  ", min_value=0, value=0, step=1, key="es_can_m")
-                n_pcd_can = st.number_input("♿ PcD  ", min_value=0, value=0, step=1, key="pcd_can_m")
-                n_ninos_can = st.number_input("👶 Niños  ", min_value=0, value=0, step=1, key="ni_can_m")
+        st.markdown("#### 👥 Composición del Grupo")
+        st.info("Puedes ingresar pasajeros de distintas categorías; el 'Origen' arriba define la moneda principal y el orden.")
+        
+        p_col1, p_col2, p_col3 = st.columns(3)
+        with p_col1:
+            st.caption("🇵🇪 NACIONALES")
+            n_adultos_nac = st.number_input("👤 Adultos", min_value=0, value=int(st.session_state.get('n_adultos_nac', 1 if tipo_t == "Nacional" else 0)), step=1, key="an_nac_uni")
+            n_estud_nac = st.number_input("🎓 Estudiantes", min_value=0, value=int(st.session_state.get('n_estud_nac', 0)), step=1, key="es_nac_uni")
+            n_pcd_nac = st.number_input("♿ PcD", min_value=0, value=int(st.session_state.get('n_pcd_nac', 0)), step=1, key="pcd_nac_uni")
+            n_ninos_nac = st.number_input("👶 Niños", min_value=0, value=int(st.session_state.get('n_ninos_nac', 0)), step=1, key="ni_nac_uni")
+            # Persistir
+            st.session_state.n_adultos_nac = n_adultos_nac
+            st.session_state.n_estud_nac = n_estud_nac
+            st.session_state.n_pcd_nac = n_pcd_nac
+            st.session_state.n_ninos_nac = n_ninos_nac
+        
+        with p_col2:
+            st.caption("🌎 EXTRANJEROS")
+            n_adultos_ext = st.number_input("👤 Adultos", min_value=0, value=int(st.session_state.get('n_adultos_ext', 1 if tipo_t == "Extranjero" else 0)), step=1, key="an_ext_uni")
+            n_estud_ext = st.number_input("🎓 Estudiantes", min_value=0, value=int(st.session_state.get('n_estud_ext', 0)), step=1, key="es_ext_uni")
+            n_pcd_ext = st.number_input("♿ PcD", min_value=0, value=int(st.session_state.get('n_pcd_ext', 0)), step=1, key="pcd_ext_uni")
+            n_ninos_ext = st.number_input("👶 Niños", min_value=0, value=int(st.session_state.get('n_ninos_ext', 0)), step=1, key="ni_ext_uni")
+            # Persistir
+            st.session_state.n_adultos_ext = n_adultos_ext
+            st.session_state.n_estud_ext = n_estud_ext
+            st.session_state.n_pcd_ext = n_pcd_ext
+            st.session_state.n_ninos_ext = n_ninos_ext
+
+        with p_col3:
+            st.caption("🤝 CAN")
+            n_adultos_can = st.number_input("👤 Adultos ", min_value=0, value=int(st.session_state.get('n_adultos_can', 0)), step=1, key="an_can_uni")
+            n_estud_can = st.number_input("🎓 Estudiantes ", min_value=0, value=int(st.session_state.get('n_estud_can', 0)), step=1, key="es_can_uni")
+            n_pcd_can = st.number_input("♿ PcD ", min_value=0, value=int(st.session_state.get('n_pcd_can', 0)), step=1, key="pcd_can_uni")
+            n_ninos_can = st.number_input("👶 Niños ", min_value=0, value=int(st.session_state.get('n_ninos_can', 0)), step=1, key="ni_can_uni")
+            # Persistir
+            st.session_state.n_adultos_can = n_adultos_can
+            st.session_state.n_estud_can = n_estud_can
+            st.session_state.n_pcd_can = n_pcd_can
+            st.session_state.n_ninos_can = n_ninos_can
 
         
         total_pasajeros = (n_adultos_nac + n_estud_nac + n_pcd_nac + n_ninos_nac + 
@@ -773,8 +761,8 @@ def render_ventas_ui():
             curr_c = "S/" if tipo_t == "Nacional" else "$"
             caf1, caf2 = st.columns(2)
             
-            # El monto de referencia es el manual si existe, o el calculado para el tipo de cliente titular
-            monto_t_ref = precio_cierre_over if precio_cierre_over > 0 else (real_nac if tipo_t == "Nacional" else real_ext)
+            # El monto de referencia es el manual si existe, o la suma de TODOS los reales (Nac + Ext + CAN)
+            monto_t_ref = precio_cierre_over if precio_cierre_over > 0 else (real_nac + real_ext + real_can)
             
             m_adelanto = caf1.number_input(f"Monto Pagado ({curr_c})", 
                                            value=float(st.session_state.get('f_monto_adelanto', 0.0)), 
@@ -905,24 +893,34 @@ def render_ventas_ui():
                                     'monto_pp': f"{b_nac:,.2f}"
                                 })
 
-                            if pasajeros_ext > 0:
+                            if pasajeros_ext > 0 or pasajeros_can > 0:
                                 b_ext = total_ext_pp + (extra_ext/max(1, pasajeros_ext))
-                                if estrategia_v == "General": b_ext += (calc_upgrades + calc_tren)
-                                precios_cierre_list.append({
-                                    'label': 'TOTAL EXTRANJERO',
-                                    'simbolo': '$',
-                                    'monto_total': f"{b_ext * pasajeros_ext:,.2f}",
-                                    'monto_pp': f"{b_ext:,.2f}"
-                                })
-
-                            if pasajeros_can > 0:
                                 b_can = total_can_pp + (extra_can/max(1, pasajeros_can))
-                                if estrategia_v == "General": b_can += (calc_upgrades + calc_tren)
+                                
+                                if estrategia_v == "General":
+                                    b_ext += (calc_upgrades + calc_tren)
+                                    b_can += (calc_upgrades + calc_tren)
+                                
+                                total_combinado = (b_ext * pasajeros_ext) + (b_can * pasajeros_can)
+                                
+                                monto_pp_val = ""
+                                nota_breakdown = ""
+                                if pasajeros_ext > 0 and pasajeros_can > 0:
+                                    monto_pp_val = "Ver desglose abajo"
+                                    nota_breakdown = f"Incluye {pasajeros_ext} pas. Extranjero (${b_ext:,.2f} c/u) y {pasajeros_can} pas. CAN (${b_can:,.2f} c/u)"
+                                elif pasajeros_ext > 0:
+                                    monto_pp_val = f"$ {b_ext:,.2f}"
+                                    nota_breakdown = ""
+                                else:
+                                    monto_pp_val = f"$ {b_can:,.2f}"
+                                    nota_breakdown = ""
+
                                 precios_cierre_list.append({
-                                    'label': 'TOTAL COMUNIDAD ANDINA (CAN)',
+                                    'label': 'TOTAL EXTRANJEROS / CAN',
                                     'simbolo': '$',
-                                    'monto_total': f"{b_can * pasajeros_can:,.2f}",
-                                    'monto_pp': f"{b_can:,.2f}"
+                                    'monto_total': f"{total_combinado:,.2f}",
+                                    'monto_pp': monto_pp_val,
+                                    'nota': nota_breakdown
                                 })
                             
                             # Fallback para base_final (usado en comparativas)

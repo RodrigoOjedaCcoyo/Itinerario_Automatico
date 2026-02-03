@@ -160,6 +160,12 @@
                         style="margin-top: 5px; padding: 3px 12px; background: #f8f9fa; border-radius: 6px; display: inline-block; font-size: 0.75rem; color: #666; font-weight: 600;">
                         Inversión por persona: {{ p.simbolo }} {{ p.monto_pp }}
                     </div>
+                    {% if p.nota %}
+                    <div class="price-note"
+                        style="margin-top: 8px; font-size: 0.7rem; color: #888; font-style: italic;">
+                        {{ p.nota }}
+                    </div>
+                    {% endif %}
                 </div>
                 {% endfor %}
                 {% endif %}
