@@ -402,13 +402,14 @@ def render_ventas_ui():
         # --- NUEVA SECCIÓN: DISTRIBUCIÓN DE HABITACIONES ---
         with st.expander("🛏️ Distribución de Habitaciones", expanded=total_pasajeros > 0):
             st.caption("Define cómo se distribuirá el grupo en las habitaciones.")
-            rd1, rd2, rd3, rd4 = st.columns(4)
+            rd1, rd2, rd3, rd4, rd5 = st.columns(5)
             n_sgl = rd1.number_input("Simple (1p)", min_value=0, value=int(st.session_state.get('f_n_sgl', 0)), step=1, key="f_n_sgl")
-            n_dbl = rd2.number_input("Double/Mat (2p)", min_value=0, value=int(st.session_state.get('f_n_dbl', 0)), step=1, key="f_n_dbl")
-            n_tpl = rd3.number_input("Triple (3p)", min_value=0, value=int(st.session_state.get('f_n_tpl', 0)), step=1, key="f_n_tpl")
-            n_cua = rd4.number_input("Cuádruple (4p)", min_value=0, value=int(st.session_state.get('f_n_cua', 0)), step=1, key="f_n_cua")
+            n_dbl = rd2.number_input("Doble Twin (2p)", min_value=0, value=int(st.session_state.get('f_n_dbl', 0)), step=1, key="f_n_dbl")
+            n_mat = rd3.number_input("Matrimonial (2p)", min_value=0, value=int(st.session_state.get('f_n_mat', 0)), step=1, key="f_n_mat")
+            n_tpl = rd4.number_input("Triple (3p)", min_value=0, value=int(st.session_state.get('f_n_tpl', 0)), step=1, key="f_n_tpl")
+            n_cua = rd5.number_input("Cuádruple (4p)", min_value=0, value=int(st.session_state.get('f_n_cua', 0)), step=1, key="f_n_cua")
             
-            pax_en_habitaciones = (n_sgl * 1) + (n_dbl * 2) + (n_tpl * 3) + (n_cua * 4)
+            pax_en_habitaciones = (n_sgl * 1) + (n_dbl * 2) + (n_mat * 2) + (n_tpl * 3) + (n_cua * 4)
             if pax_en_habitaciones != total_pasajeros:
                 st.warning(f"⚠️ La distribución ({pax_en_habitaciones} pax) no coincide con el total de pasajeros ({total_pasajeros} pax).")
             else:
@@ -711,18 +712,20 @@ def render_ventas_ui():
                 tab2, tab3, tab4 = st.tabs(["Hotel 2*", "Hotel 3*", "Hotel 4*"])
                 
                 with tab2:
-                    c2_1, c2_2, c2_3, c2_4 = st.columns(4)
+                    c2_1, c2_2, c2_3, c2_4, c2_5 = st.columns(5)
                     u_h2_sgl = c2_1.number_input(f"Simple ({curr})", value=float(st.session_state.get('u_h2_sgl', 60.0)), key="uh2_sgl")
-                    u_h2_dbl = c2_2.number_input(f"Double ({curr})", value=float(st.session_state.get('u_h2_dbl', 40.0)), key="uh2_dbl")
-                    u_h2_tpl = c2_3.number_input(f"Triple ({curr})", value=float(st.session_state.get('u_h2_tpl', 35.0)), key="uh2_tpl")
-                    u_h2_cua = c2_4.number_input(f"Cuádruple ({curr})", value=float(st.session_state.get('u_h2_cua', 30.0)), key="uh2_cua")
+                    u_h2_dbl = c2_2.number_input(f"Doble ({curr})", value=float(st.session_state.get('u_h2_dbl', 40.0)), key="uh2_dbl")
+                    u_h2_mat = c2_3.number_input(f"Matrim. ({curr})", value=float(st.session_state.get('u_h2_mat', 40.0)), key="uh2_mat")
+                    u_h2_tpl = c2_4.number_input(f"Triple ({curr})", value=float(st.session_state.get('u_h2_tpl', 35.0)), key="uh2_tpl")
+                    u_h2_cua = c2_5.number_input(f"Cuádruple ({curr})", value=float(st.session_state.get('u_h2_cua', 30.0)), key="uh2_cua")
                 
                 with tab3:
-                    c3_1, c3_2, c3_3, c3_4 = st.columns(4)
+                    c3_1, c3_2, c3_3, c3_4, c3_5 = st.columns(5)
                     u_h3_sgl = c3_1.number_input(f"Simple ({curr})", value=float(st.session_state.get('u_h3_sgl', 100.0)), key="uh3_sgl", help="Costo por persona en SGL")
-                    u_h3_dbl = c3_2.number_input(f"Double ({curr})", value=float(st.session_state.get('u_h3_dbl', 70.0)), key="uh3_dbl")
-                    u_h3_tpl = c3_3.number_input(f"Triple ({curr})", value=float(st.session_state.get('u_h3_tpl', 65.0)), key="uh3_tpl")
-                    u_h3_cua = c3_4.number_input(f"Cuádruple ({curr})", value=float(st.session_state.get('u_h3_cua', 60.0)), key="uh3_cua")
+                    u_h3_dbl = c3_2.number_input(f"Doble ({curr})", value=float(st.session_state.get('u_h3_dbl', 70.0)), key="uh3_dbl")
+                    u_h3_mat = c3_3.number_input(f"Matrim. ({curr})", value=float(st.session_state.get('u_h3_mat', 70.0)), key="uh3_mat")
+                    u_h3_tpl = c3_4.number_input(f"Triple ({curr})", value=float(st.session_state.get('u_h3_tpl', 65.0)), key="uh3_tpl")
+                    u_h3_cua = c3_5.number_input(f"Cuádruple ({curr})", value=float(st.session_state.get('u_h3_cua', 60.0)), key="uh3_cua")
 
                 with tab4:
                     c4_1, c4_2, c4_3, c4_4 = st.columns(4)
