@@ -354,28 +354,28 @@ def render_ventas_ui():
             n_ninos_can = int(st.session_state.get('n_ninos_can', 0))
             
         else:
-            # Caso "Extranjero" / Mixto: Muestra todo para facilitar envíos conjuntos
-            p_col1, p_col2, p_col3 = st.columns(3)
-            with p_col1:
-                st.caption("🇵🇪 NACIONALES")
-                n_adultos_nac = st.number_input("👤 Adultos", min_value=0, value=int(st.session_state.get('n_adultos_nac', 0)), step=1, key="an_nac_uni")
-                n_estud_nac = st.number_input("🎓 Estudiantes", min_value=0, value=int(st.session_state.get('n_estud_nac', 0)), step=1, key="es_nac_uni")
-                n_pcd_nac = st.number_input("♿ PcD", min_value=0, value=int(st.session_state.get('n_pcd_nac', 0)), step=1, key="pcd_nac_uni")
-                n_ninos_nac = st.number_input("👶 Niños", min_value=0, value=int(st.session_state.get('n_ninos_nac', 0)), step=1, key="ni_nac_uni")
+            # Caso "Extranjero": Muestra solo Extranjeros y CAN
+            p_col1, p_col2 = st.columns(2)
             
-            with p_col2:
+            with p_col1:
                 st.caption("🌎 EXTRANJEROS")
                 n_adultos_ext = st.number_input("👤 Adultos", min_value=0, value=int(st.session_state.get('n_adultos_ext', 1)), step=1, key="an_ext_uni")
                 n_estud_ext = st.number_input("🎓 Estudiantes", min_value=0, value=int(st.session_state.get('n_estud_ext', 0)), step=1, key="es_ext_uni")
                 n_pcd_ext = st.number_input("♿ PcD", min_value=0, value=int(st.session_state.get('n_pcd_ext', 0)), step=1, key="pcd_ext_uni")
                 n_ninos_ext = st.number_input("👶 Niños", min_value=0, value=int(st.session_state.get('n_ninos_ext', 0)), step=1, key="ni_ext_uni")
 
-            with p_col3:
+            with p_col2:
                 st.caption("🤝 CAN")
                 n_adultos_can = st.number_input("👤 Adultos ", min_value=0, value=int(st.session_state.get('n_adultos_can', 0)), step=1, key="an_can_uni")
                 n_estud_can = st.number_input("🎓 Estudiantes ", min_value=0, value=int(st.session_state.get('n_estud_can', 0)), step=1, key="es_can_uni")
                 n_pcd_can = st.number_input("♿ PcD ", min_value=0, value=int(st.session_state.get('n_pcd_can', 0)), step=1, key="pcd_can_uni")
                 n_ninos_can = st.number_input("👶 Niños ", min_value=0, value=int(st.session_state.get('n_ninos_can', 0)), step=1, key="ni_can_uni")
+            
+            # Los nacionales se quedan con lo que tenían en la sesión
+            n_adultos_nac = int(st.session_state.get('n_adultos_nac', 0))
+            n_estud_nac = int(st.session_state.get('n_estud_nac', 0))
+            n_pcd_nac = int(st.session_state.get('n_pcd_nac', 0))
+            n_ninos_nac = int(st.session_state.get('n_ninos_nac', 0))
 
         # Persistencia obligatoria de todos los valores para el cálculo en página
         st.session_state.n_adultos_nac = n_adultos_nac
