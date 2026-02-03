@@ -727,9 +727,15 @@ def render_ventas_ui():
 
             st.divider()
             
-            pasajeros_nac = n_adultos_nac + n_estud_nac + n_pcd_nac + n_ninos_nac
-            pasajeros_ext = n_adultos_ext + n_estud_ext + n_pcd_ext + n_ninos_ext
-            pasajeros_can = n_adultos_can + n_estud_can + n_pcd_can + n_ninos_can
+            # FILTRAR PASAJEROS SEGÚN ORIGEN (Para evitar filtraciones de data oculta en la sesión)
+            if tipo_t == "Nacional":
+                pasajeros_nac = n_adultos_nac + n_estud_nac + n_pcd_nac + n_ninos_nac
+                pasajeros_ext = 0
+                pasajeros_can = 0
+            else:
+                pasajeros_nac = 0
+                pasajeros_ext = n_adultos_ext + n_estud_ext + n_pcd_ext + n_ninos_ext
+                pasajeros_can = n_adultos_can + n_estud_can + n_pcd_can + n_ninos_can
             
             # --- NUEVA LÓGICA DE CÁLCULO DETALLADO ---
             # Inicializar acumuladores por categoría
@@ -906,7 +912,8 @@ def render_ventas_ui():
                             # Lista de precios de cierre para el PDF
                             precios_cierre_list = []
                             
-                            if pasajeros_nac > 0:
+                            # FILTRAR POR ORIGEN: Solo mostrar lo que el usuario ha elegido como Origen principal
+                            if tipo_t == "Nacional" and pasajeros_nac > 0:
                                 b_nac = total_nac_pp + (extra_nac/max(1, pasajeros_nac))
                                 if estrategia_v == "General": b_nac += (calc_upgrades + calc_tren)
                                 precios_cierre_list.append({
@@ -916,35 +923,36 @@ def render_ventas_ui():
                                     'monto_pp': f"{b_nac:,.2f}"
                                 })
 
-                            if pasajeros_ext > 0 or pasajeros_can > 0:
-                                b_ext = total_ext_pp + (extra_ext/max(1, pasajeros_ext))
-                                b_can = total_can_pp + (extra_can/max(1, pasajeros_can))
-                                
-                                if estrategia_v == "General":
-                                    b_ext += (calc_upgrades + calc_tren)
-                                    b_can += (calc_upgrades + calc_tren)
-                                
-                                total_combinado = (b_ext * pasajeros_ext) + (b_can * pasajeros_can)
-                                
-                                monto_pp_val = ""
-                                nota_breakdown = ""
-                                if pasajeros_ext > 0 and pasajeros_can > 0:
-                                    monto_pp_val = "Ver desglose abajo"
-                                    nota_breakdown = f"Incluye {pasajeros_ext} pas. Extranjero (${b_ext:,.2f} c/u) y {pasajeros_can} pas. CAN (${b_can:,.2f} c/u)"
-                                elif pasajeros_ext > 0:
-                                    monto_pp_val = f"$ {b_ext:,.2f}"
+                            if tipo_t == "Extranjero":
+                                if pasajeros_ext > 0 or pasajeros_can > 0:
+                                    b_ext = total_ext_pp + (extra_ext/max(1, pasajeros_ext))
+                                    b_can = total_can_pp + (extra_can/max(1, pasajeros_can))
+                                    
+                                    if estrategia_v == "General":
+                                        b_ext += (calc_upgrades + calc_tren)
+                                        b_can += (calc_upgrades + calc_tren)
+                                    
+                                    total_combinado = (b_ext * pasajeros_ext) + (b_can * pasajeros_can)
+                                    
+                                    monto_pp_val = ""
                                     nota_breakdown = ""
-                                else:
-                                    monto_pp_val = f"$ {b_can:,.2f}"
-                                    nota_breakdown = ""
+                                    if pasajeros_ext > 0 and pasajeros_can > 0:
+                                        monto_pp_val = "Ver desglose abajo"
+                                        nota_breakdown = f"Incluye {pasajeros_ext} pas. Extranjero (${b_ext:,.2f} c/u) y {pasajeros_can} pas. CAN (${b_can:,.2f} c/u)"
+                                    elif pasajeros_ext > 0:
+                                        monto_pp_val = f"$ {b_ext:,.2f}"
+                                        nota_breakdown = ""
+                                    else:
+                                        monto_pp_val = f"$ {b_can:,.2f}"
+                                        nota_breakdown = ""
 
-                                precios_cierre_list.append({
-                                    'label': 'TOTAL EXTRANJEROS / CAN',
-                                    'simbolo': '$',
-                                    'monto_total': f"{total_combinado:,.2f}",
-                                    'monto_pp': monto_pp_val,
-                                    'nota': nota_breakdown
-                                })
+                                    precios_cierre_list.append({
+                                        'label': 'TOTAL EXTRANJEROS / CAN',
+                                        'simbolo': '$',
+                                        'monto_total': f"{total_combinado:,.2f}",
+                                        'monto_pp': monto_pp_val,
+                                        'nota': nota_breakdown
+                                    })
                             
                             # Fallback para base_final (usado en comparativas)
                             base_final = total_ext_pp + (extra_ext/max(1, pasajeros_ext))
@@ -1009,9 +1017,9 @@ def render_ventas_ui():
                                         'total': f"{real_can:,.2f}"
                                     } if (total_can > 0) else None,
                                 },
-                                'total_pasajeros': pasajeros_nac + pasajeros_ext + pasajeros_can,
-                                'precio_cierre': f"{precio_cierre_over:,.2f}" if (precio_cierre_over and precio_cierre_over > 0) else f"{real_nac if tipo_t == 'Nacional' else real_ext:,.2f}",
-                                'precio_cierre_pp': f"{(precio_cierre_over/max(1, pasajeros_nac + pasajeros_ext + pasajeros_can)):,.2f}" if (precio_cierre_over and precio_cierre_over > 0) else f"{base_final:,.2f}",
+                                'total_pasajeros': pasajeros_nac if tipo_t == "Nacional" else (pasajeros_ext + pasajeros_can),
+                                'precio_cierre': f"{precio_cierre_over:,.2f}" if (precio_cierre_over and precio_cierre_over > 0) else f"{real_nac if tipo_t == 'Nacional' else (real_ext + real_can):,.2f}",
+                                'precio_cierre_pp': f"{(precio_cierre_over/max(1, pasajeros_nac if tipo_t == 'Nacional' else (pasajeros_ext + pasajeros_can))):,.2f}" if (precio_cierre_over and precio_cierre_over > 0) else f"{base_final:,.2f}",
                                 'monto_adelanto': f"{st.session_state.get('f_monto_adelanto', 0.0):,.2f}",
                                 'monto_pendiente': f"{st.session_state.get('f_monto_pendiente', 0.0):,.2f}",
                                 'matriz': pricing_matrix,
