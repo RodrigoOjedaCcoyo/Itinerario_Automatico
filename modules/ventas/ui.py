@@ -901,7 +901,7 @@ def render_ventas_ui():
                                 precios_cierre_list.append({
                                     'label': 'TOTAL NACIONAL',
                                     'simbolo': 'S/',
-                                    'monto_total': f"{b_nac * (pasajeros_nac + pasajeros_can if tipo_t == 'Nacional' else pasajeros_nac):,.2f}",
+                                    'monto_total': f"{b_nac * pasajeros_nac:,.2f}",
                                     'monto_pp': f"{b_nac:,.2f}"
                                 })
 
@@ -911,8 +911,18 @@ def render_ventas_ui():
                                 precios_cierre_list.append({
                                     'label': 'TOTAL EXTRANJERO',
                                     'simbolo': '$',
-                                    'monto_total': f"{b_ext * (pasajeros_ext + pasajeros_can if tipo_t == 'Extranjero' or tipo_t == 'Mixto' else pasajeros_ext):,.2f}",
+                                    'monto_total': f"{b_ext * pasajeros_ext:,.2f}",
                                     'monto_pp': f"{b_ext:,.2f}"
+                                })
+
+                            if pasajeros_can > 0:
+                                b_can = total_can_pp + (extra_can/max(1, pasajeros_can))
+                                if estrategia_v == "General": b_can += (calc_upgrades + calc_tren)
+                                precios_cierre_list.append({
+                                    'label': 'TOTAL COMUNIDAD ANDINA (CAN)',
+                                    'simbolo': '$',
+                                    'monto_total': f"{b_can * pasajeros_can:,.2f}",
+                                    'monto_pp': f"{b_can:,.2f}"
                                 })
                             
                             # Fallback para base_final (usado en comparativas)
