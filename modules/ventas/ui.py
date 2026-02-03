@@ -727,17 +727,33 @@ def render_ventas_ui():
 
             st.divider()
             
-            # FILTRAR PASAJEROS SEGÚN ORIGEN (Para evitar filtraciones de data oculta en la sesión)
+            # FILTRAR PASAJEROS Y MÁRGENES SEGÚN ORIGEN (Para evitar filtraciones de data oculta en la sesión)
+            # Definimos variables locales de conteo para la lógica de cálculo
+            c_ad_nac = n_adultos_nac; c_es_nac = n_estud_nac; c_pc_nac = n_pcd_nac; c_ni_nac = n_ninos_nac
+            c_ad_ext = n_adultos_ext; c_es_ext = n_estud_ext; c_pc_ext = n_pcd_ext; c_ni_ext = n_ninos_ext
+            c_ad_can = n_adultos_can; c_es_can = n_estud_can; c_pc_can = n_pcd_can; c_ni_can = n_ninos_can
+            
+            # Margen local para cálculo
+            m_extra_nac = extra_nac
+            m_extra_ext = extra_ext
+            m_extra_can = extra_can
+
             if tipo_t == "Nacional":
-                pasajeros_nac = n_adultos_nac + n_estud_nac + n_pcd_nac + n_ninos_nac
-                pasajeros_ext = 0
-                pasajeros_can = 0
+                pasajeros_nac = c_ad_nac + c_es_nac + c_pc_nac + c_ni_nac
+                pasajeros_ext = 0; pasajeros_can = 0
+                # Zero out foreigners for calculation
+                c_ad_ext = 0; c_es_ext = 0; c_pc_ext = 0; c_ni_ext = 0
+                c_ad_can = 0; c_es_can = 0; c_pc_can = 0; c_ni_can = 0
+                m_extra_ext = 0.0; m_extra_can = 0.0
             else:
                 pasajeros_nac = 0
-                pasajeros_ext = n_adultos_ext + n_estud_ext + n_pcd_ext + n_ninos_ext
-                pasajeros_can = n_adultos_can + n_estud_can + n_pcd_can + n_ninos_can
+                pasajeros_ext = c_ad_ext + c_es_ext + c_pc_ext + c_ni_ext
+                pasajeros_can = c_ad_can + c_es_can + c_pc_can + c_ni_can
+                # Zero out nationals for calculation
+                c_ad_nac = 0; c_es_nac = 0; c_pc_nac = 0; c_ni_nac = 0
+                m_extra_nac = 0.0
 
-            # 🎯 CÁLCULO DE UPGRADES (Movido aquí para afectar a los totales de la UI y el balance)
+            # 🎯 CÁLCULO DE UPGRADES
             calc_upgrades = 0.0
             calc_tren = 0.0
             if estrategia_v == "General":
@@ -756,25 +772,30 @@ def render_ventas_ui():
 
             for t in st.session_state.itinerario:
                 # Nacionales
-                total_nac += (t.get('costo_nac', 0) * n_adultos_nac)
-                total_nac += (t.get('costo_nac_est', t.get('costo_nac', 0)-70) * (n_estud_nac + n_pcd_nac))
-                total_nac += (t.get('costo_nac_nino', t.get('costo_nac', 0)-40) * n_ninos_nac)
+                total_nac += (t.get('costo_nac', 0) * c_ad_nac)
+                total_nac += (t.get('costo_nac_est', t.get('costo_nac', 0)-70) * (c_es_nac + c_pc_nac))
+                total_nac += (t.get('costo_nac_nino', t.get('costo_nac', 0)-40) * c_ni_nac)
                 
                 # Extranjeros
-                total_ext += (t.get('costo_ext', 0) * n_adultos_ext)
-                total_ext += (t.get('costo_ext_est', t.get('costo_ext', 0)-20) * (n_estud_ext + n_pcd_ext))
-                total_ext += (t.get('costo_ext_nino', t.get('costo_ext', 0)-15) * n_ninos_ext)
+                total_ext += (t.get('costo_ext', 0) * c_ad_ext)
+                total_ext += (t.get('costo_ext_est', t.get('costo_ext', 0)-20) * (c_es_ext + c_pc_ext))
+                total_ext += (t.get('costo_ext_nino', t.get('costo_ext', 0)-15) * c_ni_ext)
 
                 # CAN
-                total_can += (t.get('costo_can', 0) * n_adultos_can)
-                total_can += (t.get('costo_can_est', t.get('costo_can', 0)-20) * (n_estud_can + n_pcd_can))
-                total_can += (t.get('costo_can_nino', t.get('costo_can', 0)-15) * n_ninos_can)
+                total_can += (t.get('costo_can', 0) * c_ad_can)
+                total_can += (t.get('costo_can_est', t.get('costo_can', 0)-20) * (c_es_can + c_pc_can))
+                total_can += (t.get('costo_can_nino', t.get('costo_can', 0)-15) * c_ni_can)
 
-            real_nac = total_nac + extra_nac + (calc_upgrades + calc_tren) * pasajeros_nac
-            real_ext = total_ext + extra_ext + (calc_upgrades + calc_tren) * pasajeros_ext
-            real_can = total_can + extra_can + (calc_upgrades + calc_tren) * pasajeros_can
+            real_nac = total_nac + m_extra_nac + (calc_upgrades + calc_tren) * pasajeros_nac
+            real_ext = total_ext + m_extra_ext + (calc_upgrades + calc_tren) * pasajeros_ext
+            real_can = total_can + m_extra_can + (calc_upgrades + calc_tren) * pasajeros_can
             
-            # Para mostrar en la UI los precios promedio por persona (opcional, para referencia)
+            # Variables base para el PDF y UI (sin extras ni upgrades iniciales, se añaden según modo)
+            total_nac_pp = total_nac / max(1, pasajeros_nac)
+            total_ext_pp = total_ext / max(1, pasajeros_ext)
+            total_can_pp = total_can / max(1, pasajeros_can)
+
+            # Para mostrar en la UI los precios promedio con todo incluido
             avg_nac_pp = real_nac / max(1, pasajeros_nac)
             avg_ext_pp = real_ext / max(1, pasajeros_ext)
             avg_can_pp = real_can / max(1, pasajeros_can)
