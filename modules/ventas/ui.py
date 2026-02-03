@@ -884,16 +884,41 @@ def render_ventas_ui():
                                 base_raw = total_ext_pp + (extra_ext/max(1, pasajeros_ext))
 
                             # Aplicar Upgrades si estamos en modo General
-                            base_final = base_raw
-                            if estrategia_v == "General":
-                                # Sumar Hotel
-                                if sel_hotel_gen == "Hotel 2*": base_final += (u_h2 * num_noches)
-                                elif sel_hotel_gen == "Hotel 3*": base_final += (u_h3 * num_noches)
-                                elif sel_hotel_gen == "Hotel 4*": base_final += (u_h4 * num_noches)
-                                
-                                # Sumar Tren
-                                if sel_tren_gen == "Vistadome": base_final += u_t_v
-                                elif sel_tren_gen == "Observatory": base_final += u_t_o
+                            # AHORA: Calculamos bases separadas para NAC, EXT y CAN para soportar grupos mixtos
+                            calc_upgrades = (u_h2 * num_noches) if sel_hotel_gen == "Hotel 2*" else \
+                                           (u_h3 * num_noches) if sel_hotel_gen == "Hotel 3*" else \
+                                           (u_h4 * num_noches) if sel_hotel_gen == "Hotel 4*" else 0
+                            
+                            calc_tren = u_t_v if sel_tren_gen == "Vistadome" else \
+                                        u_t_o if sel_tren_gen == "Observatory" else 0
+
+                            # Lista de precios de cierre para el PDF
+                            precios_cierre_list = []
+                            
+                            if pasajeros_nac > 0:
+                                b_nac = total_nac_pp + (extra_nac/max(1, pasajeros_nac))
+                                if estrategia_v == "General": b_nac += (calc_upgrades + calc_tren)
+                                precios_cierre_list.append({
+                                    'label': 'TOTAL NACIONAL',
+                                    'simbolo': 'S/',
+                                    'monto_total': f"{b_nac * (pasajeros_nac + pasajeros_can if tipo_t == 'Nacional' else pasajeros_nac):,.2f}",
+                                    'monto_pp': f"{b_nac:,.2f}"
+                                })
+
+                            if pasajeros_ext > 0:
+                                b_ext = total_ext_pp + (extra_ext/max(1, pasajeros_ext))
+                                if estrategia_v == "General": b_ext += (calc_upgrades + calc_tren)
+                                precios_cierre_list.append({
+                                    'label': 'TOTAL EXTRANJERO',
+                                    'simbolo': '$',
+                                    'monto_total': f"{b_ext * (pasajeros_ext + pasajeros_can if tipo_t == 'Extranjero' or tipo_t == 'Mixto' else pasajeros_ext):,.2f}",
+                                    'monto_pp': f"{b_ext:,.2f}"
+                                })
+                            
+                            # Fallback para base_final (usado en comparativas)
+                            base_final = total_ext_pp + (extra_ext/max(1, pasajeros_ext))
+                            if tipo_t == "Nacional": base_final = total_nac_pp + (extra_nac/max(1, pasajeros_nac))
+                            if estrategia_v == "General": base_final += (calc_upgrades + calc_tren)
 
                             # Matrix Calculation
                             def calc_m(base, extra_t, extra_h_n):
@@ -961,7 +986,9 @@ def render_ventas_ui():
                                 'matriz': pricing_matrix,
                                 'precio_nota': nota_p.upper(),
                                 'canal': st.session_state.get('f_tipo_cliente', 'B2C'),
-                                'days': days_data
+                                'days': days_data,
+                                'precios_cierre': precios_cierre_list,
+                                'manual_override': f"{precio_cierre_over:,.2f}" if (precio_cierre_over and precio_cierre_over > 0) else None
                             }
 
                             # 2. Guardar en Supabase y obtener ID de vinculación

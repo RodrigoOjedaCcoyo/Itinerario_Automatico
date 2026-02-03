@@ -140,15 +140,33 @@
             <div class="price-person-label">RESUMEN DE RESERVA</div>
 
             <div class="closing-premium-card">
+                {% if manual_override %}
                 <h1 style="color: #000; font-size: 1.5rem; margin-bottom: 5px;">PRECIO TOTAL GRUPO</h1>
                 <div class="total-price" style="font-size: 3.5rem; font-weight: 900; color: var(--color-primary);">{{
-                    simbolo_moneda }} {{ precio_cierre }}</div>
-                <div class="sub-label" style="font-size: 0.9rem; font-weight: 700; color: #666; margin-bottom: 10px;">
-                    PARA {{ total_pasajeros }} PASAJEROS
-                </div>
+                    simbolo_moneda }} {{ manual_override }}</div>
                 <div class="per-person-breakdown"
                     style="padding: 5px 15px; background: #f8f9fa; border-radius: 8px; display: inline-block; font-size: 0.8rem; color: #555; border: 1px solid #eee;">
-                    Inversión por persona: <strong>{{ simbolo_moneda }} {{ precio_cierre_pp }}</strong>
+                    Monto Final Acordado
+                </div>
+                {% else %}
+                {% for p in precios_cierre %}
+                <div class="price-block"
+                    style="margin-bottom: 25px; {% if not loop.last %}border-bottom: 1px dashed #eee; padding-bottom: 20px;{% endif %}">
+                    <h1 style="color: #000; font-size: 1.2rem; margin-bottom: 2px; font-weight: 800;">{{ p.label }}</h1>
+                    <div class="total-price"
+                        style="font-size: 3rem; font-weight: 900; color: var(--color-primary); line-height: 1;">{{
+                        p.simbolo }} {{ p.monto_total }}</div>
+                    <div class="per-person-breakdown"
+                        style="margin-top: 5px; padding: 3px 12px; background: #f8f9fa; border-radius: 6px; display: inline-block; font-size: 0.75rem; color: #666; font-weight: 600;">
+                        Inversión por persona: {{ p.simbolo }} {{ p.monto_pp }}
+                    </div>
+                </div>
+                {% endfor %}
+                {% endif %}
+
+                <div class="sub-label"
+                    style="font-size: 0.9rem; font-weight: 700; color: #666; margin-top: 10px; margin-bottom: 10px;">
+                    PARA {{ total_pasajeros }} PASAJEROS
                 </div>
 
                 {% if monto_adelanto != "0.00" %}
