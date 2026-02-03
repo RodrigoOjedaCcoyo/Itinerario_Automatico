@@ -421,12 +421,6 @@
         <h2 class="important-header" style="margin-top: 0;">IMPORTANTE</h2>
 
         <div class="important-sub-title">
-            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"
-                stroke-linecap="round" stroke-linejoin="round">
-                <path d="M7 15v4m5-4v4m5-4v4M3 9a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2v10a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V9Z" />
-                <path d="M3 13h18" />
-                <path d="M8 5V3a1 1 0 0 1 1-1h6a1 1 0 0 1 1 1v2" />
-            </svg>
             Tren Local
         </div>
         <ul class="bullet-list-std">
@@ -436,12 +430,6 @@
         </ul>
 
         <div class="important-sub-title">
-            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"
-                stroke-linecap="round" stroke-linejoin="round">
-                <path d="M7 15v4m5-4v4m5-4v4M3 9a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2v10a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V9Z" />
-                <path d="M3 13h18" />
-                <path d="M8 5V3a1 1 0 0 1 1-1h6a1 1 0 0 1 1 1v2" />
-            </svg>
             Tren Turístico - Promoción para peruanos
         </div>
         <ul class="bullet-list-std">
@@ -452,12 +440,6 @@
         </ul>
 
         <div class="important-sub-title">
-            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"
-                stroke-linecap="round" stroke-linejoin="round">
-                <path d="M7 15v4m5-4v4m5-4v4M3 9a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2v10a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V9Z" />
-                <path d="M3 13h18" />
-                <path d="M8 5V3a1 1 0 0 1 1-1h6a1 1 0 0 1 1 1v2" />
-            </svg>
             Tren Turístico - Tarifa Regular
         </div>
         <ul class="bullet-list-std">
@@ -495,8 +477,7 @@
 
         <div class="purchase-section">
             <p><strong>IMPORTANTE:</strong> Niño de 2 años puede viajar sin costo compartiendo asiento y cama con sus
-                padres.</p>
-            <p>No incluye IGV.</p>
+                padres. No incluye IGV.</p>
         </div>
 
         <div class="purchase-section">
@@ -518,7 +499,7 @@
         </div>
 
         <div class="llama-round-container">
-            <div class="llama-round-img" style="background-image: url('{{ llama_img }}');"></div>
+            <img class="llama-round-img" src="{{ llama_img }}" alt="Llama">
         </div>
     </div>
     {% else %}
@@ -532,39 +513,43 @@
 
         <h1 class="important-header" style="text-align: center;">DETALLES DE TRENES</h1>
 
-        <div class="train-info-section">
-            <div class="train-item">
-                <div class="train-text-col">
-                    <h2 class="important-sub-title">🚆 TREN EXPEDITION / VOYAGER</h2>
+        <table class="train-table" style="width: 100%; border-collapse: collapse; margin-top: 30px;">
+            <tr>
+                <td style="width: 70%; vertical-align: middle; padding-bottom: 40px;">
+                    <h2 class="important-sub-title">TREN EXPEDITION / VOYAGER</h2>
                     <ul class="bullet-list-std">
                         <li>Servicios turísticos diseñados para un viaje cómodo con vistas panorámicas a Machu Picchu.
                         </li>
                     </ul>
-                </div>
-                <div class="train-img-round" style="background-image: url('{{ train_exp_img }}');"></div>
-            </div>
-
-            <div class="train-item">
-                <div class="train-text-col">
-                    <h2 class="important-sub-title">🚆 TREN VISTADOME / THE 360</h2>
+                </td>
+                <td style="width: 30%; vertical-align: middle; text-align: right; padding-bottom: 40px;">
+                    <img src="{{ train_exp_img }}" class="train-img-round">
+                </td>
+            </tr>
+            <tr>
+                <td style="width: 70%; vertical-align: middle; padding-bottom: 40px;">
+                    <h2 class="important-sub-title">TREN VISTADOME / THE 360</h2>
                     <ul class="bullet-list-std">
                         <li>Ventanas panorámicas envolventes. Incluye snacks y presentaciones culturales a bordo.</li>
                     </ul>
-                </div>
-                <div class="train-img-round" style="background-image: url('{{ train_vis_img }}');"></div>
-            </div>
-
-            <div class="train-item">
-                <div class="train-text-col">
-                    <h2 class="important-sub-title">🚆 VISTADOME OBSERVATORY</h2>
+                </td>
+                <td style="width: 30%; vertical-align: middle; text-align: right; padding-bottom: 40px;">
+                    <img src="{{ train_vis_img }}" class="train-img-round">
+                </td>
+            </tr>
+            <tr>
+                <td style="width: 70%; vertical-align: middle; padding-bottom: 40px;">
+                    <h2 class="important-sub-title">VISTADOME OBSERVATORY</h2>
                     <ul class="bullet-list-std">
                         <li>Servicio exclusivo con vagón observatorio de cristal, danzas andinas y desfile de modas.
                         </li>
                     </ul>
-                </div>
-                <div class="train-img-round" style="background-image: url('{{ train_obs_img }}');"></div>
-            </div>
-        </div>
+                </td>
+                <td style="width: 30%; vertical-align: middle; text-align: right; padding-bottom: 40px;">
+                    <img src="{{ train_obs_img }}" class="train-img-round">
+                </td>
+            </tr>
+        </table>
     </div>
 
     <!-- PÁGINA 2 EXTRANJEROS: COMPRA -->
@@ -592,12 +577,19 @@
         </div>
 
         <div class="purchase-section">
+            <h4>MÉTODOS DE PAGO:</h4>
+            <p>Contamos con todos los métodos de pago. El 5% de comisión por pasarela de pago externo no está incluido.
+            </p>
+        </div>
+
+        <div class="purchase-section">
             <h4>ANULACIÓN:</h4>
-            <p>Machu Picchu no tiene devolución. Cambios sujetos a penalidades de hoteles y trenes.</p>
+            <p>El ingreso a Machu Picchu no tiene devolución por parte de las entidades gubernamentales. El resto del
+                paquete está sujeto a penalidades de hoteles y trenes si se cancela con menos de 15 días.</p>
         </div>
 
         <div class="llama-round-container">
-            <div class="llama-round-img" style="background-image: url('{{ llama_purchase_img }}');"></div>
+            <img class="llama-round-img" src="{{ llama_purchase_img }}" alt="Llama">
         </div>
     </div>
     {% endif %}
