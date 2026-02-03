@@ -736,6 +736,17 @@ def render_ventas_ui():
                 pasajeros_nac = 0
                 pasajeros_ext = n_adultos_ext + n_estud_ext + n_pcd_ext + n_ninos_ext
                 pasajeros_can = n_adultos_can + n_estud_can + n_pcd_can + n_ninos_can
+
+            # 🎯 CÁLCULO DE UPGRADES (Movido aquí para afectar a los totales de la UI y el balance)
+            calc_upgrades = 0.0
+            calc_tren = 0.0
+            if estrategia_v == "General":
+                calc_upgrades = (u_h2 * num_noches) if sel_hotel_gen == "Hotel 2*" else \
+                                (u_h3 * num_noches) if sel_hotel_gen == "Hotel 3*" else \
+                                (u_h4 * num_noches) if sel_hotel_gen == "Hotel 4*" else 0
+                
+                calc_tren = u_t_v if sel_tren_gen == "Vistadome" else \
+                            u_t_o if sel_tren_gen == "Observatory" else 0
             
             # --- NUEVA LÓGICA DE CÁLCULO DETALLADO ---
             # Inicializar acumuladores por categoría
@@ -759,14 +770,14 @@ def render_ventas_ui():
                 total_can += (t.get('costo_can_est', t.get('costo_can', 0)-20) * (n_estud_can + n_pcd_can))
                 total_can += (t.get('costo_can_nino', t.get('costo_can', 0)-15) * n_ninos_can)
 
-            real_nac = total_nac + extra_nac
-            real_ext = total_ext + extra_ext
-            real_can = total_can + extra_can
+            real_nac = total_nac + extra_nac + (calc_upgrades + calc_tren) * pasajeros_nac
+            real_ext = total_ext + extra_ext + (calc_upgrades + calc_tren) * pasajeros_ext
+            real_can = total_can + extra_can + (calc_upgrades + calc_tren) * pasajeros_can
             
             # Para mostrar en la UI los precios promedio por persona (opcional, para referencia)
-            avg_nac_pp = total_nac / max(1, pasajeros_nac)
-            avg_ext_pp = total_ext / max(1, pasajeros_ext)
-            avg_can_pp = total_can / max(1, pasajeros_can)
+            avg_nac_pp = real_nac / max(1, pasajeros_nac)
+            avg_ext_pp = real_ext / max(1, pasajeros_ext)
+            avg_can_pp = real_can / max(1, pasajeros_can)
 
             col_res1, col_res2, col_res3 = st.columns(3)
             with col_res1:
@@ -899,15 +910,6 @@ def render_ventas_ui():
                                 base_raw = total_ext_pp + (extra_ext/max(1, pasajeros_ext))
                             else: # Mixto
                                 base_raw = total_ext_pp + (extra_ext/max(1, pasajeros_ext))
-
-                            # Aplicar Upgrades si estamos en modo General
-                            # AHORA: Calculamos bases separadas para NAC, EXT y CAN para soportar grupos mixtos
-                            calc_upgrades = (u_h2 * num_noches) if sel_hotel_gen == "Hotel 2*" else \
-                                           (u_h3 * num_noches) if sel_hotel_gen == "Hotel 3*" else \
-                                           (u_h4 * num_noches) if sel_hotel_gen == "Hotel 4*" else 0
-                            
-                            calc_tren = u_t_v if sel_tren_gen == "Vistadome" else \
-                                        u_t_o if sel_tren_gen == "Observatory" else 0
 
                             # Lista de precios de cierre para el PDF
                             precios_cierre_list = []
