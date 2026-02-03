@@ -134,45 +134,45 @@
         </div>
         <div class="pricing-centering-wrapper">
             {% if estrategia == "General" %}
-            <h1 class="price-main-title">CONFIRMACIÓN DE VIAJE</h1>
+            <h1 class="price-main-title">Propuesta Económica</h1>
             <div class="price-person-label">RESUMEN DE RESERVA</div>
             <div class="closing-premium-card">
                 {% if manual_override %}
-                <h1 style="color: #000; font-size: 1.5rem; margin-bottom: 5px;">PRECIO TOTAL GRUPO</h1>
+                <h1 style="color: #000; font-size: 1.5rem; margin-bottom: 10px;">INVERSIÓN TOTAL</h1>
                 <div class="total-price" style="font-size: 3.5rem; font-weight: 900; color: var(--color-primary);">{{
                     simbolo_moneda }} {{ manual_override }}</div>
                 {% else %}
                 {% for p in precios_cierre %}
                 <div class="price-block" style="margin-bottom: 25px;">
-                    <h1 style="color: #000; font-size: 1.2rem; margin-bottom: 2px; font-weight: 800;">{{ p.label }}</h1>
+                    <h1 style="color: #000; font-size: 1.2rem; font-weight: 800;">{{ p.label }}</h1>
                     <div class="total-price" style="font-size: 3rem; font-weight: 900; color: var(--color-primary);">{{
                         p.simbolo }} {{ p.monto_total }}</div>
+                    <div style="font-size: 0.8rem; color: #666; font-weight: 600;">INVERSIÓN P/P: {{ p.simbolo }} {{
+                        p.monto_pp }}</div>
                 </div>
                 {% endfor %}
                 {% endif %}
             </div>
             {% elif estrategia == "Matriz" %}
-            <h1 class="price-main-title">COMPARATIVA DE SERVICIOS</h1>
+            <h1 class="price-main-title">Cuadro Comparativo</h1>
             <div class="matrix-premium-container">
-                <!-- Solo un resumen para brevedad del template logic -->
-                <p style="text-align:center">Ver matriz de precios en la versión digital.</p>
+                <p style="text-align:center; font-size: 1.1rem; color: #666;">Selección detallada de servicios adjunta.
+                </p>
             </div>
             {% else %}
-            <h1 class="price-main-title">TU PROPUESTA DE VIAJE</h1>
+            <h1 class="price-main-title">Tarifas de Viaje</h1>
             <div class="price-grid-columns"
                 style="display: flex; justify-content: center; gap: 50px; margin-top: 30px;">
                 {% if precios.nac %}
                 <div class="price-column">
-                    <h4 style="font-size: 0.9rem; color: #ff5252;">TOTAL NACIONAL</h4>
-                    <div class="price-large-text" style="font-size: 2.2rem; font-weight: 900;">S/ {{ precios.nac.total
-                        }}</div>
+                    <h4 style="color: #e74c3c;">NACIONAL</h4>
+                    <div class="price-large-text">S/ {{ precios.nac.total }}</div>
                 </div>
                 {% endif %}
                 {% if precios.ext %}
                 <div class="price-column">
-                    <h4 style="font-size: 0.9rem; color: #ff5252;">TOTAL EXTRANJERO</h4>
-                    <div class="price-large-text" style="font-size: 2.2rem; font-weight: 900;">$ {{ precios.ext.total }}
-                    </div>
+                    <h4 style="color: #e74c3c;">EXTRANJERO</h4>
+                    <div class="price-large-text">$ {{ precios.ext.total }}</div>
                 </div>
                 {% endif %}
             </div>
@@ -180,161 +180,206 @@
         </div>
     </div>
 
-    <!-- SECCIÓN DE ANEXOS CONDICIONALES -->
+    <!-- SECCIÓN DE ANEXOS PREMIUM -->
     {% if es_nacional %}
-    <!-- ANEXO NACIONAL - PÁGINA 1: TREN LOCAL VS TURISTA -->
-    <div class="page-container">
+    <!-- ANEXO NACIONAL - PÁGINA 1: GUÍA DEL TREN -->
+    <div class="page-container premium-appendix-page">
         <div class="decor-top-right"></div>
         <div class="decor-bottom-left"></div>
         <div class="logo-container">
             <img src="{{ logo_url }}" alt="Logo">
         </div>
-        <h2 class="important-header" style="margin-top: 0;">IMPORTANTE</h2>
 
-        <div class="important-sub-title">Tren Local</div>
-        <ul class="bullet-list-std">
-            <li>Requiere hacer cola entre 3 a 6 horas.</li>
-            <li>No cuenta con reserva de asiento.</li>
-            <li>Servicio básico para residentes locales.</li>
-        </ul>
+        <h1 class="premium-title-main">Guía del Viajero</h1>
+        <div class="premium-section-header">ELECCIÓN DEL SERVICIO DE TREN</div>
 
-        <div class="important-sub-title">Tren Turístico - Promoción para peruanos</div>
-        <ul class="bullet-list-std">
-            <li>Compra con anticipación, sin filas.</li>
-            <li>Viajas con asiento asignado.</li>
-            <li>Sujeto a disponibilidad y fechas no festivas.</li>
-        </ul>
+        <p style="font-size: 1rem; color: #444; margin-bottom: 20px;">
+            Para tu viaje a Machu Picchu, la elección del tren es fundamental para tu comodidad y experiencia.
+            A continuación, te presentamos una comparativa directa para que elijas la mejor opción.
+        </p>
 
-        <div class="important-sub-title">Tren Turístico - Tarifa Regular</div>
-        <ul class="bullet-list-std">
-            <li>Mayor confort y salidas diurnas.</li>
-            <li>Asiento asignado garantizado.</li>
-        </ul>
+        <table class="comparison-table">
+            <tr>
+                <th class="comparison-header" style="width: 30%;">CARACTERÍSTICA</th>
+                <th class="comparison-header" style="width: 35%;">TREN LOCAL</th>
+                <th class="comparison-header" style="width: 35%; background: var(--color-primary);">TREN TURÍSTICO</th>
+            </tr>
+            <tr>
+                <td class="comparison-cell"><strong>Disponibilidad</strong></td>
+                <td class="comparison-cell">Sujeto a colas de 3-6 horas el mismo día.</td>
+                <td class="comparison-cell">Reserva inmediata y garantizada.</td>
+            </tr>
+            <tr>
+                <td class="comparison-cell"><strong>Asientos</strong></td>
+                <td class="comparison-cell">Sin reserva. Posibilidad de viajar de pie.</td>
+                <td class="comparison-cell">Asiento numerado y confortable.</td>
+            </tr>
+            <tr>
+                <td class="comparison-cell"><strong>Servicios</strong></td>
+                <td class="comparison-cell">Básico, transporte de carga y pasajeros.</td>
+                <td class="comparison-cell">Snacks, música, ventanas amplias.</td>
+            </tr>
+        </table>
 
-        <h3 class="summary-red">En resumen:</h3>
-        <div class="summary-item">- El tren local es económico pero incierto e incómodo.</div>
-        <div class="summary-item">- El tren turístico ofrece seguridad, confort y control total.</div>
+        <div class="recommendation-box">
+            <h3 style="margin: 0 0 10px 0; color: var(--color-primary);">Nuestra Recomendación:</h3>
+            <p style="margin: 0; font-size: 0.95rem; line-height: 1.4;">
+                Si buscas optimizar tu tiempo y evitar el cansancio extremo, el <strong>Tren Turístico</strong> es la
+                mejor inversión.
+                Te permite llegar descansado a la ciudadela para disfrutar plenamente de la maravilla del mundo.
+            </p>
+        </div>
 
-        <div class="important-footer-img"
-            style="margin-top: 40px; height: 350px; background-image: url('{{ days[0].images[2] if days|length > 0 and days[0].images|length > 2 else cover_url }}'); background-size: cover; background-position: center; border-radius: 20px;">
+        <div style="margin-top: 40px; text-align: center;">
+            <img src="{{ days[0].images[2] if days|length > 0 and days[0].images|length > 2 else cover_url }}"
+                style="width: 100%; height: 250px; object-fit: cover; border-radius: 20px;">
         </div>
     </div>
 
-    <!-- ANEXO NACIONAL - PÁGINA 2: COMPRA -->
-    <div class="page-container price-page-content">
+    <!-- ANEXO NACIONAL - PÁGINA 2: CONDICIONES -->
+    <div class="page-container premium-appendix-page">
         <div class="decor-top-right"></div>
         <div class="decor-bottom-left"></div>
         <div class="logo-container">
             <img src="{{ logo_url }}" alt="Logo">
         </div>
 
-        <div class="purchase-title">INFORMACIÓN DE COMPRA NACIONAL</div>
+        <h1 class="premium-title-main">Términos de Reserva</h1>
 
-        <div class="purchase-section">
-            <h4>Reserva:</h4>
-            <p>La reserva es con el 50%. El saldo se abona al llegar a Perú.</p>
-        </div>
+        <table style="width: 100%; border-collapse: collapse;">
+            <tr>
+                <td style="width: 65%; vertical-align: top; padding-right: 40px;">
+                    <div class="premium-section-header">PROCESO DE PAGO</div>
+                    <p style="font-size: 0.95rem; color: #555; line-height: 1.6;">
+                        Confirmación de reserva con el <strong>50% del total</strong>. El saldo restante debe ser
+                        cancelado el primer día de su llegada a la ciudad de Cusco.
+                    </p>
 
-        <div class="purchase-section">
-            <p><strong>IMPORTANTE:</strong> Niños de 2 años viajan sin costo compartiendo servicios con sus padres. No
-                incluye IGV.</p>
-        </div>
-
-        <div class="purchase-section">
-            <h4>Anulación:</h4>
-            <p>El ingreso a Machu Picchu no tiene cambios ni devoluciones. Menor a 15 días, no hay devolución del
-                paquete.</p>
-        </div>
-
-        <div class="llama-round-container">
-            <img class="llama-round-img" src="{{ llama_img }}" alt="Llama">
-        </div>
+                    <div class="premium-section-header" style="margin-top: 30px;">POLÍTICAS DE CANCELACIÓN</div>
+                    <ul style="font-size: 0.9rem; color: #555; padding-left: 20px;">
+                        <li>Entradas a monumentos (Machu Picchu) no reembolsables.</li>
+                        <li>Anulaciones con menos de 15 días incurren en 100% de penalidad.</li>
+                        <li>Cambios de fecha sujetos a disponibilidad y cargos de hoteles/trenes.</li>
+                    </ul>
+                </td>
+                <td style="width: 35%; text-align: center; vertical-align: middle;">
+                    <img src="{{ llama_img }}" class="premium-llama-footer">
+                    <p style="margin-top: 15px; font-weight: 800; color: var(--color-primary);">¡TODO LISTO!</p>
+                </td>
+            </tr>
+        </table>
     </div>
     {% else %}
-    <!-- ANEXO EXTRANJERO - PÁGINA 1: DETALLES DE TRENES (PREMIUM) -->
-    <div class="page-container price-page-content">
+    <!-- ANEXO EXTRANJERO - PÁGINA 1: TRENES PREMIUM GALLERY -->
+    <div class="page-container premium-appendix-page">
         <div class="decor-top-right"></div>
         <div class="decor-bottom-left"></div>
         <div class="logo-container">
             <img src="{{ logo_url }}" alt="Logo">
         </div>
 
-        <h1 class="important-header" style="text-align: center;">DETALLES DE TRENES</h1>
+        <h1 class="premium-title-main">The Train Experience</h1>
 
-        <table class="train-table" style="width: 100%; border-collapse: collapse; margin-top: 30px;">
+        <table class="experience-card-table">
             <tr>
-                <td style="width: 70%; vertical-align: middle; padding-bottom: 40px;">
-                    <h2 class="important-sub-title">TREN EXPEDITION / VOYAGER</h2>
-                    <ul class="bullet-list-std">
-                        <li>Viaje cómodo con excelentes vistas panorámicas hacia la ciudadela de Machu Picchu.</li>
-                    </ul>
-                </td>
-                <td style="width: 30%; vertical-align: middle; text-align: right; padding-bottom: 40px;">
-                    <img src="{{ train_exp_img }}" class="train-img-round">
+                <td style="width: 40%;"><img src="{{ train_exp_img }}" class="experience-card-img"></td>
+                <td class="experience-card-text">
+                    <h2 class="experience-card-title">EXPEDITION & VOYAGER</h2>
+                    <p class="experience-card-desc">
+                        Designed for modern travelers, these services offer comfort and large panoramic windows
+                        to witness the breathtaking Andean landscapes on your way to Machu Picchu.
+                    </p>
                 </td>
             </tr>
+        </table>
+
+        <table class="experience-card-table">
             <tr>
-                <td style="width: 70%; vertical-align: middle; padding-bottom: 40px;">
-                    <h2 class="important-sub-title">TREN VISTADOME / THE 360</h2>
-                    <ul class="bullet-list-std">
-                        <li>Ventanas panorámicas de 360 grados, snacks y presentaciones culturales a bordo.</li>
-                    </ul>
+                <td class="experience-card-text" style="padding-left: 0; padding-right: 30px; text-align: right;">
+                    <h2 class="experience-card-title">VISTADOME & THE 360</h2>
+                    <p class="experience-card-desc">
+                        An immersive travel experience with panoramic views from every angle.
+                        Includes live cultural entertainment and gourmet snacks served at your seat.
+                    </p>
                 </td>
-                <td style="width: 30%; vertical-align: middle; text-align: right; padding-bottom: 40px;">
-                    <img src="{{ train_vis_img }}" class="train-img-round">
-                </td>
+                <td style="width: 40%;"><img src="{{ train_vis_img }}" class="experience-card-img"></td>
             </tr>
+        </table>
+
+        <table class="experience-card-table">
             <tr>
-                <td style="width: 70%; vertical-align: middle; padding-bottom: 40px;">
-                    <h2 class="important-sub-title">VISTADOME OBSERVATORY</h2>
-                    <ul class="bullet-list-std">
-                        <li>Servicio de lujo con vagón observatorio al aire libre y espectáculos folclóricos.</li>
-                    </ul>
-                </td>
-                <td style="width: 30%; vertical-align: middle; text-align: right; padding-bottom: 40px;">
-                    <img src="{{ train_obs_img }}" class="train-img-round">
+                <td style="width: 40%;"><img src="{{ train_obs_img }}" class="experience-card-img"></td>
+                <td class="experience-card-text">
+                    <h2 class="experience-card-title">THE OBSERVATORY LUXE</h2>
+                    <p class="experience-card-desc">
+                        Ultra-exclusive service featuring an open-air observatory car and live music.
+                        The pinnacle of train travel in Latin America, combining luxury with tradition.
+                    </p>
                 </td>
             </tr>
         </table>
     </div>
 
-    <!-- ANEXO EXTRANJERO - PÁGINA 2: COMPRA (INTL) -->
-    <div class="page-container price-page-content">
+    <!-- ANEXO EXTRANJERO - PÁGINA 2: INTERNATIONAL CONTRACT -->
+    <div class="page-container premium-appendix-page">
         <div class="decor-top-right"></div>
         <div class="decor-bottom-left"></div>
         <div class="logo-container">
             <img src="{{ logo_url }}" alt="Logo">
         </div>
 
-        <div class="purchase-title">INFORMACIÓN DE COMPRA (INTERNACIONAL)</div>
+        <h1 class="premium-title-main">Booking Details</h1>
 
-        <div class="purchase-section">
-            <h4>RESERVA:</h4>
-            <p>Reserva con el 50%. El saldo restante se cancela el primer día al llegar a Perú.</p>
-        </div>
+        <table class="booking-guide-table">
+            <tr>
+                <td class="booking-guide-header" colspan="2">RESERVATION POLICIES</td>
+            </tr>
+            <tr>
+                <td class="booking-guide-cell" style="width: 50%;">
+                    <strong>CONFIRMATION</strong><br>
+                    A 50% deposit is required to secure all services. The remaining balance must be paid in USD or PEN
+                    upon arrival.
+                </td>
+                <td class="booking-guide-cell">
+                    <strong>PASSPORT DATA</strong><br>
+                    Precise passport details are mandatory for issuing train and site tickets. Changes post-issuance are
+                    not permitted.
+                </td>
+            </tr>
+            <tr>
+                <td class="booking-guide-header" colspan="2">SPECIAL DISCOUNTS & CREDITS</td>
+            </tr>
+            <tr>
+                <td class="booking-guide-cell">
+                    <strong>CHILDREN & YOUTH</strong><br>
+                    - USD 80 discount for kids (3-11)<br>
+                    - USD 60 discount for youth (12-17)
+                </td>
+                <td class="booking-guide-cell">
+                    <strong>COMMUNITY PASS</strong><br>
+                    USD 20 credit for citizens of the Andean Community (CAN) upon presentation of valid ID.
+                </td>
+            </tr>
+        </table>
 
-        <div class="purchase-section">
-            <h4>DESCUENTOS:</h4>
-            <ul class="bullet-list-std">
-                <li>$ 80.00 para niños (3-11 años).</li>
-                <li>$ 60.00 para jóvenes (12-17 años).</li>
-                <li>$ 20.00 para Comunidad Andina.</li>
-            </ul>
-        </div>
-
-        <div class="purchase-section">
-            <h4>NOTAS IMPORTANTES:</h4>
-            <p>Las entradas a Machu Picchu no son reembolsables. Se requiere pasaporte original para el ingreso.</p>
-        </div>
-
-        <div class="llama-round-container">
-            <img class="llama-round-img" src="{{ llama_purchase_img }}" alt="Llama">
-        </div>
+        <table style="width: 100%; margin-top: 40px;">
+            <tr>
+                <td style="width: 30%; text-align: center;">
+                    <img src="{{ llama_purchase_img }}" class="premium-llama-footer">
+                </td>
+                <td style="vertical-align: middle; padding-left: 30px;">
+                    <h3 style="color: var(--color-primary); margin: 0;">Journey with Professionalism</h3>
+                    <p style="font-size: 0.9rem; color: #666;">
+                        Our expert team handles every detail so you can focus on the magic of the Andes.
+                        We look forward to hosting your unforgettable Peruvian adventure.
+                    </p>
+                </td>
+            </tr>
+        </table>
     </div>
     {% endif %}
 
     <style>
-        /* Estilos base incrustados para redundancia */
         .day-date-row {
             display: flex;
             align-items: baseline;

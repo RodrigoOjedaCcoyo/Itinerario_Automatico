@@ -475,6 +475,120 @@ body {
     font-weight: 900;
 }
 
+/* ESTILOS PREMIUM PARA ANEXOS (MAGAZINE STYLE) */
+.premium-appendix-page {
+    padding: 40px;
+}
+
+.premium-title-main {
+    font-size: 2.8rem;
+    color: var(--color-primary);
+    font-weight: 900;
+    margin-bottom: 30px;
+    letter-spacing: -1px;
+    text-transform: uppercase;
+    border-bottom: 8px solid var(--color-primary);
+    padding-bottom: 10px;
+}
+
+.premium-section-header {
+    background: var(--color-primary);
+    color: white;
+    padding: 10px 20px;
+    font-size: 1.2rem;
+    font-weight: 800;
+    margin-bottom: 20px;
+}
+
+.experience-card-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-bottom: 30px;
+}
+
+.experience-card-img {
+    width: 280px;
+    height: 200px;
+    object-fit: cover;
+    border-radius: 15px;
+    border: 1px solid #ddd;
+}
+
+.experience-card-text {
+    padding-left: 30px;
+    vertical-align: top;
+}
+
+.experience-card-title {
+    font-size: 1.4rem;
+    color: #333;
+    font-weight: 800;
+    margin: 0 0 10px 0;
+}
+
+.experience-card-desc {
+    font-size: 0.95rem;
+    color: #555;
+    line-height: 1.5;
+}
+
+.booking-guide-table {
+    width: 100%;
+    border-collapse: collapse;
+    background: #fdfdfd;
+    border: 1px solid #eee;
+}
+
+.booking-guide-header {
+    background: #f8f9fa;
+    padding: 15px;
+    font-weight: 800;
+    color: var(--color-primary);
+    border-bottom: 2px solid var(--color-primary);
+}
+
+.booking-guide-cell {
+    padding: 20px;
+    vertical-align: top;
+    border-bottom: 1px solid #eee;
+}
+
+.premium-llama-footer {
+    width: 180px;
+    height: 180px;
+    border-radius: 90px;
+    border: 6px solid white;
+    box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
+}
+
+.comparison-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 20px;
+}
+
+.comparison-header {
+    background: #2d3436;
+    color: white;
+    padding: 15px;
+    text-align: center;
+    font-weight: 800;
+}
+
+.comparison-cell {
+    padding: 15px;
+    border: 1px solid #eee;
+    font-size: 0.9rem;
+    vertical-align: top;
+}
+
+.recommendation-box {
+    background: rgba(85, 183, 176, 0.05);
+    border-left: 5px solid var(--color-primary);
+    padding: 20px;
+    margin-top: 30px;
+}
+
 .price-bottom-grid {
     display: flex;
     gap: 10px;
