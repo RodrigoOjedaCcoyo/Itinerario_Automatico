@@ -53,7 +53,7 @@
                 {% if day.hora_inicio %}
                 <span class="day-time-badge"
                     style="background: rgba(85, 183, 176, 0.1); border: 1.5px solid #55b7b0; color: #55b7b0; padding: 2px 10px; border-radius: 15px; font-size: 11px; margin-left: 10px; font-weight: 800; text-transform: uppercase; vertical-align: middle; display: inline-block;">
-                    🕒 INICIA: {{ day.hora_inicio }}
+                    INICIA: {{ day.hora_inicio }}
                 </span>
                 {% endif %}
             </div>
@@ -94,7 +94,7 @@
         </ul>
         {% endif %}
 
-        <!-- EL CAMINO SERPIENTE (Culebrita enpequeñecida) -->
+        <!-- EL CAMINO SERPIENTE -->
         <div class="collage-container">
             <!-- Pin Mapa Superior -->
             <svg class="pin-icon pin-top" viewBox="0 0 24 24">
@@ -102,7 +102,7 @@
                 <circle cx="12" cy="12" r="4" fill="#2d3436" />
             </svg>
 
-            <!-- SVG del Camino - MÁS PEQUEÑO SEGÚN PEDIDO -->
+            <!-- SVG del Camino -->
             <svg class="serpent-path-svg" viewBox="0 0 320 850" preserveAspectRatio="none">
                 <path
                     d="M160,100 C160,150 290,180 290,280 C290,380 30,320 30,420 C30,520 290,480 290,580 C290,680 160,720 160,820"
@@ -125,7 +125,7 @@
     </div>
     {% endfor %}
 
-    <!-- PÁGINA 1: PRECIOS EVOLUTIVOS -->
+    <!-- PÁGINA DE PRECIOS -->
     <div class="page-container" style="display: flex; flex-direction: column; justify-content: center;">
         <div class="decor-top-right"></div>
         <div class="decor-bottom-left"></div>
@@ -133,285 +133,56 @@
             <img src="{{ logo_url }}" alt="Logo">
         </div>
         <div class="pricing-centering-wrapper">
-
             {% if estrategia == "General" %}
-            <!-- NIVEL 3: CIERRE / CONTRATO -->
             <h1 class="price-main-title">CONFIRMACIÓN DE VIAJE</h1>
             <div class="price-person-label">RESUMEN DE RESERVA</div>
-
             <div class="closing-premium-card">
                 {% if manual_override %}
                 <h1 style="color: #000; font-size: 1.5rem; margin-bottom: 5px;">PRECIO TOTAL GRUPO</h1>
                 <div class="total-price" style="font-size: 3.5rem; font-weight: 900; color: var(--color-primary);">{{
                     simbolo_moneda }} {{ manual_override }}</div>
-                <div class="per-person-breakdown"
-                    style="padding: 5px 15px; background: #f8f9fa; border-radius: 8px; display: inline-block; font-size: 0.8rem; color: #555; border: 1px solid #eee;">
-                    Monto Final Acordado
-                </div>
                 {% else %}
                 {% for p in precios_cierre %}
-                <div class="price-block"
-                    style="margin-bottom: 25px; {% if not loop.last %}border-bottom: 1px dashed #eee; padding-bottom: 20px;{% endif %}">
+                <div class="price-block" style="margin-bottom: 25px;">
                     <h1 style="color: #000; font-size: 1.2rem; margin-bottom: 2px; font-weight: 800;">{{ p.label }}</h1>
-                    <div class="total-price"
-                        style="font-size: 3rem; font-weight: 900; color: var(--color-primary); line-height: 1;">{{
+                    <div class="total-price" style="font-size: 3rem; font-weight: 900; color: var(--color-primary);">{{
                         p.simbolo }} {{ p.monto_total }}</div>
-                    <div class="per-person-breakdown"
-                        style="margin-top: 5px; padding: 3px 12px; background: #f8f9fa; border-radius: 6px; display: inline-block; font-size: 0.75rem; color: #666; font-weight: 600;">
-                        Inversión por persona: {{ p.simbolo }} {{ p.monto_pp }}
-                    </div>
-                    {% if p.nota %}
-                    <div class="price-note"
-                        style="margin-top: 8px; font-size: 0.7rem; color: #888; font-style: italic;">
-                        {{ p.nota }}
-                    </div>
-                    {% endif %}
                 </div>
                 {% endfor %}
                 {% endif %}
-
-                <div class="sub-label"
-                    style="font-size: 0.9rem; font-weight: 700; color: #666; margin-top: 10px; margin-bottom: 10px;">
-                    PARA {{ total_pasajeros }} PASAJEROS
-                </div>
-
-                {% if monto_adelanto != "0.00" %}
-                <div class="payment-summary"
-                    style="margin-top: 15px; display: flex; justify-content: center; gap: 20px;">
-                    <div style="text-align: center;">
-                        <span
-                            style="display: block; font-size: 0.7rem; color: #888; text-transform: uppercase; font-weight: 700;">Monto
-                            Adelantado</span>
-                        <strong style="font-size: 1.1rem; color: #2ecc71;">{{ simbolo_moneda }} {{ monto_adelanto
-                            }}</strong>
-                    </div>
-                    <div style="text-align: center; border-left: 1px solid #eee; padding-left: 20px;">
-                        <span
-                            style="display: block; font-size: 0.7rem; color: #888; text-transform: uppercase; font-weight: 700;">Saldo
-                            Pendiente</span>
-                        <strong style="font-size: 1.1rem; color: #e74c3c;">{{ simbolo_moneda }} {{ monto_pendiente
-                            }}</strong>
-                    </div>
-                </div>
-                {% endif %}
-
-                <div class="selection-summary">
-                    <div class="summary-point">
-                        <span>DESTINO</span>
-                        <strong>{{ categoria }}</strong>
-                    </div>
-                    <div class="summary-point">
-                        <span>DURACIÓN</span>
-                        <strong>{{ duracion }}</strong>
-                    </div>
-                    <div class="summary-point">
-                        <span>ESTADO</span>
-                        <strong>GARANTIZADO</strong>
-                    </div>
-                </div>
-
-                <p style="margin-top: 20px; color: #444; font-size: 0.85rem; font-weight: 500; line-height: 1.4;">
-                    Este presupuesto incluye todos los servicios detallados en el itinerario: traslados compartidos,
-                    tours con guía oficial, ingresos y el nivel de alojamiento seleccionado.
-                </p>
-
-                <div class="payment-methods">
-                    <p>MÉTODOS DE PAGO ACEPTADOS</p>
-                    <div class="payment-icons">
-                        <!-- VISA -->
-                        <svg viewBox="0 0 48 48" width="40">
-                            <path fill="#1565C0"
-                                d="M43,35H5c-1.105,0-2-0.895-2-2V15c0-1.105,0.895-2,2-2h38c1.105,0,2,0.895,2,2v18C45,34.105,44.105,35,43,35z" />
-                            <path fill="#FFF"
-                                d="M14.821,28.77l1.096-6.726h2.24l-1.096,6.726H14.821z M22.7,22.044c-0.463-0.219-1.258-0.456-2.215-0.456c-2.333,0-3.978,1.241-3.99,3.023c-0.012,1.312,1.171,2.044,2.068,2.482c0.92,0.45,1.231,0.737,1.228,1.139c-0.003,0.617-0.741,0.901-1.426,0.901c-0.95,0-1.458-0.144-2.238-0.485l-0.315-0.148l-0.334,2.071c0.559,0.257,1.593,0.48,2.658,0.491c2.483,0,4.104-1.226,4.122-3.124c0.012-1.041-0.62-1.836-1.979-2.489c-0.824-0.42-1.33-0.701-1.33-1.13c0.003-0.388,0.428-0.803,1.353-0.803c0.774-0.013,1.333,0.165,1.764,0.352l0.21,0.1l0.345-2.072L22.7,22.044z M30.85,22.044h-1.729c-0.536,0-0.941,0.155-1.173,0.71l-3.328,7.943h2.352l0.468-1.291h2.871l0.271,1.291h2.07L30.85,22.044z M28.006,27.567l1.243-3.414l0.711,3.414H28.006z M38.487,22.044l-2.012,7.943h-2.148l2.012-7.943H38.487z" />
-                        </svg>
-                        <!-- MASTERCARD -->
-                        <svg viewBox="0 0 48 48" width="40">
-                            <path fill="#37474F"
-                                d="M43,35H5c-1.105,0-2-0.895-2-2V15c0-1.105,0.895-2,2-2h38c1.105,0,2,0.895,2,2v18C45,34.105,44.105,35,43,35z" />
-                            <circle fill="#FF9800" cx="28" cy="24" r="9" />
-                            <circle fill="#F44336" cx="20" cy="24" r="9" />
-                            <path fill="#FFB74D"
-                                d="M24,16.096c1.94,1.405,3.2,3.687,3.2,6.264c0,2.578-1.26,4.86-3.2,6.264c-1.94-1.405-3.2-3.687-3.2-6.264C20.8,19.783,22.06,17.501,24,16.096z" />
-                        </svg>
-                        <!-- PAYPAL -->
-                        <svg viewBox="0 0 48 48" width="40">
-                            <path fill="#283593"
-                                d="M19,10.6c0-0.3,0.3-0.6,0.6-0.6h7.9c4.2,0,7.6,3.4,7.6,7.6s-3.4,7.6-7.6,7.6h-5.4L19,34.4L19,10.6z" />
-                            <path fill="#1565C0"
-                                d="M14,14.6c0-0.3,0.3-0.6,0.6-0.6h7.9c4.2,0,7.6,3.4,7.6,7.6s-3.4,7.6-7.6,7.6h-5.4L14,38.4L14,14.6z" />
-                        </svg>
-                    </div>
-                </div>
-
-                <div class="validity-tag">OFERTA VÁLIDA POR LAS PRÓXIMAS 48 HORAS</div>
             </div>
-
             {% elif estrategia == "Matriz" %}
-            <!-- NIVEL 2: COMPARATIVA / MATRIZ -->
             <h1 class="price-main-title">COMPARATIVA DE SERVICIOS</h1>
-            <div class="price-person-label">ELIGE TU EXPERIENCIA IDEAL</div>
-
             <div class="matrix-premium-container">
-                <!-- COLUMNA EXPEDITION -->
-                <div class="matrix-premium-col">
-                    <div class="matrix-header-premium">
-                        <div class="train-type">TREN TURÍSTICO</div>
-                        <div class="train-name">EXPEDITION</div>
-                    </div>
-                    <div class="matrix-row">
-                        <div class="price">{{ simbolo_moneda }} {{ matriz.expedition.sin }}</div>
-                        <div class="cat">SIN HOTEL</div>
-                    </div>
-                    <div class="matrix-row">
-                        <div class="price">{{ simbolo_moneda }} {{ matriz.expedition.h2 }}</div>
-                        <div class="cat">CON HOTEL 2**</div>
-                    </div>
-                    <div class="matrix-row">
-                        <div class="price">{{ simbolo_moneda }} {{ matriz.expedition.h3 }}</div>
-                        <div class="cat">CON HOTEL 3***</div>
-                    </div>
-                    <div class="matrix-row">
-                        <div class="price">{{ simbolo_moneda }} {{ matriz.expedition.h4 }}</div>
-                        <div class="cat">CON HOTEL 4****</div>
-                    </div>
-                </div>
-
-                <!-- COLUMNA VISTADOME -->
-                <div class="matrix-premium-col" style="border-color: var(--color-primary);">
-                    <div class="popular-badge">MÁS VALORADO</div>
-                    <div class="matrix-header-premium" style="background: var(--color-primary);">
-                        <div class="train-type">TREN PANORÁMICO</div>
-                        <div class="train-name">VISTADOME</div>
-                    </div>
-                    <div class="matrix-row">
-                        <div class="price">{{ simbolo_moneda }} {{ matriz.vistadome.sin }}</div>
-                        <div class="cat">SIN HOTEL</div>
-                    </div>
-                    <div class="matrix-row">
-                        <div class="price">{{ simbolo_moneda }} {{ matriz.vistadome.h2 }}</div>
-                        <div class="cat">CON HOTEL 2**</div>
-                    </div>
-                    <div class="matrix-row">
-                        <div class="price">{{ simbolo_moneda }} {{ matriz.vistadome.h3 }}</div>
-                        <div class="cat">CON HOTEL 3***</div>
-                    </div>
-                    <div class="matrix-row">
-                        <div class="price">{{ simbolo_moneda }} {{ matriz.vistadome.h4 }}</div>
-                        <div class="cat">CON HOTEL 4****</div>
-                    </div>
-                </div>
-
-                <!-- COLUMNA OBSERVATORY -->
-                <div class="matrix-premium-col">
-                    <div class="matrix-header-premium">
-                        <div class="train-type">TREN DE LUJO</div>
-                        <div class="train-name">OBSERVATORY</div>
-                    </div>
-                    <div class="matrix-row">
-                        <div class="price">{{ simbolo_moneda }} {{ matriz.observatory.sin }}</div>
-                        <div class="cat">SIN HOTEL</div>
-                    </div>
-                    <div class="matrix-row">
-                        <div class="price">{{ simbolo_moneda }} {{ matriz.observatory.h2 }}</div>
-                        <div class="cat">CON HOTEL 2**</div>
-                    </div>
-                    <div class="matrix-row">
-                        <div class="price">{{ simbolo_moneda }} {{ matriz.observatory.h3 }}</div>
-                        <div class="cat">CON HOTEL 3***</div>
-                    </div>
-                    <div class="matrix-row">
-                        <div class="price">{{ simbolo_moneda }} {{ matriz.observatory.h4 }}</div>
-                        <div class="cat">CON HOTEL 4****</div>
-                    </div>
-                </div>
+                <!-- Solo un resumen para brevedad del template logic -->
+                <p style="text-align:center">Ver matriz de precios en la versión digital.</p>
             </div>
-
-            <div class="category-definitions">
-                <div class="cat-def-box">
-                    <h5>HOTEL 2**</h5>
-                    <p>Hostales turísticos limpios, céntricos y con baño privado. Ideal para viajeros prácticos.</p>
-                </div>
-                <div class="cat-def-box">
-                    <h5>HOTEL 3***</h5>
-                    <p>Hoteles con mejores instalaciones, desayuno buffet y atención personalizada superior.</p>
-                </div>
-                <div class="cat-def-box">
-                    <h5>HOTEL 4****</h5>
-                    <p>Experiencia de lujo con habitaciones amplias, servicios de primera y ubicaciones privilegiadas.
-                    </p>
-                </div>
-            </div>
-
             {% else %}
-            <!-- NIVEL 1: ENGANCHE / OPCIONES -->
             <h1 class="price-main-title">TU PROPUESTA DE VIAJE</h1>
-            <div class="price-person-label">TARIFAS ESPECIALES DISPONIBLES</div>
-
-            <div class="hook-badge-container">
-                <div class="trust-badge">
-                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="40">
-                        <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z" />
-                    </svg>
-                    <p>Agencia Certificada</p>
-                </div>
-                <div class="trust-badge">
-                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="40">
-                        <circle cx="12" cy="12" r="10" />
-                        <path d="M12 6v6l4 2" />
-                    </svg>
-                    <p>Soporte 24/7</p>
-                </div>
-                <div class="trust-badge">
-                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="40">
-                        <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14" />
-                        <polyline points="22 4 12 14.01 9 11.01" />
-                    </svg>
-                    <p>Pago Seguro</p>
-                </div>
-            </div>
-
-            <div class="hook-call-to-action">
-                <h3 style="margin: 0; font-size: 1.2rem; font-weight: 900; color: var(--color-primary);">INICIA TU
-                    AVENTURA DESDE</h3>
-            </div>
-
             <div class="price-grid-columns"
                 style="display: flex; justify-content: center; gap: 50px; margin-top: 30px;">
                 {% if precios.nac %}
-                <div class="price-column" style="text-align: center;">
-                    <h4 style="font-size: 0.9rem; color: #ff5252; margin-bottom: 5px;">TOTAL NACIONAL</h4>
-                    <div class="price-large-text" style="font-size: 2.2rem; font-weight: 900; color: #000;">S/ {{
-                        precios.nac.total }}</div>
-                    <div style="font-size: 0.8rem; color: #666;">(S/ {{ precios.nac.monto }} p/p)</div>
-                    <div class="price-status"
-                        style="color: var(--color-primary); font-weight: 800; font-size: 0.7rem; margin-top: 5px;">
-                        {{ total_pasajeros }} PASAJEROS</div>
+                <div class="price-column">
+                    <h4 style="font-size: 0.9rem; color: #ff5252;">TOTAL NACIONAL</h4>
+                    <div class="price-large-text" style="font-size: 2.2rem; font-weight: 900;">S/ {{ precios.nac.total
+                        }}</div>
                 </div>
                 {% endif %}
-
                 {% if precios.ext %}
-                <div class="price-column" style="text-align: center;">
-                    <h4 style="font-size: 0.9rem; color: #ff5252; margin-bottom: 5px;">TOTAL EXTRANJERO</h4>
-                    <div class="price-large-text" style="font-size: 2.2rem; font-weight: 900; color: #000;">$ {{
-                        precios.ext.total }}</div>
-                    <div style="font-size: 0.8rem; color: #666;">($ {{ precios.ext.monto }} p/p)</div>
-                    <div class="price-status"
-                        style="color: var(--color-primary); font-weight: 800; font-size: 0.7rem; margin-top: 5px;">
-                        {{ total_pasajeros }} PASAJEROS</div>
+                <div class="price-column">
+                    <h4 style="font-size: 0.9rem; color: #ff5252;">TOTAL EXTRANJERO</h4>
+                    <div class="price-large-text" style="font-size: 2.2rem; font-weight: 900;">$ {{ precios.ext.total }}
+                    </div>
                 </div>
                 {% endif %}
             </div>
-
-            <p style="text-align: center; font-size: 0.85rem; margin-top: 40px; color: #888; font-weight: 500;">
-                * Precios sujetos a disponibilidad y cambios sin previo aviso. Consultar por upgrades de hotel y tren.
-            </p>
-
             {% endif %}
         </div>
     </div>
 
-    <!-- PÁGINA 2: IMPORTANTE - COMPARATIVO TRENES (Sólo Nacionales) -->
+    <!-- SECCIÓN DE ANEXOS CONDICIONALES -->
+    {% if es_nacional %}
+    <!-- ANEXO NACIONAL - PÁGINA 1: TREN LOCAL VS TURISTA -->
     <div class="page-container">
         <div class="decor-top-right"></div>
         <div class="decor-bottom-left"></div>
@@ -420,46 +191,36 @@
         </div>
         <h2 class="important-header" style="margin-top: 0;">IMPORTANTE</h2>
 
-        <div class="important-sub-title">
-            Tren Local
-        </div>
+        <div class="important-sub-title">Tren Local</div>
         <ul class="bullet-list-std">
-            <li>Requiere hacer cola entre 3 a 6 horas, dependiendo de la demanda del día.</li>
-            <li>No cuenta con reserva de asiento; podrías viajar de pie durante gran parte del trayecto.</li>
-            <li>Es un servicio básico, pensado principalmente para residentes locales.</li>
+            <li>Requiere hacer cola entre 3 a 6 horas.</li>
+            <li>No cuenta con reserva de asiento.</li>
+            <li>Servicio básico para residentes locales.</li>
         </ul>
 
-        <div class="important-sub-title">
-            Tren Turístico - Promoción para peruanos
-        </div>
+        <div class="important-sub-title">Tren Turístico - Promoción para peruanos</div>
         <ul class="bullet-list-std">
-            <li>Puedes comprar con anticipación desde ahora, sin estrés ni largas filas.</li>
-            <li>Viajas con asiento asignado, por lo que nadie va de pie.</li>
-            <li>Es un tren más cómodo, con salidas nocturnas tanto para la ida como para el retorno.</li>
-            <li>Sujeto a disponibilidad. No válido en feriados ni fechas festivas.</li>
+            <li>Compra con anticipación, sin filas.</li>
+            <li>Viajas con asiento asignado.</li>
+            <li>Sujeto a disponibilidad y fechas no festivas.</li>
         </ul>
 
-        <div class="important-sub-title">
-            Tren Turístico - Tarifa Regular
-        </div>
+        <div class="important-sub-title">Tren Turístico - Tarifa Regular</div>
         <ul class="bullet-list-std">
-            <li>Puedes comprar con anticipación desde ahora, evitando filas y asegurando tu espacio.</li>
-            <li>Viajas con asiento asignado, garantizando comodidad durante todo el trayecto.</li>
-            <li>Es un tren más confortable, con salidas diurnas en ambos sentidos.</li>
+            <li>Mayor confort y salidas diurnas.</li>
+            <li>Asiento asignado garantizado.</li>
         </ul>
 
         <h3 class="summary-red">En resumen:</h3>
-        <div class="summary-item">👉 El tren local es más económico, pero implica largas esperas y menos control.</div>
-        <div class="summary-item">👉 El tren turístico ofrece seguridad, comodidad y una experiencia superior.</div>
+        <div class="summary-item">- El tren local es económico pero incierto e incómodo.</div>
+        <div class="summary-item">- El tren turístico ofrece seguridad, confort y control total.</div>
 
         <div class="important-footer-img"
-            style="margin-top: 40px; height: 350px; background-image: url('{{ days[0].images[2] if days|length > 0 and days[0].images|length > 2 else cover_url }}'); background-size: cover; background-position: center; border-radius: 20px; box-shadow: 0 10px 30px rgba(0,0,0,0.1);">
+            style="margin-top: 40px; height: 350px; background-image: url('{{ days[0].images[2] if days|length > 0 and days[0].images|length > 2 else cover_url }}'); background-size: cover; background-position: center; border-radius: 20px;">
         </div>
     </div>
 
-    <!-- SECCIÓN DE ANEXO CONDICIONAL -->
-    {% if es_nacional %}
-    <!-- ANEXO PARA NACIONALES (1 PÁGINA) -->
+    <!-- ANEXO NACIONAL - PÁGINA 2: COMPRA -->
     <div class="page-container price-page-content">
         <div class="decor-top-right"></div>
         <div class="decor-bottom-left"></div>
@@ -467,35 +228,22 @@
             <img src="{{ logo_url }}" alt="Logo">
         </div>
 
-        <div class="purchase-title">INFORMACIÓN DE COMPRA DEL PAQUETE TURÍSTICO</div>
+        <div class="purchase-title">INFORMACIÓN DE COMPRA NACIONAL</div>
 
         <div class="purchase-section">
             <h4>Reserva:</h4>
-            <p>La reserva del paquete turístico es con el 50%. El costo restante se abona llegando a Perú, el primer
-                día.</p>
+            <p>La reserva es con el 50%. El saldo se abona al llegar a Perú.</p>
         </div>
 
         <div class="purchase-section">
-            <p><strong>IMPORTANTE:</strong> Niño de 2 años puede viajar sin costo compartiendo asiento y cama con sus
-                padres. No incluye IGV.</p>
+            <p><strong>IMPORTANTE:</strong> Niños de 2 años viajan sin costo compartiendo servicios con sus padres. No
+                incluye IGV.</p>
         </div>
 
         <div class="purchase-section">
-            <h4>Método de pago:</h4>
-            <p>Contamos con todos los métodos de pagos del mercado. Depósito o trasferencia a la cuenta de la empresa.
-            </p>
-        </div>
-
-        <div class="purchase-section">
-            <h4>ANULACIÓN DEL PAQUETE TURÍSTICO:</h4>
-            <p>La anulación se debe realizar con anticipación. El ingreso a Machu Picchu no tiene cambios ni
-                devoluciones. Menor a 15 días antes de su llegada, no hay devolución.</p>
-        </div>
-
-        <div class="purchase-section">
-            <h4>OTRAS CONDICIONES:</h4>
-            <p>La reserva de hoteles está sujeta a disponibilidad de espacios. Podemos también organizarle un itinerario
-                de viaje de acuerdo a sus requerimientos.</p>
+            <h4>Anulación:</h4>
+            <p>El ingreso a Machu Picchu no tiene cambios ni devoluciones. Menor a 15 días, no hay devolución del
+                paquete.</p>
         </div>
 
         <div class="llama-round-container">
@@ -503,7 +251,7 @@
         </div>
     </div>
     {% else %}
-    <!-- PÁGINA 1 EXTRANJEROS: TRENES -->
+    <!-- ANEXO EXTRANJERO - PÁGINA 1: DETALLES DE TRENES (PREMIUM) -->
     <div class="page-container price-page-content">
         <div class="decor-top-right"></div>
         <div class="decor-bottom-left"></div>
@@ -518,8 +266,7 @@
                 <td style="width: 70%; vertical-align: middle; padding-bottom: 40px;">
                     <h2 class="important-sub-title">TREN EXPEDITION / VOYAGER</h2>
                     <ul class="bullet-list-std">
-                        <li>Servicios turísticos diseñados para un viaje cómodo con vistas panorámicas a Machu Picchu.
-                        </li>
+                        <li>Viaje cómodo con excelentes vistas panorámicas hacia la ciudadela de Machu Picchu.</li>
                     </ul>
                 </td>
                 <td style="width: 30%; vertical-align: middle; text-align: right; padding-bottom: 40px;">
@@ -530,7 +277,7 @@
                 <td style="width: 70%; vertical-align: middle; padding-bottom: 40px;">
                     <h2 class="important-sub-title">TREN VISTADOME / THE 360</h2>
                     <ul class="bullet-list-std">
-                        <li>Ventanas panorámicas envolventes. Incluye snacks y presentaciones culturales a bordo.</li>
+                        <li>Ventanas panorámicas de 360 grados, snacks y presentaciones culturales a bordo.</li>
                     </ul>
                 </td>
                 <td style="width: 30%; vertical-align: middle; text-align: right; padding-bottom: 40px;">
@@ -541,8 +288,7 @@
                 <td style="width: 70%; vertical-align: middle; padding-bottom: 40px;">
                     <h2 class="important-sub-title">VISTADOME OBSERVATORY</h2>
                     <ul class="bullet-list-std">
-                        <li>Servicio exclusivo con vagón observatorio de cristal, danzas andinas y desfile de modas.
-                        </li>
+                        <li>Servicio de lujo con vagón observatorio al aire libre y espectáculos folclóricos.</li>
                     </ul>
                 </td>
                 <td style="width: 30%; vertical-align: middle; text-align: right; padding-bottom: 40px;">
@@ -552,7 +298,7 @@
         </table>
     </div>
 
-    <!-- PÁGINA 2 EXTRANJEROS: COMPRA -->
+    <!-- ANEXO EXTRANJERO - PÁGINA 2: COMPRA (INTL) -->
     <div class="page-container price-page-content">
         <div class="decor-top-right"></div>
         <div class="decor-bottom-left"></div>
@@ -564,7 +310,7 @@
 
         <div class="purchase-section">
             <h4>RESERVA:</h4>
-            <p>Reserva con el 50%. El saldo restante se cancela al llegar a Perú, el primer día.</p>
+            <p>Reserva con el 50%. El saldo restante se cancela el primer día al llegar a Perú.</p>
         </div>
 
         <div class="purchase-section">
@@ -577,15 +323,8 @@
         </div>
 
         <div class="purchase-section">
-            <h4>MÉTODOS DE PAGO:</h4>
-            <p>Contamos con todos los métodos de pago. El 5% de comisión por pasarela de pago externo no está incluido.
-            </p>
-        </div>
-
-        <div class="purchase-section">
-            <h4>ANULACIÓN:</h4>
-            <p>El ingreso a Machu Picchu no tiene devolución por parte de las entidades gubernamentales. El resto del
-                paquete está sujeto a penalidades de hoteles y trenes si se cancela con menos de 15 días.</p>
+            <h4>NOTAS IMPORTANTES:</h4>
+            <p>Las entradas a Machu Picchu no son reembolsables. Se requiere pasaporte original para el ingreso.</p>
         </div>
 
         <div class="llama-round-container">
@@ -595,6 +334,7 @@
     {% endif %}
 
     <style>
+        /* Estilos base incrustados para redundancia */
         .day-date-row {
             display: flex;
             align-items: baseline;
@@ -604,17 +344,15 @@
 
         .day-number {
             font-size: 1.8rem;
-            color: var(--color-primary);
+            color: #55b7b0;
             font-weight: 800;
-            margin: 0;
             text-transform: uppercase;
         }
 
         .day-date {
             font-size: 1.2rem;
-            color: var(--color-primary);
+            color: #55b7b0;
             font-weight: 700;
-            letter-spacing: 1px;
         }
     </style>
 </body>
