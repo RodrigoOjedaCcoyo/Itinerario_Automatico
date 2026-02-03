@@ -212,8 +212,7 @@
 
                 <p style="margin-top: 20px; color: #444; font-size: 0.85rem; font-weight: 500; line-height: 1.4;">
                     Este presupuesto incluye todos los servicios detallados en el itinerario: traslados compartidos,
-                    tours
-                    con guía oficial, ingresos y el nivel de alojamiento seleccionado.
+                    tours con guía oficial, ingresos y el nivel de alojamiento seleccionado.
                 </p>
 
                 <div class="payment-methods">
@@ -374,8 +373,7 @@
 
             <div class="hook-call-to-action">
                 <h3 style="margin: 0; font-size: 1.2rem; font-weight: 900; color: var(--color-primary);">INICIA TU
-                    AVENTURA
-                    DESDE</h3>
+                    AVENTURA DESDE</h3>
             </div>
 
             <div class="price-grid-columns"
@@ -410,13 +408,10 @@
             </p>
 
             {% endif %}
-
-
-
-        </div> <!-- Cierre de pricing-centering-wrapper -->
+        </div>
     </div>
 
-    <!-- PÁGINA 2: IMPORTANTE - COMPARATIVO TRENES (Imagen 2) -->
+    <!-- PÁGINA 2: IMPORTANTE - COMPARATIVO TRENES (Sólo Nacionales) -->
     <div class="page-container">
         <div class="decor-top-right"></div>
         <div class="decor-bottom-left"></div>
@@ -452,12 +447,8 @@
         <ul class="bullet-list-std">
             <li>Puedes comprar con anticipación desde ahora, sin estrés ni largas filas.</li>
             <li>Viajas con asiento asignado, por lo que nadie va de pie.</li>
-            <li>Es un tren más cómodo, con salidas nocturnas tanto para la ida como para el retorno, diseñado para
-                brindar una experiencia agradable al viajero.</li>
-            <li>Sujeto a disponibilidad.</li>
-            <li>La promoción no es válida en feriados y fiestas (navidad, año nuevo, inti raymi, fiestas patrias,
-                fiesta
-                de todos los santos 1-2 de noviembre).</li>
+            <li>Es un tren más cómodo, con salidas nocturnas tanto para la ida como para el retorno.</li>
+            <li>Sujeto a disponibilidad. No válido en feriados ni fechas festivas.</li>
         </ul>
 
         <div class="important-sub-title">
@@ -472,70 +463,145 @@
         <ul class="bullet-list-std">
             <li>Puedes comprar con anticipación desde ahora, evitando filas y asegurando tu espacio.</li>
             <li>Viajas con asiento asignado, garantizando comodidad durante todo el trayecto.</li>
-            <li>Es un tren más confortable, con salidas diurnas en ambos sentidos, ideales para disfrutar de mejores
-                vistas del valle.</li>
+            <li>Es un tren más confortable, con salidas diurnas en ambos sentidos.</li>
         </ul>
 
         <h3 class="summary-red">En resumen:</h3>
-        <div class="summary-item">👉 El tren local es más económico, pero implica largas esperas, posibles
-            incomodidades
-            y menos control sobre tu viaje.</div>
-        <div class="summary-item">👉 El tren turístico ofrece seguridad, comodidad y una experiencia más agradable
-            desde
-            el inicio hasta el final del viaje.</div>
+        <div class="summary-item">👉 El tren local es más económico, pero implica largas esperas y menos control.</div>
+        <div class="summary-item">👉 El tren turístico ofrece seguridad, comodidad y una experiencia superior.</div>
 
         <div class="important-footer-img"
             style="margin-top: 40px; height: 350px; background-image: url('{{ days[0].images[2] if days|length > 0 and days[0].images|length > 2 else cover_url }}'); background-size: cover; background-position: center; border-radius: 20px; box-shadow: 0 10px 30px rgba(0,0,0,0.1);">
         </div>
     </div>
 
-    <!-- PÁGINA 3: INFORMACIÓN DE COMPRA (Imagen 0) -->
-    <div class="page-container">
+    <!-- SECCIÓN DE ANEXO CONDICIONAL -->
+    {% if es_nacional %}
+    <!-- ANEXO PARA NACIONALES (1 PÁGINA) -->
+    <div class="page-container price-page-content">
         <div class="decor-top-right"></div>
         <div class="decor-bottom-left"></div>
         <div class="logo-container">
             <img src="{{ logo_url }}" alt="Logo">
         </div>
-        <h1 class="purchase-title">INFORMACIÓN DE COMPRA DEL PAQUETE TURÍSTICO</h1>
+
+        <div class="purchase-title">INFORMACIÓN DE COMPRA DEL PAQUETE TURÍSTICO</div>
 
         <div class="purchase-section">
             <h4>Reserva:</h4>
-            <p>La reserva del paquete turístico es con el 50%. El costo restante se abona llegando a Perú, 50%.</p>
+            <p>La reserva del paquete turístico es con el 50%. El costo restante se abona llegando a Perú, el primer
+                día.</p>
         </div>
 
         <div class="purchase-section">
-            <p><strong>IMPORTANTE:</strong> Niño de 2 años puede viajar con sus papás en los tours sin costo, pero
-                comparten asiento en el tour y cama en el hotel.</p>
+            <p><strong>IMPORTANTE:</strong> Niño de 2 años puede viajar sin costo compartiendo asiento y cama con sus
+                padres.</p>
             <p>No incluye IGV.</p>
         </div>
 
         <div class="purchase-section">
             <h4>Método de pago:</h4>
-            <p>Contamos con todos los métodos de pagos del mercado. Depósito o trasferencia a la cuenta de la
-                empresa.
-                Incluido en los métodos los pago los impuestos y cargos de depósito.</p>
+            <p>Contamos con todos los métodos de pagos del mercado. Depósito o trasferencia a la cuenta de la empresa.
+            </p>
         </div>
 
         <div class="purchase-section">
             <h4>ANULACIÓN DEL PAQUETE TURÍSTICO:</h4>
-            <p>La anulación se debe realizar con anticipación. Ingreso a Machupicchu, no hay cambio ni devoluciones,
-                solo en casos excepcionales hay cambios como desastres naturales o paralizaciones. Tren turístico y
-                los
-                Hoteles cobran penalidades por los cambios, solo en casos excepcionales hay cambios como desastres
-                naturales o paralizaciones. Menor a 15 días antes de su llegada, No hay devolución.</p>
+            <p>La anulación se debe realizar con anticipación. El ingreso a Machu Picchu no tiene cambios ni
+                devoluciones. Menor a 15 días antes de su llegada, no hay devolución.</p>
         </div>
 
         <div class="purchase-section">
             <h4>OTRAS CONDICIONES:</h4>
-            <p>La reserva de hoteles está sujeta a disponibilidad de espacios. Podemos también organizarle un
-                itinerario
-                de viaje de acuerdo a sus requerimientos. Para mayor información y consultas puede escribirnos.</p>
+            <p>La reserva de hoteles está sujeta a disponibilidad de espacios. Podemos también organizarle un itinerario
+                de viaje de acuerdo a sus requerimientos.</p>
         </div>
 
         <div class="llama-round-container">
             <div class="llama-round-img" style="background-image: url('{{ llama_img }}');"></div>
         </div>
     </div>
+    {% else %}
+    <!-- PÁGINA 1 EXTRANJEROS: TRENES -->
+    <div class="page-container price-page-content">
+        <div class="decor-top-right"></div>
+        <div class="decor-bottom-left"></div>
+        <div class="logo-container">
+            <img src="{{ logo_url }}" alt="Logo">
+        </div>
+
+        <h1 class="important-header" style="text-align: center;">DETALLES DE TRENES</h1>
+
+        <div class="train-info-section">
+            <div class="train-item">
+                <div class="train-text-col">
+                    <h2 class="important-sub-title">🚆 TREN EXPEDITION / VOYAGER</h2>
+                    <ul class="bullet-list-std">
+                        <li>Servicios turísticos diseñados para un viaje cómodo con vistas panorámicas a Machu Picchu.
+                        </li>
+                    </ul>
+                </div>
+                <div class="train-img-round" style="background-image: url('{{ train_exp_img }}');"></div>
+            </div>
+
+            <div class="train-item">
+                <div class="train-text-col">
+                    <h2 class="important-sub-title">🚆 TREN VISTADOME / THE 360</h2>
+                    <ul class="bullet-list-std">
+                        <li>Ventanas panorámicas envolventes. Incluye snacks y presentaciones culturales a bordo.</li>
+                    </ul>
+                </div>
+                <div class="train-img-round" style="background-image: url('{{ train_vis_img }}');"></div>
+            </div>
+
+            <div class="train-item">
+                <div class="train-text-col">
+                    <h2 class="important-sub-title">🚆 VISTADOME OBSERVATORY</h2>
+                    <ul class="bullet-list-std">
+                        <li>Servicio exclusivo con vagón observatorio de cristal, danzas andinas y desfile de modas.
+                        </li>
+                    </ul>
+                </div>
+                <div class="train-img-round" style="background-image: url('{{ train_obs_img }}');"></div>
+            </div>
+        </div>
+    </div>
+
+    <!-- PÁGINA 2 EXTRANJEROS: COMPRA -->
+    <div class="page-container price-page-content">
+        <div class="decor-top-right"></div>
+        <div class="decor-bottom-left"></div>
+        <div class="logo-container">
+            <img src="{{ logo_url }}" alt="Logo">
+        </div>
+
+        <div class="purchase-title">INFORMACIÓN DE COMPRA (INTERNACIONAL)</div>
+
+        <div class="purchase-section">
+            <h4>RESERVA:</h4>
+            <p>Reserva con el 50%. El saldo restante se cancela al llegar a Perú, el primer día.</p>
+        </div>
+
+        <div class="purchase-section">
+            <h4>DESCUENTOS:</h4>
+            <ul class="bullet-list-std">
+                <li>$ 80.00 para niños (3-11 años).</li>
+                <li>$ 60.00 para jóvenes (12-17 años).</li>
+                <li>$ 20.00 para Comunidad Andina.</li>
+            </ul>
+        </div>
+
+        <div class="purchase-section">
+            <h4>ANULACIÓN:</h4>
+            <p>Machu Picchu no tiene devolución. Cambios sujetos a penalidades de hoteles y trenes.</p>
+        </div>
+
+        <div class="llama-round-container">
+            <div class="llama-round-img" style="background-image: url('{{ llama_purchase_img }}');"></div>
+        </div>
+    </div>
+    {% endif %}
+
     <style>
         .day-date-row {
             display: flex;

@@ -90,6 +90,10 @@ def generate_pdf(itinerary_data, output_filename=OUTPUT_FILENAME):
     itinerary_data['logo_cover_url'] = get_image_as_base64(itinerary_data.get('logo_cover_url'))
     itinerary_data['cover_url'] = get_image_as_base64(itinerary_data.get('cover_url'))
     itinerary_data['llama_img'] = get_image_as_base64(itinerary_data.get('llama_img'))
+    itinerary_data['llama_purchase_img'] = get_image_as_base64(itinerary_data.get('llama_purchase_img'))
+    itinerary_data['train_exp_img'] = get_image_as_base64(itinerary_data.get('train_exp_img'))
+    itinerary_data['train_vis_img'] = get_image_as_base64(itinerary_data.get('train_vis_img'))
+    itinerary_data['train_obs_img'] = get_image_as_base64(itinerary_data.get('train_obs_img'))
 
     # Intentar importar markdown aquí por si se instaló después del arranque
     global markdown

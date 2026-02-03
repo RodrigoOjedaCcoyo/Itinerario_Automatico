@@ -1078,6 +1078,11 @@ def render_ventas_ui():
                                 'logo_url': logo_path,
                                 'logo_cover_url': logo_path,
                                 'llama_img': os.path.abspath(os.path.join("assets", "images", "logo_background.png")),
+                                'llama_purchase_img': os.path.abspath(os.path.join("assets", "images", "llama_purchase.png")),
+                                'train_exp_img': os.path.abspath(os.path.join("assets", "images", "train_expedition.png")),
+                                'train_vis_img': os.path.abspath(os.path.join("assets", "images", "train_vistadome.png")),
+                                'train_obs_img': os.path.abspath(os.path.join("assets", "images", "train_observatory.png")),
+                                'es_nacional': (tipo_t == "Nacional"),
                                 'precios': {
                                     'nac': {
                                         'monto': f"{total_nac_pp + (extra_nac/max(1, pasajeros_nac)):,.2f}",
