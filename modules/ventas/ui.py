@@ -159,7 +159,9 @@ def render_ventas_ui():
     if get_supabase_client() is None:
         st.warning("⚠️ El sistema no está conectado a Supabase (El Cerebro). Configura el archivo .env para habilitar el seguimiento de leads.")
 
-    st.title("🏔️ Constructor de Itinerarios Premium")
+    st.title("Constructor de Itinerarios Premium")
+    # Mostrar logo al lado del título
+    st.image("assets/images/logo_background.ico", width=50)
     st.write("Interfaz exclusiva para el equipo de ventas de Viajes Cusco Perú.")
     
     # 0. Cargar Catálogo desde Supabase (Cacheado en sesión)
