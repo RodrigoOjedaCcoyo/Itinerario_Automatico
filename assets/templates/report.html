@@ -178,7 +178,16 @@
                 <div class="validity-tag" style="margin-top: 30px;">OFERTA VÁLIDA POR LAS PRÓXIMAS 48 HORAS</div>
             </div>
             {% elif estrategia == "Matriz" %}
-            {% elif estrategia == "Matriz" %}
+            {% macro render_price_item(label, value, symbol, stars) %}
+            <div class="price-item">
+                <span class="hotel-cat">{{ label }} <span class="hotel-stars">{{ stars }}</span></span>
+                <span class="amount-box">
+                    <span class="currency">{{ symbol }}</span>
+                    <span class="value">{{ value }}</span>
+                </span>
+            </div>
+            {% endmacro %}
+
             <h1 class="price-main-title">Propuesta de Inversión</h1>
             <p
                 style="text-align:center; font-size: 1rem; color: #888; text-transform: uppercase; letter-spacing: 3px; margin-bottom: 30px;">
@@ -249,16 +258,6 @@
                     </div>
                 </div>
             </div>
-
-            {% macro render_price_item(label, value, symbol, stars) %}
-            <div class="price-item">
-                <span class="hotel-cat">{{ label }} <span class="hotel-stars">{{ stars }}</span></span>
-                <span class="amount-box">
-                    <span class="currency">{{ symbol }}</span>
-                    <span class="value">{{ value }}</span>
-                </span>
-            </div>
-            {% endmacro %}
             {% else %}
             <h1 class="price-main-title">Tarifas de Viaje</h1>
             <div class="price-grid-columns"

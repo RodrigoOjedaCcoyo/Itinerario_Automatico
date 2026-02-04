@@ -372,16 +372,17 @@ body {
 
 /* 2. COMPARATIVA / MATRIZ LUXURY (WOW FACTOR) */
 .luxury-pricing-container {
-    margin-top: 35px;
+    margin-top: 30px;
     width: 100%;
+    min-height: 400px;
 }
 
 .luxury-pricing-grid {
     display: table;
     width: 100%;
-    border-spacing: 15px 0;
-    margin-left: -15px;
-    /* Compensar espaciado */
+    border-spacing: 12px 0;
+    table-layout: fixed;
+    /* Asegurar anchos fijos */
 }
 
 .luxury-card {
