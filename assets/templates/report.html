@@ -178,6 +178,10 @@
                 <div class="validity-tag" style="margin-top: 30px;">OFERTA VÁLIDA POR LAS PRÓXIMAS 48 HORAS</div>
             </div>
             {% elif estrategia == "Matriz" %}
+            <div
+                style="position: absolute; top: 20%; left: 50%; transform: translateX(-50%); width: 80%; opacity: 0.03; z-index: -1;">
+                <img src="{{ logo_url }}" style="width: 100%;">
+            </div>
             {% macro render_price_item(label, value, symbol, stars) %}
             <div class="price-item">
                 <span class="hotel-cat">{{ label }} <span class="hotel-stars">{{ stars }}</span></span>
@@ -284,21 +288,57 @@
                 </div>
             </div>
             {% else %}
-            <h1 class="price-main-title">Tarifas de Viaje</h1>
-            <div class="price-grid-columns"
-                style="display: flex; justify-content: center; gap: 50px; margin-top: 30px;">
+            <div
+                style="position: absolute; top: 20%; left: 50%; transform: translateX(-50%); width: 80%; opacity: 0.03; z-index: -1;">
+                <img src="{{ logo_url }}" style="width: 100%;">
+            </div>
+            <h1 class="price-main-title">Propuesta VIP</h1>
+            <p
+                style="text-align:center; font-size: 1rem; color: #888; text-transform: uppercase; letter-spacing: 3px; margin-bottom: 30px;">
+                Tarifas preferenciales por persona
+            </p>
+
+            <div class="luxury-offer-container">
                 {% if precios.nac %}
-                <div class="price-column">
-                    <h4 style="color: #e74c3c;">NACIONAL</h4>
-                    <div class="price-large-text">S/ {{ precios.nac.total }}</div>
+                <div class="luxury-offer-card featured">
+                    <div class="offer-badge" style="background: #ff5252; color: white;">MEJOR OPCIÓN</div>
+                    <div class="offer-type">TARIFAS NACIONALES</div>
+                    <div class="offer-price-box">
+                        <span class="offer-currency">S/</span>
+                        <span class="offer-amount">{{ precios.nac.total }}</span>
+                    </div>
+                    <div class="offer-footer">PRECIO TOTAL POR PASAJERO</div>
                 </div>
                 {% endif %}
+
                 {% if precios.ext %}
-                <div class="price-column">
-                    <h4 style="color: #e74c3c;">EXTRANJERO</h4>
-                    <div class="price-large-text">USD {{ precios.ext.total }}</div>
+                <div class="luxury-offer-card">
+                    <div class="offer-badge">INTERNATIONAL ACCESS</div>
+                    <div class="offer-type">TARIFAS EXTRANJEROS</div>
+                    <div class="offer-price-box">
+                        <span class="offer-currency">USD</span>
+                        <span class="offer-amount">{{ precios.ext.total }}</span>
+                    </div>
+                    <div class="offer-footer">TOTAL PRICE PER PASSENGER</div>
                 </div>
                 {% endif %}
+            </div>
+
+            <div class="pricing-complements-container" style="margin-top: 50px;">
+                <div class="complement-box">
+                    <div class="complement-title">💳 GARANTÍA DE RESERVA</div>
+                    <div class="complement-content">
+                        Reserva inmediata con el <strong>50%</strong> del total. El saldo restante se cancela
+                        cómodamente el primer día de su llegada a Cusco.
+                    </div>
+                </div>
+                <div class="complement-box">
+                    <div class="complement-title">🏛️ CONDICIONES</div>
+                    <div class="complement-content">
+                        Precios incluyen todos los servicios mencionados en el itinerario. Tarifas vigentes para la
+                        temporada 2026.
+                    </div>
+                </div>
             </div>
             {% endif %}
         </div>
@@ -524,10 +564,10 @@
                     </td>
 
                     <div class="regulation-box">
-                        <div class="regulation-title">🏛️ MACHU PICCHU REGULATION 2019</div>
+                        <div class="regulation-title">🏛️ REGLAMENTO MACHU PICCHU 2019</div>
                         <div class="regulation-text">
-                            Entrance tickets are valid for a single entry. Visitors typically spend 2 to 3 hours
-                            inside the Sanctuary to support its conservation and sustainable use.
+                            Los boletos de ingreso son válidos para un solo ingreso. Los pasajeros suelen permanecer
+                            entre 2 a 3 horas dentro del Santuario para apoyar su conservación y uso sostenible.
                         </div>
                     </div>
 

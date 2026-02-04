@@ -6,6 +6,79 @@
     --font-main: 'Montserrat', sans-serif;
 }
 
+/* TARJETAS DE PRECIO ÚNICO / GENERAL (WOW FACTOR) */
+.luxury-offer-container {
+    display: table;
+    width: 100%;
+    border-spacing: 25px 0;
+    margin-top: 40px;
+}
+
+.luxury-offer-card {
+    display: table-cell;
+    background: #fff;
+    border-radius: 30px;
+    padding: 35px 25px;
+    vertical-align: top;
+    text-align: center;
+    box-shadow: 0 25px 50px rgba(0, 0, 0, 0.1);
+    border: 1px solid #f0f0f0;
+    position: relative;
+    overflow: hidden;
+}
+
+.luxury-offer-card.featured {
+    border: 2px solid var(--color-primary);
+}
+
+.offer-badge {
+    display: inline-block;
+    background: #f0fdfa;
+    color: var(--color-primary);
+    padding: 6px 15px;
+    border-radius: 20px;
+    font-size: 0.6rem;
+    font-weight: 800;
+    text-transform: uppercase;
+    letter-spacing: 2px;
+    margin-bottom: 20px;
+}
+
+.offer-type {
+    font-size: 1.2rem;
+    font-weight: 900;
+    color: #333;
+    margin-bottom: 15px;
+    text-transform: uppercase;
+}
+
+.offer-price-box {
+    margin: 20px 0;
+}
+
+.offer-currency {
+    font-size: 1.5rem;
+    font-weight: 400;
+    color: var(--color-primary);
+    vertical-align: top;
+    margin-right: 5px;
+}
+
+.offer-amount {
+    font-size: 3.5rem;
+    font-weight: 900;
+    color: #222;
+    line-height: 1;
+}
+
+.offer-footer {
+    font-size: 0.8rem;
+    color: #888;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    margin-top: 15px;
+}
+
 body {
     margin: 0;
     padding: 0;
