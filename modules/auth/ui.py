@@ -14,8 +14,8 @@ def render_login_ui():
     
     with col2:
         with st.form("login_form"):
-            email = st.text_input("Correo Electrónico Autorizado", placeholder="tu_correo@agencia.com")
-            password = st.text_input("Contraseña", type="password", placeholder="••••••••")
+            email = st.text_input("Correo Electrónico Autorizado", placeholder="tu_nombre@latitudvcp.com")
+            password = st.text_input("Contraseña", type="password", placeholder="")
             submit = st.form_submit_button("Ingresar al Portal", use_container_width=True)
             
             if submit:
