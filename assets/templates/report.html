@@ -253,6 +253,35 @@
                         </div>
                     </div>
                 </div>
+
+                <!-- COMPLEMENTOS DE PRECIO (INVADIENDO ESPACIO PARA LIBERAR ANEXOS) -->
+                <div class="pricing-complements-container">
+                    <div class="complement-box">
+                        <div class="complement-title">💳 GARANTÍA DE RESERVA</div>
+                        <div class="complement-content">
+                            Confirmación con el <strong>50%</strong> del total. El saldo se cancela al llegar a Cusco.
+                            Incluye todos los impuestos bancarios.
+                        </div>
+                    </div>
+                    <div class="complement-box">
+                        <div class="complement-title">🎁 DESCUENTOS DISPONIBLES</div>
+                        <div class="complement-content">
+                            {% if es_nacional %}
+                            <div class="complement-discount-row"><span>Menores (2-12 años)</span> <span
+                                    class="discount-val">- S/ 60.00</span></div>
+                            <div class="complement-discount-row"><span>Estudiantes</span> <span class="discount-val">-
+                                    S/ 40.00</span></div>
+                            {% else %}
+                            <div class="complement-discount-row"><span>Child (3-11y)</span> <span class="discount-val">-
+                                    $80.00 USD</span></div>
+                            <div class="complement-discount-row"><span>Youth (12-17y)</span> <span
+                                    class="discount-val">- $60.00 USD</span></div>
+                            <div class="complement-discount-row"><span>CAN Citizens</span> <span class="discount-val">-
+                                    $20.00 USD</span></div>
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
             </div>
             {% else %}
             <h1 class="price-main-title">Tarifas de Viaje</h1>
@@ -344,38 +373,16 @@
         <table style="width: 100%; border-collapse: collapse;">
             <tr>
                 <td style="width: 65%; vertical-align: top; padding-right: 40px;">
-                    <div class="premium-section-header">PROCESO DE PAGO</div>
-                    <p style="font-size: 0.95rem; color: #555; line-height: 1.6;">
-                        Confirmación de reserva con el <strong>50% del total</strong>. El saldo restante debe ser
-                        cancelado el primer día de su llegada a la ciudad de Cusco.
-                    </p>
-
+                    <div class="premium-section-header">INFORMACIÓN IMPORTANTE</div>
                     <div class="exclusive-rates-badge">TARIFAS EXCLUSIVAS PARA PERUANOS</div>
-
-                    <div class="policy-card">
-                        <div class="policy-card-title">💵 RESERVA Y PAGO</div>
-                        <div class="policy-card-body">
-                            - La reserva se confirma con el <strong>50% del total</strong>.<br>
-                            - El saldo restante se cancela al llegar a Cusco (50%).<br>
-                            - <span class="info-alert-text">NO INCLUYE IGV</span><br>
-                            - Aceptamos todos los métodos de pago. Impuestos bancarios incluidos.
-                        </div>
-                    </div>
-
-                    <div class="policy-card" style="background-color: #fff9f0;">
-                        <div class="policy-card-title">👶 IMPORTANTE: HIJOS</div>
-                        <div class="policy-card-body">
-                            Niños de <strong>2 años</strong> viajan sin costo en tours (comparten asiento y cama con sus
-                            padres).
-                        </div>
-                    </div>
 
                     <div class="policy-card">
                         <div class="policy-card-title">🕒 CONDICIONES Y ANULACIÓN</div>
                         <div class="policy-card-body">
                             - Habitación individual (SGL): Suplemento de <strong>S/ 35 o $10</strong> por noche.<br>
+                            - Menores de 2 años: Gratis (comparten asiento/cama).<br>
                             - Anulaciones con menos de <strong>15 días</strong>: No hay devolución.<br>
-                            - Machu Picchu, Trenes y Hoteles: Sin cambios ni devoluciones (salvo desastres naturales).
+                            - Machu Picchu y Trenes: Sin cambios ni devoluciones.
                         </div>
                     </div>
 
@@ -503,62 +510,33 @@
 
             <table class="recommendations-table" style="margin-top: 20px;">
                 <tr>
-                    <td style="width: 50%; vertical-align: top; padding-right: 20px;">
+                    <td style="width: 55%; vertical-align: top; padding-right: 20px;">
                         <div class="policy-card">
-                            <div class="policy-card-title">💳 RESERVATION & PAYMENT</div>
-                            <div class="policy-card-body">
-                                - <strong>50% deposit</strong> required for confirmation.<br>
-                                - Balance due upon arrival in Peru (50%).<br>
-                                - All bank taxes and charges are <strong>already included</strong>.<br>
-                                <table class="discount-table">
-                                    <tr>
-                                        <td><span class="discount-badge">CHILD (3-11)</span></td>
-                                        <td>-$80.00 USD</td>
-                                    </tr>
-                                    <tr>
-                                        <td><span class="discount-badge">YOUTH (12-17)</span></td>
-                                        <td>-$60.00 USD</td>
-                                    </tr>
-                                    <tr>
-                                        <td><span class="discount-badge">CAN CITIZENS</span></td>
-                                        <td>-$20.00 USD</td>
-                                    </tr>
-                                </table>
-                            </div>
-                        </div>
-
-                        <div class="policy-card">
-                            <div class="policy-card-title">🛂 CONDITIONS</div>
+                            <div class="policy-card-title">🛂 IMPORTANT CONDITIONS</div>
                             <div class="policy-card-body">
                                 - Single Room (SGL): Supplement of <strong>$50 USD</strong> per night.<br>
-                                - Infants (2 years): Free of charge (sharing seat/bed).<br>
+                                - Infants (under 2y): Free of charge (sharing seat/bed).<br>
+                                - Cancellations less than <strong>15 days</strong>: Non-refundable.<br>
+                                - Machu Picchu & Train tickets: Non-changeable/Non-refundable.<br>
                                 - Valid passport is mandatory for all tickets.
                             </div>
                         </div>
                     </td>
-                    <td style="width: 50%; vertical-align: top;">
-                        <div class="policy-card">
-                            <div class="policy-card-title">🕒 CANCELLATION POLICY</div>
-                            <div class="policy-card-body">
-                                - Cancellations less than <strong>15 days</strong> before arrival: Non-refundable.<br>
-                                - Machu Picchu & Train tickets: Non-changeable/Non-refundable.
-                            </div>
-                        </div>
 
-                        <div class="regulation-box">
-                            <div class="regulation-title">🏛️ MACHU PICCHU REGULATION 2019</div>
-                            <div class="regulation-text">
-                                Entrance tickets are valid for a single entry. Visitors typically spend 2 to 3 hours
-                                inside the Sanctuary to support its conservation and sustainable use.
-                            </div>
+                    <div class="regulation-box">
+                        <div class="regulation-title">🏛️ MACHU PICCHU REGULATION 2019</div>
+                        <div class="regulation-text">
+                            Entrance tickets are valid for a single entry. Visitors typically spend 2 to 3 hours
+                            inside the Sanctuary to support its conservation and sustainable use.
                         </div>
+                    </div>
 
-                        <div style="margin-top: 30px; text-align: center;">
-                            <img src="{{ llama_purchase_img }}"
-                                style="width: 100px; border-radius: 50%; border: 3px solid #eee;">
-                            <h3 style="color: var(--color-primary); margin: 10px 0 0 0;">Travel with Confidence</h3>
-                            <p style="font-size: 0.8rem; color: #666;">Our team handles every detail for you.</p>
-                        </div>
+                    <div style="margin-top: 30px; text-align: center;">
+                        <img src="{{ llama_purchase_img }}"
+                            style="width: 100px; border-radius: 50%; border: 3px solid #eee;">
+                        <h3 style="color: var(--color-primary); margin: 10px 0 0 0;">Travel with Confidence</h3>
+                        <p style="font-size: 0.8rem; color: #666;">Our team handles every detail for you.</p>
+                    </div>
                     </td>
                 </tr>
             </table>
