@@ -5,8 +5,8 @@ def render_login_ui():
     """Renderiza una interfaz de inicio de sesión elegante."""
     st.markdown("""
         <div style='text-align: center; padding: 2rem;'>
-            <h1 style='font-size: 3rem;'>🏔️</h1>
-            <h2 style='color: #2d3436;'>Viajes Cusco Perú</h2>
+            <h1 style='font-size: 3rem;'>"assets/images/logo_background.ico"</h1>
+            <h2 style='color: #2d3436;'>LatitudViajes Cusco Perú</h2>
             <p style='color: #636e72;'>Sistema Interno de Itinerarios</p>
         </div>
     """, unsafe_allow_html=True)
