@@ -902,3 +902,44 @@ body {
     font-weight: 800;
     color: #666;
 }
+
+/* RECOMENDACIONES Y EQUIPAJE */
+.recommendations-container {
+    margin-top: 30px;
+}
+
+.recommendations-group {
+    margin-bottom: 25px;
+}
+
+.recommendations-title {
+    color: var(--color-primary);
+    font-size: 1.1rem;
+    font-weight: 900;
+    text-transform: uppercase;
+    margin-bottom: 12px;
+    letter-spacing: 1px;
+}
+
+.recommendations-list {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+
+.recommendations-list li {
+    font-size: 0.82rem;
+    color: #000;
+    font-weight: 800;
+    text-transform: uppercase;
+    margin-bottom: 6px;
+    display: flex;
+    align-items: flex-start;
+    gap: 8px;
+}
+
+.recommendations-list li::before {
+    content: "•";
+    color: #000;
+    font-weight: 900;
+}

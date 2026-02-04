@@ -7,8 +7,8 @@ sys.path.insert(0, str(Path(__file__).parent))
 
 # Configuración de Página Global (Debe ser lo primero)
 st.set_page_config(
-    page_title="Viajes Cusco Perú - Constructor de Itinerarios",
-    page_icon="🏔️",
+    page_title=" Latitud viajes Cusco Perú - Constructor de Itinerarios",
+    page_icon="assets/images/logo_background.ico",
     layout="wide",
     initial_sidebar_state="expanded"
 )
