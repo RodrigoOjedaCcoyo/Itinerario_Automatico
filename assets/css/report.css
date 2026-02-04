@@ -986,3 +986,98 @@ body {
     box-shadow: 0 2px 4px rgba(0, 0, 0, 0.02);
     height: 100%;
 }
+/* POLICY AND REGULATION COMPONENTS */
+.policy-card {
+    padding: 15px;
+    background: #ffffff;
+    border-radius: 8px;
+    border: 1px solid #e0e0e0;
+    margin-bottom: 20px;
+}
+
+.policy-card-title {
+    font-size: 0.9rem;
+    font-weight: 800;
+    color: var(--color-primary);
+    text-transform: uppercase;
+    margin-bottom: 10px;
+    display: flex;
+    align-items: center;
+}
+
+.policy-card-body {
+    font-size: 0.8rem;
+    line-height: 1.5;
+    color: #444;
+}
+
+.policy-card-body strong {
+    color: #000;
+}
+
+.regulation-box {
+    background-color: #f0f7f6;
+    border-left: 4px solid var(--color-primary);
+    padding: 15px;
+    border-radius: 4px;
+    margin-top: 20px;
+}
+
+.regulation-title {
+    font-size: 0.85rem;
+    font-weight: 900;
+    color: var(--color-primary);
+    margin-bottom: 8px;
+    text-transform: uppercase;
+}
+
+.regulation-text {
+    font-size: 0.78rem;
+    color: #333;
+    line-height: 1.4;
+    font-style: italic;
+}
+
+.discount-table {
+    width: 100%;
+    margin-top: 10px;
+    border-collapse: collapse;
+}
+
+.discount-table td {
+    padding: 4px 0;
+    font-size: 0.8rem;
+    font-weight: 700;
+    color: #444;
+}
+
+.discount-badge {
+    background-color: #e3f2fd;
+    color: #1976d2;
+    padding: 2px 8px;
+    border-radius: 12px;
+    font-size: 0.7rem;
+    font-weight: 800;
+    display: inline-block;
+    margin-right: 5px;
+}
+
+.exclusive-rates-badge {
+    background-color: var(--color-primary);
+    color: #fff;
+    padding: 5px 15px;
+    border-radius: 4px;
+    font-size: 0.75rem;
+    font-weight: 900;
+    text-transform: uppercase;
+    display: inline-block;
+    margin-bottom: 15px;
+}
+
+.info-alert-text {
+    font-size: 0.8rem;
+    color: #d32f2f;
+    font-weight: 800;
+    text-transform: uppercase;
+    margin-left: 5px;
+}
