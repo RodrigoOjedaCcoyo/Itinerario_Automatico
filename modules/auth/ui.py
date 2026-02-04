@@ -3,8 +3,13 @@ from utils.supabase_db import verify_user
 
 def render_login_ui():
     """Renderiza una interfaz de inicio de sesión elegante."""
+    # Centrar el logo y el texto
+    col_l1, col_l2, col_l3 = st.columns([1, 1, 1])
+    with col_l2:
+        st.image("assets/images/logo_background.ico", width=120)
+    
     st.markdown("""
-        <div style='text-align: center; padding: 1rem;'>
+        <div style='text-align: center; padding-bottom: 2rem;'>
             <h2 style='color: #2d3436; margin: 0;'>Viajes Cusco Perú</h2>
             <p style='color: #636e72;'>Sistema Interno de Itinerarios</p>
         </div>
