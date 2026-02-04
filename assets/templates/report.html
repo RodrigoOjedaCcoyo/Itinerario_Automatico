@@ -178,97 +178,87 @@
                 <div class="validity-tag" style="margin-top: 30px;">OFERTA VÁLIDA POR LAS PRÓXIMAS 48 HORAS</div>
             </div>
             {% elif estrategia == "Matriz" %}
-            <h1 class="price-main-title">Cuadro Comparativo</h1>
-            <p style="text-align:center; font-size: 0.9rem; color: #666; margin-top: -5px; margin-bottom: 20px;">TARIFAS
-                DE
-                VIAJE POR PERSONA</p>
+            {% elif estrategia == "Matriz" %}
+            <h1 class="price-main-title">Propuesta de Inversión</h1>
+            <p
+                style="text-align:center; font-size: 1rem; color: #888; text-transform: uppercase; letter-spacing: 3px; margin-bottom: 30px;">
+                Seleccione su nivel de experiencia
+            </p>
 
-            <div class="matrix-magazine-container">
-                <table class="matrix-magazine-table">
-                    <thead>
-                        <tr>
-                            <th style="background: transparent; border: none;"></th>
-                            {% if es_nacional and matriz.tren_local %}
-                            <th>
-                                <span class="train-sub">TREN</span>
-                                LOCAL
-                            </th>
-                            {% endif %}
-                            <th>
-                                <span class="train-sub">TREN</span>
-                                EXPEDITION
-                            </th>
-                            <th class="popular-cell">
-                                <span class="popular-tag">RECOMENDADO</span>
-                                <span class="train-sub">TREN</span>
-                                VISTADOME
-                            </th>
-                            <th>
-                                <span class="train-sub">TREN</span>
-                                OBSERVATORY
-                            </th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <tr>
-                            <td class="row-label">Sin Alojamiento</td>
-                            {% if es_nacional and matriz.tren_local %}
-                            <td><span class="price-curr">S/</span><span class="price-val">{{ matriz.tren_local.sin
-                                    }}</span>
-                            </td>
-                            {% endif %}
-                            <td><span class="price-curr">{{ simbolo_moneda }}</span><span class="price-val">{{
-                                    matriz.expedition.sin }}</span></td>
-                            <td class="popular-cell"><span class="price-curr">{{ simbolo_moneda }}</span><span
-                                    class="price-val">{{ matriz.vistadome.sin }}</span></td>
-                            <td><span class="price-curr">{{ simbolo_moneda }}</span><span class="price-val">{{
-                                    matriz.observatory.sin }}</span></td>
-                        </tr>
-                        <tr>
-                            <td class="row-label">Hotel 2★</td>
-                            {% if es_nacional and matriz.tren_local %}
-                            <td><span class="price-curr">S/</span><span class="price-val">{{ matriz.tren_local.h2
-                                    }}</span>
-                            </td>
-                            {% endif %}
-                            <td><span class="price-curr">{{ simbolo_moneda }}</span><span class="price-val">{{
-                                    matriz.expedition.h2 }}</span></td>
-                            <td class="popular-cell"><span class="price-curr">{{ simbolo_moneda }}</span><span
-                                    class="price-val">{{ matriz.vistadome.h2 }}</span></td>
-                            <td><span class="price-curr">{{ simbolo_moneda }}</span><span class="price-val">{{
-                                    matriz.observatory.h2 }}</span></td>
-                        </tr>
-                        <tr>
-                            <td class="row-label">Hotel 3★</td>
-                            {% if es_nacional and matriz.tren_local %}
-                            <td><span class="price-curr">S/</span><span class="price-val">{{ matriz.tren_local.h3
-                                    }}</span>
-                            </td>
-                            {% endif %}
-                            <td><span class="price-curr">{{ simbolo_moneda }}</span><span class="price-val">{{
-                                    matriz.expedition.h3 }}</span></td>
-                            <td class="popular-cell"><span class="price-curr">{{ simbolo_moneda }}</span><span
-                                    class="price-val">{{ matriz.vistadome.h3 }}</span></td>
-                            <td><span class="price-curr">{{ simbolo_moneda }}</span><span class="price-val">{{
-                                    matriz.observatory.h3 }}</span></td>
-                        </tr>
-                        <tr>
-                            <td class="row-label">Hotel 4★</td>
-                            {% if es_nacional and matriz.tren_local %}
-                            <td><span class="price-curr">S/</span><span class="price-val">{{ matriz.tren_local.h4
-                                    }}</span>
-                            </td>
-                            {% endif %}
-                            <td><span class="price-curr">{{ simbolo_moneda }}</span><span class="price-val">{{
-                                    matriz.expedition.h4 }}</span></td>
-                            <td class="popular-cell"><span class="price-curr">{{ simbolo_moneda }}</span><span
-                                    class="price-val">{{ matriz.vistadome.h4 }}</span></td>
-                            <td><span class="price-curr">{{ simbolo_moneda }}</span><span class="price-val">{{
-                                    matriz.observatory.h4 }}</span></td>
-                        </tr>
-                    </tbody>
-                </table>
+            <div class="luxury-pricing-container">
+                <div class="luxury-pricing-grid">
+                    {% if es_nacional and matriz.tren_local %}
+                    <div class="luxury-card">
+                        <img src="{{ logo_url }}" class="luxury-card-img"
+                            style="object-fit: contain; padding: 10px; background: #000;">
+                        <div class="luxury-card-header">
+                            <span class="train-label">EXPERIENCIA</span>
+                            <div class="train-title">TREN LOCAL</div>
+                        </div>
+                        <div class="luxury-pricing-rows">
+                            {{ render_price_item("Sin Hotel", matriz.tren_local.sin, "S/", "") }}
+                            {{ render_price_item("Hotel 2★", matriz.tren_local.h2, "S/", "★★") }}
+                            {{ render_price_item("Hotel 3★", matriz.tren_local.h3, "S/", "★★★") }}
+                            {{ render_price_item("Hotel 4★", matriz.tren_local.h4, "S/", "★★★★") }}
+                        </div>
+                    </div>
+                    {% endif %}
+
+                    <div class="luxury-card">
+                        <img src="{{ train_exp_img }}" class="luxury-card-img">
+                        <div class="luxury-card-header">
+                            <span class="train-label">EXPERIENCIA</span>
+                            <div class="train-title">EXPEDITION</div>
+                        </div>
+                        <div class="luxury-pricing-rows">
+                            {% set sym = simbolo_moneda %}
+                            {{ render_price_item("Sin Hotel", matriz.expedition.sin, sym, "") }}
+                            {{ render_price_item("Hotel 2★", matriz.expedition.h2, sym, "★★") }}
+                            {{ render_price_item("Hotel 3★", matriz.expedition.h3, sym, "★★★") }}
+                            {{ render_price_item("Hotel 4★", matriz.expedition.h4, sym, "★★★★") }}
+                        </div>
+                    </div>
+
+                    <div class="luxury-card featured">
+                        <div class="featured-badge">RECOMENDADO</div>
+                        <img src="{{ train_vis_img }}" class="luxury-card-img">
+                        <div class="luxury-card-header">
+                            <span class="train-label">EXPERIENCIA</span>
+                            <div class="train-title">VISTADOME</div>
+                        </div>
+                        <div class="luxury-pricing-rows">
+                            {{ render_price_item("Sin Hotel", matriz.vistadome.sin, sym, "") }}
+                            {{ render_price_item("Hotel 2★", matriz.vistadome.h2, sym, "★★") }}
+                            {{ render_price_item("Hotel 3★", matriz.vistadome.h3, sym, "★★★") }}
+                            {{ render_price_item("Hotel 4★", matriz.vistadome.h4, sym, "★★★★") }}
+                        </div>
+                    </div>
+
+                    <div class="luxury-card">
+                        <img src="{{ train_obs_img }}" class="luxury-card-img">
+                        <div class="luxury-card-header">
+                            <span class="train-label">EXPERIENCIA</span>
+                            <div class="train-title">OBSERVATORY</div>
+                        </div>
+                        <div class="luxury-pricing-rows">
+                            {{ render_price_item("Sin Hotel", matriz.observatory.sin, sym, "") }}
+                            {{ render_price_item("Hotel 2★", matriz.observatory.h2, sym, "★★") }}
+                            {{ render_price_item("Hotel 3★", matriz.observatory.h3, sym, "★★★") }}
+                            {{ render_price_item("Hotel 4★", matriz.observatory.h4, sym, "★★★★") }}
+                        </div>
+                    </div>
+                </div>
             </div>
+
+            {% macro render_price_item(label, value, symbol, stars) %}
+            <div class="price-item">
+                <span class="hotel-cat">{{ label }} <span class="hotel-stars">{{ stars }}</span></span>
+                <span class="amount-box">
+                    <span class="currency">{{ symbol }}</span>
+                    <span class="value">{{ value }}</span>
+                </span>
+            </div>
+            {% endmacro %}
             {% else %}
             <h1 class="price-main-title">Tarifas de Viaje</h1>
             <div class="price-grid-columns"
