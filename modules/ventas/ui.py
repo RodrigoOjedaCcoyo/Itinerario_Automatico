@@ -961,28 +961,10 @@ def render_ventas_ui():
                 st.markdown(f"## USD {real_can:,.2f}")
                 st.caption(f"**{pasajeros_can}** pasajeros | Prom: **USD {avg_can_pp:,.2f}**")
             
-            # --- SECCIÓN FINANCIERA (MOVIDA AQUÍ PARA EVITAR ERRORES DE ORDEN) ---
-            st.divider()
-            st.markdown("### 💰 Control de Adelanto y Saldo")
-            curr_c = "S/" if tipo_t == "Nacional" else "$"
-            caf1, caf2 = st.columns(2)
-            
             # El monto de referencia es el manual si existe, o la suma de TODOS los reales (Nac + Ext + CAN)
             monto_t_ref = precio_cierre_over if precio_cierre_over > 0 else (real_nac + real_ext + real_can)
             
-            m_adelanto = caf1.number_input(f"Monto Pagado ({curr_c})", 
-                                           value=float(st.session_state.get('f_monto_adelanto', 0.0)), 
-                                           min_value=0.0,
-                                           step=10.0,
-                                           key="v_adelanto")
-            st.session_state.f_monto_adelanto = m_adelanto
-            
-            s_pendiente = max(0.0, monto_t_ref - m_adelanto)
-            caf2.metric("Saldo Pendiente", f"{curr_c} {s_pendiente:,.2f}")
-            st.session_state.f_monto_pendiente = s_pendiente
-
-            nota_p = st.text_input("📝 Nota de Precio (Aparece en el PDF)", value=st.session_state.f_nota_precio, placeholder="Ej: INCLUYE HOTEL EN HAB. DOBLE")
-            st.session_state.f_nota_precio = nota_p
+            st.divider()
             
             st.divider()
             
@@ -1246,10 +1228,6 @@ def render_ventas_ui():
                                     'ext': {'total': f"{(total_ext_a / max(1, pasajeros_ext)) + (extra_ext/max(1, pasajeros_ext)) + (calc_upgrades + calc_tren):,.2f}"} if pasajeros_ext > 0 else None,
                                 },
                                 'precios_cierre': precios_cierre_list,
-                                'nota_precio': st.session_state.f_nota_precio,
-                                'monto_adelanto': f"{st.session_state.get('f_monto_adelanto', 0.0):,.2f}",
-                                'monto_pendiente': f"{st.session_state.get('f_monto_pendiente', 0.0):,.2f}",
-                                'precio_nota': nota_p.upper(),
                                 'canal': st.session_state.get('f_tipo_cliente', 'B2C'),
                                 'manual_override': f"{precio_cierre_over:,.2f}" if (precio_cierre_over and precio_cierre_over > 0) else None
                             }
