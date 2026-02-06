@@ -637,6 +637,9 @@ def render_ventas_ui():
                             col_t1, col_n, col_e, col_c, col_h = st.columns([1.5, 0.6, 0.6, 0.6, 0.6])
                             tour['titulo'] = col_t1.text_input(f"Título día {i+1}", tour['titulo'], key=f"title_{tour_id}", disabled=is_disabled)
                             tour['hora_inicio'] = col_h.text_input(f"⏰ Hora", value=tour.get('hora_inicio', '08:00 AM'), key=f"hi_{tour_id}", disabled=is_disabled)
+                            # Control de visibilidad de hora
+                            tour['mostrar_hora'] = st.toggle("👁️ Mostrar hora en PDF", value=tour.get('mostrar_hora', True), key=f"v_h_{tour_id}", disabled=is_disabled)
+                            
                             tour['costo_nac'] = col_n.number_input(f"Nac (S/)", value=float(tour.get('costo_nac', 0)), key=f"cn_{tour_id}", disabled=is_disabled)
                             tour['costo_ext'] = col_e.number_input(f"Ext ($)", value=float(tour.get('costo_ext', 0)), key=f"ce_{tour_id}", disabled=is_disabled)
                             tour['costo_can'] = col_c.number_input(f"CAN ($)", value=float(tour.get('costo_can', 0)), key=f"cc_{tour_id}", disabled=is_disabled)
@@ -644,6 +647,9 @@ def render_ventas_ui():
                             col_t1, col_n, col_e, col_h = st.columns([2, 0.8, 0.8, 0.8])
                             tour['titulo'] = col_t1.text_input(f"Título día {i+1}", tour['titulo'], key=f"title_{tour_id}", disabled=is_disabled)
                             tour['hora_inicio'] = col_h.text_input(f"⏰ Hora", value=tour.get('hora_inicio', '08:00 AM'), key=f"hi_{tour_id}", disabled=is_disabled)
+                            # Control de visibilidad de hora
+                            tour['mostrar_hora'] = st.toggle("👁️ Mostrar hora en PDF", value=tour.get('mostrar_hora', True), key=f"v_h_{tour_id}", disabled=is_disabled)
+                            
                             tour['costo_nac'] = col_n.number_input(f"Nac (S/)", value=float(tour.get('costo_nac', 0)), key=f"cn_{tour_id}", disabled=is_disabled)
                             tour['costo_ext'] = col_e.number_input(f"Ext ($)", value=float(tour.get('costo_ext', 0)), key=f"ce_{tour_id}", disabled=is_disabled)
                             tour['costo_can'] = tour['costo_ext']
@@ -1039,6 +1045,7 @@ def render_ventas_ui():
                                 'fecha': current_date.strftime('%d / %m / %Y') if usa_fechas else "",
                                 'titulo': tour['titulo'],
                                 'hora_inicio': format_tour_time(tour.get('hora_inicio', '08:00 AM')),
+                                'mostrar_hora': tour.get('mostrar_hora', True),
                                 'descripcion': tour.get('descripcion', ''),
                                 'servicios': servicios_html,
                                 'servicios_no': servicios_no_html,
