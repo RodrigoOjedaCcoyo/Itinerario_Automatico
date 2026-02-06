@@ -581,6 +581,10 @@ def render_ventas_ui():
         if not st.session_state.itinerario:
             st.info("El itinerario está vacío. Comienza cargando un paquete o un tour individual.")
         else:
+            # Obtener factor de margen para visualización
+            m_pct_view = st.session_state.get('f_margen_porcentaje', 0.0)
+            f_m_view = 1 + (m_pct_view / 100)
+
             for i, tour in enumerate(st.session_state.itinerario):
                 total_nac_pp += tour.get('costo_nac', 0)
                 total_ext_pp += tour.get('costo_ext', 0)
@@ -597,9 +601,15 @@ def render_ventas_ui():
                     current_date = fecha_inicio + timedelta(days=i)
                     date_str = current_date.strftime('%d/%m/%Y')
                     header_icon = "⭐" if modo_s == "B2B" else "📍" 
-                    header_text = f"✨ {date_str} - DÍA {i+1}: {tour['titulo']} - (S/ {tour.get('costo_nac', 0)} | $ {tour.get('costo_ext', 0)})"
+                    
+                    # Precios marginados para el encabezado
+                    p_nac_m = tour.get('costo_nac', 0) * f_m_view
+                    p_ext_m = tour.get('costo_ext', 0) * f_m_view
+                    p_can_m = tour.get('costo_can', 0) * f_m_view
+
+                    header_text = f"✨ {date_str} - DÍA {i+1}: {tour['titulo']} - (S/ {p_nac_m:,.2f} | $ {p_ext_m:,.2f})"
                     if es_mp:
-                        header_text = f"✨ {date_str} - DÍA {i+1}: {tour['titulo']} - (S/ {tour.get('costo_nac', 0)} | $ {tour.get('costo_ext', 0)} | CAN $ {tour.get('costo_can', 0)})"
+                        header_text = f"✨ {date_str} - DÍA {i+1}: {tour['titulo']} - (S/ {p_nac_m:,.2f} | $ {p_ext_m:,.2f} | CAN $ {p_can_m:,.2f})"
                     
                     with st.expander(header_text, expanded=False):
                         # Control de edición manual para este día específico
