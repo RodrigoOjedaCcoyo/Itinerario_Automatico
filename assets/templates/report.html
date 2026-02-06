@@ -264,7 +264,16 @@
                             </div>
                             <div class="luxury-pricing-rows" style="border-top: 2px solid #f0f0f0;">
                                 {% set sym = simbolo_moneda %}
-                                {% if show_antes_pdf %}
+                                {% if origen == 'Mixto' %}
+                                {{ render_price_item("Sin Hotel", matriz.expedition.sin, "S/", "", None,
+                                matriz_ext.expedition.sin) }}
+                                {{ render_price_item("Hotel 2★", matriz.expedition.h2, "S/", "★★", None,
+                                matriz_ext.expedition.h2) }}
+                                {{ render_price_item("Hotel 3★", matriz.expedition.h3, "S/", "★★★", None,
+                                matriz_ext.expedition.h3) }}
+                                {{ render_price_item("Hotel 4★", matriz.expedition.h4, "S/", "★★★★", None,
+                                matriz_ext.expedition.h4) }}
+                                {% elif show_antes_pdf %}
                                 {{ render_price_item("Sin Hotel", matriz.expedition.sin, sym, "",
                                 matrix_antes.expedition.sin) }}
                                 {{ render_price_item("Hotel 2★", matriz.expedition.h2, sym, "★★",
@@ -290,7 +299,16 @@
                                 <div class="train-title" style="color: #fff;">VISTADOME</div>
                             </div>
                             <div class="luxury-pricing-rows">
-                                {% if show_antes_pdf %}
+                                {% if origen == 'Mixto' %}
+                                {{ render_price_item("Sin Hotel", matriz.vistadome.sin, "S/", "", None,
+                                matriz_ext.vistadome.sin) }}
+                                {{ render_price_item("Hotel 2★", matriz.vistadome.h2, "S/", "★★", None,
+                                matriz_ext.vistadome.h2) }}
+                                {{ render_price_item("Hotel 3★", matriz.vistadome.h3, "S/", "★★★", None,
+                                matriz_ext.vistadome.h3) }}
+                                {{ render_price_item("Hotel 4★", matriz.vistadome.h4, "S/", "★★★★", None,
+                                matriz_ext.vistadome.h4) }}
+                                {% elif show_antes_pdf %}
                                 {{ render_price_item("Sin Hotel", matriz.vistadome.sin, sym, "",
                                 matrix_antes.vistadome.sin)
                                 }}
@@ -317,7 +335,16 @@
                                 <div class="train-title">OBSERVATORY</div>
                             </div>
                             <div class="luxury-pricing-rows" style="border-top: 2px solid #f0f0f0;">
-                                {% if show_antes_pdf %}
+                                {% if origen == 'Mixto' %}
+                                {{ render_price_item("Sin Hotel", matriz.observatory.sin, "S/", "", None,
+                                matriz_ext.observatory.sin) }}
+                                {{ render_price_item("Hotel 2★", matriz.observatory.h2, "S/", "★★", None,
+                                matriz_ext.observatory.h2) }}
+                                {{ render_price_item("Hotel 3★", matriz.observatory.h3, "S/", "★★★", None,
+                                matriz_ext.observatory.h3) }}
+                                {{ render_price_item("Hotel 4★", matriz.observatory.h4, "S/", "★★★★", None,
+                                matriz_ext.observatory.h4) }}
+                                {% elif show_antes_pdf %}
                                 {{ render_price_item("Sin Hotel", matriz.observatory.sin, sym, "",
                                 matrix_antes.observatory.sin) }}
                                 {{ render_price_item("Hotel 2★", matriz.observatory.h2, sym, "★★",
