@@ -182,10 +182,13 @@
                 style="position: absolute; top: 20%; left: 50%; transform: translateX(-50%); width: 80%; opacity: 0.03; z-index: -1;">
                 <img src="{{ logo_url }}" style="width: 100%;">
             </div>
-            {% macro render_price_item(label, value, symbol, stars) %}
+            {% macro render_price_item(label, value, symbol, stars, value_before=None) %}
             <div class="price-item">
                 <span class="hotel-cat">{{ label }} <span class="hotel-stars">{{ stars }}</span></span>
                 <span class="amount-box">
+                    {% if value_before %}
+                    <span class="matrix-price-before">{{ symbol }} {{ value_before }}</span>
+                    {% endif %}
                     <span class="currency">{{ symbol }}</span>
                     <span class="value">{{ value }}</span>
                 </span>
@@ -207,10 +210,21 @@
                             <div class="train-title" style="color: #fff;">TREN LOCAL</div>
                         </div>
                         <div class="luxury-pricing-rows">
+                            {% if show_antes_pdf %}
+                            {{ render_price_item("Sin Hotel", matriz.tren_local.sin, "S/", "",
+                            matrix_antes.tren_local.sin) }}
+                            {{ render_price_item("Hotel 2★", matriz.tren_local.h2, "S/", "★★",
+                            matrix_antes.tren_local.h2) }}
+                            {{ render_price_item("Hotel 3★", matriz.tren_local.h3, "S/", "★★★",
+                            matrix_antes.tren_local.h3) }}
+                            {{ render_price_item("Hotel 4★", matriz.tren_local.h4, "S/", "★★★★",
+                            matrix_antes.tren_local.h4) }}
+                            {% else %}
                             {{ render_price_item("Sin Hotel", matriz.tren_local.sin, "S/", "") }}
                             {{ render_price_item("Hotel 2★", matriz.tren_local.h2, "S/", "★★") }}
                             {{ render_price_item("Hotel 3★", matriz.tren_local.h3, "S/", "★★★") }}
                             {{ render_price_item("Hotel 4★", matriz.tren_local.h4, "S/", "★★★★") }}
+                            {% endif %}
                         </div>
                     </div>
                     {% endif %}
@@ -222,10 +236,21 @@
                         </div>
                         <div class="luxury-pricing-rows" style="border-top: 2px solid #f0f0f0;">
                             {% set sym = simbolo_moneda %}
+                            {% if show_antes_pdf %}
+                            {{ render_price_item("Sin Hotel", matriz.expedition.sin, sym, "",
+                            matrix_antes.expedition.sin) }}
+                            {{ render_price_item("Hotel 2★", matriz.expedition.h2, sym, "★★",
+                            matrix_antes.expedition.h2) }}
+                            {{ render_price_item("Hotel 3★", matriz.expedition.h3, sym, "★★★",
+                            matrix_antes.expedition.h3) }}
+                            {{ render_price_item("Hotel 4★", matriz.expedition.h4, sym, "★★★★",
+                            matrix_antes.expedition.h4) }}
+                            {% else %}
                             {{ render_price_item("Sin Hotel", matriz.expedition.sin, sym, "") }}
                             {{ render_price_item("Hotel 2★", matriz.expedition.h2, sym, "★★") }}
                             {{ render_price_item("Hotel 3★", matriz.expedition.h3, sym, "★★★") }}
                             {{ render_price_item("Hotel 4★", matriz.expedition.h4, sym, "★★★★") }}
+                            {% endif %}
                         </div>
                     </div>
 
@@ -237,10 +262,21 @@
                             <div class="train-title" style="color: #fff;">VISTADOME</div>
                         </div>
                         <div class="luxury-pricing-rows">
+                            {% if show_antes_pdf %}
+                            {{ render_price_item("Sin Hotel", matriz.vistadome.sin, sym, "", matrix_antes.vistadome.sin)
+                            }}
+                            {{ render_price_item("Hotel 2★", matriz.vistadome.h2, sym, "★★", matrix_antes.vistadome.h2)
+                            }}
+                            {{ render_price_item("Hotel 3★", matriz.vistadome.h3, sym, "★★★", matrix_antes.vistadome.h3)
+                            }}
+                            {{ render_price_item("Hotel 4★", matriz.vistadome.h4, sym, "★★★★",
+                            matrix_antes.vistadome.h4) }}
+                            {% else %}
                             {{ render_price_item("Sin Hotel", matriz.vistadome.sin, sym, "") }}
                             {{ render_price_item("Hotel 2★", matriz.vistadome.h2, sym, "★★") }}
                             {{ render_price_item("Hotel 3★", matriz.vistadome.h3, sym, "★★★") }}
                             {{ render_price_item("Hotel 4★", matriz.vistadome.h4, sym, "★★★★") }}
+                            {% endif %}
                         </div>
                     </div>
 
@@ -250,10 +286,21 @@
                             <div class="train-title">OBSERVATORY</div>
                         </div>
                         <div class="luxury-pricing-rows" style="border-top: 2px solid #f0f0f0;">
+                            {% if show_antes_pdf %}
+                            {{ render_price_item("Sin Hotel", matriz.observatory.sin, sym, "",
+                            matrix_antes.observatory.sin) }}
+                            {{ render_price_item("Hotel 2★", matriz.observatory.h2, sym, "★★",
+                            matrix_antes.observatory.h2) }}
+                            {{ render_price_item("Hotel 3★", matriz.observatory.h3, sym, "★★★",
+                            matrix_antes.observatory.h3) }}
+                            {{ render_price_item("Hotel 4★", matriz.observatory.h4, sym, "★★★★",
+                            matrix_antes.observatory.h4) }}
+                            {% else %}
                             {{ render_price_item("Sin Hotel", matriz.observatory.sin, sym, "") }}
                             {{ render_price_item("Hotel 2★", matriz.observatory.h2, sym, "★★") }}
                             {{ render_price_item("Hotel 3★", matriz.observatory.h3, sym, "★★★") }}
                             {{ render_price_item("Hotel 4★", matriz.observatory.h4, sym, "★★★★") }}
+                            {% endif %}
                         </div>
                     </div>
                 </div>
@@ -304,6 +351,10 @@
                     <div class="offer-badge" style="background: #ff5252; color: white;">MEJOR OPCIÓN</div>
                     <div class="offer-type">TARIFAS NACIONALES</div>
                     <div class="offer-price-box">
+                        {% if show_antes_pdf %}
+                        <span class="price-before"><span class="price-before-label">Antes</span> S/ {{
+                            precios_antes.nac.total }}</span>
+                        {% endif %}
                         <span class="offer-currency">S/</span>
                         <span class="offer-amount">{{ precios.nac.total }}</span>
                     </div>
@@ -316,6 +367,10 @@
                     <div class="offer-badge">INTERNATIONAL ACCESS</div>
                     <div class="offer-type">TARIFAS EXTRANJEROS</div>
                     <div class="offer-price-box">
+                        {% if show_antes_pdf %}
+                        <span class="price-before"><span class="price-before-label">Antes</span> USD {{
+                            precios_antes.ext.total }}</span>
+                        {% endif %}
                         <span class="offer-currency">USD</span>
                         <span class="offer-amount">{{ precios.ext.total }}</span>
                     </div>

@@ -581,9 +581,12 @@ def render_ventas_ui():
         if not st.session_state.itinerario:
             st.info("El itinerario está vacío. Comienza cargando un paquete o un tour individual.")
         else:
-            # Obtener factor de margen para visualización
+            # Obtener factores de margen para visualización
             m_pct_view = st.session_state.get('f_margen_porcentaje', 0.0)
             f_m_view = 1 + (m_pct_view / 100)
+            
+            m_antes_view = st.session_state.get('f_margen_antes', 0.0)
+            f_m_antes_view = 1 + (m_antes_view / 100)
 
             for i, tour in enumerate(st.session_state.itinerario):
                 total_nac_pp += tour.get('costo_nac', 0)
@@ -606,10 +609,24 @@ def render_ventas_ui():
                     p_nac_m = tour.get('costo_nac', 0) * f_m_view
                     p_ext_m = tour.get('costo_ext', 0) * f_m_view
                     p_can_m = tour.get('costo_can', 0) * f_m_view
+                    
+                    # Precios "Antes" para visualización
+                    p_nac_a = tour.get('costo_nac', 0) * f_m_antes_view
+                    p_ext_a = tour.get('costo_ext', 0) * f_m_antes_view
+                    
+                    show_antes = m_antes_view > m_pct_view
+                    
+                    p_nac_str = f"S/ {p_nac_m:,.2f}"
+                    if show_antes: p_nac_str = f"~~S/ {p_nac_a:,.2f}~~ {p_nac_str}"
+                    
+                    p_ext_str = f"$ {p_ext_m:,.2f}"
+                    if show_antes: p_ext_str = f"~~$ {p_ext_a:,.2f}~~ {p_ext_str}"
 
-                    header_text = f"✨ {date_str} - DÍA {i+1}: {tour['titulo']} - (S/ {p_nac_m:,.2f} | $ {p_ext_m:,.2f})"
+                    header_text = f"✨ {date_str} - DÍA {i+1}: {tour['titulo']} - ({p_nac_str} | {p_ext_str})"
                     if es_mp:
-                        header_text = f"✨ {date_str} - DÍA {i+1}: {tour['titulo']} - (S/ {p_nac_m:,.2f} | $ {p_ext_m:,.2f} | CAN $ {p_can_m:,.2f})"
+                        p_can_str = f"CAN $ {p_can_m:,.2f}"
+                        # Para CAN no solemos mostrar antes para no saturar, pero si es necesario se añade
+                        header_text = f"✨ {date_str} - DÍA {i+1}: {tour['titulo']} - ({p_nac_str} | {p_ext_str} | {p_can_str})"
                     
                     with st.expander(header_text, expanded=False):
                         # Control de edición manual para este día específico
@@ -706,7 +723,10 @@ def render_ventas_ui():
             extra_nac = ma1.number_input("S/ Extra (Nac)", step=10.0, key="f_extra_nac")
             extra_ext = ma2.number_input("$ Extra (Ext)", step=5.0, key="f_extra_ext")
             extra_can = ma3.number_input("$ Extra (CAN)", step=5.0, key="f_extra_can")
-            margen_pct = ma4.number_input("% Margen (Utilidad)", step=1.0, key="f_margen_porcentaje", help="Aumenta los precios de los tours en este porcentaje.")
+            margen_pct = ma4.number_input("% Margen (Venta)", step=1.0, key="f_margen_porcentaje", help="Aumenta los precios de los tours en este porcentaje.")
+            
+            ma5, ma6, ma7, ma8 = st.columns(4)
+            margen_antes_pct = ma5.number_input("% Margen (Antes)", step=1.0, key="f_margen_antes", help="Margen para el precio tachado (efecto de oferta).")
             
             # Cálculo automático base de noches si el valor es 0 o el estado no existe
             auto_noches = max(0, len(st.session_state.itinerario) - 1)
@@ -864,14 +884,18 @@ def render_ventas_ui():
                 else:
                     calc_tren = 0
             
-            # --- NUEVA LÓGICA DE CÁLCULO DETALLADO ---
             # Factor de margen de utilidad
             factor_m = 1 + (margen_pct / 100)
+            factor_a = 1 + (margen_antes_pct / 100)
             
             # Inicializar acumuladores por categoría
             total_nac = 0.0
             total_ext = 0.0
             total_can = 0.0
+
+            total_nac_a = 0.0
+            total_ext_a = 0.0
+            total_can_a = 0.0
 
             for t in st.session_state.itinerario:
                 # Nacionales (Aplicando factor de margen)
@@ -879,15 +903,27 @@ def render_ventas_ui():
                 total_nac += (t.get('costo_nac_est', t.get('costo_nac', 0)-70) * factor_m * (c_es_nac + c_pc_nac))
                 total_nac += (t.get('costo_nac_nino', t.get('costo_nac', 0)-40) * factor_m * c_ni_nac)
                 
+                total_nac_a += (t.get('costo_nac', 0) * factor_a * c_ad_nac)
+                total_nac_a += (t.get('costo_nac_est', t.get('costo_nac', 0)-70) * factor_a * (c_es_nac + c_pc_nac))
+                total_nac_a += (t.get('costo_nac_nino', t.get('costo_nac', 0)-40) * factor_a * c_ni_nac)
+
                 # Extranjeros (Aplicando factor de margen)
                 total_ext += (t.get('costo_ext', 0) * factor_m * c_ad_ext)
                 total_ext += (t.get('costo_ext_est', t.get('costo_ext', 0)-20) * factor_m * (c_es_ext + c_pc_ext))
                 total_ext += (t.get('costo_ext_nino', t.get('costo_ext', 0)-15) * factor_m * c_ni_ext)
 
+                total_ext_a += (t.get('costo_ext', 0) * factor_a * c_ad_ext)
+                total_ext_a += (t.get('costo_ext_est', t.get('costo_ext', 0)-20) * factor_a * (c_es_ext + c_pc_ext))
+                total_ext_a += (t.get('costo_ext_nino', t.get('costo_ext', 0)-15) * factor_a * c_ni_ext)
+
                 # CAN (Aplicando factor de margen)
                 total_can += (t.get('costo_can', 0) * factor_m * c_ad_can)
                 total_can += (t.get('costo_can_est', t.get('costo_can', 0)-20) * factor_m * (c_es_can + c_pc_can))
                 total_can += (t.get('costo_can_nino', t.get('costo_can', 0)-15) * factor_m * c_ni_can)
+
+                total_can_a += (t.get('costo_can', 0) * factor_a * c_ad_can)
+                total_can_a += (t.get('costo_can_est', t.get('costo_can', 0)-20) * factor_a * (c_es_can + c_pc_can))
+                total_can_a += (t.get('costo_can_nino', t.get('costo_can', 0)-15) * factor_a * c_ni_can)
 
             real_nac = total_nac + m_extra_nac + (calc_upgrades + calc_tren) * pasajeros_nac
             real_ext = total_ext + m_extra_ext + (calc_upgrades + calc_tren) * pasajeros_ext
@@ -1082,35 +1118,42 @@ def render_ventas_ui():
                             
                             # Fallback para base_final (usado en comparativas)
                             base_final = total_ext_pp + (extra_ext/max(1, pasajeros_ext))
-                            if tipo_t == "Nacional": base_final = total_nac_pp + (extra_nac/max(1, pasajeros_nac))
-                            if estrategia_v == "General": base_final += (calc_upgrades + calc_tren)
+                            base_antes = (total_ext_a / max(1, pasajeros_ext)) + (extra_ext/max(1, pasajeros_ext))
+                            if tipo_t == "Nacional": 
+                                base_final = total_nac_pp + (extra_nac/max(1, pasajeros_nac))
+                                base_antes = (total_nac_a / max(1, pasajeros_nac)) + (extra_nac/max(1, pasajeros_nac))
+                            
+                            if estrategia_v == "General": 
+                                base_final += (calc_upgrades + calc_tren)
+                                base_antes += (calc_upgrades + calc_tren)
+                            
+                            show_antes_pdf = margen_antes_pct > margen_pct
 
                             # Matrix Calculation
                             def calc_m(base, extra_t, extra_h_n):
                                 return base + extra_t + (extra_h_n * num_noches)
 
                             pricing_matrix = {}
+                            matrix_antes = {}
 
 
                             if tipo_t == "Nacional":
 
 
                                 pricing_matrix['tren_local'] = {
-
-
                                     'sin': f"{calc_m(base_final, u_t_local, 0):,.2f}",
-
-
                                     'h2': f"{calc_m(base_final, u_t_local, u_h2):,.2f}",
-
-
                                     'h3': f"{calc_m(base_final, u_t_local, u_h3):,.2f}",
-
-
                                     'h4': f"{calc_m(base_final, u_t_local, u_h4):,.2f}"
-
-
                                 }
+                                
+                                if show_antes_pdf:
+                                    matrix_antes['tren_local'] = {
+                                        'sin': f"{calc_m(base_antes, u_t_local, 0):,.2f}",
+                                        'h2': f"{calc_m(base_antes, u_t_local, u_h2):,.2f}",
+                                        'h3': f"{calc_m(base_antes, u_t_local, u_h3):,.2f}",
+                                        'h4': f"{calc_m(base_antes, u_t_local, u_h4):,.2f}"
+                                    }
 
 
 
@@ -1118,62 +1161,46 @@ def render_ventas_ui():
 
 
                                 'expedition': {
-
-
                                     'sin': f"{calc_m(base_final, 0, 0):,.2f}",
-
-
                                     'h2': f"{calc_m(base_final, 0, u_h2):,.2f}",
-
-
                                     'h3': f"{calc_m(base_final, 0, u_h3):,.2f}",
-
-
                                     'h4': f"{calc_m(base_final, 0, u_h4):,.2f}"
-
-
                                 },
-
-
                                 'vistadome': {
-
-
                                     'sin': f"{calc_m(base_final, u_t_v * (tc if tipo_t == 'Nacional' else 1), 0):,.2f}",
-
-
                                     'h2': f"{calc_m(base_final, u_t_v * (tc if tipo_t == 'Nacional' else 1), u_h2):,.2f}",
-
-
                                     'h3': f"{calc_m(base_final, u_t_v * (tc if tipo_t == 'Nacional' else 1), u_h3):,.2f}",
-
-
                                     'h4': f"{calc_m(base_final, u_t_v * (tc if tipo_t == 'Nacional' else 1), u_h4):,.2f}"
-
-
                                 },
-
-
                                 'observatory': {
-
-
                                     'sin': f"{calc_m(base_final, u_t_o * (tc if tipo_t == 'Nacional' else 1), 0):,.2f}",
-
-
                                     'h2': f"{calc_m(base_final, u_t_o * (tc if tipo_t == 'Nacional' else 1), u_h2):,.2f}",
-
-
                                     'h3': f"{calc_m(base_final, u_t_o * (tc if tipo_t == 'Nacional' else 1), u_h3):,.2f}",
-
-
                                     'h4': f"{calc_m(base_final, u_t_o * (tc if tipo_t == 'Nacional' else 1), u_h4):,.2f}"
-
-
                                 }
-
-
                             })
 
-
+                            if show_antes_pdf:
+                                matrix_antes.update({
+                                    'expedition': {
+                                        'sin': f"{calc_m(base_antes, 0, 0):,.2f}",
+                                        'h2': f"{calc_m(base_antes, 0, u_h2):,.2f}",
+                                        'h3': f"{calc_m(base_antes, 0, u_h3):,.2f}",
+                                        'h4': f"{calc_m(base_antes, 0, u_h4):,.2f}"
+                                    },
+                                    'vistadome': {
+                                        'sin': f"{calc_m(base_antes, u_t_v * (tc if tipo_t == 'Nacional' else 1), 0):,.2f}",
+                                        'h2': f"{calc_m(base_antes, u_t_v * (tc if tipo_t == 'Nacional' else 1), u_h2):,.2f}",
+                                        'h3': f"{calc_m(base_antes, u_t_v * (tc if tipo_t == 'Nacional' else 1), u_h3):,.2f}",
+                                        'h4': f"{calc_m(base_antes, u_t_v * (tc if tipo_t == 'Nacional' else 1), u_h4):,.2f}"
+                                    },
+                                    'observatory': {
+                                        'sin': f"{calc_m(base_antes, u_t_o * (tc if tipo_t == 'Nacional' else 1), 0):,.2f}",
+                                        'h2': f"{calc_m(base_antes, u_t_o * (tc if tipo_t == 'Nacional' else 1), u_h2):,.2f}",
+                                        'h3': f"{calc_m(base_antes, u_t_o * (tc if tipo_t == 'Nacional' else 1), u_h3):,.2f}",
+                                        'h4': f"{calc_m(base_antes, u_t_o * (tc if tipo_t == 'Nacional' else 1), u_h4):,.2f}"
+                                    }
+                                })                            
                             full_itinerary_data = {
                                 'title_1': t1,
                                 'title_2': t2,
@@ -1198,30 +1225,24 @@ def render_ventas_ui():
                                 'train_vis_img': os.path.abspath(os.path.join("assets", "images", "train_vistadome.png")),
                                 'train_obs_img': os.path.abspath(os.path.join("assets", "images", "train_observatory.png")),
                                 'es_nacional': (tipo_t == "Nacional"),
+                                'itinerario': days_data,
+                                'matriz': pricing_matrix,
+                                'matrix_antes': matrix_antes,
+                                'show_antes_pdf': show_antes_pdf,
                                 'precios': {
-                                    'nac': {
-                                        'monto': f"{total_nac_pp + (extra_nac/max(1, pasajeros_nac)):,.2f}",
-                                        'total': f"{real_nac:,.2f}"
-                                    } if (total_nac > 0) else None,
-                                    'ext': {
-                                        'monto': f"{total_ext_pp + (extra_ext/max(1, pasajeros_ext)):,.2f}",
-                                        'total': f"{real_ext:,.2f}"
-                                    } if (total_ext > 0) else None,
-                                    'can': {
-                                        'monto': f"{total_can_pp + (extra_can/max(1, pasajeros_can)):,.2f}",
-                                        'total': f"{real_can:,.2f}"
-                                    } if (total_can > 0) else None,
+                                    'nac': {'total': f"{(total_nac_pp + (extra_nac/max(1, pasajeros_nac)) + (calc_upgrades + calc_tren)):,.2f}"} if pasajeros_nac > 0 else None,
+                                    'ext': {'total': f"{(total_ext_pp + (extra_ext/max(1, pasajeros_ext)) + (calc_upgrades + calc_tren)):,.2f}"} if pasajeros_ext > 0 else None,
                                 },
-                                'total_pasajeros': pasajeros_nac if tipo_t == "Nacional" else (pasajeros_ext + pasajeros_can),
-                                'precio_cierre': f"{precio_cierre_over:,.2f}" if (precio_cierre_over and precio_cierre_over > 0) else f"{real_nac if tipo_t == 'Nacional' else (real_ext + real_can):,.2f}",
-                                'precio_cierre_pp': f"{(precio_cierre_over/max(1, pasajeros_nac if tipo_t == 'Nacional' else (pasajeros_ext + pasajeros_can))):,.2f}" if (precio_cierre_over and precio_cierre_over > 0) else f"{base_final:,.2f}",
+                                'precios_antes': {
+                                    'nac': {'total': f"{(total_nac_a / max(1, pasajeros_nac)) + (extra_nac/max(1, pasajeros_nac)) + (calc_upgrades + calc_tren):,.2f}"} if pasajeros_nac > 0 else None,
+                                    'ext': {'total': f"{(total_ext_a / max(1, pasajeros_ext)) + (extra_ext/max(1, pasajeros_ext)) + (calc_upgrades + calc_tren):,.2f}"} if pasajeros_ext > 0 else None,
+                                },
+                                'precios_cierre': precios_cierre_list,
+                                'nota_precio': st.session_state.f_nota_precio,
                                 'monto_adelanto': f"{st.session_state.get('f_monto_adelanto', 0.0):,.2f}",
                                 'monto_pendiente': f"{st.session_state.get('f_monto_pendiente', 0.0):,.2f}",
-                                'matriz': pricing_matrix,
                                 'precio_nota': nota_p.upper(),
                                 'canal': st.session_state.get('f_tipo_cliente', 'B2C'),
-                                'days': days_data,
-                                'precios_cierre': precios_cierre_list,
                                 'manual_override': f"{precio_cierre_over:,.2f}" if (precio_cierre_over and precio_cierre_over > 0) else None
                             }
 

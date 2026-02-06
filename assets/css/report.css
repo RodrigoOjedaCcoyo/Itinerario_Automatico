@@ -71,6 +71,24 @@
     line-height: 1;
 }
 
+.price-before {
+    display: block;
+    font-size: 1.1rem;
+    color: #999;
+    text-decoration: line-through;
+    font-weight: 400;
+    margin-bottom: 5px;
+}
+
+.price-before-label {
+    font-size: 0.7rem;
+    color: #999;
+    text-transform: uppercase;
+    margin-right: 5px;
+    text-decoration: none;
+    display: inline-block;
+}
+
 .offer-footer {
     font-size: 0.8rem;
     color: #888;
@@ -427,6 +445,19 @@ body {
     flex-direction: column;
     align-items: center;
     gap: 10px;
+}
+
+.price-item .amount-box {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
+}
+
+.matrix-price-before {
+    font-size: 0.75rem;
+    color: #bbb;
+    text-decoration: line-through;
+    font-weight: 400;
 }
 
 .cover-dates {
