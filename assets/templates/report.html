@@ -188,15 +188,28 @@
                     style="position: absolute; top: 20%; left: 50%; transform: translateX(-50%); width: 80%; opacity: 0.03; z-index: -1;">
                     <img src="{{ logo_url }}" style="width: 100%;">
                 </div>
-                {% macro render_price_item(label, value, symbol, stars, value_before=None) %}
+                {% macro render_price_item(label, value, symbol, stars, value_before=None, value_ext=None, sym_ext=None)
+                %}
                 <div class="price-item">
                     <span class="hotel-cat">{{ label }} <span class="hotel-stars">{{ stars }}</span></span>
                     <span class="amount-box">
+                        {% if value_ext %}
+                        <div class="mirrored-price">
+                            <div class="mirrored-nac" style="color: #000; font-weight: 800; font-size: 0.85rem;">
+                                <span class="currency">S/</span> <span class="value">{{ value }}</span>
+                            </div>
+                            <div class="mirrored-ext"
+                                style="color: var(--color-primary); font-weight: 700; font-size: 0.75rem;">
+                                <span class="currency">$</span> <span class="value">{{ value_ext }}</span>
+                            </div>
+                        </div>
+                        {% else %}
                         {% if value_before %}
                         <span class="matrix-price-before">{{ symbol }} {{ value_before }}</span>
                         {% endif %}
                         <span class="currency">{{ symbol }}</span>
                         <span class="value">{{ value }}</span>
+                        {% endif %}
                     </span>
                 </div>
                 {% endmacro %}
@@ -209,14 +222,23 @@
 
                 <div class="luxury-pricing-container">
                     <div class="luxury-pricing-grid">
-                        {% if es_nacional and matriz.tren_local %}
+                        {% if (es_nacional or origen == 'Mixto') and matriz.tren_local %}
                         <div class="luxury-card">
                             <div class="luxury-card-header" style="background: #000; color: #fff; padding: 25px 10px;">
                                 <span class="train-label" style="color: #aaa;">EXPERIENCIA</span>
                                 <div class="train-title" style="color: #fff;">TREN LOCAL</div>
                             </div>
                             <div class="luxury-pricing-rows">
-                                {% if show_antes_pdf %}
+                                {% if origen == 'Mixto' %}
+                                {{ render_price_item("Sin Hotel", matriz.tren_local.sin, "S/", "", None,
+                                matriz_ext.tren_local.sin) }}
+                                {{ render_price_item("Hotel 2★", matriz.tren_local.h2, "S/", "★★", None,
+                                matriz_ext.tren_local.h2) }}
+                                {{ render_price_item("Hotel 3★", matriz.tren_local.h3, "S/", "★★★", None,
+                                matriz_ext.tren_local.h3) }}
+                                {{ render_price_item("Hotel 4★", matriz.tren_local.h4, "S/", "★★★★", None,
+                                matriz_ext.tren_local.h4) }}
+                                {% elif show_antes_pdf %}
                                 {{ render_price_item("Sin Hotel", matriz.tren_local.sin, "S/", "",
                                 matrix_antes.tren_local.sin) }}
                                 {{ render_price_item("Hotel 2★", matriz.tren_local.h2, "S/", "★★",

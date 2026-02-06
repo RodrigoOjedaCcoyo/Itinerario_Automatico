@@ -321,8 +321,12 @@ def render_ventas_ui():
                         st.warning("No se encontraron registros previos.")
         
         t_col1, t_col2 = st.columns(2)
-        idx_o = 0 if "Nacional" in st.session_state.f_origen else 1
-        tipo_t = t_col1.radio("Origen", ["Nacional", "Extranjero"], index=idx_o)
+        idx_o = 0
+        if "Extranjero" in st.session_state.f_origen: idx_o = 1
+        elif "Mixto" in st.session_state.f_origen: idx_o = 2
+        
+        tipo_t = t_col1.radio("Origen", ["Nacional", "Extranjero", "Mixto"], index=idx_o)
+        st.session_state.f_origen = tipo_t
         modo_s = "Sistema Pool" # Definimos por defecto para evitar errores en el PDF
         # es_pool = (modo_s == "Sistema Pool") # Mantenemos modo_edicion individual
         
@@ -358,7 +362,7 @@ def render_ventas_ui():
             n_pcd_can = int(st.session_state.get('n_pcd_can', 0))
             n_ninos_can = int(st.session_state.get('n_ninos_can', 0))
             
-        else:
+        elif tipo_t == "Extranjero":
             # Caso "Extranjero": Muestra solo Extranjeros y CAN
             p_col1, p_col2 = st.columns(2)
             
@@ -381,6 +385,27 @@ def render_ventas_ui():
             n_estud_nac = int(st.session_state.get('n_estud_nac', 0))
             n_pcd_nac = int(st.session_state.get('n_pcd_nac', 0))
             n_ninos_nac = int(st.session_state.get('n_ninos_nac', 0))
+        else:
+            # Caso "Mixto": Muestra todos
+            p_col_m1, p_col_m2, p_col_m3 = st.columns(3)
+            with p_col_m1:
+                st.caption("🇵🇪 NACIONALES")
+                n_adultos_nac = st.number_input("👤 Adultos", min_value=0, value=int(st.session_state.get('n_adultos_nac', 1)), step=1, key="an_nac_mix")
+                n_estud_nac = st.number_input("🎓 Estudiantes", min_value=0, value=int(st.session_state.get('n_estud_nac', 0)), step=1, key="es_nac_mix")
+                n_pcd_nac = st.number_input("♿ PcD", min_value=0, value=int(st.session_state.get('n_pcd_nac', 0)), step=1, key="pcd_nac_mix")
+                n_ninos_nac = st.number_input("👶 Niños", min_value=0, value=int(st.session_state.get('n_ninos_nac', 0)), step=1, key="ni_nac_mix")
+            with p_col_m2:
+                st.caption("🌎 EXTRANJEROS")
+                n_adultos_ext = st.number_input("👤 Adultos", min_value=0, value=int(st.session_state.get('n_adultos_ext', 1)), step=1, key="an_ext_mix")
+                n_estud_ext = st.number_input("🎓 Estudiantes", min_value=0, value=int(st.session_state.get('n_estud_ext', 0)), step=1, key="es_ext_mix")
+                n_pcd_ext = st.number_input("♿ PcD", min_value=0, value=int(st.session_state.get('n_pcd_ext', 0)), step=1, key="pcd_ext_mix")
+                n_ninos_ext = st.number_input("👶 Niños", min_value=0, value=int(st.session_state.get('n_ninos_ext', 0)), step=1, key="ni_ext_mix")
+            with p_col_m3:
+                st.caption("🤝 CAN")
+                n_adultos_can = st.number_input("👤 Adultos ", min_value=0, value=int(st.session_state.get('n_adultos_can', 0)), step=1, key="an_can_mix")
+                n_estud_can = st.number_input("🎓 Estudiantes ", min_value=0, value=int(st.session_state.get('n_estud_can', 0)), step=1, key="es_can_mix")
+                n_pcd_can = st.number_input("♿ PcD ", min_value=0, value=int(st.session_state.get('n_pcd_can', 0)), step=1, key="pcd_can_mix")
+                n_ninos_can = st.number_input("👶 Niños ", min_value=0, value=int(st.session_state.get('n_ninos_can', 0)), step=1, key="ni_can_mix")
 
         # Persistencia obligatoria de todos los valores para el cálculo en página
         st.session_state.n_adultos_nac = n_adultos_nac
@@ -845,13 +870,18 @@ def render_ventas_ui():
                 c_ad_ext = 0; c_es_ext = 0; c_pc_ext = 0; c_ni_ext = 0
                 c_ad_can = 0; c_es_can = 0; c_pc_can = 0; c_ni_can = 0
                 m_extra_ext = 0.0; m_extra_can = 0.0
-            else:
+            elif tipo_t == "Extranjero":
                 pasajeros_nac = 0
                 pasajeros_ext = c_ad_ext + c_es_ext + c_pc_ext + c_ni_ext
                 pasajeros_can = c_ad_can + c_es_can + c_pc_can + c_ni_can
                 # Zero out nationals for calculation
                 c_ad_nac = 0; c_es_nac = 0; c_pc_nac = 0; c_ni_nac = 0
                 m_extra_nac = 0.0
+            else: # Mixto
+                pasajeros_nac = c_ad_nac + c_es_nac + c_pc_nac + c_ni_nac
+                pasajeros_ext = c_ad_ext + c_es_ext + c_pc_ext + c_ni_ext
+                pasajeros_can = c_ad_can + c_es_can + c_pc_can + c_ni_can
+                # Keep all category counts as they are
 
             # Lógica de Upgrades
             calc_upgrades = 0.0
@@ -1115,7 +1145,7 @@ def render_ventas_ui():
                                 base_final += (calc_upgrades + calc_tren)
                                 base_antes += (calc_upgrades + calc_tren)
                             
-                            show_antes_pdf = margen_antes_pct > margen_pct
+                            show_antes_pdf = margen_antes_pct > margen_pct and tipo_t != "Mixto"
 
                             # Matrix Calculation
                             def calc_m(base, extra_t, extra_h_n):
@@ -1123,11 +1153,13 @@ def render_ventas_ui():
 
                             pricing_matrix = {}
                             matrix_antes = {}
+                            pricing_matrix_ext = {} # Nueva matriz para modo Mixto
 
+                            # Calculamos base_ext para el modo Mixto
+                            base_ext_final = total_ext_pp + (extra_ext/max(1, pasajeros_ext))
+                            if estrategia_v == "General": base_ext_final += (calc_upgrades + calc_tren)
 
-                            if tipo_t == "Nacional":
-
-
+                            if tipo_t == "Nacional" or tipo_t == "Mixto":
                                 pricing_matrix['tren_local'] = {
                                     'sin': f"{calc_m(base_final, u_t_local, 0):,.2f}",
                                     'h2': f"{calc_m(base_final, u_t_local, u_h2):,.2f}",
@@ -1142,12 +1174,18 @@ def render_ventas_ui():
                                         'h3': f"{calc_m(base_antes, u_t_local, u_h3):,.2f}",
                                         'h4': f"{calc_m(base_antes, u_t_local, u_h4):,.2f}"
                                     }
+                            
+                            if tipo_t == "Mixto":
+                                pricing_matrix_ext['tren_local'] = {
+                                    'sin': f"{calc_m(base_ext_final, u_t_local / tc if tc > 0 else 0, 0):,.2f}",
+                                    'h2': f"{calc_m(base_ext_final, u_t_local / tc if tc > 0 else 0, u_h2):,.2f}",
+                                    'h3': f"{calc_m(base_ext_final, u_t_local / tc if tc > 0 else 0, u_h3):,.2f}",
+                                    'h4': f"{calc_m(base_ext_final, u_t_local / tc if tc > 0 else 0, u_h4):,.2f}"
+                                }
 
 
 
                             pricing_matrix.update({
-
-
                                 'expedition': {
                                     'sin': f"{calc_m(base_final, 0, 0):,.2f}",
                                     'h2': f"{calc_m(base_final, 0, u_h2):,.2f}",
@@ -1155,18 +1193,40 @@ def render_ventas_ui():
                                     'h4': f"{calc_m(base_final, 0, u_h4):,.2f}"
                                 },
                                 'vistadome': {
-                                    'sin': f"{calc_m(base_final, u_t_v * (tc if tipo_t == 'Nacional' else 1), 0):,.2f}",
-                                    'h2': f"{calc_m(base_final, u_t_v * (tc if tipo_t == 'Nacional' else 1), u_h2):,.2f}",
-                                    'h3': f"{calc_m(base_final, u_t_v * (tc if tipo_t == 'Nacional' else 1), u_h3):,.2f}",
-                                    'h4': f"{calc_m(base_final, u_t_v * (tc if tipo_t == 'Nacional' else 1), u_h4):,.2f}"
+                                    'sin': f"{calc_m(base_final, u_t_v * (tc if tipo_t in ['Nacional', 'Mixto'] else 1), 0):,.2f}",
+                                    'h2': f"{calc_m(base_final, u_t_v * (tc if tipo_t in ['Nacional', 'Mixto'] else 1), u_h2):,.2f}",
+                                    'h3': f"{calc_m(base_final, u_t_v * (tc if tipo_t in ['Nacional', 'Mixto'] else 1), u_h3):,.2f}",
+                                    'h4': f"{calc_m(base_final, u_t_v * (tc if tipo_t in ['Nacional', 'Mixto'] else 1), u_h4):,.2f}"
                                 },
                                 'observatory': {
-                                    'sin': f"{calc_m(base_final, u_t_o * (tc if tipo_t == 'Nacional' else 1), 0):,.2f}",
-                                    'h2': f"{calc_m(base_final, u_t_o * (tc if tipo_t == 'Nacional' else 1), u_h2):,.2f}",
-                                    'h3': f"{calc_m(base_final, u_t_o * (tc if tipo_t == 'Nacional' else 1), u_h3):,.2f}",
-                                    'h4': f"{calc_m(base_final, u_t_o * (tc if tipo_t == 'Nacional' else 1), u_h4):,.2f}"
+                                    'sin': f"{calc_m(base_final, u_t_o * (tc if tipo_t in ['Nacional', 'Mixto'] else 1), 0):,.2f}",
+                                    'h2': f"{calc_m(base_final, u_t_o * (tc if tipo_t in ['Nacional', 'Mixto'] else 1), u_h2):,.2f}",
+                                    'h3': f"{calc_m(base_final, u_t_o * (tc if tipo_t in ['Nacional', 'Mixto'] else 1), u_h3):,.2f}",
+                                    'h4': f"{calc_m(base_final, u_t_o * (tc if tipo_t in ['Nacional', 'Mixto'] else 1), u_h4):,.2f}"
                                 }
                             })
+
+                            if tipo_t == "Mixto":
+                                pricing_matrix_ext.update({
+                                    'expedition': {
+                                        'sin': f"{calc_m(base_ext_final, 0, 0):,.2f}",
+                                        'h2': f"{calc_m(base_ext_final, 0, u_h2):,.2f}",
+                                        'h3': f"{calc_m(base_ext_final, 0, u_h3):,.2f}",
+                                        'h4': f"{calc_m(base_ext_final, 0, u_h4):,.2f}"
+                                    },
+                                    'vistadome': {
+                                        'sin': f"{calc_m(base_ext_final, u_t_v, 0):,.2f}",
+                                        'h2': f"{calc_m(base_ext_final, u_t_v, u_h2):,.2f}",
+                                        'h3': f"{calc_m(base_ext_final, u_t_v, u_h3):,.2f}",
+                                        'h4': f"{calc_m(base_ext_final, u_t_v, u_h4):,.2f}"
+                                    },
+                                    'observatory': {
+                                        'sin': f"{calc_m(base_ext_final, u_t_o, 0):,.2f}",
+                                        'h2': f"{calc_m(base_ext_final, u_t_o, u_h2):,.2f}",
+                                        'h3': f"{calc_m(base_ext_final, u_t_o, u_h3):,.2f}",
+                                        'h4': f"{calc_m(base_ext_final, u_t_o, u_h4):,.2f}"
+                                    }
+                                })
 
                             if show_antes_pdf:
                                 matrix_antes.update({
@@ -1195,9 +1255,11 @@ def render_ventas_ui():
                                 'pasajero': nombre.upper(),
                                 'fechas': rango_fechas.upper(),
                                 'usa_fechas': usa_fechas,
-                                'categoria': target_cat.upper(),
-                                'modo': modo_s.upper(),
-                                'estrategia': estrategia_v,
+                                'pricing_matrix': pricing_matrix,
+                                'matriz_ext': pricing_matrix_ext,
+                                'matrix_antes': matrix_antes,
+                                'origen': tipo_t,
+                                'show_antes_pdf': show_antes_pdf,
                                 'simbolo_moneda': curr_sym,
                                 'duracion': f"{len(st.session_state.itinerario)}D / {num_noches}N",
                                 'cover_url': os.path.abspath(cover_img),
