@@ -643,6 +643,9 @@ def render_ventas_ui():
                             tour['costo_nac'] = col_n.number_input(f"Nac (S/)", value=float(tour.get('costo_nac', 0)), key=f"cn_{tour_id}", disabled=is_disabled)
                             tour['costo_ext'] = col_e.number_input(f"Ext ($)", value=float(tour.get('costo_ext', 0)), key=f"ce_{tour_id}", disabled=is_disabled)
                             tour['costo_can'] = col_c.number_input(f"CAN ($)", value=float(tour.get('costo_can', 0)), key=f"cc_{tour_id}", disabled=is_disabled)
+                            
+                            st.markdown("---")
+                            tour['nota_precio'] = st.text_input("📝 Nota de Precio (Exclusivo en PDF)", value=tour.get('nota_precio', 'INCLUYE TOUR Y ALOJAMIENTO'), key=f"np_{tour_id}", disabled=is_disabled, help="Esta nota aparecerá en la sección de precios del PDF.")
                         else:
                             col_t1, col_n, col_e, col_h = st.columns([2, 0.8, 0.8, 0.8])
                             tour['titulo'] = col_t1.text_input(f"Título día {i+1}", tour['titulo'], key=f"title_{tour_id}", disabled=is_disabled)
@@ -820,12 +823,7 @@ def render_ventas_ui():
                     
                     sel_tren_gen = cg2.selectbox("Tipo de Tren", opciones_tren, key="sel_t_gen")
                     
-                    curr_c = "S/" if tipo_t == "Nacional" else "$"
-                    precio_cierre_over = st.number_input(f"Monto Total Final Manual ({curr_c})", value=0.0, help="Si dejas en 0, se usará el precio calculado automáticamente con los upgrades seleccionados.")
-                    if precio_cierre_over > 0:
-                        st.info(f"Se usará {curr_c} {precio_cierre_over:,.2f} como precio final en el PDF.")
-                    else:
-                        st.caption("Se calculará el precio base + upgrades seleccionados.")
+
 
             st.divider()
             
@@ -961,8 +959,8 @@ def render_ventas_ui():
                 st.markdown(f"## USD {real_can:,.2f}")
                 st.caption(f"**{pasajeros_can}** pasajeros | Prom: **USD {avg_can_pp:,.2f}**")
             
-            # El monto de referencia es el manual si existe, o la suma de TODOS los reales (Nac + Ext + CAN)
-            monto_t_ref = precio_cierre_over if precio_cierre_over > 0 else (real_nac + real_ext + real_can)
+            # El monto de referencia es la suma de TODOS los reales (Nac + Ext + CAN)
+            monto_t_ref = (real_nac + real_ext + real_can)
             
             st.divider()
             
@@ -1043,6 +1041,7 @@ def render_ventas_ui():
                                 'costo_can_est': tour.get('costo_can_est', 0),
                                 'costo_can_nino': tour.get('costo_can_nino', 0),
                                 'servicios_no_incluye': tour.get('servicios_no_incluye', []),
+                                'nota_precio': tour.get('nota_precio', ''),
                                 'id_original': tour.get('id', '')
                             })
                         
@@ -1228,8 +1227,8 @@ def render_ventas_ui():
                                     'ext': {'total': f"{(total_ext_a / max(1, pasajeros_ext)) + (extra_ext/max(1, pasajeros_ext)) + (calc_upgrades + calc_tren):,.2f}"} if pasajeros_ext > 0 else None,
                                 },
                                 'precios_cierre': precios_cierre_list,
-                                'canal': st.session_state.get('f_tipo_cliente', 'B2C'),
-                                'manual_override': f"{precio_cierre_over:,.2f}" if (precio_cierre_over and precio_cierre_over > 0) else None
+                                'nota_p': next((t.get('nota_precio', '') for t in st.session_state.itinerario if "MACHU PICCHU" in t.get('titulo', '').upper()), ''),
+                                'canal': st.session_state.get('f_tipo_cliente', 'B2C')
                             }
 
                             # 2. Guardar en Supabase y obtener ID de vinculación
