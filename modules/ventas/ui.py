@@ -696,6 +696,7 @@ def render_ventas_ui():
             extra_nac = ma1.number_input("S/ Extra (Nac)", step=10.0, key="f_extra_nac")
             extra_ext = ma2.number_input("$ Extra (Ext)", step=5.0, key="f_extra_ext")
             extra_can = ma3.number_input("$ Extra (CAN)", step=5.0, key="f_extra_can")
+            margen_pct = ma4.number_input("% Margen (Utilidad)", step=1.0, key="f_margen_porcentaje", help="Aumenta los precios de los tours en este porcentaje.")
             
             # Cálculo automático base de noches si el valor es 0 o el estado no existe
             auto_noches = max(0, len(st.session_state.itinerario) - 1)
@@ -703,7 +704,8 @@ def render_ventas_ui():
             if st.session_state.f_num_noches == 0 and auto_noches > 0:
                 st.session_state.f_num_noches = auto_noches
 
-            num_noches = ma4.number_input("🌙 Noches Hotel", min_value=0, step=1, key="f_num_noches")
+            ma_n1, ma_n2 = st.columns(2)
+            num_noches = ma_n1.number_input("🌙 Noches Hotel", min_value=0, step=1, key="f_num_noches")
 
             # --- CONFIGURACIÓN DE UPGRADES (HOTEL Y TREN) ---
             u_h2, u_h3, u_h4 = 0, 0, 0
@@ -853,26 +855,29 @@ def render_ventas_ui():
                     calc_tren = 0
             
             # --- NUEVA LÓGICA DE CÁLCULO DETALLADO ---
+            # Factor de margen de utilidad
+            factor_m = 1 + (margen_pct / 100)
+            
             # Inicializar acumuladores por categoría
             total_nac = 0.0
             total_ext = 0.0
             total_can = 0.0
 
             for t in st.session_state.itinerario:
-                # Nacionales
-                total_nac += (t.get('costo_nac', 0) * c_ad_nac)
-                total_nac += (t.get('costo_nac_est', t.get('costo_nac', 0)-70) * (c_es_nac + c_pc_nac))
-                total_nac += (t.get('costo_nac_nino', t.get('costo_nac', 0)-40) * c_ni_nac)
+                # Nacionales (Aplicando factor de margen)
+                total_nac += (t.get('costo_nac', 0) * factor_m * c_ad_nac)
+                total_nac += (t.get('costo_nac_est', t.get('costo_nac', 0)-70) * factor_m * (c_es_nac + c_pc_nac))
+                total_nac += (t.get('costo_nac_nino', t.get('costo_nac', 0)-40) * factor_m * c_ni_nac)
                 
-                # Extranjeros
-                total_ext += (t.get('costo_ext', 0) * c_ad_ext)
-                total_ext += (t.get('costo_ext_est', t.get('costo_ext', 0)-20) * (c_es_ext + c_pc_ext))
-                total_ext += (t.get('costo_ext_nino', t.get('costo_ext', 0)-15) * c_ni_ext)
+                # Extranjeros (Aplicando factor de margen)
+                total_ext += (t.get('costo_ext', 0) * factor_m * c_ad_ext)
+                total_ext += (t.get('costo_ext_est', t.get('costo_ext', 0)-20) * factor_m * (c_es_ext + c_pc_ext))
+                total_ext += (t.get('costo_ext_nino', t.get('costo_ext', 0)-15) * factor_m * c_ni_ext)
 
-                # CAN
-                total_can += (t.get('costo_can', 0) * c_ad_can)
-                total_can += (t.get('costo_can_est', t.get('costo_can', 0)-20) * (c_es_can + c_pc_can))
-                total_can += (t.get('costo_can_nino', t.get('costo_can', 0)-15) * c_ni_can)
+                # CAN (Aplicando factor de margen)
+                total_can += (t.get('costo_can', 0) * factor_m * c_ad_can)
+                total_can += (t.get('costo_can_est', t.get('costo_can', 0)-20) * factor_m * (c_es_can + c_pc_can))
+                total_can += (t.get('costo_can_nino', t.get('costo_can', 0)-15) * factor_m * c_ni_can)
 
             real_nac = total_nac + m_extra_nac + (calc_upgrades + calc_tren) * pasajeros_nac
             real_ext = total_ext + m_extra_ext + (calc_upgrades + calc_tren) * pasajeros_ext
