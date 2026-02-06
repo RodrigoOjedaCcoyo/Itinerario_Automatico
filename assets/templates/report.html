@@ -310,11 +310,14 @@
                                 matriz_ext.vistadome.h4) }}
                                 {% elif show_antes_pdf %}
                                 {{ render_price_item("Sin Hotel", matriz.vistadome.sin, sym, "",
-                                matrix_antes.vistadome.sin) }}
+                                matrix_antes.vistadome.sin)
+                                }}
                                 {{ render_price_item("Hotel 2★", matriz.vistadome.h2, sym, "★★",
-                                matrix_antes.vistadome.h2) }}
+                                matrix_antes.vistadome.h2)
+                                }}
                                 {{ render_price_item("Hotel 3★", matriz.vistadome.h3, sym, "★★★",
-                                matrix_antes.vistadome.h3) }}
+                                matrix_antes.vistadome.h3)
+                                }}
                                 {{ render_price_item("Hotel 4★", matriz.vistadome.h4, sym, "★★★★",
                                 matrix_antes.vistadome.h4) }}
                                 {% else %}
@@ -370,7 +373,6 @@
                                 Incluye todos los impuestos bancarios.
                             </div>
                         </div>
-                        {% endif %}
                     </div>
                 </div>
             </div>
