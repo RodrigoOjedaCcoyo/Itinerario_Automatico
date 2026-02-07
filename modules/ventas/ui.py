@@ -1173,7 +1173,9 @@ def render_ventas_ui():
                             # 3. En otros casos (General), mostrar si el margen de antes es mayor.
                             if tipo_t == "Mixto" or estrategia_v == "Matriz":
                                 show_antes_pdf = False
-                            else:
+                            elif estrategia_v == "General":
+                                show_antes_pdf = False # Cierre final, diseño limpio
+                            else: # Estrategia "Opciones"
                                 show_antes_pdf = margen_antes_pct > margen_pct
 
                             # Matrix Calculation
@@ -1299,7 +1301,7 @@ def render_ventas_ui():
                                 # "Opciones" (Radio) -> "General" (Template: Vista Estándar 3 opciones)
                                 # "Matriz" (Radio) -> "Matriz" (Template: Grid 12 opciones)
                                 # "General" (Radio) -> "General" (Template: Vista Cierre con precios_cierre)
-                                'estrategia': "General" if estrategia_v == "Opciones" else estrategia_v, 
+                                'estrategia': estrategia_v, 
                                 'estado': "Cotización", # Valor fijo ya que usamos estrategia
                                 'logo_url': logo_path,
                                 'logo_cover_url': logo_path,

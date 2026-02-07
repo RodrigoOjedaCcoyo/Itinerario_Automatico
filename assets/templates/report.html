@@ -134,26 +134,29 @@
         </div>
         <div class="pricing-centering-wrapper">
             {% if estrategia == "General" %}
-            <h1 class="price-main-title">CONFIRMACIÓN DE VIAJE</h1>
-            <div class="price-person-label">RESUMEN DE RESERVA</div>
+            <h1 class="price-main-title" style="margin-bottom: 10px;">CONFIRMACIÓN FINAL</h1>
+            <p style="text-align:center; color: #666; font-size: 1rem; margin-bottom: 30px; letter-spacing: 2px;">
+                DOCUMENTO DE CIERRE DE RESERVA</p>
 
-            <div class="closing-premium-card">
+            <div class="closing-premium-card" style="border: 2px solid #eee; background: white;">
                 {% if manual_override %}
-                <h1 style="color: #000; font-size: 1.5rem; margin-bottom: 5px;">PRECIO TOTAL GRUPO</h1>
-                <div class="total-price" style="font-size: 3.5rem; font-weight: 900; color: var(--color-primary);">{{
+                <h2 style="color: #000; font-size: 1.3rem; margin-bottom: 5px; font-weight: 800;">TOTAL ACORDADO</h2>
+                <div class="total-price" style="font-size: 3.8rem; font-weight: 900; color: #2d3436;">{{
                     simbolo_moneda }} {{ manual_override }}</div>
                 <div class="per-person-breakdown"
-                    style="padding: 5px 15px; background: #f8f9fa; border-radius: 8px; display: inline-block; font-size: 0.8rem; color: #555; border: 1px solid #eee;">
-                    Monto Final Acordado
+                    style="padding: 6px 20px; background: #2d3436; color: white; border-radius: 20px; display: inline-block; font-size: 0.9rem; font-weight: 700;">
+                    Monto Final de Cierre
                 </div>
                 {% else %}
                 {% for p in precios_cierre %}
-                <div class="price-block" style="margin-bottom: 25px;">
-                    <h1 style="color: #000; font-size: 1.2rem; margin-bottom: 2px; font-weight: 800;">{{ p.label }}</h1>
-                    <div class="total-price" style="font-size: 3rem; font-weight: 900; color: var(--color-primary);">{{
+                <div class="price-block"
+                    style="margin-bottom: 30px; border-bottom: 1px solid #f0f0f0; padding-bottom: 20px;">
+                    <h2
+                        style="color: #444; font-size: 1.1rem; margin-bottom: 5px; font-weight: 700; text-transform: uppercase;">
+                        {{ p.label }}</h2>
+                    <div class="total-price" style="font-size: 3.5rem; font-weight: 900; color: #2d3436;">{{
                         p.simbolo }} {{ p.monto_total }}</div>
-                    <div class="per-person-breakdown"
-                        style="margin-top: 5px; padding: 3px 12px; background: #f8f9fa; border-radius: 6px; display: inline-block; font-size: 0.75rem; color: #666; font-weight: 600;">
+                    <div style="margin-top: 8px; font-size: 0.9rem; color: #777; font-weight: 600;">
                         Inversión por persona: {{ p.simbolo }} {{ p.monto_pp }}
                     </div>
                 </div>
@@ -162,12 +165,13 @@
 
                 {% if nota_p %}
                 <div class="price-note"
-                    style="margin-top: 15px; padding: 10px; border-left: 4px solid var(--color-primary); background: #fffcf0; font-size: 0.85rem; color: #555; font-style: italic;">
-                    <strong>Nota:</strong> {{ nota_p }}
+                    style="margin-top: 25px; padding: 15px; border-radius: 8px; background: #f9f9f9; font-size: 0.9rem; color: #444; text-align: left; border: 1px solid #eee;">
+                    <strong>Observaciones:</strong> {{ nota_p }}
                 </div>
                 {% endif %}
 
-                <div class="selection-summary" style="margin-top: 30px;">
+                <div class="selection-summary"
+                    style="margin-top: 35px; border-top: 2px solid #2d3436; padding-top: 20px;">
                     <div class="summary-point">
                         <span>DESTINO</span>
                         <strong>{{ categoria }}</strong>
@@ -178,12 +182,11 @@
                     </div>
                     <div class="summary-point">
                         <span>ESTADO</span>
-                        <strong>GARANTIZADO</strong>
+                        <strong style="color: #27ae60;">RESERVA GARANTIZADA</strong>
                     </div>
                 </div>
-
-                <div class="validity-tag" style="margin-top: 30px;">OFERTA VÁLIDA POR LAS PRÓXIMAS 48 HORAS</div>
             </div>
+
             {% elif estrategia == "Matriz" %}
             <div
                 style="position: absolute; top: 20%; left: 50%; transform: translateX(-50%); width: 80%; opacity: 0.03; z-index: -1;">
@@ -387,73 +390,98 @@
     </div>
     {% else %}
     <div
-        style="position: absolute; top: 20%; left: 50%; transform: translateX(-50%); width: 80%; opacity: 0.03; z-index: -1;">
+        style="position: absolute; top: 15%; left: 50%; transform: translateX(-50%); width: 85%; opacity: 0.04; z-index: -1;">
         <img src="{{ logo_url }}" style="width: 100%;">
     </div>
-    <h1 class="price-main-title">Propuesta VIP</h1>
-    <p
-        style="text-align:center; font-size: 1rem; color: #888; text-transform: uppercase; letter-spacing: 3px; margin-bottom: 30px;">
-        Tarifas preferenciales por persona
-    </p>
 
-    <div class="luxury-offer-container">
+    <div style="text-align: center; margin-bottom: 40px;">
+        <span
+            style="background: var(--color-primary); color: white; padding: 5px 15px; border-radius: 20px; font-size: 0.8rem; font-weight: 800; letter-spacing: 2px;">OFERTA
+            DE LANZAMIENTO</span>
+        <h1 class="price-main-title" style="margin-top: 10px;">Propuesta de Inversión</h1>
+        <p style="color: #666; font-size: 1.1rem; letter-spacing: 1px;">TARIFAS PREFERENCIALES POR PERSONA</p>
+    </div>
+
+    <div class="luxury-offer-container"
+        style="display: flex; gap: 25px; justify-content: center; align-items: stretch; margin-top: 20px;">
         {% if precios.nac %}
-        <div class="luxury-offer-card featured">
-            <div class="offer-badge" style="background: #ff5252; color: white;">MEJOR OPCIÓN</div>
-            <div class="offer-type">TARIFAS NACIONALES</div>
-            <div class="offer-price-box">
+        <div class="luxury-offer-card featured"
+            style="flex: 1; position: relative; border: 3px solid var(--color-primary); overflow: visible;">
+            <div class="offer-badge"
+                style="background: #eb4d4b; color: white; font-weight: 900; transform: rotate(-5deg); left: -10px; top: -15px; padding: 8px 15px; box-shadow: 0 4px 10px rgba(0,0,0,0.2);">
+                ¡SÚPER PRECIO!</div>
+            <div class="offer-type" style="margin-top: 15px; font-weight: 800; color: #2d3436;">TARIFA NACIONAL</div>
+
+            <div class="offer-price-box" style="padding: 25px 10px;">
                 {% if show_antes_pdf %}
-                <span class="price-before"><span class="price-before-label">Antes</span> S/ {{
-                    precios_antes.nac.total }}</span>
+                <div style="margin-bottom: 5px;">
+                    <span style="color: #999; text-decoration: line-through; font-size: 1.2rem; font-weight: 600;">S/ {{
+                        precios_antes.nac.total }}</span>
+                    <span
+                        style="background: #fff5f5; color: #eb4d4b; padding: 2px 8px; border-radius: 4px; font-size: 0.8rem; font-weight: 800; margin-left: 5px;">AHORRA
+                        S/ {{ (precios_antes.nac.total|float - precios.nac.total|float)|round|int }}</span>
+                </div>
                 {% endif %}
-                <span class="offer-currency">S/</span>
-                <span class="offer-amount">{{ precios.nac.total }}</span>
+                <div style="display: flex; align-items: center; justify-content: center; gap: 5px;">
+                    <span class="offer-currency"
+                        style="font-size: 1.8rem; color: var(--color-primary); font-weight: 800;">S/</span>
+                    <span class="offer-amount"
+                        style="font-size: 4.5rem; line-height: 1; color: var(--color-primary); font-weight: 900;">{{
+                        precios.nac.total }}</span>
+                </div>
             </div>
-            <div class="offer-footer">PRECIO TOTAL POR PASAJERO</div>
+            <div class="offer-footer"
+                style="background: #f8f9fa; color: #2d3436; font-weight: 700; border-top: 1px solid #eee;">TOTAL POR
+                PASAJERO</div>
         </div>
         {% endif %}
 
         {% if precios.ext %}
-        <div class="luxury-offer-card">
-            <div class="offer-badge">INTERNATIONAL ACCESS</div>
-            <div class="offer-type">TARIFAS EXTRANJEROS</div>
-            <div class="offer-price-box">
+        <div class="luxury-offer-card" style="flex: 1; border: 3px solid #eee;">
+            <div class="offer-badge" style="background: #2d3436; color: white;">INTERNATIONAL ACCESS</div>
+            <div class="offer-type" style="margin-top: 15px; font-weight: 800;">TARIFA EXTRANJERO</div>
+
+            <div class="offer-price-box" style="padding: 25px 10px;">
                 {% if show_antes_pdf %}
-                <span class="price-before"><span class="price-before-label">Antes</span> USD {{
-                    precios_antes.ext.total }}</span>
+                <div style="margin-bottom: 5px;">
+                    <span style="color: #999; text-decoration: line-through; font-size: 1.2rem; font-weight: 600;">USD
+                        {{ precios_antes.ext.total }}</span>
+                </div>
                 {% endif %}
-                <span class="offer-currency">USD</span>
-                <span class="offer-amount">{{ precios.ext.total }}</span>
+                <div style="display: flex; align-items: center; justify-content: center; gap: 5px;">
+                    <span class="offer-currency" style="font-size: 1.8rem; font-weight: 800;">USD</span>
+                    <span class="offer-amount" style="font-size: 4.5rem; line-height: 1; font-weight: 900;">{{
+                        precios.ext.total }}</span>
+                </div>
             </div>
             <div class="offer-footer">TOTAL PRICE PER PASSENGER</div>
         </div>
         {% endif %}
     </div>
 
-    <div class="pricing-complements-container" style="margin-top: 50px;">
-        <div class="complement-box">
-            <div class="complement-title">💳 GARANTÍA DE RESERVA</div>
+    <div class="pricing-complements-container" style="margin-top: 40px; display: flex; gap: 20px;">
+        <div class="complement-box" style="flex: 1; background: #fffcf0; border: 1px solid #ffeaa7;">
+            <div class="complement-title" style="color: #d35400;">🚀 DISPONIBILIDAD</div>
             <div class="complement-content">
-                Reserva inmediata con el <strong>50%</strong> del total. El saldo restante se cancela
-                cómodamente el primer día de su llegada a Cusco.
+                Esta tarifa especial está sujeta a cambios según la disponibilidad de espacios al momento de la reserva.
             </div>
         </div>
-        <div class="complement-box">
-            <div class="complement-title">🏛️ CONDICIONES</div>
+        <div class="complement-box" style="flex: 1; background: #f0fff4; border: 1px solid #c6f6d5;">
+            <div class="complement-title" style="color: #27ae60;">📅 VALIDEZ</div>
             <div class="complement-content">
-                Precios incluyen todos los servicios mencionados en el itinerario. Tarifas vigentes para la
-                temporada 2026.
+                Oferta válida para reservas confirmadas en las próximas **48 horas**.
             </div>
         </div>
     </div>
 
     {% if nota_p %}
     <div class="price-note"
-        style="margin-top: 30px; padding: 15px; border-bottom: 2px solid var(--color-primary); background: #fdfdfd; font-size: 1rem; color: #333; text-align: center; font-weight: 600;">
-        📢 {{ nota_p }}
+        style="margin-top: 30px; padding: 15px; border-radius: 12px; border: 2px dashed var(--color-primary); background: #f0f7f7; font-size: 0.95rem; color: #2c3e50; text-align: center;">
+        ✨ <strong>Nota del Experto:</strong> {{ nota_p }}
     </div>
     {% endif %}
     {% endif %}
+
     </div>
     </div>
 
