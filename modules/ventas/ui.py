@@ -847,11 +847,17 @@ def render_ventas_ui():
                     cg1, cg2 = st.columns(2)
                     sel_hotel_gen = cg1.selectbox("Categoría de Hotel", ["Sin Hotel", "Hotel 2*", "Hotel 3*", "Hotel 4*"], key="sel_h_gen")
                     
-                    opciones_tren = ["Expedition", "Vistadome", "Observatory"]
-                    if tipo_t == "Nacional":
-                        opciones_tren.insert(0, "Tren Local")
+                    sel_tren_gen = "Expedition" # Valor por defecto seguro
                     
-                    sel_tren_gen = cg2.selectbox("Tipo de Tren", opciones_tren, key="sel_t_gen")
+                    # Verificar si existe MP para mostrar el selector de tren
+                    has_mp = any("MACHU PICCHU" in t.get('titulo', '').upper() for t in st.session_state.itinerario)
+                    
+                    if has_mp:
+                        opciones_tren = ["Expedition", "Vistadome", "Observatory"]
+                        if tipo_t == "Nacional":
+                            opciones_tren.insert(0, "Tren Local")
+                        
+                        sel_tren_gen = cg2.selectbox("Tipo de Tren", opciones_tren, key="sel_t_gen")
                     
 
 
@@ -926,6 +932,10 @@ def render_ventas_ui():
                 elif sel_tren_gen == "Observatory":
                     calc_tren = (u_t_o * tc) if tipo_t == "Nacional" else u_t_o
                 else:
+                    calc_tren = 0
+
+                # Si no hay MP, el costo del tren en modo general debe ser 0
+                if not has_mp:
                     calc_tren = 0
             
             # Factor de margen de utilidad
