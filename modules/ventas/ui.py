@@ -1165,7 +1165,16 @@ def render_ventas_ui():
                                 base_final += (calc_upgrades + calc_tren)
                                 base_antes += (calc_upgrades + calc_tren)
                             
-                            show_antes_pdf = margen_antes_pct > margen_pct and tipo_t != "Mixto"
+
+                            
+                            # Lógica de visualización de precios "Antes"
+                            # 1. Si es Mixto, no mostramos antes para no saturar.
+                            # 2. Si es estrategia MATRIZ, el usuario pidió NO mostrar precios antes.
+                            # 3. En otros casos (General), mostrar si el margen de antes es mayor.
+                            if tipo_t == "Mixto" or estrategia_v == "Matriz":
+                                show_antes_pdf = False
+                            else:
+                                show_antes_pdf = margen_antes_pct > margen_pct
 
                             # Matrix Calculation
                             def calc_m(base, extra_t, extra_h_n):
