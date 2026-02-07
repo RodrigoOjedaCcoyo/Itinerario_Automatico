@@ -149,6 +149,7 @@ def render_ventas_ui():
     if 'u_h4' not in st.session_state: st.session_state.u_h4 = 110.0
     if 'u_t_v' not in st.session_state: st.session_state.u_t_v = 90.0
     if 'u_t_o' not in st.session_state: st.session_state.u_t_o = 140.0
+    if 'u_t_local' not in st.session_state: st.session_state.u_t_local = 0.0
     # Inicialización de Ajuste Global
     if 'f_extra_nac' not in st.session_state: st.session_state.f_extra_nac = 0.0
     if 'f_extra_ext' not in st.session_state: st.session_state.f_extra_ext = 0.0
@@ -671,6 +672,23 @@ def render_ventas_ui():
                             
                             st.markdown("---")
                             tour['nota_precio'] = st.text_input("📝 Nota de Precio (Exclusivo en PDF)", value=tour.get('nota_precio', 'INCLUYE TOUR Y ALOJAMIENTO'), key=f"np_{tour_id}", disabled=is_disabled, help="Esta nota aparecerá en la sección de precios del PDF.")
+                            
+                            # --- Suplementos de Tren (Localizados en MP) ---
+                            st.markdown("🚅 **Suplementos de Tren**")
+                            ct1, ct2, ct3 = st.columns(3)
+                            
+                            # Vistadome
+                            val_v = ct1.number_input("Vistadome ($)", value=float(st.session_state.u_t_v), key=f"utv_{tour_id}", disabled=is_disabled)
+                            st.session_state.u_t_v = val_v
+                            
+                            # Observatory
+                            val_o = ct2.number_input("Observatory ($)", value=float(st.session_state.u_t_o), key=f"uto_{tour_id}", disabled=is_disabled)
+                            st.session_state.u_t_o = val_o
+                            
+                            # Tren Local (Solo Nacionales)
+                            if tipo_t == "Nacional":
+                                val_l = ct3.number_input("Tren Local (S/)", value=float(st.session_state.get('u_t_local', 0.0)), key=f"utl_{tour_id}", disabled=is_disabled, help="Costo fijo o diferencia por persona para el Tren Local")
+                                st.session_state.u_t_local = val_l
                         else:
                             col_t1, col_n, col_e, col_h = st.columns([2, 0.8, 0.8, 0.8])
                             tour['titulo'] = col_t1.text_input(f"Título día {i+1}", tour['titulo'], key=f"title_{tour_id}", disabled=is_disabled)
@@ -815,23 +833,10 @@ def render_ventas_ui():
                 st.session_state.u_h3_sgl = u_h3_sgl; st.session_state.u_h3_dbl = u_h3_dbl; st.session_state.u_h3_mat = u_h3_mat; st.session_state.u_h3_tpl = u_h3_tpl; st.session_state.u_h3_cua = u_h3_cua
                 st.session_state.u_h4_sgl = u_h4_sgl; st.session_state.u_h4_dbl = u_h4_dbl; st.session_state.u_h4_mat = u_h4_mat; st.session_state.u_h4_tpl = u_h4_tpl; st.session_state.u_h4_cua = u_h4_cua
                 
-                st.divider()
-                st.markdown("🚅 **Suplementos de Tren**")
-                ct1, ct2, ct3 = st.columns(3)
-                u_t_v = ct1.number_input("Extra Tren Vistadome ($)", value=float(st.session_state.get('u_t_v', 90.0)), key="utv")
-                u_t_o = ct2.number_input("Extra Tren Observatory ($)", value=float(st.session_state.get('u_t_o', 140.0)), key="uto")
-                
-                # Tren Local solo para Nacionales
-                u_t_local = 0.0
-                if tipo_t == "Nacional":
-                    u_t_local = ct3.number_input("Costo Tren Local (S/)", value=float(st.session_state.get('u_t_local', 0.0)), key="utlocal", help="Costo fijo o diferencia por persona para el Tren Local")
-                
                 st.session_state.u_h2 = u_h2
                 st.session_state.u_h3 = u_h3
                 st.session_state.u_h4 = u_h4
-                st.session_state.u_t_v = u_t_v
-                st.session_state.u_t_o = u_t_o
-                st.session_state.u_t_local = u_t_local
+                # Suplementos de Tren movidos a la tarjeta de MP
 
             sel_hotel_gen = "Sin Hotel"
             sel_tren_gen = "Expedition"
@@ -884,6 +889,11 @@ def render_ventas_ui():
                 # Keep all category counts as they are
 
             # Lógica de Upgrades
+            # RECUPERAR VALORES GLOBALES ACTUALIZADOS (Crucial para el cálculo)
+            u_t_v = st.session_state.u_t_v
+            u_t_o = st.session_state.u_t_o
+            u_t_local = st.session_state.u_t_local
+
             calc_upgrades = 0.0
             calc_tren = 0.0
             tc = 3.8 # Tipo de cambio base para el sistema
