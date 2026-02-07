@@ -771,11 +771,10 @@ body {
     color: var(--color-primary);
     font-weight: 900;
     margin-bottom: 30px;
+    margin-left: 180px;
+    /* Fix overlap with decor */
     letter-spacing: -1px;
     text-transform: uppercase;
-    border-bottom: 8px solid var(--color-primary);
-    padding-bottom: 10px;
-    padding-left: 180px; /* Fix overlap with decor */
 }
 
 .premium-section-header {
