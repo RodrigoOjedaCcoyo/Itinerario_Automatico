@@ -771,10 +771,10 @@ body {
     color: var(--color-primary);
     font-weight: 900;
     margin-bottom: 30px;
-    margin-left: 180px;
-    /* Fix overlap with decor */
     letter-spacing: -1px;
     text-transform: uppercase;
+    border-bottom: 8px solid var(--color-primary);
+    padding-bottom: 10px;
 }
 
 .premium-section-header {
@@ -784,8 +784,6 @@ body {
     font-size: 1.2rem;
     font-weight: 800;
     margin-bottom: 20px;
-    margin-left: 180px;
-    /* Align with title */
 }
 
 .experience-card-table {
