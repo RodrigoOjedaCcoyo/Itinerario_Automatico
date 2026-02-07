@@ -1286,6 +1286,7 @@ def render_ventas_ui():
                                 'vendedor': vendedor,
                                 'celular_cliente': celular,
                                 'fuente': origen_lead,
+                                'estrategia': estrategia_v, # Pasar la estrategia seleccionada (Matriz, General, etc.)
                                 'estado': "Cotización", # Valor fijo ya que usamos estrategia
                                 'logo_url': logo_path,
                                 'logo_cover_url': logo_path,
