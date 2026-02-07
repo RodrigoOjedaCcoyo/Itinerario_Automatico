@@ -156,303 +156,304 @@
                         style="margin-top: 5px; padding: 3px 12px; background: #f8f9fa; border-radius: 6px; display: inline-block; font-size: 0.75rem; color: #666; font-weight: 600;">
                         Inversión por persona: {{ p.simbolo }} {{ p.monto_pp }}
                     </div>
-                    {% endfor %}
-                    {% endif %}
+                </div>
+                {% endfor %}
+                {% endif %}
 
-                    {% if nota_p %}
-                    <div class="price-note"
-                        style="margin-top: 15px; padding: 10px; border-left: 4px solid var(--color-primary); background: #fffcf0; font-size: 0.85rem; color: #555; font-style: italic;">
-                        <strong>Nota:</strong> {{ nota_p }}
+                {% if nota_p %}
+                <div class="price-note"
+                    style="margin-top: 15px; padding: 10px; border-left: 4px solid var(--color-primary); background: #fffcf0; font-size: 0.85rem; color: #555; font-style: italic;">
+                    <strong>Nota:</strong> {{ nota_p }}
+                </div>
+                {% endif %}
+
+                <div class="selection-summary" style="margin-top: 30px;">
+                    <div class="summary-point">
+                        <span>DESTINO</span>
+                        <strong>{{ categoria }}</strong>
+                    </div>
+                    <div class="summary-point">
+                        <span>DURACIÓN</span>
+                        <strong>{{ duracion }}</strong>
+                    </div>
+                    <div class="summary-point">
+                        <span>ESTADO</span>
+                        <strong>GARANTIZADO</strong>
+                    </div>
+                </div>
+
+                <div class="validity-tag" style="margin-top: 30px;">OFERTA VÁLIDA POR LAS PRÓXIMAS 48 HORAS</div>
+            </div>
+            {% elif estrategia == "Matriz" %}
+            <div
+                style="position: absolute; top: 20%; left: 50%; transform: translateX(-50%); width: 80%; opacity: 0.03; z-index: -1;">
+                <img src="{{ logo_url }}" style="width: 100%;">
+            </div>
+            {% macro render_price_item(label, value, symbol, stars, value_before=None, value_ext=None, sym_ext=None)
+            %}
+            <div class="price-item">
+                <span class="hotel-cat">{{ label }} <span class="hotel-stars">{{ stars }}</span></span>
+                <span class="amount-box">
+                    {% if value_ext %}
+                    <div class="mirrored-price">
+                        <div class="mirrored-nac" style="color: #000; font-weight: 800; font-size: 0.85rem;">
+                            <span class="currency">S/</span> <span class="value">{{ value }}</span>
+                        </div>
+                        <div class="mirrored-ext"
+                            style="color: var(--color-primary); font-weight: 700; font-size: 0.75rem;">
+                            <span class="currency">$</span> <span class="value">{{ value_ext }}</span>
+                        </div>
+                    </div>
+                    {% else %}
+                    {% if value_before %}
+                    <span class="matrix-price-before">{{ symbol }} {{ value_before }}</span>
+                    {% endif %}
+                    <span class="currency">{{ symbol }}</span>
+                    <span class="value">{{ value }}</span>
+                    {% endif %}
+                </span>
+            </div>
+            {% endmacro %}
+
+            <h1 class="price-main-title">Propuesta de Inversión</h1>
+            <p
+                style="text-align:center; font-size: 1rem; color: #888; text-transform: uppercase; letter-spacing: 3px; margin-bottom: 30px;">
+                Seleccione su nivel de experiencia
+            </p>
+
+            <div class="luxury-pricing-container">
+                <div class="luxury-pricing-grid">
+                    {% if (es_nacional or origen == 'Mixto') and matriz.tren_local %}
+                    <div class="luxury-card">
+                        <div class="luxury-card-header" style="background: #000; color: #fff; padding: 25px 10px;">
+                            <span class="train-label" style="color: #aaa;">EXPERIENCIA</span>
+                            <div class="train-title" style="color: #fff;">TREN LOCAL</div>
+                        </div>
+                        <div class="luxury-pricing-rows">
+                            {% if origen == 'Mixto' %}
+                            {{ render_price_item("Sin Hotel", matriz.tren_local.sin, "S/", "", None,
+                            matriz_ext.tren_local.sin) }}
+                            {{ render_price_item("Hotel 2★", matriz.tren_local.h2, "S/", "★★", None,
+                            matriz_ext.tren_local.h2) }}
+                            {{ render_price_item("Hotel 3★", matriz.tren_local.h3, "S/", "★★★", None,
+                            matriz_ext.tren_local.h3) }}
+                            {{ render_price_item("Hotel 4★", matriz.tren_local.h4, "S/", "★★★★", None,
+                            matriz_ext.tren_local.h4) }}
+                            {% elif show_antes_pdf %}
+                            {{ render_price_item("Sin Hotel", matriz.tren_local.sin, "S/", "",
+                            matrix_antes.tren_local.sin) }}
+                            {{ render_price_item("Hotel 2★", matriz.tren_local.h2, "S/", "★★",
+                            matrix_antes.tren_local.h2) }}
+                            {{ render_price_item("Hotel 3★", matriz.tren_local.h3, "S/", "★★★",
+                            matrix_antes.tren_local.h3) }}
+                            {{ render_price_item("Hotel 4★", matriz.tren_local.h4, "S/", "★★★★",
+                            matrix_antes.tren_local.h4) }}
+                            {% else %}
+                            {{ render_price_item("Sin Hotel", matriz.tren_local.sin, "S/", "") }}
+                            {{ render_price_item("Hotel 2★", matriz.tren_local.h2, "S/", "★★") }}
+                            {{ render_price_item("Hotel 3★", matriz.tren_local.h3, "S/", "★★★") }}
+                            {{ render_price_item("Hotel 4★", matriz.tren_local.h4, "S/", "★★★★") }}
+                            {% endif %}
+                        </div>
                     </div>
                     {% endif %}
 
-                    <div class="selection-summary" style="margin-top: 30px;">
-                        <div class="summary-point">
-                            <span>DESTINO</span>
-                            <strong>{{ categoria }}</strong>
+                    <div class="luxury-card">
+                        <div class="luxury-card-header" style="padding: 25px 10px;">
+                            <span class="train-label">EXPERIENCIA</span>
+                            <div class="train-title">EXPEDITION</div>
                         </div>
-                        <div class="summary-point">
-                            <span>DURACIÓN</span>
-                            <strong>{{ duracion }}</strong>
-                        </div>
-                        <div class="summary-point">
-                            <span>ESTADO</span>
-                            <strong>GARANTIZADO</strong>
-                        </div>
-                    </div>
-
-                    <div class="validity-tag" style="margin-top: 30px;">OFERTA VÁLIDA POR LAS PRÓXIMAS 48 HORAS</div>
-                </div>
-                {% elif estrategia == "Matriz" %}
-                <div
-                    style="position: absolute; top: 20%; left: 50%; transform: translateX(-50%); width: 80%; opacity: 0.03; z-index: -1;">
-                    <img src="{{ logo_url }}" style="width: 100%;">
-                </div>
-                {% macro render_price_item(label, value, symbol, stars, value_before=None, value_ext=None, sym_ext=None)
-                %}
-                <div class="price-item">
-                    <span class="hotel-cat">{{ label }} <span class="hotel-stars">{{ stars }}</span></span>
-                    <span class="amount-box">
-                        {% if value_ext %}
-                        <div class="mirrored-price">
-                            <div class="mirrored-nac" style="color: #000; font-weight: 800; font-size: 0.85rem;">
-                                <span class="currency">S/</span> <span class="value">{{ value }}</span>
-                            </div>
-                            <div class="mirrored-ext"
-                                style="color: var(--color-primary); font-weight: 700; font-size: 0.75rem;">
-                                <span class="currency">$</span> <span class="value">{{ value_ext }}</span>
-                            </div>
-                        </div>
-                        {% else %}
-                        {% if value_before %}
-                        <span class="matrix-price-before">{{ symbol }} {{ value_before }}</span>
-                        {% endif %}
-                        <span class="currency">{{ symbol }}</span>
-                        <span class="value">{{ value }}</span>
-                        {% endif %}
-                    </span>
-                </div>
-                {% endmacro %}
-
-                <h1 class="price-main-title">Propuesta de Inversión</h1>
-                <p
-                    style="text-align:center; font-size: 1rem; color: #888; text-transform: uppercase; letter-spacing: 3px; margin-bottom: 30px;">
-                    Seleccione su nivel de experiencia
-                </p>
-
-                <div class="luxury-pricing-container">
-                    <div class="luxury-pricing-grid">
-                        {% if (es_nacional or origen == 'Mixto') and matriz.tren_local %}
-                        <div class="luxury-card">
-                            <div class="luxury-card-header" style="background: #000; color: #fff; padding: 25px 10px;">
-                                <span class="train-label" style="color: #aaa;">EXPERIENCIA</span>
-                                <div class="train-title" style="color: #fff;">TREN LOCAL</div>
-                            </div>
-                            <div class="luxury-pricing-rows">
-                                {% if origen == 'Mixto' %}
-                                {{ render_price_item("Sin Hotel", matriz.tren_local.sin, "S/", "", None,
-                                matriz_ext.tren_local.sin) }}
-                                {{ render_price_item("Hotel 2★", matriz.tren_local.h2, "S/", "★★", None,
-                                matriz_ext.tren_local.h2) }}
-                                {{ render_price_item("Hotel 3★", matriz.tren_local.h3, "S/", "★★★", None,
-                                matriz_ext.tren_local.h3) }}
-                                {{ render_price_item("Hotel 4★", matriz.tren_local.h4, "S/", "★★★★", None,
-                                matriz_ext.tren_local.h4) }}
-                                {% elif show_antes_pdf %}
-                                {{ render_price_item("Sin Hotel", matriz.tren_local.sin, "S/", "",
-                                matrix_antes.tren_local.sin) }}
-                                {{ render_price_item("Hotel 2★", matriz.tren_local.h2, "S/", "★★",
-                                matrix_antes.tren_local.h2) }}
-                                {{ render_price_item("Hotel 3★", matriz.tren_local.h3, "S/", "★★★",
-                                matrix_antes.tren_local.h3) }}
-                                {{ render_price_item("Hotel 4★", matriz.tren_local.h4, "S/", "★★★★",
-                                matrix_antes.tren_local.h4) }}
-                                {% else %}
-                                {{ render_price_item("Sin Hotel", matriz.tren_local.sin, "S/", "") }}
-                                {{ render_price_item("Hotel 2★", matriz.tren_local.h2, "S/", "★★") }}
-                                {{ render_price_item("Hotel 3★", matriz.tren_local.h3, "S/", "★★★") }}
-                                {{ render_price_item("Hotel 4★", matriz.tren_local.h4, "S/", "★★★★") }}
-                                {% endif %}
-                            </div>
-                        </div>
-                        {% endif %}
-
-                        <div class="luxury-card">
-                            <div class="luxury-card-header" style="padding: 25px 10px;">
-                                <span class="train-label">EXPERIENCIA</span>
-                                <div class="train-title">EXPEDITION</div>
-                            </div>
-                            <div class="luxury-pricing-rows" style="border-top: 2px solid #f0f0f0;">
-                                {% set sym = simbolo_moneda %}
-                                {% if origen == 'Mixto' %}
-                                {{ render_price_item("Sin Hotel", matriz.expedition.sin, "S/", "", None,
-                                matriz_ext.expedition.sin) }}
-                                {{ render_price_item("Hotel 2★", matriz.expedition.h2, "S/", "★★", None,
-                                matriz_ext.expedition.h2) }}
-                                {{ render_price_item("Hotel 3★", matriz.expedition.h3, "S/", "★★★", None,
-                                matriz_ext.expedition.h3) }}
-                                {{ render_price_item("Hotel 4★", matriz.expedition.h4, "S/", "★★★★", None,
-                                matriz_ext.expedition.h4) }}
-                                {% elif show_antes_pdf %}
-                                {{ render_price_item("Sin Hotel", matriz.expedition.sin, sym, "",
-                                matrix_antes.expedition.sin) }}
-                                {{ render_price_item("Hotel 2★", matriz.expedition.h2, sym, "★★",
-                                matrix_antes.expedition.h2) }}
-                                {{ render_price_item("Hotel 3★", matriz.expedition.h3, sym, "★★★",
-                                matrix_antes.expedition.h3) }}
-                                {{ render_price_item("Hotel 4★", matriz.expedition.h4, sym, "★★★★",
-                                matrix_antes.expedition.h4) }}
-                                {% else %}
-                                {{ render_price_item("Sin Hotel", matriz.expedition.sin, sym, "") }}
-                                {{ render_price_item("Hotel 2★", matriz.expedition.h2, sym, "★★") }}
-                                {{ render_price_item("Hotel 3★", matriz.expedition.h3, sym, "★★★") }}
-                                {{ render_price_item("Hotel 4★", matriz.expedition.h4, sym, "★★★★") }}
-                                {% endif %}
-                            </div>
-                        </div>
-
-                        <div class="luxury-card featured">
-                            <div class="featured-badge">MÁS ELEGIDO</div>
-                            <div class="luxury-card-header"
-                                style="background: var(--color-primary); color: #fff; padding: 25px 10px;">
-                                <span class="train-label" style="color: rgba(255,255,255,0.7);">EXPERIENCIA</span>
-                                <div class="train-title" style="color: #fff;">VISTADOME</div>
-                            </div>
-                            <div class="luxury-pricing-rows">
-                                {% if origen == 'Mixto' %}
-                                {{ render_price_item("Sin Hotel", matriz.vistadome.sin, "S/", "", None,
-                                matriz_ext.vistadome.sin) }}
-                                {{ render_price_item("Hotel 2★", matriz.vistadome.h2, "S/", "★★", None,
-                                matriz_ext.vistadome.h2) }}
-                                {{ render_price_item("Hotel 3★", matriz.vistadome.h3, "S/", "★★★", None,
-                                matriz_ext.vistadome.h3) }}
-                                {{ render_price_item("Hotel 4★", matriz.vistadome.h4, "S/", "★★★★", None,
-                                matriz_ext.vistadome.h4) }}
-                                {% elif show_antes_pdf %}
-                                {{ render_price_item("Sin Hotel", matriz.vistadome.sin, sym, "",
-                                matrix_antes.vistadome.sin)
-                                }}
-                                {{ render_price_item("Hotel 2★", matriz.vistadome.h2, sym, "★★",
-                                matrix_antes.vistadome.h2)
-                                }}
-                                {{ render_price_item("Hotel 3★", matriz.vistadome.h3, sym, "★★★",
-                                matrix_antes.vistadome.h3)
-                                }}
-                                {{ render_price_item("Hotel 4★", matriz.vistadome.h4, sym, "★★★★",
-                                matrix_antes.vistadome.h4) }}
-                                {% else %}
-                                {{ render_price_item("Sin Hotel", matriz.vistadome.sin, sym, "") }}
-                                {{ render_price_item("Hotel 2★", matriz.vistadome.h2, sym, "★★") }}
-                                {{ render_price_item("Hotel 3★", matriz.vistadome.h3, sym, "★★★") }}
-                                {{ render_price_item("Hotel 4★", matriz.vistadome.h4, sym, "★★★★") }}
-                                {% endif %}
-                            </div>
-                        </div>
-
-                        <div class="luxury-card">
-                            <div class="luxury-card-header" style="padding: 25px 10px;">
-                                <span class="train-label">EXPERIENCIA</span>
-                                <div class="train-title">OBSERVATORY</div>
-                            </div>
-                            <div class="luxury-pricing-rows" style="border-top: 2px solid #f0f0f0;">
-                                {% if origen == 'Mixto' %}
-                                {{ render_price_item("Sin Hotel", matriz.observatory.sin, "S/", "", None,
-                                matriz_ext.observatory.sin) }}
-                                {{ render_price_item("Hotel 2★", matriz.observatory.h2, "S/", "★★", None,
-                                matriz_ext.observatory.h2) }}
-                                {{ render_price_item("Hotel 3★", matriz.observatory.h3, "S/", "★★★", None,
-                                matriz_ext.observatory.h3) }}
-                                {{ render_price_item("Hotel 4★", matriz.observatory.h4, "S/", "★★★★", None,
-                                matriz_ext.observatory.h4) }}
-                                {% elif show_antes_pdf %}
-                                {{ render_price_item("Sin Hotel", matriz.observatory.sin, sym, "",
-                                matrix_antes.observatory.sin) }}
-                                {{ render_price_item("Hotel 2★", matriz.observatory.h2, sym, "★★",
-                                matrix_antes.observatory.h2) }}
-                                {{ render_price_item("Hotel 3★", matriz.observatory.h3, sym, "★★★",
-                                matrix_antes.observatory.h3) }}
-                                {{ render_price_item("Hotel 4★", matriz.observatory.h4, sym, "★★★★",
-                                matrix_antes.observatory.h4) }}
-                                {% else %}
-                                {{ render_price_item("Sin Hotel", matriz.observatory.sin, sym, "") }}
-                                {{ render_price_item("Hotel 2★", matriz.observatory.h2, sym, "★★") }}
-                                {{ render_price_item("Hotel 3★", matriz.observatory.h3, sym, "★★★") }}
-                                {{ render_price_item("Hotel 4★", matriz.observatory.h4, sym, "★★★★") }}
-                                {% endif %}
-                            </div>
+                        <div class="luxury-pricing-rows" style="border-top: 2px solid #f0f0f0;">
+                            {% set sym = simbolo_moneda %}
+                            {% if origen == 'Mixto' %}
+                            {{ render_price_item("Sin Hotel", matriz.expedition.sin, "S/", "", None,
+                            matriz_ext.expedition.sin) }}
+                            {{ render_price_item("Hotel 2★", matriz.expedition.h2, "S/", "★★", None,
+                            matriz_ext.expedition.h2) }}
+                            {{ render_price_item("Hotel 3★", matriz.expedition.h3, "S/", "★★★", None,
+                            matriz_ext.expedition.h3) }}
+                            {{ render_price_item("Hotel 4★", matriz.expedition.h4, "S/", "★★★★", None,
+                            matriz_ext.expedition.h4) }}
+                            {% elif show_antes_pdf %}
+                            {{ render_price_item("Sin Hotel", matriz.expedition.sin, sym, "",
+                            matrix_antes.expedition.sin) }}
+                            {{ render_price_item("Hotel 2★", matriz.expedition.h2, sym, "★★",
+                            matrix_antes.expedition.h2) }}
+                            {{ render_price_item("Hotel 3★", matriz.expedition.h3, sym, "★★★",
+                            matrix_antes.expedition.h3) }}
+                            {{ render_price_item("Hotel 4★", matriz.expedition.h4, sym, "★★★★",
+                            matrix_antes.expedition.h4) }}
+                            {% else %}
+                            {{ render_price_item("Sin Hotel", matriz.expedition.sin, sym, "") }}
+                            {{ render_price_item("Hotel 2★", matriz.expedition.h2, sym, "★★") }}
+                            {{ render_price_item("Hotel 3★", matriz.expedition.h3, sym, "★★★") }}
+                            {{ render_price_item("Hotel 4★", matriz.expedition.h4, sym, "★★★★") }}
+                            {% endif %}
                         </div>
                     </div>
 
-                    <!-- COMPLEMENTOS DE PRECIO (INVADIENDO ESPACIO PARA LIBERAR ANEXOS) -->
-                    <div class="pricing-complements-container">
-                        <div class="complement-box">
-                            <div class="complement-title">💳 GARANTÍA DE RESERVA</div>
-                            <div class="complement-content">
-                                Confirmación con el <strong>50%</strong> del total. El saldo se cancela al llegar a
-                                Cusco.
-                                Incluye todos los impuestos bancarios.
-                            </div>
+                    <div class="luxury-card featured">
+                        <div class="featured-badge">MÁS ELEGIDO</div>
+                        <div class="luxury-card-header"
+                            style="background: var(--color-primary); color: #fff; padding: 25px 10px;">
+                            <span class="train-label" style="color: rgba(255,255,255,0.7);">EXPERIENCIA</span>
+                            <div class="train-title" style="color: #fff;">VISTADOME</div>
+                        </div>
+                        <div class="luxury-pricing-rows">
+                            {% if origen == 'Mixto' %}
+                            {{ render_price_item("Sin Hotel", matriz.vistadome.sin, "S/", "", None,
+                            matriz_ext.vistadome.sin) }}
+                            {{ render_price_item("Hotel 2★", matriz.vistadome.h2, "S/", "★★", None,
+                            matriz_ext.vistadome.h2) }}
+                            {{ render_price_item("Hotel 3★", matriz.vistadome.h3, "S/", "★★★", None,
+                            matriz_ext.vistadome.h3) }}
+                            {{ render_price_item("Hotel 4★", matriz.vistadome.h4, "S/", "★★★★", None,
+                            matriz_ext.vistadome.h4) }}
+                            {% elif show_antes_pdf %}
+                            {{ render_price_item("Sin Hotel", matriz.vistadome.sin, sym, "",
+                            matrix_antes.vistadome.sin)
+                            }}
+                            {{ render_price_item("Hotel 2★", matriz.vistadome.h2, sym, "★★",
+                            matrix_antes.vistadome.h2)
+                            }}
+                            {{ render_price_item("Hotel 3★", matriz.vistadome.h3, sym, "★★★",
+                            matrix_antes.vistadome.h3)
+                            }}
+                            {{ render_price_item("Hotel 4★", matriz.vistadome.h4, sym, "★★★★",
+                            matrix_antes.vistadome.h4) }}
+                            {% else %}
+                            {{ render_price_item("Sin Hotel", matriz.vistadome.sin, sym, "") }}
+                            {{ render_price_item("Hotel 2★", matriz.vistadome.h2, sym, "★★") }}
+                            {{ render_price_item("Hotel 3★", matriz.vistadome.h3, sym, "★★★") }}
+                            {{ render_price_item("Hotel 4★", matriz.vistadome.h4, sym, "★★★★") }}
+                            {% endif %}
+                        </div>
+                    </div>
+
+                    <div class="luxury-card">
+                        <div class="luxury-card-header" style="padding: 25px 10px;">
+                            <span class="train-label">EXPERIENCIA</span>
+                            <div class="train-title">OBSERVATORY</div>
+                        </div>
+                        <div class="luxury-pricing-rows" style="border-top: 2px solid #f0f0f0;">
+                            {% if origen == 'Mixto' %}
+                            {{ render_price_item("Sin Hotel", matriz.observatory.sin, "S/", "", None,
+                            matriz_ext.observatory.sin) }}
+                            {{ render_price_item("Hotel 2★", matriz.observatory.h2, "S/", "★★", None,
+                            matriz_ext.observatory.h2) }}
+                            {{ render_price_item("Hotel 3★", matriz.observatory.h3, "S/", "★★★", None,
+                            matriz_ext.observatory.h3) }}
+                            {{ render_price_item("Hotel 4★", matriz.observatory.h4, "S/", "★★★★", None,
+                            matriz_ext.observatory.h4) }}
+                            {% elif show_antes_pdf %}
+                            {{ render_price_item("Sin Hotel", matriz.observatory.sin, sym, "",
+                            matrix_antes.observatory.sin) }}
+                            {{ render_price_item("Hotel 2★", matriz.observatory.h2, sym, "★★",
+                            matrix_antes.observatory.h2) }}
+                            {{ render_price_item("Hotel 3★", matriz.observatory.h3, sym, "★★★",
+                            matrix_antes.observatory.h3) }}
+                            {{ render_price_item("Hotel 4★", matriz.observatory.h4, sym, "★★★★",
+                            matrix_antes.observatory.h4) }}
+                            {% else %}
+                            {{ render_price_item("Sin Hotel", matriz.observatory.sin, sym, "") }}
+                            {{ render_price_item("Hotel 2★", matriz.observatory.h2, sym, "★★") }}
+                            {{ render_price_item("Hotel 3★", matriz.observatory.h3, sym, "★★★") }}
+                            {{ render_price_item("Hotel 4★", matriz.observatory.h4, sym, "★★★★") }}
+                            {% endif %}
                         </div>
                     </div>
                 </div>
-            </div>
 
-            {% if nota_p %}
-            <div class="price-note"
-                style="margin-top: 20px; padding: 12px; border-radius: 8px; border: 1px dashed #ccc; background: #fafafa; font-size: 0.9rem; color: #444; text-align: center;">
-                📌 <strong>Nota sobre la inversión:</strong> {{ nota_p }}
-            </div>
-            {% endif %}
-        </div>
-        {% else %}
-        <div
-            style="position: absolute; top: 20%; left: 50%; transform: translateX(-50%); width: 80%; opacity: 0.03; z-index: -1;">
-            <img src="{{ logo_url }}" style="width: 100%;">
-        </div>
-        <h1 class="price-main-title">Propuesta VIP</h1>
-        <p
-            style="text-align:center; font-size: 1rem; color: #888; text-transform: uppercase; letter-spacing: 3px; margin-bottom: 30px;">
-            Tarifas preferenciales por persona
-        </p>
-
-        <div class="luxury-offer-container">
-            {% if precios.nac %}
-            <div class="luxury-offer-card featured">
-                <div class="offer-badge" style="background: #ff5252; color: white;">MEJOR OPCIÓN</div>
-                <div class="offer-type">TARIFAS NACIONALES</div>
-                <div class="offer-price-box">
-                    {% if show_antes_pdf %}
-                    <span class="price-before"><span class="price-before-label">Antes</span> S/ {{
-                        precios_antes.nac.total }}</span>
-                    {% endif %}
-                    <span class="offer-currency">S/</span>
-                    <span class="offer-amount">{{ precios.nac.total }}</span>
-                </div>
-                <div class="offer-footer">PRECIO TOTAL POR PASAJERO</div>
-            </div>
-            {% endif %}
-
-            {% if precios.ext %}
-            <div class="luxury-offer-card">
-                <div class="offer-badge">INTERNATIONAL ACCESS</div>
-                <div class="offer-type">TARIFAS EXTRANJEROS</div>
-                <div class="offer-price-box">
-                    {% if show_antes_pdf %}
-                    <span class="price-before"><span class="price-before-label">Antes</span> USD {{
-                        precios_antes.ext.total }}</span>
-                    {% endif %}
-                    <span class="offer-currency">USD</span>
-                    <span class="offer-amount">{{ precios.ext.total }}</span>
-                </div>
-                <div class="offer-footer">TOTAL PRICE PER PASSENGER</div>
-            </div>
-            {% endif %}
-        </div>
-
-        <div class="pricing-complements-container" style="margin-top: 50px;">
-            <div class="complement-box">
-                <div class="complement-title">💳 GARANTÍA DE RESERVA</div>
-                <div class="complement-content">
-                    Reserva inmediata con el <strong>50%</strong> del total. El saldo restante se cancela
-                    cómodamente el primer día de su llegada a Cusco.
-                </div>
-            </div>
-            <div class="complement-box">
-                <div class="complement-title">🏛️ CONDICIONES</div>
-                <div class="complement-content">
-                    Precios incluyen todos los servicios mencionados en el itinerario. Tarifas vigentes para la
-                    temporada 2026.
+                <!-- COMPLEMENTOS DE PRECIO (INVADIENDO ESPACIO PARA LIBERAR ANEXOS) -->
+                <div class="pricing-complements-container">
+                    <div class="complement-box">
+                        <div class="complement-title">💳 GARANTÍA DE RESERVA</div>
+                        <div class="complement-content">
+                            Confirmación con el <strong>50%</strong> del total. El saldo se cancela al llegar a
+                            Cusco.
+                            Incluye todos los impuestos bancarios.
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>
 
         {% if nota_p %}
         <div class="price-note"
-            style="margin-top: 30px; padding: 15px; border-bottom: 2px solid var(--color-primary); background: #fdfdfd; font-size: 1rem; color: #333; text-align: center; font-weight: 600;">
-            📢 {{ nota_p }}
+            style="margin-top: 20px; padding: 12px; border-radius: 8px; border: 1px dashed #ccc; background: #fafafa; font-size: 0.9rem; color: #444; text-align: center;">
+            📌 <strong>Nota sobre la inversión:</strong> {{ nota_p }}
         </div>
         {% endif %}
+    </div>
+    {% else %}
+    <div
+        style="position: absolute; top: 20%; left: 50%; transform: translateX(-50%); width: 80%; opacity: 0.03; z-index: -1;">
+        <img src="{{ logo_url }}" style="width: 100%;">
+    </div>
+    <h1 class="price-main-title">Propuesta VIP</h1>
+    <p
+        style="text-align:center; font-size: 1rem; color: #888; text-transform: uppercase; letter-spacing: 3px; margin-bottom: 30px;">
+        Tarifas preferenciales por persona
+    </p>
+
+    <div class="luxury-offer-container">
+        {% if precios.nac %}
+        <div class="luxury-offer-card featured">
+            <div class="offer-badge" style="background: #ff5252; color: white;">MEJOR OPCIÓN</div>
+            <div class="offer-type">TARIFAS NACIONALES</div>
+            <div class="offer-price-box">
+                {% if show_antes_pdf %}
+                <span class="price-before"><span class="price-before-label">Antes</span> S/ {{
+                    precios_antes.nac.total }}</span>
+                {% endif %}
+                <span class="offer-currency">S/</span>
+                <span class="offer-amount">{{ precios.nac.total }}</span>
+            </div>
+            <div class="offer-footer">PRECIO TOTAL POR PASAJERO</div>
+        </div>
         {% endif %}
+
+        {% if precios.ext %}
+        <div class="luxury-offer-card">
+            <div class="offer-badge">INTERNATIONAL ACCESS</div>
+            <div class="offer-type">TARIFAS EXTRANJEROS</div>
+            <div class="offer-price-box">
+                {% if show_antes_pdf %}
+                <span class="price-before"><span class="price-before-label">Antes</span> USD {{
+                    precios_antes.ext.total }}</span>
+                {% endif %}
+                <span class="offer-currency">USD</span>
+                <span class="offer-amount">{{ precios.ext.total }}</span>
+            </div>
+            <div class="offer-footer">TOTAL PRICE PER PASSENGER</div>
+        </div>
+        {% endif %}
+    </div>
+
+    <div class="pricing-complements-container" style="margin-top: 50px;">
+        <div class="complement-box">
+            <div class="complement-title">💳 GARANTÍA DE RESERVA</div>
+            <div class="complement-content">
+                Reserva inmediata con el <strong>50%</strong> del total. El saldo restante se cancela
+                cómodamente el primer día de su llegada a Cusco.
+            </div>
+        </div>
+        <div class="complement-box">
+            <div class="complement-title">🏛️ CONDICIONES</div>
+            <div class="complement-content">
+                Precios incluyen todos los servicios mencionados en el itinerario. Tarifas vigentes para la
+                temporada 2026.
+            </div>
+        </div>
+    </div>
+
+    {% if nota_p %}
+    <div class="price-note"
+        style="margin-top: 30px; padding: 15px; border-bottom: 2px solid var(--color-primary); background: #fdfdfd; font-size: 1rem; color: #333; text-align: center; font-weight: 600;">
+        📢 {{ nota_p }}
+    </div>
+    {% endif %}
+    {% endif %}
     </div>
     </div>
 
