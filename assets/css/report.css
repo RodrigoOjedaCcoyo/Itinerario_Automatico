@@ -784,6 +784,8 @@ body {
     font-size: 1.2rem;
     font-weight: 800;
     margin-bottom: 20px;
+    margin-left: 180px;
+    /* Align with title */
 }
 
 .experience-card-table {
