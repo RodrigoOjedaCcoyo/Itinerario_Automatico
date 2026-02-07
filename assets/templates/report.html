@@ -419,7 +419,8 @@
                         precios_antes.nac.total }}</span>
                     <span
                         style="background: #fff5f5; color: #eb4d4b; padding: 2px 8px; border-radius: 4px; font-size: 0.8rem; font-weight: 800; margin-left: 5px;">AHORRA
-                        S/ {{ (precios_antes.nac.total|float - precios.nac.total|float)|round|int }}</span>
+                        S/ {{ (precios_antes.nac.total|replace(',', '')|float - precios.nac.total|replace(',',
+                        '')|float)|round|int }}</span>
                 </div>
                 {% endif %}
                 <div style="display: flex; align-items: center; justify-content: center; gap: 5px;">
