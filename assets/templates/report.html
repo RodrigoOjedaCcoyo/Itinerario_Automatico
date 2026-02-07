@@ -459,61 +459,7 @@
 
     <!-- SECCIÓN DE ANEXOS PREMIUM -->
     {% if es_nacional %}
-    <!-- ANEXO NACIONAL - PÁGINA 1: GUÍA DEL TREN -->
-    <div class="page-container premium-appendix-page">
-        <div class="decor-top-right"></div>
-        <div class="decor-bottom-left"></div>
-        <div class="logo-container">
-            <img src="{{ logo_url }}" alt="Logo">
-        </div>
-
-        <h1 class="premium-title-main">Guía del Viajero</h1>
-        <div class="premium-section-header">ELECCIÓN DEL SERVICIO DE TREN</div>
-
-        <p style="font-size: 1rem; color: #444; margin-bottom: 20px;">
-            Para tu viaje a Machu Picchu, la elección del tren es fundamental para tu comodidad y experiencia.
-            A continuación, te presentamos una comparativa directa para que elijas la mejor opción.
-        </p>
-
-        <table class="comparison-table">
-            <tr>
-                <th class="comparison-header" style="width: 30%;">CARACTERÍSTICA</th>
-                <th class="comparison-header" style="width: 35%;">TREN LOCAL</th>
-                <th class="comparison-header" style="width: 35%; background: var(--color-primary);">TREN TURÍSTICO</th>
-            </tr>
-            <tr>
-                <td class="comparison-cell"><strong>Disponibilidad</strong></td>
-                <td class="comparison-cell">Sujeto a colas de 3-6 horas el mismo día.</td>
-                <td class="comparison-cell">Reserva inmediata y garantizada.</td>
-            </tr>
-            <tr>
-                <td class="comparison-cell"><strong>Asientos</strong></td>
-                <td class="comparison-cell">Sin reserva. Posibilidad de viajar de pie.</td>
-                <td class="comparison-cell">Asiento numerado y confortable.</td>
-            </tr>
-            <tr>
-                <td class="comparison-cell"><strong>Servicios</strong></td>
-                <td class="comparison-cell">Básico, transporte de carga y pasajeros.</td>
-                <td class="comparison-cell">Snacks, música, ventanas amplias.</td>
-            </tr>
-        </table>
-
-        <div class="recommendation-box">
-            <h3 style="margin: 0 0 10px 0; color: var(--color-primary);">Nuestra Recomendación:</h3>
-            <p style="margin: 0; font-size: 0.95rem; line-height: 1.4;">
-                Si buscas optimizar tu tiempo y evitar el cansancio extremo, el <strong>Tren Turístico</strong> es la
-                mejor inversión.
-                Te permite llegar descansado a la ciudadela para disfrutar plenamente de la maravilla del mundo.
-            </p>
-        </div>
-
-        <div style="margin-top: 40px; text-align: center;">
-            <img src="{{ days[0].images[2] if days|length > 0 and days[0].images|length > 2 else cover_url }}"
-                style="width: 100%; height: 250px; object-fit: cover; border-radius: 20px;">
-        </div>
-    </div>
-
-    <!-- ANEXO NACIONAL - PÁGINA 2: CONDICIONES -->
+    <!-- ANEXO NACIONAL - PÁGINA 1: CONDICIONES -->
     <div class="page-container premium-appendix-page">
         <div class="decor-top-right"></div>
         <div class="decor-bottom-left"></div>
@@ -526,16 +472,38 @@
         <table style="width: 100%; border-collapse: collapse;">
             <tr>
                 <td style="width: 65%; vertical-align: top; padding-right: 40px;">
-                    <div class="premium-section-header">INFORMACIÓN IMPORTANTE</div>
+                    <div class="premium-section-header">INFORMACIÓN DE COMPRA DEL PAQUETE TURÍSTICO</div>
                     <div class="exclusive-rates-badge">TARIFAS EXCLUSIVAS PARA PERUANOS</div>
 
                     <div class="policy-card">
-                        <div class="policy-card-title">🕒 CONDICIONES Y ANULACIÓN</div>
+                        <div class="policy-card-title">💳 RESERVA</div>
+                        <div class="policy-card-body">
+                            <strong>La reserva del paquete turístico es con el 50%.</strong><br>
+                            El 50% restante lo tendrás que pagar hasta un día antes de iniciar el primer tour.<br><br>
+                            <strong>Método de pago:</strong><br>
+                            Contamos con todos los métodos de pagos del mercado.<br>
+                            Depósito o trasferencia a la cuenta de la empresa.<br>
+                            Incluido en los métodos de pago la tarjeta y cargos de depósito.
+                        </div>
+                    </div>
+
+                    <div class="policy-card" style="margin-top: 15px;">
+                        <div class="policy-card-title">🕒 ANULACIÓN DEL PAQUETE TURÍSTICO</div>
+                        <div class="policy-card-body">
+                            La anulación se debe realizar con anticipación.<br>
+                            Ingreso a Machupicchu, vías y cambios o devoluciones, solo en casos excepcionales hay
+                            cambios como desastres naturales o paralizaciones.<br>
+                            Vías turísticas y los Boletos de Machupicchu penalidades, solo en casos excepcionales hay
+                            cambios como desastres naturales o paralizaciones.<br>
+                            <strong>Menor a 15 días antes de su llegada, No hay devolución.</strong>
+                        </div>
+                    </div>
+
+                    <div class="policy-card" style="margin-top: 15px;">
+                        <div class="policy-card-title">📋 CONDICIONES ADICIONALES</div>
                         <div class="policy-card-body">
                             - Habitación individual (SGL): Suplemento de <strong>S/ 35 o $10</strong> por noche.<br>
-                            - Menores de 2 años: Gratis (comparten asiento/cama).<br>
-                            - Anulaciones con menos de <strong>15 días</strong>: No hay devolución.<br>
-                            - Machu Picchu y Trenes: Sin cambios ni devoluciones.
+                            - Menores de 2 años: Gratis (comparten asiento/cama).
                         </div>
                     </div>
 
@@ -598,57 +566,7 @@
         </table>
     </div>
     {% else %}
-    <!-- ANEXO EXTRANJERO - PÁGINA 1: GALERÍA DE TRENES PREMIUM -->
-    <div class="page-container premium-appendix-page">
-        <div class="decor-top-right"></div>
-        <div class="decor-bottom-left"></div>
-        <div class="logo-container">
-            <img src="{{ logo_url }}" alt="Logo">
-        </div>
-
-        <h1 class="premium-title-main">Experiencia en Tren</h1>
-
-        <table class="experience-card-table">
-            <tr>
-                <td style="width: 40%;"><img src="{{ train_exp_img }}" class="experience-card-img"></td>
-                <td class="experience-card-text">
-                    <h2 class="experience-card-title">EXPEDITION & VOYAGER</h2>
-                    <p class="experience-card-desc">
-                        Diseñados para viajeros modernos, estos servicios ofrecen comodidad y amplios ventanales
-                        panorámicos para ser testigo de los impresionantes paisajes andinos en su camino a Machu Picchu.
-                    </p>
-                </td>
-            </tr>
-        </table>
-
-        <table class="experience-card-table">
-            <tr>
-                <td class="experience-card-text" style="padding-left: 0; padding-right: 30px; text-align: right;">
-                    <h2 class="experience-card-title">VISTADOME & THE 360°</h2>
-                    <p class="experience-card-desc">
-                        Una experiencia de viaje inmersiva con vistas panorámicas desde todos los ángulos.
-                        Incluye entretenimiento cultural en vivo y snacks gourmet servidos en su asiento.
-                    </p>
-                </td>
-                <td style="width: 40%;"><img src="{{ train_vis_img }}" class="experience-card-img"></td>
-            </tr>
-        </table>
-
-        <table class="experience-card-table">
-            <tr>
-                <td style="width: 40%;"><img src="{{ train_obs_img }}" class="experience-card-img"></td>
-                <td class="experience-card-text">
-                    <h2 class="experience-card-title">VISTADOME OBSERVATORY</h2>
-                    <p class="experience-card-desc">
-                        Servicio ultra-exclusivo que cuenta con un vagón observatorio al aire libre y música en vivo.
-                        El punto máximo del viaje en tren en los Andes, combinando lujo con tradición.
-                    </p>
-                </td>
-            </tr>
-        </table>
-    </div>
-
-    <!-- ANEXO EXTRANJERO - PÁGINA 2: CONTRATO INTERNACIONAL -->
+    <!-- ANEXO EXTRANJERO - PÁGINA 1: CONTRATO INTERNACIONAL -->
     <div class="page-container premium-appendix-page">
         <div class="decor-top-right"></div>
         <div class="decor-bottom-left"></div>
@@ -665,12 +583,35 @@
                 <tr>
                     <td style="width: 55%; vertical-align: top; padding-right: 20px;">
                         <div class="policy-card">
-                            <div class="policy-card-title">🛂 CONDICIONES IMPORTANTES</div>
+                            <div class="policy-card-title">💳 RESERVA</div>
+                            <div class="policy-card-body">
+                                <strong>La reserva del paquete turístico es con el 50%.</strong><br>
+                                El 50% restante lo tendrás que pagar hasta un día antes de iniciar el primer
+                                tour.<br><br>
+                                <strong>Método de pago:</strong><br>
+                                Contamos con todos los métodos de pagos del mercado.<br>
+                                Depósito o trasferencia a la cuenta de la empresa.<br>
+                                Incluido en los métodos de pago la tarjeta y cargos de depósito.
+                            </div>
+                        </div>
+
+                        <div class="policy-card" style="margin-top: 15px;">
+                            <div class="policy-card-title">🕒 ANULACIÓN DEL PAQUETE TURÍSTICO</div>
+                            <div class="policy-card-body">
+                                La anulación se debe realizar con anticipación.<br>
+                                Ingreso a Machupicchu, vías y cambios o devoluciones, solo en casos excepcionales hay
+                                cambios como desastres naturales o paralizaciones.<br>
+                                Vías turísticas y los Boletos de Machupicchu penalidades, solo en casos excepcionales
+                                hay cambios como desastres naturales o paralizaciones.<br>
+                                <strong>Menor a 15 días antes de su llegada, No hay devolución.</strong>
+                            </div>
+                        </div>
+
+                        <div class="policy-card" style="margin-top: 15px;">
+                            <div class="policy-card-title">📋 CONDICIONES ADICIONALES</div>
                             <div class="policy-card-body">
                                 - Habitación Individual (SGL): Suplemento de <strong>$50 USD</strong> por noche.<br>
                                 - Infantes (menores de 2 años): Sin costo (comparten asiento/cama).<br>
-                                - Anulaciones con menos de <strong>15 días</strong>: No reembolsable.<br>
-                                - Machu Picchu y Trenes: Sin cambios ni devoluciones.<br>
                                 - Pasaporte vigente es obligatorio para todos los tickets.
                             </div>
                         </div>
