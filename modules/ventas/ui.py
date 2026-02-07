@@ -140,7 +140,7 @@ def render_ventas_ui():
     if 'f_origen' not in st.session_state: st.session_state.f_origen = "Nacional"
     if 'f_categoria' not in st.session_state: st.session_state.f_categoria = "Cusco Tradicional"
     if 'f_tipo_cliente' not in st.session_state: st.session_state.f_tipo_cliente = "B2C"
-    if 'f_nota_precio' not in st.session_state: st.session_state.f_nota_precio = "INCLUYE TOUR Y ALOJAMIENTO"
+    if 'f_nota_precio' not in st.session_state: st.session_state.f_nota_precio = "INCLUYE TOUR"
     if 'f_monto_adelanto' not in st.session_state: st.session_state.f_monto_adelanto = 0.0
     if 'f_monto_pendiente' not in st.session_state: st.session_state.f_monto_pendiente = 0.0
     if 'f_estrategia' not in st.session_state: st.session_state.f_estrategia = "Opciones"
@@ -671,7 +671,7 @@ def render_ventas_ui():
                             tour['costo_can'] = col_c.number_input(f"CAN ($)", value=float(tour.get('costo_can', 0)), key=f"cc_{tour_id}", disabled=is_disabled)
                             
                             st.markdown("---")
-                            tour['nota_precio'] = st.text_input("📝 Nota de Precio (Exclusivo en PDF)", value=tour.get('nota_precio', 'INCLUYE TOUR Y ALOJAMIENTO'), key=f"np_{tour_id}", disabled=is_disabled, help="Esta nota aparecerá en la sección de precios del PDF.")
+                            tour['nota_precio'] = st.text_input("📝 Nota de Precio (Exclusivo en PDF)", value=tour.get('nota_precio', 'INCLUYE TOUR'), key=f"np_{tour_id}", disabled=is_disabled, help="Esta nota aparecerá en la sección de precios del PDF.")
                             
                             # --- Suplementos de Tren (Localizados en MP) ---
                             st.markdown("🚅 **Suplementos de Tren**")
@@ -1295,7 +1295,11 @@ def render_ventas_ui():
                                 'vendedor': vendedor,
                                 'celular_cliente': celular,
                                 'fuente': origen_lead,
-                                'estrategia': estrategia_v, # Pasar la estrategia seleccionada (Matriz, General, etc.)
+                                # MAPPING DE ESTRATEGIA PARA EL TEMPLATE
+                                # "Opciones" (Radio) -> "General" (Template: Vista Estándar 3 opciones)
+                                # "Matriz" (Radio) -> "Matriz" (Template: Grid 12 opciones)
+                                # "General" (Radio) -> "General" (Template: Vista Cierre con precios_cierre)
+                                'estrategia': "General" if estrategia_v == "Opciones" else estrategia_v, 
                                 'estado': "Cotización", # Valor fijo ya que usamos estrategia
                                 'logo_url': logo_path,
                                 'logo_cover_url': logo_path,
