@@ -775,6 +775,7 @@ body {
     text-transform: uppercase;
     border-bottom: 8px solid var(--color-primary);
     padding-bottom: 10px;
+    padding-left: 180px; /* Fix overlap with decor */
 }
 
 .premium-section-header {
