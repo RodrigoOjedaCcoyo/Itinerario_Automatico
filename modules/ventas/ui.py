@@ -1332,9 +1332,7 @@ def render_ventas_ui():
                                     } if pasajeros_nac > 0 else None,
                                     'ext': {
                                         'total': f"{((total_ext_pp + (extra_ext/max(1, pasajeros_ext)) + (calc_upgrades + calc_tren)) * pasajeros_ext) + ((total_can_pp + (extra_can/max(1, pasajeros_can)) + (calc_upgrades + calc_tren)) * pasajeros_can):,.2f}",
-                                        'num_pas': pasajeros_ext + pasajeros_can,
-                                        'is_sum': (pasajeros_ext > 0 and pasajeros_can > 0),
-                                        'breakdown': f"{pasajeros_ext} Ext. + {pasajeros_can} CAN" if (pasajeros_ext > 0 and pasajeros_can > 0) else ""
+                                        'num_pas': pasajeros_ext + pasajeros_can
                                     } if (pasajeros_ext > 0 or pasajeros_can > 0) else None,
                                 },
                                 'precios_antes': {
