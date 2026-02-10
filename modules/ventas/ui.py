@@ -1326,7 +1326,10 @@ def render_ventas_ui():
                                 'matrix_antes': matrix_antes,
                                 'show_antes_pdf': show_antes_pdf,
                                 'precios': {
-                                    'nac': {'total': f"{(total_nac_pp + (extra_nac/max(1, pasajeros_nac)) + (calc_upgrades + calc_tren)):,.2f}"} if pasajeros_nac > 0 else None,
+                                    'nac': {
+                                        'total': f"{(total_nac_pp + (extra_nac/max(1, pasajeros_nac)) + (calc_upgrades + calc_tren)) * pasajeros_nac:,.2f}",
+                                        'num_pas': pasajeros_nac
+                                    } if pasajeros_nac > 0 else None,
                                     'ext': {
                                         'total': f"{((total_ext_pp + (extra_ext/max(1, pasajeros_ext)) + (calc_upgrades + calc_tren)) * pasajeros_ext) + ((total_can_pp + (extra_can/max(1, pasajeros_can)) + (calc_upgrades + calc_tren)) * pasajeros_can):,.2f}",
                                         'num_pas': pasajeros_ext + pasajeros_can,

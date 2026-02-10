@@ -431,10 +431,6 @@
                 <div style="margin-bottom: 5px;">
                     <span style="color: #999; text-decoration: line-through; font-size: 1.2rem; font-weight: 600;">S/ {{
                         precios_antes.nac.total }}</span>
-                    <span
-                        style="background: #fff5f5; color: #eb4d4b; padding: 2px 8px; border-radius: 4px; font-size: 0.8rem; font-weight: 800; margin-left: 5px;">AHORRA
-                        S/ {{ (precios_antes.nac.total|replace(',', '')|float - precios.nac.total|replace(',',
-                        '')|float)|round|int }}</span>
                 </div>
                 {% endif %}
                 <div style="display: flex; align-items: center; justify-content: center; gap: 5px;">
@@ -446,15 +442,22 @@
                 </div>
             </div>
             <div class="offer-footer"
-                style="background: #f8f9fa; color: #2d3436; font-weight: 700; border-top: 1px solid #eee;">TOTAL POR
-                PASAJERO</div>
+                style="background: #f8f9fa; color: #2d3436; font-weight: 700; border-top: 1px solid #eee; text-transform: uppercase;">
+                {% if precios.nac.num_pas > 1 %}
+                TOTAL GRUPO ({{ precios.nac.num_pas }} PAS.)
+                {% else %}
+                TOTAL POR PASAJERO
+                {% endif %}
+            </div>
         </div>
         {% endif %}
 
         {% if precios.ext %}
-        <div class="luxury-offer-card" style="flex: 1; border: 2px solid #eee;">
-            <div class="offer-badge" style="background: #2d3436; color: white;">INTERNATIONAL ACCESS</div>
-            <div class="offer-type" style="margin-top: 15px; font-weight: 800;">TARIFA INTERNACIONAL</div>
+        <div class="luxury-offer-card featured"
+            style="flex: 1; position: relative; border: 3px solid var(--color-primary); overflow: visible;">
+            <div class="offer-badge" style="background: #2d3436; color: white; top: -15px;">INTERNATIONAL ACCESS</div>
+            <div class="offer-type" style="margin-top: 15px; font-weight: 800; color: #2d3436;">TARIFA INTERNACIONAL
+            </div>
 
             <div class="offer-price-box" style="padding: 10px 5px;">
                 {% if show_antes_pdf %}
@@ -464,8 +467,10 @@
                 </div>
                 {% endif %}
                 <div style="display: flex; align-items: center; justify-content: center; gap: 5px;">
-                    <span class="offer-currency" style="font-size: 1.5rem; font-weight: 800;">USD</span>
-                    <span class="offer-amount" style="font-size: 2.8rem; line-height: 1; font-weight: 900;">{{
+                    <span class="offer-currency"
+                        style="font-size: 1.5rem; color: var(--color-primary); font-weight: 800;">USD</span>
+                    <span class="offer-amount"
+                        style="font-size: 2.8rem; line-height: 1; color: var(--color-primary); font-weight: 900;">{{
                         precios.ext.total }}</span>
                 </div>
                 {% if precios.ext.is_sum %}
@@ -474,7 +479,8 @@
                 </div>
                 {% endif %}
             </div>
-            <div class="offer-footer" style="text-transform: uppercase;">
+            <div class="offer-footer"
+                style="background: #f8f9fa; color: #2d3436; font-weight: 700; border-top: 1px solid #eee; text-transform: uppercase;">
                 {% if precios.ext.num_pas > 1 %}
                 TOTAL GRUPO ({{ precios.ext.num_pas }} PAS.)
                 {% else %}
