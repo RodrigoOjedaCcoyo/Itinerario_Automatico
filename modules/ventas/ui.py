@@ -1113,7 +1113,7 @@ def render_ventas_ui():
                             precios_cierre_list = []
                             
                             # FILTRAR POR ORIGEN: Solo mostrar lo que el usuario ha elegido como Origen principal
-                            if tipo_t == "Nacional" and pasajeros_nac > 0:
+                            if tipo_t in ["Nacional", "Mixto"] and pasajeros_nac > 0:
                                 b_nac = total_nac_pp + (extra_nac/max(1, pasajeros_nac))
                                 if estrategia_v == "General": b_nac += (calc_upgrades + calc_tren)
                                 precios_cierre_list.append({
@@ -1123,7 +1123,7 @@ def render_ventas_ui():
                                     'monto_pp': f"{b_nac:,.2f}"
                                 })
 
-                            if tipo_t == "Extranjero":
+                            if tipo_t in ["Extranjero", "Mixto"]:
                                 if pasajeros_ext > 0 or pasajeros_can > 0:
                                     b_ext = total_ext_pp + (extra_ext/max(1, pasajeros_ext))
                                     b_can = total_can_pp + (extra_can/max(1, pasajeros_can))
