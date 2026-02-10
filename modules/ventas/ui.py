@@ -1124,34 +1124,42 @@ def render_ventas_ui():
                                 })
 
                             if tipo_t in ["Extranjero", "Mixto"]:
-                                if pasajeros_ext > 0 or pasajeros_can > 0:
+                                # Combinar Extranjero y CAN en una sola línea de cierre
+                                total_ext_can = 0
+                                breakdown_label = []
+                                num_total_int = 0
+                                
+                                # Cálculo para Extranjero
+                                if pasajeros_ext > 0:
                                     b_ext = total_ext_pp + (extra_ext/max(1, pasajeros_ext))
+                                    if estrategia_v == "General": b_ext += (calc_upgrades + calc_tren)
+                                    total_ext_can += (b_ext * pasajeros_ext)
+                                    num_total_int += pasajeros_ext
+                                    breakdown_label.append(f"{pasajeros_ext} Ext. (USD {b_ext:,.2f})")
+                                
+                                # Cálculo para CAN
+                                if pasajeros_can > 0:
                                     b_can = total_can_pp + (extra_can/max(1, pasajeros_can))
-                                    
-                                    if estrategia_v == "General":
-                                        b_ext += (calc_upgrades + calc_tren)
-                                        b_can += (calc_upgrades + calc_tren)
-                                    
-                                    total_combinado = (b_ext * pasajeros_ext) + (b_can * pasajeros_can)
-                                    
-                                    monto_pp_val = ""
-                                    nota_breakdown = ""
+                                    if estrategia_v == "General": b_can += (calc_upgrades + calc_tren)
+                                    total_ext_can += (b_can * pasajeros_can)
+                                    num_total_int += pasajeros_can
+                                    breakdown_label.append(f"{pasajeros_can} CAN (USD {b_can:,.2f})")
+                                
+                                if total_ext_can > 0:
+                                    # Una sola entrada que suma ambos
+                                    monto_pp_final = ""
                                     if pasajeros_ext > 0 and pasajeros_can > 0:
-                                        monto_pp_val = "Ver desglose abajo"
-                                        nota_breakdown = f"Incluye {pasajeros_ext} pas. Extranjero (USD {b_ext:,.2f} c/u) y {pasajeros_can} pas. CAN (USD {b_can:,.2f} c/u)"
+                                        monto_pp_final = f"Ver desglose: {', '.join(breakdown_label)}"
                                     elif pasajeros_ext > 0:
-                                        monto_pp_val = f"USD {b_ext:,.2f}"
-                                        nota_breakdown = ""
+                                        monto_pp_final = f"USD {total_ext_can / pasajeros_ext:,.2f} c/u"
                                     else:
-                                        monto_pp_val = f"USD {b_can:,.2f}"
-                                        nota_breakdown = ""
+                                        monto_pp_final = f"USD {total_ext_can / pasajeros_can:,.2f} c/u"
 
                                     precios_cierre_list.append({
                                         'label': 'TOTAL EXTRANJEROS / CAN',
                                         'simbolo': 'USD',
-                                        'monto_total': f"{total_combinado:,.2f}",
-                                        'monto_pp': monto_pp_val,
-                                        'nota': nota_breakdown
+                                        'monto_total': f"{total_ext_can:,.2f}",
+                                        'monto_pp': monto_pp_final
                                     })
                             
                             # Fallback para base_final (usado en comparativas)
@@ -1319,11 +1327,18 @@ def render_ventas_ui():
                                 'show_antes_pdf': show_antes_pdf,
                                 'precios': {
                                     'nac': {'total': f"{(total_nac_pp + (extra_nac/max(1, pasajeros_nac)) + (calc_upgrades + calc_tren)):,.2f}"} if pasajeros_nac > 0 else None,
-                                    'ext': {'total': f"{(total_ext_pp + (extra_ext/max(1, pasajeros_ext)) + (calc_upgrades + calc_tren)):,.2f}"} if pasajeros_ext > 0 else None,
+                                    'ext': {
+                                        'total': f"{((total_ext_pp + (extra_ext/max(1, pasajeros_ext)) + (calc_upgrades + calc_tren)) * pasajeros_ext) + ((total_can_pp + (extra_can/max(1, pasajeros_can)) + (calc_upgrades + calc_tren)) * pasajeros_can):,.2f}",
+                                        'num_pas': pasajeros_ext + pasajeros_can,
+                                        'is_sum': (pasajeros_ext > 0 and pasajeros_can > 0),
+                                        'breakdown': f"{pasajeros_ext} Ext. + {pasajeros_can} CAN" if (pasajeros_ext > 0 and pasajeros_can > 0) else ""
+                                    } if (pasajeros_ext > 0 or pasajeros_can > 0) else None,
                                 },
                                 'precios_antes': {
                                     'nac': {'total': f"{(total_nac_a / max(1, pasajeros_nac)) + (extra_nac/max(1, pasajeros_nac)) + (calc_upgrades + calc_tren):,.2f}"} if pasajeros_nac > 0 else None,
-                                    'ext': {'total': f"{(total_ext_a / max(1, pasajeros_ext)) + (extra_ext/max(1, pasajeros_ext)) + (calc_upgrades + calc_tren):,.2f}"} if pasajeros_ext > 0 else None,
+                                    'ext': {
+                                        'total': f"{((total_ext_a / max(1, pasajeros_ext)) + (extra_ext/max(1, pasajeros_ext)) + (calc_upgrades + calc_tren)) * pasajeros_ext + ((total_can_a / max(1, pasajeros_can)) + (extra_can/max(1, pasajeros_can)) + (calc_upgrades + calc_tren)) * pasajeros_can:,.2f}"
+                                    } if (pasajeros_ext > 0 or pasajeros_can > 0) else None,
                                 },
                                 'precios_cierre': precios_cierre_list,
                                 'nota_p': next((t.get('nota_precio', '') for t in st.session_state.itinerario if "MACHU PICCHU" in t.get('titulo', '').upper()), ''),
