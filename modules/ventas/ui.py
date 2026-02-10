@@ -1311,6 +1311,7 @@ def render_ventas_ui():
                                 'train_vis_img': os.path.abspath(os.path.join("assets", "images", "train_vistadome.png")),
                                 'train_obs_img': os.path.abspath(os.path.join("assets", "images", "train_observatory.png")),
                                 'es_nacional': (tipo_t == "Nacional"),
+                                'categoria': st.session_state.get('f_categoria', 'Cusco Tradicional'),
                                 'itinerario': days_data,
                                 'days': days_data,
                                 'matriz': pricing_matrix,
