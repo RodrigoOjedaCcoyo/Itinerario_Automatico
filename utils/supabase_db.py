@@ -434,14 +434,22 @@ def save_custom_package(nombre: str, itinerario: list, user_email: str, es_publi
         print(f"Error guardando paquete cloud: {e}")
         return False
 
-def get_custom_packages():
+def get_custom_packages(user_email: str = None):
     """Obtiene la lista de paquetes personalizados guardados en la nube."""
     supabase = get_supabase_client()
     if not supabase: return []
     
     try:
-        # Por ahora traemos todos los públicos
-        res = supabase.table("paquete_personalizado").select("*").eq("es_publico", True).order("created_at", desc=True).execute()
+        if user_email:
+            # Traer públicos O los creados por el usuario actual
+            res = supabase.table("paquete_personalizado")\
+                .select("*")\
+                .or_(f"es_publico.eq.true,creado_por.eq.{user_email}")\
+                .order("created_at", desc=True)\
+                .execute()
+        else:
+            # Fallback: Solo los públicos
+            res = supabase.table("paquete_personalizado").select("*").eq("es_publico", True).order("created_at", desc=True).execute()
         return res.data
     except Exception as e:
         print(f"Error listando paquetes cloud: {e}")

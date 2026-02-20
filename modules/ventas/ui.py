@@ -208,14 +208,15 @@ def render_ventas_ui():
         
         st.divider()
         
-        cloud_pkgs = get_custom_packages()
+        cloud_pkgs = get_custom_packages(st.session_state.get("user_email"))
         if cloud_pkgs:
             st.subheader("📂 Paquetes del Equipo")
             for cp in cloud_pkgs:
                 with st.container(border=True):
                     col_p1, col_p2 = st.columns([4, 1])
                     with col_p1:
-                        st.markdown(f"**{cp['nombre']}**")
+                        badge = "🔒 **[Privado]** " if not cp.get('es_publico') else ""
+                        st.markdown(f"{badge}**{cp['nombre']}**")
                         st.caption(f"Por: {cp['creado_por'].split('@')[0] if cp['creado_por'] else 'Anon'}")
                     with col_p2:
                         # Botón cargar
