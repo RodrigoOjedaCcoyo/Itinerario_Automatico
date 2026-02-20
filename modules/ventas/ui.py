@@ -1352,6 +1352,8 @@ def render_ventas_ui():
                                 itinerary_id = save_itinerary_v2(full_itinerary_data)
                                 if itinerary_id:
                                     st.toast("✅ Lead e Itinerario sincronizados", icon="🧠")
+                                else:
+                                    st.error("❌ Fallo crítico al sincronizar con la base de datos cloud.")
                             
                             # 3. Generar PDF
                             pdf_path = generate_pdf(full_itinerary_data)

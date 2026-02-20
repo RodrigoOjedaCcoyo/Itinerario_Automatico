@@ -26,10 +26,14 @@ SUPABASE_KEY = get_config_var("SUPABASE_KEY")
 def get_supabase_client() -> Client:
     """Inicializa y retorna el cliente de Supabase."""
     if not SUPABASE_URL or "your-project" in str(SUPABASE_URL) or not SUPABASE_KEY or "your-anon-key" in str(SUPABASE_KEY):
+        if hasattr(st, "warning"):
+            st.warning("⚠️ Configuración de Supabase incompleta (SUPABASE_URL o KEY).")
         return None
     try:
         return create_client(SUPABASE_URL, SUPABASE_KEY)
-    except Exception:
+    except Exception as e:
+        if hasattr(st, "error"):
+            st.error(f"❌ Error al conectar con Supabase: {e}")
         return None
 
 def save_itinerary_v2(itinerary_data):
@@ -45,15 +49,19 @@ def save_itinerary_v2(itinerary_data):
         vendedor_nombre = itinerary_data.get("vendedor", "Vendedor General")
         vendedor_res = supabase.table("vendedor").select("id_vendedor").ilike("nombre", f"%{vendedor_nombre}%").limit(1).execute()
         
-        vendedor_id = 1 # Default
+        vendedor_id = None # Cambiado de 1 a None para evitar errores si 1 no existe
         if vendedor_res.data:
             vendedor_id = vendedor_res.data[0]["id_vendedor"]
         else:
             # Si no existe, creamos el vendedor para no romper la llave foránea
-            new_vend = {"nombre": vendedor_nombre}
-            res_v = supabase.table("vendedor").insert(new_vend).execute()
-            if res_v.data:
-                vendedor_id = res_v.data[0]["id_vendedor"]
+            try:
+                new_vend = {"nombre": vendedor_nombre}
+                res_v = supabase.table("vendedor").insert(new_vend).execute()
+                if res_v.data:
+                    vendedor_id = res_v.data[0]["id_vendedor"]
+            except Exception as e_v:
+                print(f"No se pudo crear/encontrar vendedor '{vendedor_nombre}': {e_v}")
+                # Si falla, se queda en None, que es permitido en lead e itinerario_digital
 
         # 2. Manejar el Lead (SOLO SI ES B2C)
         id_lead = None
@@ -102,13 +110,25 @@ def save_itinerary_v2(itinerary_data):
             
             # 4. Actualizar el último itinerario en el Lead para seguimiento rápido
             if id_lead:
-                supabase.table("lead").update({"ultimo_itinerario_id": it_id}).eq("id_lead", id_lead).execute()
+                try:
+                    supabase.table("lead").update({"ultimo_itinerario_id": it_id}).eq("id_lead", id_lead).execute()
+                except Exception as e_lead:
+                    print(f"Error actualizando ultimo_itinerario_id: {e_lead}")
                 
             return it_id
+        else:
+            print(f"Error: No se recibió data al insertar en itinerario_digital. Response: {res_it}")
+            if hasattr(st, "error"):
+                st.error(f"Error DB: No se pudo crear el registro del itinerario. Verifique permisos.")
             
         return None
     except Exception as e:
-        print(f"Error detallado en Cerebro Supabase: {e}")
+        import traceback
+        error_msg = f"Error en Cerebro Supabase: {str(e)}"
+        print(error_msg)
+        traceback.print_exc()
+        if hasattr(st, "error"):
+            st.error(f"DEBUG: {error_msg}")
         return None
 
 
