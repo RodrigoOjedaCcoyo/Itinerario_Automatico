@@ -117,7 +117,6 @@ def render_ventas_ui():
     # Esconder elementos de Streamlit (Header, Menu, Footer)
     st.markdown("""
         <style>
-            [data-testid="stHeader"], header {visibility: hidden;}
             #MainMenu {visibility: hidden;}
             footer {visibility: hidden;}
             .stAppDeployButton {display: none;}
