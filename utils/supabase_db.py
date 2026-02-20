@@ -70,21 +70,18 @@ def save_itinerary_v2(itinerary_data):
             
             if lead_res.data:
                 id_lead = lead_res.data[0]["id_lead"]
-                # Actualizamos el estado del lead existente
+                # Actualizamos el lead existente (se quita estado_lead)
                 supabase.table("lead").update({
-                    "estado_lead": estado,
                     "id_vendedor": vendedor_id,
                     "nombre_pasajero": nombre
                 }).eq("id_lead", id_lead).execute()
             else:
-                # Crear nuevo lead
+                # Crear nuevo lead (se quita estado_lead y whatsapp)
                 new_lead = {
                     "numero_celular": celular,
                     "nombre_pasajero": nombre,
                     "id_vendedor": vendedor_id,
-                    "red_social": fuente,
-                    "estado_lead": estado,
-                    "whatsapp": True if "WhatsApp" in fuente else False
+                    "red_social": fuente
                 }
                 res_nl = supabase.table("lead").insert(new_lead).execute()
                 if res_nl.data:
@@ -153,8 +150,7 @@ def get_last_itinerary_by_phone(phone: str):
                 "datos_render": {
                     "pasajero": lead.get("nombre_pasajero", ""),
                     "celular_cliente": lead.get("numero_celular", ""),
-                    "fuente": lead.get("red_social", "Desconocido"),
-                    "estado": lead.get("estado_lead", "Nuevo")
+                    "fuente": lead.get("red_social", "Desconocido")
                 }
             }
             
@@ -238,29 +234,22 @@ def get_available_tours():
     supabase = get_supabase_client()
     if not supabase: return []
     try:
-        # Intentamos seleccionar 'atractivos' explícitamente si existe
-        res = supabase.table("tour").select("*, atractivos").order("nombre").execute()
-    except Exception:
-        # Fallback si la columna 'atractivos' no existe
         res = supabase.table("tour").select("*").order("nombre").execute()
+    except Exception as e:
+        print(f"Error fetching tours: {e}")
+        return []
 
     tours = []
     if res.data:
         for t in res.data:
             try:
-                # 1. Parsear Atractivos (UI highlights) desde 'atractivos' o fallback a 'highlights'
-                raw_atractivos = t.get("atractivos")
-                # Si no hay columna atractivos, a veces se guardó en highlights["lugares"]
+                # 1. Parsear Highlights (UI highlights) desde 'highlights'
                 raw_highlights_db = t.get("highlights")
                 
                 final_highlights = []
-                # Prioridad 1: Columna atractivos
-                if raw_atractivos:
-                    final_highlights = extract_json_list(raw_atractivos, ["Lo que visitarás", "lugares", "atractivos"])
-                
-                # Prioridad 2: Buscar dentro de highlights si falló lo anterior
-                if not final_highlights and raw_highlights_db:
-                    final_highlights = extract_json_list(raw_highlights_db, ["Lo que visitarás", "lugares"])
+                # Buscar dentro de highlights
+                if raw_highlights_db:
+                    final_highlights = extract_json_list(raw_highlights_db, ["Lo que visitarás", "lugares", "atractivos"])
                 
                 # 2. Parsear Servicios
                 servicios_in = extract_json_list(t.get("servicios_incluidos"), ["incluye", "servicios"])
@@ -271,9 +260,7 @@ def get_available_tours():
                 rich_itinerary = ""
                 
                 # Intentar sacar el texto del itinerario/experiencia de los JSONs
-                if isinstance(raw_atractivos, dict) and "itinerario" in raw_atractivos:
-                    rich_itinerary = raw_atractivos["itinerario"]
-                elif isinstance(raw_highlights_db, dict) and "itinerario" in raw_highlights_db:
+                if isinstance(raw_highlights_db, dict) and "itinerario" in raw_highlights_db:
                     rich_itinerary = raw_highlights_db["itinerario"]
                 
                 # Si encontramos texto enriquecido, lo usamos
