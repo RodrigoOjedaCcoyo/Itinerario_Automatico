@@ -154,6 +154,7 @@ def render_ventas_ui():
     if 'f_extra_ext' not in st.session_state: st.session_state.f_extra_ext = 0.0
     if 'f_extra_can' not in st.session_state: st.session_state.f_extra_can = 0.0
     if 'f_num_noches' not in st.session_state: st.session_state.f_num_noches = 0
+    if 'f_nota_precio' not in st.session_state: st.session_state.f_nota_precio = "INCLUYE TOUR"
     # Verificar Conexión
     from utils.supabase_db import get_supabase_client
     if get_supabase_client() is None:
@@ -671,7 +672,7 @@ def render_ventas_ui():
                             tour['costo_can'] = col_c.number_input(f"CAN ($)", value=float(tour.get('costo_can', 0)), key=f"cc_{tour_id}", disabled=is_disabled)
                             
                             st.markdown("---")
-                            tour['nota_precio'] = st.text_input("📝 Nota de Precio (Exclusivo en PDF)", value=tour.get('nota_precio', 'INCLUYE TOUR'), key=f"np_{tour_id}", disabled=is_disabled, help="Esta nota aparecerá en la sección de precios del PDF.")
+                            # tour['nota_precio'] = st.text_input("📝 Nota de Precio (Exclusivo en PDF)", value=tour.get('nota_precio', 'INCLUYE TOUR'), key=f"np_{tour_id}", disabled=is_disabled, help="Esta nota aparecerá en la sección de precios del PDF.")
                             
                             # --- Suplementos de Tren (Localizados en MP) ---
                             st.markdown("🚅 **Suplementos de Tren**")
@@ -780,6 +781,8 @@ def render_ventas_ui():
             ma5, ma6, ma7, ma8 = st.columns(4)
             margen_antes_pct = ma5.number_input("% Margen (Antes)", step=1.0, key="f_margen_antes", help="Margen para el precio tachado (efecto de oferta).")
             
+            st.session_state.f_nota_precio = st.text_input("📝 Nota de Precio Global (Exclusivo en PDF)", value=st.session_state.get('f_nota_precio', 'INCLUYE TOUR'), key="global_nota_precio", help="Esta nota aparecerá en la sección de precios del PDF para todos los tours.")
+
             # Cálculo automático base de noches si el valor es 0 o el estado no existe
             auto_noches = max(0, len(st.session_state.itinerario) - 1)
             # Solo forzar auto_noches si el usuario no ha tocado el campo (valor en 0)
@@ -1091,7 +1094,7 @@ def render_ventas_ui():
                                 'costo_can_est': tour.get('costo_can_est', 0),
                                 'costo_can_nino': tour.get('costo_can_nino', 0),
                                 'servicios_no_incluye': tour.get('servicios_no_incluye', []),
-                                'nota_precio': tour.get('nota_precio', ''),
+                                'nota_precio': st.session_state.f_nota_precio, # Usar nota global
                                 'id_original': tour.get('id', '')
                             })
                         
@@ -1288,6 +1291,88 @@ def render_ventas_ui():
                                         'h4': f"{calc_m(base_antes, u_t_o * (tc if tipo_t == 'Nacional' else 1), u_h4):,.2f}"
                                     }
                                 })                            
+                            # --- NUEVA SECCIÓN: DESGLOSE ESTRUCTURADO PARA EXTRACCIÓN (FACTURACIÓN) ---
+                            items_ingreso = []
+                            if pasajeros_nac > 0:
+                                b_nac_final = total_nac_pp + (extra_nac/max(1, pasajeros_nac))
+                                if estrategia_v == "General": b_nac_final += (calc_upgrades + calc_tren)
+                                items_ingreso.append({
+                                    "descripcion": f"Pax Nacional ({pasajeros_nac})",
+                                    "cantidad": pasajeros_nac,
+                                    "precio_unitario": round(b_nac_final, 2),
+                                    "tipo": "NACIONAL"
+                                })
+                            
+                            if pasajeros_ext > 0:
+                                b_ext_final = total_ext_pp + (extra_ext/max(1, pasajeros_ext))
+                                if estrategia_v == "General": b_ext_final += (calc_upgrades + calc_tren)
+                                items_ingreso.append({
+                                    "descripcion": f"Pax Extranjero ({pasajeros_ext})",
+                                    "cantidad": pasajeros_ext,
+                                    "precio_unitario": round(b_ext_final, 2),
+                                    "tipo": "EXTRANJERO"
+                                })
+                                
+                            if pasajeros_can > 0:
+                                b_can_final = total_can_pp + (extra_can/max(1, pasajeros_can))
+                                if estrategia_v == "General": b_can_final += (calc_upgrades + calc_tren)
+                                items_ingreso.append({
+                                    "descripcion": f"Pax CAN ({pasajeros_can})",
+                                    "cantidad": pasajeros_can,
+                                    "precio_unitario": round(b_can_final, 2),
+                                    "tipo": "CAN"
+                                })
+
+                            # --- NUEVA SECCIÓN: METADATOS PARA ANÁLISIS POSTERIOR (AUDITORÍA) ---
+                            control_interno = {
+                                "margen_utilidad_pct": margen_pct,
+                                "tipo_cambio_aplicado": tc,
+                                "distribucion_habitaciones": {
+                                    "simples": n_sgl,
+                                    "dobles_twin": n_dbl,
+                                    "matrimoniales": n_mat,
+                                    "triples": n_tpl,
+                                    "cuadruples": n_cua
+                                },
+                                "desglose_pasajeros": {
+                                    "nacional": {
+                                        "adultos": c_ad_nac,
+                                        "estudiantes": c_es_nac,
+                                        "pcd": c_pc_nac,
+                                        "niños": c_ni_nac
+                                    },
+                                    "extranjero": {
+                                        "adultos": c_ad_ext,
+                                        "estudiantes": c_es_ext,
+                                        "pcd": c_pc_ext,
+                                        "niños": c_ni_ext
+                                    },
+                                    "can": {
+                                        "adultos": c_ad_can,
+                                        "estudiantes": c_es_can,
+                                        "pcd": c_pc_can,
+                                        "niños": c_ni_can
+                                    }
+                                },
+                                "estrategia_usada": estrategia_v,
+                                "total_pasajeros": total_pasajeros,
+                                "ajustes_manuales": {
+                                    "nacional": round(m_extra_nac, 2),
+                                    "extranjero": round(m_extra_ext, 2),
+                                    "can": round(m_extra_can, 2)
+                                },
+                                "categorias_seleccionadas": {
+                                    "hotel": sel_hotel_gen,
+                                    "tren": sel_tren_gen,
+                                    "tiene_machu_picchu": has_mp
+                                },
+                                "costos_base_sistema_pp": {
+                                    "nacional": round(total_nac_pp, 2),
+                                    "extranjero": round(total_ext_pp, 2),
+                                    "can": round(total_can_pp, 2)
+                                }
+                            }
+
                             full_itinerary_data = {
                                 'title_1': t1,
                                 'title_2': t2,
@@ -1305,44 +1390,16 @@ def render_ventas_ui():
                                 'vendedor': vendedor,
                                 'celular_cliente': celular,
                                 'fuente': origen_lead,
-                                # MAPPING DE ESTRATEGIA PARA EL TEMPLATE
-                                # "Opciones" (Radio) -> "General" (Template: Vista Estándar 3 opciones)
-                                # "Matriz" (Radio) -> "Matriz" (Template: Grid 12 opciones)
-                                # "General" (Radio) -> "General" (Template: Vista Cierre con precios_cierre)
                                 'estrategia': estrategia_v, 
-                                'estado': "Cotización", # Valor fijo ya que usamos estrategia
+                                'estado': "Cotización",
                                 'logo_url': logo_path,
                                 'logo_cover_url': logo_path,
-                                'llama_img': os.path.abspath(os.path.join("assets", "images", "logo_background.png")),
-                                'llama_purchase_img': os.path.abspath(os.path.join("assets", "images", "llama_purchase.png")),
-                                'train_exp_img': os.path.abspath(os.path.join("assets", "images", "train_expedition.png")),
-                                'train_vis_img': os.path.abspath(os.path.join("assets", "images", "train_vistadome.png")),
-                                'train_obs_img': os.path.abspath(os.path.join("assets", "images", "train_observatory.png")),
-                                'es_nacional': (tipo_t == "Nacional"),
-                                'categoria': st.session_state.get('f_categoria', 'Cusco Tradicional'),
+                                'detalle_ingresos': items_ingreso,
+                                'control_interno': control_interno, # <--- EL ACTIVO PARA ANÁLISIS
+                                'total_final_calculado': round(monto_t_ref, 2),
                                 'itinerario': days_data,
                                 'days': days_data,
-                                'matriz': pricing_matrix,
-                                'matrix_antes': matrix_antes,
-                                'show_antes_pdf': show_antes_pdf,
-                                'precios': {
-                                    'nac': {
-                                        'total': f"{(total_nac_pp + (extra_nac/max(1, pasajeros_nac)) + (calc_upgrades + calc_tren)) * pasajeros_nac:,.2f}",
-                                        'num_pas': pasajeros_nac
-                                    } if pasajeros_nac > 0 else None,
-                                    'ext': {
-                                        'total': f"{((total_ext_pp + (extra_ext/max(1, pasajeros_ext)) + (calc_upgrades + calc_tren)) * pasajeros_ext) + ((total_can_pp + (extra_can/max(1, pasajeros_can)) + (calc_upgrades + calc_tren)) * pasajeros_can):,.2f}",
-                                        'num_pas': pasajeros_ext + pasajeros_can
-                                    } if (pasajeros_ext > 0 or pasajeros_can > 0) else None,
-                                },
-                                'precios_antes': {
-                                    'nac': {'total': f"{(total_nac_a / max(1, pasajeros_nac)) + (extra_nac/max(1, pasajeros_nac)) + (calc_upgrades + calc_tren):,.2f}"} if pasajeros_nac > 0 else None,
-                                    'ext': {
-                                        'total': f"{((total_ext_a / max(1, pasajeros_ext)) + (extra_ext/max(1, pasajeros_ext)) + (calc_upgrades + calc_tren)) * pasajeros_ext + ((total_can_a / max(1, pasajeros_can)) + (extra_can/max(1, pasajeros_can)) + (calc_upgrades + calc_tren)) * pasajeros_can:,.2f}"
-                                    } if (pasajeros_ext > 0 or pasajeros_can > 0) else None,
-                                },
                                 'precios_cierre': precios_cierre_list,
-                                'nota_p': next((t.get('nota_precio', '') for t in st.session_state.itinerario if "MACHU PICCHU" in t.get('titulo', '').upper()), ''),
                                 'canal': st.session_state.get('f_tipo_cliente', 'B2C')
                             }
 

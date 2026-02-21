@@ -1,4 +1,4 @@
--- 0. REINICIAR (Surgical cleanup compatible con Supabase)
+  -- 0. REINICIAR (Surgical cleanup compatible con Supabase)
   -- Borrar vistas si existen
   DROP VIEW IF EXISTS vista_servicios_diarios CASCADE;
   DROP VIEW IF EXISTS vista_ventas_completa CASCADE;
@@ -6,7 +6,9 @@
   -- Borrar tablas si existen (en orden de dependencia)
   DROP TABLE IF EXISTS evaluacion_proveedor CASCADE;
   DROP TABLE IF EXISTS venta_servicio_proveedor CASCADE;
+  DROP TABLE IF EXISTS documentacion CASCADE; -- Seguridad para versiones viejas
   DROP TABLE IF EXISTS pasajero CASCADE;      -- Seguridad para versiones viejas
+  DROP TABLE IF EXISTS requerimiento;
   DROP TABLE IF EXISTS pago CASCADE;
   DROP TABLE IF EXISTS venta_tour CASCADE;
   DROP TABLE IF EXISTS venta CASCADE;
@@ -16,6 +18,7 @@
   DROP TABLE IF EXISTS paquete CASCADE;
   DROP TABLE IF EXISTS tour_itinerario_item CASCADE;
   DROP TABLE IF EXISTS tour CASCADE;
+  DROP TABLE IF EXISTS plantilla_servicio CASCADE;
   DROP TABLE IF EXISTS proveedor CASCADE; -- AGREGADO AQUÍ
   DROP TABLE IF EXISTS agencia_aliada CASCADE;
   DROP TABLE IF EXISTS cliente CASCADE;
@@ -73,9 +76,6 @@
       id_lead INTEGER REFERENCES lead(id_lead) ON DELETE SET NULL,
       nombre VARCHAR(255), -- Requerido por app
       tipo_cliente VARCHAR(50) DEFAULT 'B2C' CHECK (tipo_cliente IN ('B2C', 'B2B')),
-      pais VARCHAR(100), -- Requerido por app
-      genero VARCHAR(20), -- Requerido por app
-      documento_identidad VARCHAR(50),
       fecha_registro TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
   );
 
@@ -113,17 +113,6 @@
       hora_inicio TIME, 
       activo BOOLEAN DEFAULT TRUE,
       created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
-  );
-
-  CREATE TABLE tour_itinerario_item (
-      id_item SERIAL PRIMARY KEY,
-      id_tour INTEGER REFERENCES tour(id_tour) ON DELETE CASCADE,
-      orden INTEGER NOT NULL,
-      lugar_nombre VARCHAR(255) NOT NULL,
-      descripcion_corta TEXT,
-      duracion_estimada_minutos INTEGER,
-      es_parada_principal BOOLEAN DEFAULT TRUE,
-      url_foto_referencia TEXT
   );
 
   CREATE TABLE paquete (
@@ -177,9 +166,6 @@
       id_agencia_aliada INTEGER REFERENCES agencia_aliada(id_agencia),
       tour_nombre VARCHAR(255),
       num_pasajeros INTEGER DEFAULT 1, 
-      url_itinerario TEXT,
-      url_comprobante_pago TEXT,
-      url_documentos TEXT,
       cancelada BOOLEAN DEFAULT FALSE,
       fecha_cancelacion TIMESTAMP WITH TIME ZONE,
       created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
@@ -196,20 +182,29 @@
       costo_applied DECIMAL(10,2),
       moneda_costo VARCHAR(10) DEFAULT 'USD',
       id_proveedor INTEGER, -- Definido más adelante como FK
-      cantidad_pasajeros INTEGER DEFAULT 1,
+      cantidad INTEGER DEFAULT 1,
       punto_encuentro VARCHAR(255),
-      observaciones TEXT,
+      observacion TEXT,
       id_itinerario_dia_index INTEGER,
       estado_servicio VARCHAR(30) DEFAULT 'PENDIENTE' CHECK (estado_servicio IN ('PENDIENTE', 'CONFIRMADO', 'EN_CURSO', 'COMPLETADO', 'CANCELADO')),
       -- Flujo de Caja Maestro (Liquidación + Requerimientos + Endosos)
       estado_pago_operativo VARCHAR(20) DEFAULT 'NO_REQUERIDO' CHECK (estado_pago_operativo IN ('NO_REQUERIDO', 'PENDIENTE', 'PAGADO')),
       datos_pago_operativo TEXT, -- Cuentas, Yape, Plin del proveedor o guía
-      url_voucher_operativo TEXT, -- Comprobante subido por contabilidad
       es_endoso BOOLEAN DEFAULT FALSE, -- Flag para identificar si fue tercerizado
       costo_unitario DECIMAL(10,2) DEFAULT 0,
       cantidad_items INTEGER DEFAULT 1,
       precio_vendedor DECIMAL(10,2) DEFAULT 0, -- Precio proyectado por el vendedor (referencia)
       PRIMARY KEY (id_venta, n_linea)
+  );
+  
+  CREATE TABLE venta_item_ingreso (
+      id_item_ingreso SERIAL PRIMARY KEY,
+      id_venta INTEGER REFERENCES venta(id_venta) ON DELETE CASCADE,
+      descripcion VARCHAR(255) NOT NULL, -- Ej: 'Pax Nacional', 'Pax Extranjero', 'Suplemento', etc.
+      cantidad INTEGER NOT NULL DEFAULT 1,
+      precio_unitario DECIMAL(10,2) NOT NULL,
+      subtotal DECIMAL(10,2) GENERATED ALWAYS AS (cantidad * precio_unitario) STORED,
+      created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
   );
 
   CREATE TABLE pago (
@@ -219,7 +214,8 @@
       monto_pagado DECIMAL(10,2) NOT NULL CHECK (monto_pagado > 0),
       moneda VARCHAR(10) DEFAULT 'USD' CHECK (moneda IN ('USD', 'PEN', 'EUR')),
       metodo_pago VARCHAR(50) CHECK (metodo_pago IN ('EFECTIVO', 'TRANSFERENCIA', 'TARJETA', 'PAYPAL', 'YAPE', 'PLIN', 'OTRO')),
-      tipo_pago VARCHAR(50) CHECK (tipo_pago IN ('ADELANTO', 'SALDO', 'TOTAL', 'PARCIAL')),
+      tipo_pago VARCHAR(50) CHECK (tipo_pago IN ('ADELANTO', 'SALDO', 'TOTAL', 'PARCIAL', 'REEMBOLSO')),
+      tipo_comprobante VARCHAR(50) DEFAULT 'RECIBO' CHECK (tipo_comprobante IN ('BOLETA', 'FACTURA', 'RECIBO', 'RECIBO SIMPLE', 'SIN_COMPROBANTE')),
       created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
   );
 
@@ -284,12 +280,12 @@
           'TRANSPORTE', 'ALOJAMIENTO', 'ALIMENTACION', 
           'GUIA', 'TICKETS', 'ENDOSE' 
       )),
-      costo_acordado DECIMAL(10,2) NOT NULL,
+      costo_unitario DECIMAL(10,2) NOT NULL,
       moneda VARCHAR(10) DEFAULT 'USD',
 
       created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
       FOREIGN KEY (id_venta, n_linea) REFERENCES venta_tour(id_venta, n_linea) ON DELETE CASCADE,
-      UNIQUE(id_venta, n_linea, tipo_servicio) -- CRÍTICO: Evitar duplicar guías/tours por servicio
+      UNIQUE(id_venta, n_linea, tipo_servicio)
   );
 
   CREATE TABLE evaluacion_proveedor (
@@ -360,7 +356,7 @@
     8, 1, 44.00, 115.00,
     'FULL DAY', 'MODERADO',
     '{"itinerario": "Después del desayuno, iniciamos la ruta por el ***Valle Sagrado de los Incas*** visitando ***Chinchero***, donde conoceremos un antiguo ***palacio inca***, su ***iglesia colonial*** y un tradicional ***centro textil***. Continuamos hacia ***Moray***, famoso por sus ***terrazas circulares agrícolas***, y luego descendemos a las impresionantes ***Salineras de Maras***, con miles de pozos de sal aún en funcionamiento.\n\nEl recorrido prosigue hacia el valle de ***Urubamba*** para disfrutar de un ***almuerzo buffet***. Posteriormente visitamos ***Ollantaytambo***, conocida como la ***última ciudad inca viviente***, y nos dirigimos a la estación para abordar el ***tren turístico*** rumbo a ***Aguas Calientes*** y nos trasladamos al ***hotel*** para pasar la noche."}'::jsonb,
-    '{"Lo que visitarás": ["Pisac", "Mercado de Pisac", "Ollantaytambo", "Chinchero"]}'::jsonb,
+    '{"incluye": ["Pisac", "Mercado de Pisac", "Ollantaytambo", "Chinchero"]}'::jsonb,
     '{"no_incluye": ["Gastos Extras", "Hospedaje", "Aliemntación"]}'::jsonb,
     'valle_sagrado_vip', '06:30:00', TRUE
   ),
@@ -797,7 +793,7 @@
   CREATE OR REPLACE FUNCTION sync_costo_venta_total()
   RETURNS TRIGGER AS $$
   BEGIN
-      UPDATE venta SET costo_total = (SELECT COALESCE(SUM(costo_acordado), 0) FROM venta_servicio_proveedor WHERE id_venta = COALESCE(NEW.id_venta, OLD.id_venta))
+      UPDATE venta SET costo_total = (SELECT COALESCE(SUM(costo_unitario), 0) FROM venta_servicio_proveedor WHERE id_venta = COALESCE(NEW.id_venta, OLD.id_venta))
       WHERE id_venta = COALESCE(NEW.id_venta, OLD.id_venta);
       RETURN NULL;
   END;
@@ -817,6 +813,42 @@
 
   CREATE TRIGGER trigger_calc_utilidad BEFORE INSERT OR UPDATE OF precio_total_cierre, costo_total ON venta
       FOR EACH ROW EXECUTE FUNCTION calcular_utilidad_venta();
+
+  -- 3.4. Sincronizar estado_pago de la venta (Basado en tabla Pagos)
+  CREATE OR REPLACE FUNCTION sync_estado_pago_venta()
+  RETURNS TRIGGER AS $$
+  DECLARE
+      total_deuda DECIMAL(10,2);
+      total_pagado DECIMAL(10,2);
+      nuevo_estado VARCHAR(50);
+  BEGIN
+      -- Obtener el precio total de la venta
+      SELECT precio_total_cierre INTO total_deuda FROM venta WHERE id_venta = COALESCE(NEW.id_venta, OLD.id_venta);
+      
+      -- Sumar todos los pagos (reembolsos restan)
+      SELECT COALESCE(SUM(CASE WHEN tipo_pago = 'REEMBOLSO' THEN -monto_pagado ELSE monto_pagado END), 0) 
+      INTO total_pagado 
+      FROM pago 
+      WHERE id_venta = COALESCE(NEW.id_venta, OLD.id_venta);
+
+      -- Determinar estado
+      IF total_pagado <= 0 THEN
+          nuevo_estado := 'PENDIENTE';
+      ELSIF total_pagado < total_deuda THEN
+          nuevo_estado := 'PARCIAL';
+      ELSE
+          nuevo_estado := 'COMPLETADO';
+      END IF;
+
+      -- Actualizar venta
+      UPDATE venta SET estado_pago = nuevo_estado WHERE id_venta = COALESCE(NEW.id_venta, OLD.id_venta);
+      
+      RETURN NULL;
+  END;
+  $$ language 'plpgsql';
+
+  CREATE TRIGGER trigger_sync_estado_pago AFTER INSERT OR UPDATE OR DELETE ON pago
+      FOR EACH ROW EXECUTE FUNCTION sync_estado_pago_venta();
 
 
   -- ==============================================================
