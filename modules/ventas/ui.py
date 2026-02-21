@@ -1028,7 +1028,18 @@ def render_ventas_ui():
             
             c_btn1, c_btn2 = st.columns(2)
             if c_btn2.button("🧹 Limpiar Todo"):
+                # Resetear itinerario
                 st.session_state.itinerario = []
+                # Resetear nota de precio global
+                st.session_state.f_nota_precio = "INCLUYE TOUR"
+                # Resetear datos del pasajero
+                st.session_state.f_nombre = ""
+                st.session_state.f_celular = ""
+                # Reiniciar otros campos opcionales si es necesario
+                st.session_state.f_extra_nac = 0.0
+                st.session_state.f_extra_ext = 0.0
+                st.session_state.f_extra_can = 0.0
+                st.success("¡Formulario limpiado por completo!")
                 st.rerun()
             
             if c_btn1.button("🔥 GENERAR ITINERARIO PDF"):
@@ -1418,7 +1429,8 @@ def render_ventas_ui():
                                 'itinerario': days_data,
                                 'days': days_data,
                                 'precios_cierre': precios_cierre_list,
-                                'canal': st.session_state.get('f_tipo_cliente', 'B2C')
+                                'canal': st.session_state.get('f_tipo_cliente', 'B2C'),
+                                'nota_p': st.session_state.get('f_nota_precio', '')
                             }
 
                             # 2. Guardar en Supabase y obtener ID de vinculación
