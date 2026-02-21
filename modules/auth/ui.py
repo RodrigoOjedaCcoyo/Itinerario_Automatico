@@ -24,11 +24,33 @@ def render_login_ui():
                 else:
                     user_data = verify_user(email.strip().lower(), password)
                     if user_data:
+                        # Datos de sesión
+                        email_clean = email.strip().lower()
+                        rol = user_data.get("rol", "VENTAS")
+                        nombre = user_data.get("nombre", "Vendedor")
+                        
                         st.session_state.authenticated = True
-                        st.session_state.user_email = email
-                        st.session_state.user_rol = user_data.get("rol", "VENTAS")
-                        st.session_state.vendedor_name = user_data.get("nombre", "Vendedor")
-                        st.success(f"¡Bienvenido {st.session_state.vendedor_name}!")
+                        st.session_state.user_email = email_clean
+                        st.session_state.user_rol = rol
+                        st.session_state.vendedor_name = nombre
+                        
+                        # Guardar cookie por 24 horas (expires_at)
+                        import datetime
+                        import extra_streamlit_components as nsc
+                        cookie_manager = nsc.CookieManager()
+                        
+                        expires = datetime.datetime.now() + datetime.timedelta(days=1)
+                        cookie_manager.set(
+                            "latitud_session_token",
+                            {
+                                "email": email_clean,
+                                "rol": rol,
+                                "nombre": nombre
+                            },
+                            expires_at=expires
+                        )
+                        
+                        st.success(f"¡Bienvenido {nombre}!")
                         st.rerun()
                     else:
                         st.error("Correo o Contraseña incorrectos.")

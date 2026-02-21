@@ -672,7 +672,7 @@ def render_ventas_ui():
                             tour['costo_can'] = col_c.number_input(f"CAN ($)", value=float(tour.get('costo_can', 0)), key=f"cc_{tour_id}", disabled=is_disabled)
                             
                             st.markdown("---")
-                            # tour['nota_precio'] = st.text_input("📝 Nota de Precio (Exclusivo en PDF)", value=tour.get('nota_precio', 'INCLUYE TOUR'), key=f"np_{tour_id}", disabled=is_disabled, help="Esta nota aparecerá en la sección de precios del PDF.")
+                            # Campo movido a la sección de resumen global abajo
                             
                             # --- Suplementos de Tren (Localizados en MP) ---
                             st.markdown("🚅 **Suplementos de Tren**")
@@ -1016,6 +1016,13 @@ def render_ventas_ui():
             monto_t_ref = (real_nac + real_ext + real_can)
             
             st.divider()
+            
+            # --- NUEVA SECCIÓN: NOTA DE PRECIO GLOBAL ---
+            st.session_state.f_nota_precio = st.text_input(
+                "📝 Nota de Precio (Aparecerá en el PDF)", 
+                value=st.session_state.get('f_nota_precio', "INCLUYE TOUR"),
+                help="Ej: INCLUYE TOUR, No incluye vuelos, etc."
+            )
             
             st.divider()
             
@@ -1364,12 +1371,23 @@ def render_ventas_ui():
                                 "categorias_seleccionadas": {
                                     "hotel": sel_hotel_gen,
                                     "tren": sel_tren_gen,
-                                    "tiene_machu_picchu": has_mp
+                                    "tiene_machu_picchu": has_mp,
+                                    "noches_hotel": num_noches
                                 },
-                                "costos_base_sistema_pp": {
-                                    "nacional": round(total_nac_pp, 2),
-                                    "extranjero": round(total_ext_pp, 2),
-                                    "can": round(total_can_pp, 2)
+                                "componentes_precio_pp": {
+                                    "hotel_upgrade_pp": round(calc_upgrades, 2),
+                                    "tren_upgrade_pp": round(calc_tren, 2),
+                                    "costo_base_itinerario_pp": {
+                                        "nacional": round(total_nac_pp, 2),
+                                        "extranjero": round(total_ext_pp, 2),
+                                        "can": round(total_can_pp, 2)
+                                    }
+                                },
+                                "tarifas_suplementos_momento_venta": {
+                                    "tren_vistadome": u_t_v,
+                                    "tren_observatory": u_t_o,
+                                    "tren_local": u_t_local,
+                                    "tipo_cambio": tc
                                 }
                             }
 

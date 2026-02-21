@@ -1,6 +1,8 @@
 import streamlit as st
 import sys
+import datetime
 from pathlib import Path
+import extra_streamlit_components as nsc
 
 # Configurar path para imports relativos
 sys.path.insert(0, str(Path(__file__).parent))
@@ -22,9 +24,28 @@ def load_css():
 
 load_css()
 
+# --- GESTIÓN DE COOKIES (PERSISTENCIA 24H) ---
+def get_manager():
+    return nsc.CookieManager()
+
+cookie_manager = get_manager()
+
 # --- SEGURIDAD ---
 if 'authenticated' not in st.session_state:
     st.session_state.authenticated = False
+
+# Intentar auto-login si no está autenticado
+if not st.session_state.authenticated:
+    existing_cookie = cookie_manager.get(cookie="latitud_session_token")
+    if existing_cookie:
+        # Recuperar datos del token (es un dict guardado en la cookie)
+        try:
+            st.session_state.authenticated = True
+            st.session_state.user_email = existing_cookie.get("email")
+            st.session_state.user_rol = existing_cookie.get("rol")
+            st.session_state.vendedor_name = existing_cookie.get("nombre")
+        except:
+            pass
 
 if not st.session_state.authenticated:
     from modules.auth.ui import render_login_ui
@@ -37,10 +58,11 @@ else:
         st.write(f"👤 **Usuario:** {user_email}")
         st.write(f"🛡️ **Rol:** {user_rol}")
         if st.button("Cerrar Sesión"):
+            cookie_manager.delete("latitud_session_token")
             st.session_state.authenticated = False
             st.rerun()
         st.divider()
-        st.caption("v2.3 - Estabilidad Reforzada 🟢")
+        st.caption("v2.4 - Persistencia Diaria 🛡️")
 
     # Importar y renderizar el módulo de ventas
     from modules.ventas.ui import render_ventas_ui

@@ -4,3 +4,4 @@ playwright
 supabase
 python-dotenv
 markdown
+extra-streamlit-components
