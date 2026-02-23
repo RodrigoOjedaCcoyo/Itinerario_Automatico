@@ -10,6 +10,7 @@
   DROP TABLE IF EXISTS pasajero CASCADE;      -- Seguridad para versiones viejas
   DROP TABLE IF EXISTS requerimiento;
   DROP TABLE IF EXISTS pago CASCADE;
+  DROP TABLE IF EXISTS venta_item_ingreso CASCADE;
   DROP TABLE IF EXISTS venta_tour CASCADE;
   DROP TABLE IF EXISTS venta CASCADE;
   DROP TABLE IF EXISTS itinerario_digital CASCADE;

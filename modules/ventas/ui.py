@@ -131,6 +131,22 @@ def render_ventas_ui():
     if 'origen_previo' not in st.session_state:
         st.session_state.origen_previo = "Nacional"
     
+    # Inicialización explícita en cero para todo el grupo
+    pax_keys_init = [
+        'n_adultos_nac', 'n_estud_nac', 'n_pcd_nac', 'n_ninos_nac',
+        'n_adultos_ext', 'n_estud_ext', 'n_pcd_ext', 'n_ninos_ext',
+        'n_adultos_can', 'n_estud_can', 'n_pcd_can', 'n_ninos_can',
+        'an_nac_uni', 'es_nac_uni', 'pcd_nac_uni', 'ni_nac_uni',
+        'an_ext_uni', 'es_ext_uni', 'pcd_ext_uni', 'ni_ext_uni',
+        'an_can_uni', 'es_can_uni', 'pcd_can_uni', 'ni_can_uni',
+        'an_nac_mix', 'es_nac_mix', 'pcd_nac_mix', 'ni_nac_mix',
+        'an_ext_mix', 'es_ext_mix', 'pcd_ext_mix', 'ni_ext_mix',
+        'an_can_mix', 'es_can_mix', 'pcd_can_mix', 'ni_can_mix'
+    ]
+    for k in pax_keys_init:
+        if k not in st.session_state:
+            st.session_state[k] = 0
+
     # Campos del formulario controlados
     if 'f_vendedor' not in st.session_state: st.session_state.f_vendedor = ""
     if 'f_celular' not in st.session_state: st.session_state.f_celular = ""
@@ -348,7 +364,7 @@ def render_ventas_ui():
             p_col_n = st.columns([1, 2])[0]
             with p_col_n:
                 st.caption("🇵🇪 NACIONALES")
-                n_adultos_nac = st.number_input("👤 Adultos", min_value=0, value=int(st.session_state.get('n_adultos_nac', 1)), step=1, key="an_nac_uni")
+                n_adultos_nac = st.number_input("👤 Adultos", min_value=0, value=int(st.session_state.get('n_adultos_nac', 0)), step=1, key="an_nac_uni")
                 n_estud_nac = st.number_input("🎓 Estudiantes", min_value=0, value=int(st.session_state.get('n_estud_nac', 0)), step=1, key="es_nac_uni")
                 n_pcd_nac = st.number_input("♿ PcD", min_value=0, value=int(st.session_state.get('n_pcd_nac', 0)), step=1, key="pcd_nac_uni")
                 n_ninos_nac = st.number_input("👶 Niños", min_value=0, value=int(st.session_state.get('n_ninos_nac', 0)), step=1, key="ni_nac_uni")
@@ -370,7 +386,7 @@ def render_ventas_ui():
             
             with p_col1:
                 st.caption("🌎 EXTRANJEROS")
-                n_adultos_ext = st.number_input("👤 Adultos", min_value=0, value=int(st.session_state.get('n_adultos_ext', 1)), step=1, key="an_ext_uni")
+                n_adultos_ext = st.number_input("👤 Adultos", min_value=0, value=int(st.session_state.get('n_adultos_ext', 0)), step=1, key="an_ext_uni")
                 n_estud_ext = st.number_input("🎓 Estudiantes", min_value=0, value=int(st.session_state.get('n_estud_ext', 0)), step=1, key="es_ext_uni")
                 n_pcd_ext = st.number_input("♿ PcD", min_value=0, value=int(st.session_state.get('n_pcd_ext', 0)), step=1, key="pcd_ext_uni")
                 n_ninos_ext = st.number_input("👶 Niños", min_value=0, value=int(st.session_state.get('n_ninos_ext', 0)), step=1, key="ni_ext_uni")
@@ -392,13 +408,13 @@ def render_ventas_ui():
             p_col_m1, p_col_m2, p_col_m3 = st.columns(3)
             with p_col_m1:
                 st.caption("🇵🇪 NACIONALES")
-                n_adultos_nac = st.number_input("👤 Adultos", min_value=0, value=int(st.session_state.get('n_adultos_nac', 1)), step=1, key="an_nac_mix")
+                n_adultos_nac = st.number_input("👤 Adultos", min_value=0, value=int(st.session_state.get('n_adultos_nac', 0)), step=1, key="an_nac_mix")
                 n_estud_nac = st.number_input("🎓 Estudiantes", min_value=0, value=int(st.session_state.get('n_estud_nac', 0)), step=1, key="es_nac_mix")
                 n_pcd_nac = st.number_input("♿ PcD", min_value=0, value=int(st.session_state.get('n_pcd_nac', 0)), step=1, key="pcd_nac_mix")
                 n_ninos_nac = st.number_input("👶 Niños", min_value=0, value=int(st.session_state.get('n_ninos_nac', 0)), step=1, key="ni_nac_mix")
             with p_col_m2:
                 st.caption("🌎 EXTRANJEROS")
-                n_adultos_ext = st.number_input("👤 Adultos", min_value=0, value=int(st.session_state.get('n_adultos_ext', 1)), step=1, key="an_ext_mix")
+                n_adultos_ext = st.number_input("👤 Adultos", min_value=0, value=int(st.session_state.get('n_adultos_ext', 0)), step=1, key="an_ext_mix")
                 n_estud_ext = st.number_input("🎓 Estudiantes", min_value=0, value=int(st.session_state.get('n_estud_ext', 0)), step=1, key="es_ext_mix")
                 n_pcd_ext = st.number_input("♿ PcD", min_value=0, value=int(st.session_state.get('n_pcd_ext', 0)), step=1, key="pcd_ext_mix")
                 n_ninos_ext = st.number_input("👶 Niños", min_value=0, value=int(st.session_state.get('n_ninos_ext', 0)), step=1, key="ni_ext_mix")
@@ -1035,10 +1051,31 @@ def render_ventas_ui():
                 # Resetear datos del pasajero
                 st.session_state.f_nombre = ""
                 st.session_state.f_celular = ""
-                # Reiniciar otros campos opcionales si es necesario
+                # Resetear composición del grupo
+                keys_to_reset = [
+                    'n_adultos_nac', 'n_estud_nac', 'n_pcd_nac', 'n_ninos_nac',
+                    'n_adultos_ext', 'n_estud_ext', 'n_pcd_ext', 'n_ninos_ext',
+                    'n_adultos_can', 'n_estud_can', 'n_pcd_can', 'n_ninos_can',
+                    'an_nac_uni', 'es_nac_uni', 'pcd_nac_uni', 'ni_nac_uni',
+                    'an_ext_uni', 'es_ext_uni', 'pcd_ext_uni', 'ni_ext_uni',
+                    'an_can_uni', 'es_can_uni', 'pcd_can_uni', 'ni_can_uni',
+                    'an_nac_mix', 'es_nac_mix', 'pcd_nac_mix', 'ni_nac_mix',
+                    'an_ext_mix', 'es_ext_mix', 'pcd_ext_mix', 'ni_ext_mix',
+                    'an_can_mix', 'es_can_mix', 'pcd_can_mix', 'ni_can_mix'
+                ]
+                for k in keys_to_reset:
+                    st.session_state[k] = 0
+                
+                # Resetear distribución de habitaciones
+                room_keys = ['f_n_sgl', 'f_n_dbl', 'f_n_mat', 'f_n_tpl', 'f_n_cua']
+                for rk in room_keys:
+                    st.session_state[rk] = 0
+
+                # Reiniciar otros campos opcionales
                 st.session_state.f_extra_nac = 0.0
                 st.session_state.f_extra_ext = 0.0
                 st.session_state.f_extra_can = 0.0
+                
                 st.success("¡Formulario limpiado por completo!")
                 st.rerun()
             
