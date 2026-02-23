@@ -18,8 +18,12 @@
         </div>
 
         <div class="cover-content">
+            {% if pasajero and pasajero | trim != '' %}
             <div class="cover-client-label">PREPARADO PARA</div>
             <div class="cover-passenger-name">{{ pasajero }}</div>
+            {% else %}
+            <div style="height: 50px;"></div> <!-- Solo un espaciador para no alterar el layout -->
+            {% endif %}
 
             <div class="cover-divider"></div>
 

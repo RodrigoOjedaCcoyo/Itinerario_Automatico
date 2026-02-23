@@ -1080,7 +1080,7 @@ def render_ventas_ui():
                 st.rerun()
             
             if c_btn1.button("🔥 GENERAR ITINERARIO PDF"):
-                if nombre and celular and st.session_state.itinerario:
+                if celular and st.session_state.itinerario:
                     with st.spinner("Generando PDF con Edge..."):
                         # Determinar portada y títulos desde el ESTADO DE SESIÓN
                         base_dir = os.getcwd()
@@ -1442,7 +1442,7 @@ def render_ventas_ui():
                             full_itinerary_data = {
                                 'title_1': t1,
                                 'title_2': t2,
-                                'pasajero': nombre.upper(),
+                                'pasajero': (nombre.upper() if nombre else ""),
                                 'fechas': rango_fechas.upper(),
                                 'usa_fechas': usa_fechas,
                                 'pricing_matrix': pricing_matrix,
@@ -1490,14 +1490,14 @@ def render_ventas_ui():
                                 st.download_button(
                                     label="📥 Descargar PDF Final",
                                     data=file,
-                                    file_name=f"Itinerario_{nombre.replace(' ', '_')}.pdf",
+                                    file_name=f"Itinerario_{nombre.replace(' ', '_') if nombre else 'Generico'}.pdf",
                                     mime="application/pdf"
                                 )
-                            st.success(f"¡Itinerario listo para {nombre}!")
+                            st.success(f"¡Itinerario listo para {nombre if nombre else 'el cliente'}!")
                         except Exception as e:
                             st.error(f"Error procesando: {e}")
                 else:
-                    st.warning("⚠️ Asegúrate de poner el Nombre, el Celular y tener al menos un tour en el plan.")
+                    st.warning("⚠️ Asegúrate de poner el Celular y tener al menos un tour en el plan.")
     
     # Pie de página
     st.markdown("---")
