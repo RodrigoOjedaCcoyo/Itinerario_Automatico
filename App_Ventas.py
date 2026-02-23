@@ -49,7 +49,7 @@ if not st.session_state.authenticated:
 
 if not st.session_state.authenticated:
     from modules.auth.ui import render_login_ui
-    render_login_ui()
+    render_login_ui(cookie_manager)
 else:
     # Sidebar de Usuario Autenticado
     with st.sidebar:

@@ -1,7 +1,7 @@
 import streamlit as st
 from utils.supabase_db import verify_user
 
-def render_login_ui():
+def render_login_ui(cookie_manager):
     # Renderizado centrado del logo y texto
     st.markdown("""
         <div style='text-align: center; padding: 2rem;'>
@@ -36,8 +36,6 @@ def render_login_ui():
                         
                         # Guardar cookie por 24 horas (expires_at)
                         import datetime
-                        import extra_streamlit_components as nsc
-                        cookie_manager = nsc.CookieManager()
                         
                         expires = datetime.datetime.now() + datetime.timedelta(days=1)
                         cookie_manager.set(
