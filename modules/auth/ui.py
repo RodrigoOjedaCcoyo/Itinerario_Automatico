@@ -1,7 +1,7 @@
 import streamlit as st
 from utils.supabase_db import verify_user
 
-def render_login_ui(cookie_manager):
+def render_login_ui(cookie_manager=None):
     # Renderizado centrado del logo y texto
     st.markdown("""
         <div style='text-align: center; padding: 2rem;'>
