@@ -364,10 +364,10 @@ def render_ventas_ui():
             p_col_n = st.columns([1, 2])[0]
             with p_col_n:
                 st.caption("🇵🇪 NACIONALES")
-                n_adultos_nac = st.number_input("👤 Adultos", min_value=0, value=int(st.session_state.get('n_adultos_nac', 0)), step=1, key="an_nac_uni")
-                n_estud_nac = st.number_input("🎓 Estudiantes", min_value=0, value=int(st.session_state.get('n_estud_nac', 0)), step=1, key="es_nac_uni")
-                n_pcd_nac = st.number_input("♿ PcD", min_value=0, value=int(st.session_state.get('n_pcd_nac', 0)), step=1, key="pcd_nac_uni")
-                n_ninos_nac = st.number_input("👶 Niños", min_value=0, value=int(st.session_state.get('n_ninos_nac', 0)), step=1, key="ni_nac_uni")
+                n_adultos_nac = st.number_input("👤 Adultos", min_value=0, step=1, key="an_nac_uni")
+                n_estud_nac = st.number_input("🎓 Estudiantes", min_value=0, step=1, key="es_nac_uni")
+                n_pcd_nac = st.number_input("♿ PcD", min_value=0, step=1, key="pcd_nac_uni")
+                n_ninos_nac = st.number_input("👶 Niños", min_value=0, step=1, key="ni_nac_uni")
             
             # Los otros se quedan con lo que tenían en la sesión o en 0 si no existen
             n_adultos_ext = int(st.session_state.get('n_adultos_ext', 0))
@@ -386,17 +386,17 @@ def render_ventas_ui():
             
             with p_col1:
                 st.caption("🌎 EXTRANJEROS")
-                n_adultos_ext = st.number_input("👤 Adultos", min_value=0, value=int(st.session_state.get('n_adultos_ext', 0)), step=1, key="an_ext_uni")
-                n_estud_ext = st.number_input("🎓 Estudiantes", min_value=0, value=int(st.session_state.get('n_estud_ext', 0)), step=1, key="es_ext_uni")
-                n_pcd_ext = st.number_input("♿ PcD", min_value=0, value=int(st.session_state.get('n_pcd_ext', 0)), step=1, key="pcd_ext_uni")
-                n_ninos_ext = st.number_input("👶 Niños", min_value=0, value=int(st.session_state.get('n_ninos_ext', 0)), step=1, key="ni_ext_uni")
+                n_adultos_ext = st.number_input("👤 Adultos", min_value=0, step=1, key="an_ext_uni")
+                n_estud_ext = st.number_input("🎓 Estudiantes", min_value=0, step=1, key="es_ext_uni")
+                n_pcd_ext = st.number_input("♿ PcD", min_value=0, step=1, key="pcd_ext_uni")
+                n_ninos_ext = st.number_input("👶 Niños", min_value=0, step=1, key="ni_ext_uni")
 
             with p_col2:
                 st.caption("🤝 CAN")
-                n_adultos_can = st.number_input("👤 Adultos ", min_value=0, value=int(st.session_state.get('n_adultos_can', 0)), step=1, key="an_can_uni")
-                n_estud_can = st.number_input("🎓 Estudiantes ", min_value=0, value=int(st.session_state.get('n_estud_can', 0)), step=1, key="es_can_uni")
-                n_pcd_can = st.number_input("♿ PcD ", min_value=0, value=int(st.session_state.get('n_pcd_can', 0)), step=1, key="pcd_can_uni")
-                n_ninos_can = st.number_input("👶 Niños ", min_value=0, value=int(st.session_state.get('n_ninos_can', 0)), step=1, key="ni_can_uni")
+                n_adultos_can = st.number_input("👤 Adultos ", min_value=0, step=1, key="an_can_uni")
+                n_estud_can = st.number_input("🎓 Estudiantes ", min_value=0, step=1, key="es_can_uni")
+                n_pcd_can = st.number_input("♿ PcD ", min_value=0, step=1, key="pcd_can_uni")
+                n_ninos_can = st.number_input("👶 Niños ", min_value=0, step=1, key="ni_can_uni")
             
             # Los nacionales se quedan con lo que tenían en la sesión
             n_adultos_nac = int(st.session_state.get('n_adultos_nac', 0))
@@ -408,22 +408,22 @@ def render_ventas_ui():
             p_col_m1, p_col_m2, p_col_m3 = st.columns(3)
             with p_col_m1:
                 st.caption("🇵🇪 NACIONALES")
-                n_adultos_nac = st.number_input("👤 Adultos", min_value=0, value=int(st.session_state.get('n_adultos_nac', 0)), step=1, key="an_nac_mix")
-                n_estud_nac = st.number_input("🎓 Estudiantes", min_value=0, value=int(st.session_state.get('n_estud_nac', 0)), step=1, key="es_nac_mix")
-                n_pcd_nac = st.number_input("♿ PcD", min_value=0, value=int(st.session_state.get('n_pcd_nac', 0)), step=1, key="pcd_nac_mix")
-                n_ninos_nac = st.number_input("👶 Niños", min_value=0, value=int(st.session_state.get('n_ninos_nac', 0)), step=1, key="ni_nac_mix")
+                n_adultos_nac = st.number_input("👤 Adultos", min_value=0, step=1, key="an_nac_mix")
+                n_estud_nac = st.number_input("🎓 Estudiantes", min_value=0, step=1, key="es_nac_mix")
+                n_pcd_nac = st.number_input("♿ PcD", min_value=0, step=1, key="pcd_nac_mix")
+                n_ninos_nac = st.number_input("👶 Niños", min_value=0, step=1, key="ni_nac_mix")
             with p_col_m2:
                 st.caption("🌎 EXTRANJEROS")
-                n_adultos_ext = st.number_input("👤 Adultos", min_value=0, value=int(st.session_state.get('n_adultos_ext', 0)), step=1, key="an_ext_mix")
-                n_estud_ext = st.number_input("🎓 Estudiantes", min_value=0, value=int(st.session_state.get('n_estud_ext', 0)), step=1, key="es_ext_mix")
-                n_pcd_ext = st.number_input("♿ PcD", min_value=0, value=int(st.session_state.get('n_pcd_ext', 0)), step=1, key="pcd_ext_mix")
-                n_ninos_ext = st.number_input("👶 Niños", min_value=0, value=int(st.session_state.get('n_ninos_ext', 0)), step=1, key="ni_ext_mix")
+                n_adultos_ext = st.number_input("👤 Adultos", min_value=0, step=1, key="an_ext_mix")
+                n_estud_ext = st.number_input("🎓 Estudiantes", min_value=0, step=1, key="es_ext_mix")
+                n_pcd_ext = st.number_input("♿ PcD", min_value=0, step=1, key="pcd_ext_mix")
+                n_ninos_ext = st.number_input("👶 Niños", min_value=0, step=1, key="ni_ext_mix")
             with p_col_m3:
                 st.caption("🤝 CAN")
-                n_adultos_can = st.number_input("👤 Adultos ", min_value=0, value=int(st.session_state.get('n_adultos_can', 0)), step=1, key="an_can_mix")
-                n_estud_can = st.number_input("🎓 Estudiantes ", min_value=0, value=int(st.session_state.get('n_estud_can', 0)), step=1, key="es_can_mix")
-                n_pcd_can = st.number_input("♿ PcD ", min_value=0, value=int(st.session_state.get('n_pcd_can', 0)), step=1, key="pcd_can_mix")
-                n_ninos_can = st.number_input("👶 Niños ", min_value=0, value=int(st.session_state.get('n_ninos_can', 0)), step=1, key="ni_can_mix")
+                n_adultos_can = st.number_input("👤 Adultos ", min_value=0, step=1, key="an_can_mix")
+                n_estud_can = st.number_input("🎓 Estudiantes ", min_value=0, step=1, key="es_can_mix")
+                n_pcd_can = st.number_input("♿ PcD ", min_value=0, step=1, key="pcd_can_mix")
+                n_ninos_can = st.number_input("👶 Niños ", min_value=0, step=1, key="ni_can_mix")
 
         # Persistencia obligatoria de todos los valores para el cálculo en página
         st.session_state.n_adultos_nac = n_adultos_nac
@@ -451,13 +451,13 @@ def render_ventas_ui():
         with st.expander("🛏️ Distribución de Habitaciones", expanded=total_pasajeros > 0):
             st.caption("Define cómo se distribuirá el grupo en las habitaciones.")
             rdr1_1, rdr1_2, rdr1_3 = st.columns(3)
-            n_sgl = rdr1_1.number_input("Simple (1p)", min_value=0, value=int(st.session_state.get('f_n_sgl', 0)), step=1, key="f_n_sgl")
-            n_dbl = rdr1_2.number_input("Doble Twin (2p)", min_value=0, value=int(st.session_state.get('f_n_dbl', 0)), step=1, key="f_n_dbl")
-            n_mat = rdr1_3.number_input("Matrimonial (2p)", min_value=0, value=int(st.session_state.get('f_n_mat', 0)), step=1, key="f_n_mat")
+            n_sgl = rdr1_1.number_input("Simple (1p)", min_value=0, step=1, key="f_n_sgl")
+            n_dbl = rdr1_2.number_input("Doble Twin (2p)", min_value=0, step=1, key="f_n_dbl")
+            n_mat = rdr1_3.number_input("Matrimonial (2p)", min_value=0, step=1, key="f_n_mat")
             
             rdr2_1, rdr2_2, _ = st.columns(3)
-            n_tpl = rdr2_1.number_input("Triple (3p)", min_value=0, value=int(st.session_state.get('f_n_tpl', 0)), step=1, key="f_n_tpl")
-            n_cua = rdr2_2.number_input("Cuádruple (4p)", min_value=0, value=int(st.session_state.get('f_n_cua', 0)), step=1, key="f_n_cua")
+            n_tpl = rdr2_1.number_input("Triple (3p)", min_value=0, step=1, key="f_n_tpl")
+            n_cua = rdr2_2.number_input("Cuádruple (4p)", min_value=0, step=1, key="f_n_cua")
             
             pax_en_habitaciones = (n_sgl * 1) + (n_dbl * 2) + (n_mat * 2) + (n_tpl * 3) + (n_cua * 4)
             if pax_en_habitaciones != total_pasajeros:
