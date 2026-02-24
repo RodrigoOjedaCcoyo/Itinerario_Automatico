@@ -794,10 +794,10 @@ def render_ventas_ui():
             extra_nac = ma1.number_input("S/ Extra (Nac)", step=10.0, key="f_extra_nac")
             extra_ext = ma2.number_input("$ Extra (Ext)", step=5.0, key="f_extra_ext")
             extra_can = ma3.number_input("$ Extra (CAN)", step=5.0, key="f_extra_can")
-            margen_pct = ma4.number_input("% Margen (Venta)", step=1.0, key="f_margen_porcentaje", help="Aumenta los precios de los tours en este porcentaje.")
+            margen_pct = ma4.number_input("% Margen (Venta)", value=float(st.session_state.get('f_margen_porcentaje', 30.0)), step=1.0, key="f_margen_porcentaje", help="Aumenta los precios de los tours en este porcentaje.")
             
             ma5, ma6, ma7, ma8 = st.columns(4)
-            margen_antes_pct = ma5.number_input("% Margen (Antes)", step=1.0, key="f_margen_antes", help="Margen para el precio tachado (efecto de oferta).")
+            margen_antes_pct = ma5.number_input("% Margen (Antes)", value=float(st.session_state.get('f_margen_antes', 40.0)), step=1.0, key="f_margen_antes", help="Margen para el precio tachado (efecto de oferta).")
             
             st.session_state.f_nota_precio = st.text_input("📝 Nota de Precio Global (Exclusivo en PDF)", value=st.session_state.get('f_nota_precio', 'INCLUYE TOUR'), key="global_nota_precio", help="Esta nota aparecerá en la sección de precios del PDF para todos los tours.")
 
@@ -1014,6 +1014,24 @@ def render_ventas_ui():
             avg_ext_pp = real_ext / max(1, pasajeros_ext)
             avg_can_pp = real_can / max(1, pasajeros_can)
 
+            # Promedios con el factor de "Antes"
+            real_nac_a = total_nac_a + m_extra_nac + (calc_upgrades + calc_tren) * pasajeros_nac
+            real_ext_a = total_ext_a + m_extra_ext + (calc_upgrades + calc_tren) * pasajeros_ext
+            real_can_a = total_can_a + m_extra_can + (calc_upgrades + calc_tren) * pasajeros_can
+            avg_nac_a_pp = real_nac_a / max(1, pasajeros_nac)
+            avg_ext_a_pp = real_ext_a / max(1, pasajeros_ext)
+            avg_can_a_pp = real_can_a / max(1, pasajeros_can)
+
+            # --- DICCIONARIOS PARA EL PDF (Solo cuando es Opciones) ---
+            precios = {
+                'nac': {'total': f"{avg_nac_pp:,.2f}"} if pasajeros_nac > 0 else None,
+                'ext': {'total': f"{avg_ext_pp:,.2f}"} if (pasajeros_ext + pasajeros_can) > 0 else None
+            }
+            precios_antes = {
+                'nac': {'total': f"{avg_nac_a_pp:,.2f}"} if pasajeros_nac > 0 else None,
+                'ext': {'total': f"{avg_ext_a_pp:,.2f}"} if (pasajeros_ext + pasajeros_can) > 0 else None
+            }
+            
             col_res1, col_res2, col_res3 = st.columns(3)
             with col_res1:
                 st.markdown("### 🇵🇪 Nacional")
@@ -1470,6 +1488,8 @@ def render_ventas_ui():
                                 'itinerario': days_data,
                                 'days': days_data,
                                 'precios_cierre': precios_cierre_list,
+                                'precios': precios,
+                                'precios_antes': precios_antes,
                                 'canal': st.session_state.get('f_tipo_cliente', 'B2C'),
                                 'nota_p': st.session_state.get('f_nota_precio', '')
                             }
