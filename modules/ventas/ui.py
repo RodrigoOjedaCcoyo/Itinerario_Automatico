@@ -158,6 +158,8 @@ def render_ventas_ui():
     if 'f_nota_precio' not in st.session_state: st.session_state.f_nota_precio = "INCLUYE TOUR"
     if 'f_monto_adelanto' not in st.session_state: st.session_state.f_monto_adelanto = 0.0
     if 'f_monto_pendiente' not in st.session_state: st.session_state.f_monto_pendiente = 0.0
+    if 'f_margen_porcentaje' not in st.session_state: st.session_state.f_margen_porcentaje = 30.0
+    if 'f_margen_antes' not in st.session_state: st.session_state.f_margen_antes = 40.0
     if 'f_estrategia' not in st.session_state: st.session_state.f_estrategia = "Opciones"
     if 'u_h2' not in st.session_state: st.session_state.u_h2 = 40.0
     if 'u_h3' not in st.session_state: st.session_state.u_h3 = 70.0
@@ -1075,6 +1077,8 @@ def render_ventas_ui():
                 st.session_state.f_extra_nac = 0.0
                 st.session_state.f_extra_ext = 0.0
                 st.session_state.f_extra_can = 0.0
+                st.session_state.f_margen_porcentaje = 30.0
+                st.session_state.f_margen_antes = 40.0
                 
                 st.success("¡Formulario limpiado por completo!")
                 st.rerun()
