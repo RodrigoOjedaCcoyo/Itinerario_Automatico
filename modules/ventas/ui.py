@@ -860,6 +860,9 @@ def render_ventas_ui():
             sel_hotel_gen = "Sin Hotel"
             sel_tren_gen = "Expedition"
 
+            # Verificar si existe MP en el itinerario de forma global (usado por métricas y General)
+            has_mp = any("MACHU PICCHU" in t.get('titulo', '').upper() for t in st.session_state.itinerario)
+
             if estrategia_v == "General":
                 with st.container(border=True):
                     st.markdown("🎯 **Configuración del Paquete (Modo General)**")
@@ -867,9 +870,6 @@ def render_ventas_ui():
                     sel_hotel_gen = cg1.selectbox("Categoría de Hotel", ["Sin Hotel", "Hotel 2*", "Hotel 3*", "Hotel 4*"], key="sel_h_gen")
                     
                     sel_tren_gen = "Expedition" # Valor por defecto seguro
-                    
-                    # Verificar si existe MP para mostrar el selector de tren
-                    has_mp = any("MACHU PICCHU" in t.get('titulo', '').upper() for t in st.session_state.itinerario)
                     
                     if has_mp:
                         opciones_tren = ["Expedition", "Vistadome", "Observatory"]
