@@ -62,8 +62,21 @@ else:
             st.session_state.authenticated = False
             st.rerun()
         st.divider()
-        st.caption("v2.4 - Persistencia Diaria 🛡️")
+        
+        # Módulos Disponibles según Rol
+        active_tab = "Itinerarios"
+        if user_rol in ["GERENCIA", "OPERACIONES"]:
+            st.markdown("### ⚙️ Administración")
+            active_tab = st.radio("Selector de Módulo:", ["Itinerarios", "Catálogo Maestro"], index=0, help="Elige la herramienta a usar.")
+            st.divider()
+            
+        st.caption("v2.5 - Catálogo Integrado 🚀")
 
-    # Importar y renderizar el módulo de ventas
-    from modules.ventas.ui import render_ventas_ui
-    render_ventas_ui()
+    # Renderizar el módulo seleccionado
+    if active_tab == "Catálogo Maestro":
+        from modules.admin.ui_precios import render_admin_precios_ui
+        render_admin_precios_ui()
+    else:
+        # Importar y renderizar el módulo de ventas
+        from modules.ventas.ui import render_ventas_ui
+        render_ventas_ui()

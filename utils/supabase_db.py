@@ -315,6 +315,7 @@ def get_available_tours():
                         formatted_hora = str(raw_hora)
 
                 tours.append({
+                    "id_tour": t.get("id_tour"),
                     "titulo": t.get("nombre", "Sin Nombre"),
                     "descripcion": desc,
                     "highlights": final_highlights,
@@ -478,3 +479,82 @@ def get_service_templates():
     except Exception as e:
         print(f"Error cargando plantillas de servicio: {e}")
         return []
+
+# --- CONFIGURACIÓN MAESTRA ---
+def update_tour_prices(id_tour, precio_nac, precio_ext, precio_can):
+    """
+    Actualiza los precios base de un tour en la tabla `tour`.
+    """
+    supabase = get_supabase_client()
+    if not supabase: return False, "No client"
+    try:
+        data = {
+            "precio_adulto_nacional": precio_nac,
+            "precio_adulto_extranjero": precio_ext,
+            "precio_adulto_can": precio_can
+        }
+        res = supabase.table("tour").update(data).eq("id_tour", id_tour).execute()
+        return True, "Precios actualizados"
+    except Exception as e:
+        return False, str(e)
+
+def create_new_tour(
+    nombre, descripcion, highlights_text,
+    precio_nac, precio_ext, precio_can,
+    incluye_text="", no_incluye_text="",
+    duracion_dias=1, duracion_horas=0
+):
+    """
+    Crea un nuevo tour en la base de datos asegurando que no haya campos Null críticos
+    y estructurando las listas de JSON (highlights, servicios).
+    """
+    supabase = get_supabase_client()
+    if not supabase: return False, "No client"
+
+    try:
+        # 1. Transformar textos largos a la estructura JSON esperada por UI
+        # UI espera { "itinerario": "texto largo" } o listas
+        hl_json = {"itinerario": descripcion, "lugares": [h.strip() for h in highlights_text.split(",") if h.strip()]}
+        inc_json = {"incluye": [i.strip() for i in incluye_text.split(",") if i.strip()]}
+        no_inc_json = {"no_incluye": [n.strip() for n in no_incluye_text.split(",") if n.strip()]}
+
+        data = {
+            "nombre": nombre,
+            "duracion_dias": duracion_dias,
+            "duracion_horas": duracion_horas,
+            
+            # Precios Base
+            "precio_adulto_nacional": precio_nac,
+            "precio_adulto_extranjero": precio_ext,
+            "precio_adulto_can": precio_can,
+            
+            # Precios Derivados o Secundarios (Llenar con 0 para evitar nulls aritméticos luego)
+            "precio_nino_nacional": max(0, precio_nac - 40),
+            "precio_nino_extranjero": max(0, precio_ext - 15),
+            "precio_nino_can": max(0, precio_can - 15),
+            
+            "precio_estudiante_nacional": max(0, precio_nac - 70),
+            "precio_estudiante_extranjero": max(0, precio_ext - 20),
+            "precio_estudiante_can": max(0, precio_can - 20),
+            
+            "precio_pcd_nacional": 0,
+            "precio_pcd_extranjero": 0,
+            "precio_pcd_can": 0,
+            
+            # Textos y Metadatos
+            "highlights": hl_json,
+            "servicios_incluidos": inc_json,
+            "servicios_no_incluidos": no_inc_json,
+            
+            "categoria": "General",
+            "dificultad": "FACIL",
+            "carpeta_img": "general",
+            "hora_inicio": "08:00:00",
+            "activo": True
+        }
+        
+        res = supabase.table("tour").insert(data).execute()
+        return True, "Tour creado con éxito"
+    except Exception as e:
+        return False, str(e)
+
