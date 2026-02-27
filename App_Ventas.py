@@ -63,12 +63,10 @@ else:
             st.rerun()
         st.divider()
         
-        # Módulos Disponibles según Rol
-        active_tab = "Itinerarios"
-        if user_rol in ["GERENCIA", "OPERACIONES"]:
-            st.markdown("### ⚙️ Administración")
-            active_tab = st.radio("Selector de Módulo:", ["Itinerarios", "Catálogo Maestro"], index=0, help="Elige la herramienta a usar.")
-            st.divider()
+        # Módulos Disponibles para Todos
+        st.markdown("### ⚙️ Administración")
+        active_tab = st.radio("Selector de Módulo:", ["Itinerarios", "Catálogo Maestro"], index=0, help="Elige la herramienta a usar.")
+        st.divider()
             
         st.caption("v2.5 - Catálogo Integrado 🚀")
 

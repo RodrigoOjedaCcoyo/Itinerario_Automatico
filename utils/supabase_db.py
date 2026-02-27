@@ -503,7 +503,10 @@ def create_new_tour(
     nombre, descripcion, highlights_text,
     precio_nac, precio_ext, precio_can,
     incluye_text="", no_incluye_text="",
-    duracion_dias=1, duracion_horas=0
+    duracion_dias=1, duracion_horas=0,
+    precio_nino_nac=None, precio_nino_ext=None, precio_nino_can=None,
+    precio_est_nac=None, precio_est_ext=None, precio_est_can=None,
+    precio_pcd_nac=0, precio_pcd_ext=0, precio_pcd_can=0
 ):
     """
     Crea un nuevo tour en la base de datos asegurando que no haya campos Null críticos
@@ -529,18 +532,18 @@ def create_new_tour(
             "precio_adulto_extranjero": precio_ext,
             "precio_adulto_can": precio_can,
             
-            # Precios Derivados o Secundarios (Llenar con 0 para evitar nulls aritméticos luego)
-            "precio_nino_nacional": max(0, precio_nac - 40),
-            "precio_nino_extranjero": max(0, precio_ext - 15),
-            "precio_nino_can": max(0, precio_can - 15),
+            # Precios Derivados o Secundarios (Cálculo automático si no se proveen)
+            "precio_nino_nacional": precio_nino_nac if precio_nino_nac is not None else max(0, precio_nac - 40),
+            "precio_nino_extranjero": precio_nino_ext if precio_nino_ext is not None else max(0, precio_ext - 15),
+            "precio_nino_can": precio_nino_can if precio_nino_can is not None else max(0, precio_can - 15),
             
-            "precio_estudiante_nacional": max(0, precio_nac - 70),
-            "precio_estudiante_extranjero": max(0, precio_ext - 20),
-            "precio_estudiante_can": max(0, precio_can - 20),
+            "precio_estudiante_nacional": precio_est_nac if precio_est_nac is not None else max(0, precio_nac - 70),
+            "precio_estudiante_extranjero": precio_est_ext if precio_est_ext is not None else max(0, precio_ext - 20),
+            "precio_estudiante_can": precio_est_can if precio_est_can is not None else max(0, precio_can - 20),
             
-            "precio_pcd_nacional": 0,
-            "precio_pcd_extranjero": 0,
-            "precio_pcd_can": 0,
+            "precio_pcd_nacional": precio_pcd_nac,
+            "precio_pcd_extranjero": precio_pcd_ext,
+            "precio_pcd_can": precio_pcd_can,
             
             # Textos y Metadatos
             "highlights": hl_json,
