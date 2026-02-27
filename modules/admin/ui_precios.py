@@ -31,7 +31,17 @@ def render_admin_precios_ui():
                         col_e1, col_e2 = st.columns([2, 1])
                         with col_e1:
                             new_nombre = st.text_input("Nombre del Tour", value=t['titulo'])
-                            new_desc = st.text_area("Descripción", value=t.get('description', t.get('descripcion', "")), height=150)
+                            
+                            # Validación de palabras en descripción
+                            current_desc = t.get('description', t.get('descripcion', ""))
+                            word_count = len(current_desc.split())
+                            desc_label = f"Descripción (Itinerario) - {word_count}/100 palabras"
+                            
+                            new_desc = st.text_area(desc_label, value=current_desc, height=150)
+                            
+                            new_word_count = len(new_desc.split())
+                            if new_word_count > 100:
+                                st.error(f"⚠️ ¡Atención! La descripción tiene {new_word_count} palabras. El límite para el PDF es de 100.")
                         with col_e2:
                             st.markdown("**💰 Precios Base (Adulto)**")
                             new_p_nac = st.number_input("Nacional (S/)", value=float(t.get('costo_nacional', 0.0)), step=1.0, key=f"ed_nac_{id_tour}")
@@ -62,9 +72,15 @@ def render_admin_precios_ui():
                         
                         with c_adv_main2:
                             with st.expander("🛠️ Configuración Técnica"):
-                                st.caption("Metadatos del sistema:")
-                                n_dificultad = st.selectbox("Dificultad", options=["FACIL", "MODERADO", "DIFICIL", "EXTREMO"], index=["FACIL", "MODERADO", "DIFICIL", "EXTREMO"].index(t.get('dificultad', 'FACIL')), key=f"ed_dif_{id_tour}")
-                                n_categoria = st.text_input("Categoría", value=t.get('categoria', 'General'), key=f"ed_cat_{id_tour}")
+                                st.caption("Metadatos y duración:")
+                                c_tech1, c_tech2 = st.columns(2)
+                                with c_tech1:
+                                    n_dias = st.number_input("Días", min_value=1, value=int(t.get('duracion_dias', 1)), key=f"ed_dias_{id_tour}")
+                                    n_horas = st.number_input("Horas", min_value=0, value=int(t.get('duracion_horas', 0)), key=f"ed_hr_{id_tour}")
+                                with c_tech2:
+                                    n_dificultad = st.selectbox("Dificultad", options=["FACIL", "MODERADO", "DIFICIL", "EXTREMO"], index=["FACIL", "MODERADO", "DIFICIL", "EXTREMO"].index(t.get('dificultad', 'FACIL')), key=f"ed_dif_{id_tour}")
+                                    n_categoria = st.text_input("Categoría", value=t.get('categoria', 'General'), key=f"ed_cat_{id_tour}")
+                                
                                 n_img = st.text_input("Carpeta Imágenes", value=t.get('carpeta_img', 'general'), key=f"ed_img_{id_tour}")
                                 n_hora = st.text_input("Hora Inicio (HH:MM)", value=t.get('hora_inicio', '08:00:00')[:8], key=f"ed_hora_{id_tour}")
 
@@ -94,6 +110,8 @@ def render_admin_precios_ui():
                                 "precio_pcd_nacional": n_pcd_nac,
                                 "precio_pcd_extranjero": n_pcd_ext,
                                 "precio_pcd_can": n_pcd_can,
+                                "duracion_dias": n_dias,
+                                "duracion_horas": n_horas,
                                 "dificultad": n_dificultad,
                                 "categoria": n_categoria,
                                 "carpeta_img": n_img,
@@ -104,8 +122,11 @@ def render_admin_precios_ui():
                             }
                             
                             with st.spinner("Actualizando base de datos..."):
-                                success, msg = update_tour_master(id_tour, update_data)
-                                if success:
+                                if len(new_desc.split()) > 100:
+                                    st.error("❌ No se puede guardar: La descripción excede las 100 palabras.")
+                                else:
+                                    success, msg = update_tour_master(id_tour, update_data)
+                                    if success:
                                     st.success(f"✅ '{new_nombre}' actualizado correctamente.")
                                     st.rerun()
                                 else:
@@ -117,7 +138,13 @@ def render_admin_precios_ui():
             col_t1, col_t2 = st.columns([2, 1])
             with col_t1:
                 f_nombre = st.text_input("Nombre del Tour *", placeholder="Ej: Full Day Paracas e Ica")
-                f_desc = st.text_area("Descripción Principal", placeholder="Escribe el itinerario o resumen...")
+                f_desc = st.text_area("Descripción Principal (Máx 100 palabras) *", placeholder="Escribe el itinerario o resumen...")
+                
+                f_word_count = len(f_desc.split())
+                if f_word_count > 0:
+                    st.caption(f"Palabras: {f_word_count}/100")
+                if f_word_count > 100:
+                    st.error(f"⚠️ Has excedido el límite ({f_word_count}/100).")
             with col_t2:
                 f_dias = st.number_input("Días", min_value=1, value=1, step=1)
                 f_horas = st.number_input("Horas", min_value=0, value=0, step=1)
@@ -164,6 +191,8 @@ def render_admin_precios_ui():
             if st.form_submit_button("🔨 Crear Tour Oficial", type="primary", use_container_width=True):
                 if not f_nombre:
                     st.error("❌ El nombre es obligatorio.")
+                elif len(f_desc.split()) > 100:
+                    st.error(f"❌ La descripción es muy larga ({len(f_desc.split())} palabras). Máximo 100.")
                 else:
                     success, msg = create_new_tour(
                         nombre=f_nombre, descripcion=f_desc, highlights_text=f_high,
@@ -196,6 +225,14 @@ def render_admin_precios_ui():
                 p_dias = st.number_input("Total Días", min_value=1, value=3)
                 p_noches = st.number_input("Total Noches", min_value=0, value=2)
             
+            col_p3, col_p4, col_p5 = st.columns(3)
+            with col_p3:
+                p_destino = st.text_input("Destino Principal", placeholder="Ej: Cusco")
+            with col_p4:
+                p_temporada = st.text_input("Temporada sugerida", placeholder="Ej: Todo el año")
+            with col_p5:
+                p_precio_sug = st.number_input("Precio Sugerido (Opcional)", min_value=0.0, value=0.0)
+            
             st.write("Selecciona los tours:")
             opciones_tours = {t['titulo']: t['id_tour'] for t in tours_db}
             seleccionados = st.multiselect("Tours del Catálogo", options=list(opciones_tours.keys()))
@@ -212,7 +249,13 @@ def render_admin_precios_ui():
 
             if st.form_submit_button("🔨 Crear Paquete Maestro", type="primary", use_container_width=True):
                 if p_nombre and tours_vinculados:
-                    success, msg = create_master_package(p_nombre, p_desc, p_dias, p_noches, tours_vinculados)
+                    success, msg = create_master_package(
+                        nombre=p_nombre, descripcion=p_desc,
+                        dias=p_dias, noches=p_noches,
+                        tours_vinculados=tours_vinculados,
+                        precio_sugerido=p_precio_sug,
+                        destino=p_destino, temporada=p_temporada
+                    )
                     if success: st.success("✅ Paquete guardado."); st.rerun()
                     else: st.error(msg)
                 else: st.error("Faltan datos.")
