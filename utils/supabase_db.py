@@ -481,22 +481,23 @@ def get_service_templates():
         return []
 
 # --- CONFIGURACIÓN MAESTRA ---
-def update_tour_prices(id_tour, precio_nac, precio_ext, precio_can):
+def update_tour_master(id_tour, data):
     """
-    Actualiza los precios base de un tour en la tabla `tour`.
+    Actualiza cualquier campo de un tour en la tabla `tour`.
+    `data` es un diccionario con los campos a actualizar.
     """
     supabase = get_supabase_client()
     if not supabase: return False, "No client"
     try:
-        data = {
-            "precio_adulto_nacional": precio_nac,
-            "precio_adulto_extranjero": precio_ext,
-            "precio_adulto_can": precio_can
-        }
+        # Actualización en una sola llamada
         res = supabase.table("tour").update(data).eq("id_tour", id_tour).execute()
-        return True, "Precios actualizados"
+        if res.data:
+            return True, "Tour actualizado correctamente"
+        else:
+            return False, "No se encontró el tour para actualizar"
     except Exception as e:
         return False, str(e)
+
 
 def create_new_tour(
     nombre, descripcion, highlights_text,
@@ -557,4 +558,50 @@ def create_new_tour(
         return True, "Tour creado con éxito"
     except Exception as e:
         return False, str(e)
+
+def create_master_package(nombre, descripcion, dias, noches, tours_vinculados, precio_sugerido=0, destino="", temporada=""):
+    """
+    Crea un paquete maestro oficial y lo vincula con los tours del catálogo.
+    `tours_vinculados` es una lista de dicts: [{"id_tour": 1, "dia": 1, "orden": 1}, ...]
+    """
+    supabase = get_supabase_client()
+    if not supabase: return False, "No client"
+    
+    try:
+        # 1. Insertar el encabezado del paquete
+        pkg_data = {
+            "nombre": nombre,
+            "descripcion": descripcion,
+            "dias": dias,
+            "noches": noches,
+            "precio_sugerido": precio_sugerido,
+            "destino_principal": destino,
+            "temporada": temporada,
+            "activo": True
+        }
+        res_pkg = supabase.table("paquete").insert(pkg_data).execute()
+        
+        if not res_pkg.data:
+            return False, "Error creando el registro del paquete"
+            
+        new_pkg_id = res_pkg.data[0]["id_paquete"]
+        
+        # 2. Insertar las relaciones paquete_tour
+        relaciones = []
+        for vt in tours_vinculados:
+            relaciones.append({
+                "id_paquete": new_pkg_id,
+                "id_tour": vt["id_tour"],
+                "dia_del_paquete": vt["dia"],
+                "orden": vt["orden"]
+            })
+            
+        if relaciones:
+            supabase.table("paquete_tour").insert(relaciones).execute()
+            
+        return True, "Paquete maestro creado y vinculado exitosamente"
+        
+    except Exception as e:
+        return False, str(e)
+
 
