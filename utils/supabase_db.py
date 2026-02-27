@@ -332,7 +332,10 @@ def get_available_tours():
                     "costo_can_est": float(t.get("precio_estudiante_can") or 0),
                     "costo_can_nino": float(t.get("precio_nino_can") or 0),
                     "carpeta_img": t.get("carpeta_img") or "general",
-                    "hora_inicio": formatted_hora
+                    "hora_inicio": formatted_hora,
+                    # Campos técnicos adicionales
+                    "dificultad": t.get("dificultad") or "FACIL",
+                    "categoria": t.get("categoria") or "General"
                 })
             except Exception as e_row:
                 print(f"Error procesando fila de tour {t.get('nombre')}: {e_row}")
@@ -506,7 +509,8 @@ def create_new_tour(
     duracion_dias=1, duracion_horas=0,
     precio_nino_nac=None, precio_nino_ext=None, precio_nino_can=None,
     precio_est_nac=None, precio_est_ext=None, precio_est_can=None,
-    precio_pcd_nac=0, precio_pcd_ext=0, precio_pcd_can=0
+    precio_pcd_nac=0, precio_pcd_ext=0, precio_pcd_can=0,
+    categoria="General", dificultad="FACIL", carpeta_img="general", hora_inicio="08:00:00"
 ):
     """
     Crea un nuevo tour en la base de datos asegurando que no haya campos Null críticos
@@ -550,10 +554,10 @@ def create_new_tour(
             "servicios_incluidos": inc_json,
             "servicios_no_incluidos": no_inc_json,
             
-            "categoria": "General",
-            "dificultad": "FACIL",
-            "carpeta_img": "general",
-            "hora_inicio": "08:00:00",
+            "categoria": categoria,
+            "dificultad": dificultad,
+            "carpeta_img": carpeta_img,
+            "hora_inicio": hora_inicio,
             "activo": True
         }
         
