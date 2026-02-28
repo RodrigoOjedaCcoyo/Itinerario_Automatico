@@ -1097,22 +1097,23 @@ def render_ventas_ui():
                     'an_can_uni', 'es_can_uni', 'pcd_can_uni', 'ni_can_uni',
                     'an_nac_mix', 'es_nac_mix', 'pcd_nac_mix', 'ni_nac_mix',
                     'an_ext_mix', 'es_ext_mix', 'pcd_ext_mix', 'ni_ext_mix',
-                    'an_can_mix', 'es_can_mix', 'pcd_can_mix', 'ni_can_mix'
+                    'an_can_mix', 'es_can_mix', 'pcd_can_mix', 'ni_can_mix',
+                    'v_nombre', 'v_celular', 'f_usa_fechas'
                 ]
                 for k in keys_to_reset:
-                    st.session_state[k] = 0
+                    if k in st.session_state:
+                        del st.session_state[k]
                 
                 # Resetear distribución de habitaciones
                 room_keys = ['f_n_sgl', 'f_n_dbl', 'f_n_mat', 'f_n_tpl', 'f_n_cua']
                 for rk in room_keys:
-                    st.session_state[rk] = 0
+                    if rk in st.session_state:
+                        del st.session_state[rk]
 
                 # Reiniciar otros campos opcionales
-                st.session_state.f_extra_nac = 0.0
-                st.session_state.f_extra_ext = 0.0
-                st.session_state.f_extra_can = 0.0
-                st.session_state.f_margen_porcentaje = 30.0
-                st.session_state.f_margen_antes = 40.0
+                for fk in ['f_extra_nac', 'f_extra_ext', 'f_extra_can', 'f_margen_porcentaje', 'f_margen_antes']:
+                    if fk in st.session_state:
+                        del st.session_state[fk]
                 
                 st.success("¡Formulario limpiado por completo!")
                 st.rerun()
