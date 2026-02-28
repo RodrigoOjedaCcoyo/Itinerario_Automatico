@@ -816,6 +816,8 @@ def render_ventas_ui():
             margen_antes_pct = ma5.number_input("% Margen (Antes)", value=float(st.session_state.get('f_margen_antes', 40.0)), step=1.0, key="f_margen_antes", help="Margen para el precio tachado (efecto de oferta).")
             
             st.session_state.f_nota_precio = st.text_input("📝 Nota de Precio Global (Exclusivo en PDF)", value=st.session_state.get('f_nota_precio', 'INCLUYE TOUR'), key="global_nota_precio", help="Esta nota aparecerá en la sección de precios del PDF para todos los tours.")
+            
+            st.session_state.f_notas_finales = st.text_area("✍️ Notas Finales del Vendedor (Última Hoja)", value=st.session_state.get('f_notas_finales', ''), key="global_notas_finales", height=100, help="Escribe aquí recomendaciones breves o especificaciones finales para el cliente.")
 
             # Cálculo automático base de noches si el valor es 0 o el estado no existe
             auto_noches = max(0, len(st.session_state.itinerario) - 1)
@@ -1098,7 +1100,7 @@ def render_ventas_ui():
                     'an_nac_mix', 'es_nac_mix', 'pcd_nac_mix', 'ni_nac_mix',
                     'an_ext_mix', 'es_ext_mix', 'pcd_ext_mix', 'ni_ext_mix',
                     'an_can_mix', 'es_can_mix', 'pcd_can_mix', 'ni_can_mix',
-                    'v_nombre', 'v_celular', 'f_usa_fechas'
+                    'v_nombre', 'v_celular', 'f_usa_fechas', 'global_notas_finales'
                 ]
                 for k in keys_to_reset:
                     if k in st.session_state:
@@ -1509,7 +1511,8 @@ def render_ventas_ui():
                                 'precios': precios,
                                 'precios_antes': precios_antes,
                                 'canal': st.session_state.get('f_tipo_cliente', 'B2C'),
-                                'nota_p': st.session_state.get('f_nota_precio', '')
+                                'nota_p': st.session_state.get('f_nota_precio', ''),
+                                'notas_finales': st.session_state.get('f_notas_finales', '')
                             }
 
                             # 2. Guardar en Supabase y obtener ID de vinculación

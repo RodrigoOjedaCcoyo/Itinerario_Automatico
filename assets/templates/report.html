@@ -809,6 +809,20 @@
                 Cada detalle cuenta para que tu viaje sea perfecto. ¡Nos vemos pronto en Cusco!
             </p>
         </div>
+
+        {% if notas_finales %}
+        <!-- Notas finales personalizadas por el vendedor -->
+        <div
+            style="margin-top: 25px; padding: 15px; border: 1.5px dashed #55b7b0; border-radius: 12px; background: rgba(85, 183, 176, 0.03);">
+            <div
+                style="font-size: 0.75rem; color: #55b7b0; font-weight: 800; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 8px;">
+                📝 Notas Adicionales:
+            </div>
+            <div style="font-size: 0.95rem; color: #444; line-height: 1.5; font-style: italic;">
+                "{{ notas_finales }}"
+            </div>
+        </div>
+        {% endif %}
     </div>
     {% endif %}
 
