@@ -377,7 +377,9 @@ def get_available_packages():
             
             packages.append({
                 "nombre": p["nombre"],
-                "tours": tours_names
+                "tours": tours_names,
+                "destino": p.get("destino_principal") or "Otros",
+                "carpeta_img": p.get("carpeta_img") or "general"
             })
         return packages
     except Exception as e:
@@ -584,7 +586,7 @@ def create_new_tour(
     except Exception as e:
         return False, f"Error de excepción: {str(e)}"
 
-def create_master_package(nombre, descripcion, dias, noches, tours_vinculados, precio_sugerido=0, destino="", temporada=""):
+def create_master_package(nombre, descripcion, dias, noches, tours_vinculados, precio_sugerido=0, destino="", temporada="", carpeta_img="general"):
     """
     Crea un paquete maestro oficial y lo vincula con los tours del catálogo.
     `tours_vinculados` es una lista de dicts: [{"id_tour": 1, "dia": 1, "orden": 1}, ...]
@@ -602,6 +604,7 @@ def create_master_package(nombre, descripcion, dias, noches, tours_vinculados, p
             "precio_sugerido": precio_sugerido,
             "destino_principal": destino,
             "temporada": temporada,
+            "carpeta_img": carpeta_img,
             "activo": True
         }
         res_pkg = supabase.table("paquete").insert(pkg_data).execute()

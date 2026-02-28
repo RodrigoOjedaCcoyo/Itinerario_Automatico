@@ -1,5 +1,5 @@
 import streamlit as st
-from utils.supabase_db import get_available_tours, update_tour_master, create_new_tour, create_master_package
+from utils.supabase_db import get_available_tours, update_tour_master, create_new_tour
 
 def render_admin_precios_ui():
     st.markdown("## ⚙️ Configuración Maestra de Catálogo")
@@ -10,7 +10,7 @@ def render_admin_precios_ui():
     with st.spinner("Cargando catálogo..."):
         tours_db = get_available_tours()
 
-    tab1, tab2, tab3 = st.tabs(["✏️ Editar Catálogo Existente", "➕ Crear Nuevo Tour", "📦 Crear Nuevo Paquete"])
+    tab1, tab2 = st.tabs(["✏️ Editar Catálogo Existente", "➕ Crear Nuevo Tour"])
 
     with tab1:
         if not tours_db:
@@ -219,48 +219,3 @@ def render_admin_precios_ui():
                         with st.expander("Ver detalle del error"):
                             st.code(msg)
 
-    with tab3:
-        st.markdown("### 📦 Armar Nuevo Paquete Maestro")
-        with st.form("form_crear_paquete", clear_on_submit=True):
-            col_p1, col_p2 = st.columns([2, 1])
-            with col_p1:
-                p_nombre = st.text_input("Nombre del Paquete *")
-                p_desc = st.text_area("Descripción General")
-            with col_p2:
-                p_dias = st.number_input("Total Días", min_value=1, value=3)
-                p_noches = st.number_input("Total Noches", min_value=0, value=2)
-            
-            col_p3, col_p4, col_p5 = st.columns(3)
-            with col_p3:
-                p_destino = st.text_input("Destino Principal", placeholder="Ej: Cusco")
-            with col_p4:
-                p_temporada = st.text_input("Temporada sugerida", placeholder="Ej: Todo el año")
-            with col_p5:
-                p_precio_sug = st.number_input("Precio Sugerido (Opcional)", min_value=0.0, value=0.0)
-            
-            st.write("Selecciona los tours:")
-            opciones_tours = {t['nombre']: t['id_tour'] for t in tours_db}
-            seleccionados = st.multiselect("Tours del Catálogo", options=list(opciones_tours.keys()))
-            
-            tours_vinculados = []
-            if seleccionados:
-                for i, nt in enumerate(seleccionados):
-                    id_t = opciones_tours[nt]
-                    c1, c2, c3 = st.columns([3, 1, 1])
-                    with c1: st.caption(nt)
-                    with c2: vd = st.number_input("Día", 1, p_dias, 1, key=f"pd_{id_t}_{i}")
-                    with c3: vo = st.number_input("Ord", 1, 99, i+1, key=f"po_{id_t}_{i}")
-                    tours_vinculados.append({"id_tour": id_t, "dia": vd, "orden": vo})
-
-            if st.form_submit_button("🔨 Crear Paquete Maestro", type="primary", use_container_width=True):
-                if p_nombre and tours_vinculados:
-                    success, msg = create_master_package(
-                        nombre=p_nombre, descripcion=p_desc,
-                        dias=p_dias, noches=p_noches,
-                        tours_vinculados=tours_vinculados,
-                        precio_sugerido=p_precio_sug,
-                        destino=p_destino, temporada=p_temporada
-                    )
-                    if success: st.success("✅ Paquete guardado."); st.rerun()
-                    else: st.error(msg)
-                else: st.error("Faltan datos.")

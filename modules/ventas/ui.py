@@ -487,20 +487,30 @@ def render_ventas_ui():
         st.divider()
         
         st.subheader("🎁 Cargar Paquete Sugerido")
-        # Sincronizar selectbox con session_state
-        lineas = ["Cusco Tradicional", "Perú para el Mundo"]
+        # Generar líneas dinámicas desde el catálogo de paquetes
+        lineas_raw = sorted(list(set([p.get('destino', 'Otros') for p in paquetes_db])))
+        # Priorizar nombres conocidos si existen
+        prioridad = ["Cusco Tradicional", "Perú para el Mundo"]
+        lineas = [l for l in prioridad if l in lineas_raw] + [l for l in lineas_raw if l not in prioridad]
+        if not lineas: lineas = ["-- No hay paquetes --"]
+        
         idx_cat = lineas.index(st.session_state.f_categoria) if st.session_state.f_categoria in lineas else 0
         cat_sel = st.selectbox("Elija Línea de Producto", lineas, index=idx_cat)
         st.session_state.f_categoria = cat_sel
         
-        if cat_sel != "-- Seleccione --":
-            pkgs_filtered = [p for p in paquetes_db if cat_sel.upper() in p['nombre'].upper()]
-            dias_disponibles = [p['nombre'].split(" ")[-1] for p in pkgs_filtered]
-            dia_sel = st.selectbox("Seleccione Duración", dias_disponibles)
+        if cat_sel and cat_sel != "-- No hay paquetes --":
+            # Filtrado por el campo destino (Línea de Producto)
+            pkgs_filtered = [p for p in paquetes_db if p.get('destino') == cat_sel]
+            
+            # Formatear opciones de duración: "Nombre (XD/XN)"
+            opciones_pkg = {p['nombre']: p for p in pkgs_filtered}
+            pkg_name_sel = st.selectbox("Seleccione el Paquete", list(opciones_pkg.keys()))
             
             if pkgs_filtered and st.button("🚀 Cargar Itinerario", use_container_width=True):
-                pkg_final = next((p for p in pkgs_filtered if dia_sel in p['nombre']), None)
+                pkg_final = opciones_pkg.get(pkg_name_sel)
                 if pkg_final:
+                    # Guardar la imagen de portada asignada al paquete
+                    st.session_state.f_package_img = pkg_final.get('carpeta_img', 'general')
                     found_tours = []
                     missing_tours = []
                     for t_n in pkg_final['tours']:
@@ -1129,20 +1139,39 @@ def render_ventas_ui():
             if c_btn1.button("🔥 GENERAR ITINERARIO PDF"):
                 if celular and st.session_state.itinerario:
                     with st.spinner("Generando PDF con Edge..."):
-                        # Determinar portada y títulos desde el ESTADO DE SESIÓN
+                        # Determinar portada y títulos de forma dinámica
                         base_dir = os.getcwd()
-                        cover_1 = os.path.join(base_dir, "assets", "images", "covers", "peru_mundo.jpg")
-                        cover_2 = os.path.join(base_dir, "assets", "images", "covers", "cusco_tradicional.jpg")
+                        target_cat = st.session_state.get('f_categoria', 'Cusco Tradicional')
+                        package_img_folder = st.session_state.get('f_package_img', '')
                         fallback_cover = os.path.join(base_dir, "assets", "images", "fallback_cover.jpg")
                         
-                        target_cat = st.session_state.get('f_categoria', 'Cusco Tradicional')
+                        cover_img = fallback_cover
                         
+                        # PRIORIDAD 1: Imagen específica del paquete (Base de Datos)
+                        if package_img_folder:
+                            # Buscamos cualquier jpg dentro de la carpeta especificada en assets/images/covers/
+                            target_path = os.path.join(base_dir, "assets", "images", "covers", package_img_folder)
+                            if os.path.exists(target_path):
+                                potential_files = [f for f in os.listdir(target_path) if f.lower().endswith(('.jpg', '.jpeg', '.png', '.webp'))]
+                                if potential_files:
+                                    cover_img = os.path.join(target_path, potential_files[0])
+                        
+                        # PRIORIDAD 2: Si no hay carpeta o está vacía, usar lógica por defecto de categorías
+                        if cover_img == fallback_cover:
+                            if target_cat == "Perú para el Mundo":
+                                cover_1 = os.path.join(base_dir, "assets", "images", "covers", "peru_mundo.jpg")
+                                if os.path.exists(cover_1): cover_img = cover_1
+                            elif target_cat == "Cusco Tradicional":
+                                cover_2 = os.path.join(base_dir, "assets", "images", "covers", "cusco_tradicional.jpg")
+                                if os.path.exists(cover_2): cover_img = cover_2
+
+                        # Títulos de portada (Pueden ser dinámicos luego)
                         if target_cat == "Perú para el Mundo":
-                            cover_img = cover_1 if os.path.exists(cover_1) else fallback_cover
                             t1, t2 = "PERÚ", "PARA EL MUNDO"
-                        else:
-                            cover_img = cover_2 if os.path.exists(cover_2) else fallback_cover
+                        elif target_cat == "Cusco Tradicional":
                             t1, t2 = "CUSCO", "TRADICIONAL"
+                        else:
+                            t1, t2 = target_cat.upper(), "ITINERARIO"
                         
                         # Logo
                         logo_orig = "Captura de pantalla 2026-01-05 102612.png"

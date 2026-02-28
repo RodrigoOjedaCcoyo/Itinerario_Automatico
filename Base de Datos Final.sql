@@ -21,7 +21,7 @@
   DROP TABLE IF EXISTS tour CASCADE;
   DROP TABLE IF EXISTS plantilla_servicio CASCADE;
   DROP TABLE IF EXISTS proveedor CASCADE; -- AGREGADO AQUÍ
-  DROP TABLE IF EXISTS agencia_aliada CASCADE;
+  DROP TABLE IF EXISTS agencia_aliada CASCeADE;
   DROP TABLE IF EXISTS cliente CASCADE;
   DROP TABLE IF EXISTS lead CASCADE;
   DROP TABLE IF EXISTS vendedor CASCADE;
@@ -277,12 +277,10 @@
       id_venta INTEGER,
       n_linea INTEGER,
       id_proveedor INTEGER REFERENCES proveedor(id_proveedor) ON DELETE RESTRICT,
-      tipo_servicio VARCHAR(50) CHECK (tipo_servicio IN (
-          'TRANSPORTE', 'ALOJAMIENTO', 'ALIMENTACION', 
-          'GUIA', 'TICKETS', 'ENDOSE' 
-      )),
+      tipo_servicio VARCHAR(50), 
       costo_unitario DECIMAL(10,2) NOT NULL,
       moneda VARCHAR(10) DEFAULT 'USD',
+      cantidad_pax INTEGER DEFAULT 1,
 
       created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
       FOREIGN KEY (id_venta, n_linea) REFERENCES venta_tour(id_venta, n_linea) ON DELETE CASCADE,
@@ -357,8 +355,8 @@
     8, 1, 44.00, 115.00,
     'FULL DAY', 'MODERADO',
     '{"itinerario": "Después del desayuno, iniciamos la ruta por el ***Valle Sagrado de los Incas*** visitando ***Chinchero***, donde conoceremos un antiguo ***palacio inca***, su ***iglesia colonial*** y un tradicional ***centro textil***. Continuamos hacia ***Moray***, famoso por sus ***terrazas circulares agrícolas***, y luego descendemos a las impresionantes ***Salineras de Maras***, con miles de pozos de sal aún en funcionamiento.\n\nEl recorrido prosigue hacia el valle de ***Urubamba*** para disfrutar de un ***almuerzo buffet***. Posteriormente visitamos ***Ollantaytambo***, conocida como la ***última ciudad inca viviente***, y nos dirigimos a la estación para abordar el ***tren turístico*** rumbo a ***Aguas Calientes*** y nos trasladamos al ***hotel*** para pasar la noche."}'::jsonb,
-    '{"incluye": ["Pisac", "Mercado de Pisac", "Ollantaytambo", "Chinchero"]}'::jsonb,
-    '{"no_incluye": ["Gastos Extras", "Hospedaje", "Aliemntación"]}'::jsonb,
+    '{"incluye": ["Recojo de Hotel", "Almuerzo Buffet", "Transporte Turistico", "Boleto Turistico", "Ingreso a Salineras", "Ticket de Tren Turistico", "Guia Profesional"]}'::jsonb,
+    '{"no_incluye": ["Gastos Extras", "Hospedaje", "Aliementación"]}'::jsonb,
     'valle_sagrado_vip', '06:30:00', TRUE
   ),
   (
@@ -775,6 +773,17 @@
   END $$;
 
   -- ==============================================================
+  -- SECCIÓN 2.2: PROVEEDORES POR DEFECTO
+  -- ==============================================================
+  INSERT INTO proveedor (nombre_comercial, servicios_ofrecidos, contacto_telefono, pais)
+  VALUES 
+  ('OPERACION PROPIA', ARRAY['GUIA', 'TRANSPORTE', 'ALIMENTACION', 'ALOJAMIENTO', 'TICKETS', 'ENDOSE'], '---', 'Perú'),
+  ('PERURAIL', ARRAY['TICKETS', 'TRANSPORTE'], '---', 'Perú'),
+  ('INCARAIL', ARRAY['TICKETS', 'TRANSPORTE'], '---', 'Perú'),
+  ('ENTRADAS MACHU PICCHU', ARRAY['TICKETS'], '---', 'Perú'),
+  ('CONSETTUR', ARRAY['TICKETS', 'TRANSPORTE'], '---', 'Perú');
+
+  -- ==============================================================
   -- SECCIÓN 3: FUNCIONES Y TRIGGERS (AUTOMATIZACIÓN)
   -- ==============================================================
 
@@ -794,7 +803,7 @@
   CREATE OR REPLACE FUNCTION sync_costo_venta_total()
   RETURNS TRIGGER AS $$
   BEGIN
-      UPDATE venta SET costo_total = (SELECT COALESCE(SUM(costo_unitario), 0) FROM venta_servicio_proveedor WHERE id_venta = COALESCE(NEW.id_venta, OLD.id_venta))
+      UPDATE venta SET costo_total = (SELECT COALESCE(SUM(costo_unitario * cantidad_pax), 0) FROM venta_servicio_proveedor WHERE id_venta = COALESCE(NEW.id_venta, OLD.id_venta))
       WHERE id_venta = COALESCE(NEW.id_venta, OLD.id_venta);
       RETURN NULL;
   END;
