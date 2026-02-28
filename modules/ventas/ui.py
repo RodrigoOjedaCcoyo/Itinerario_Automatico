@@ -582,23 +582,23 @@ def render_ventas_ui():
                 cn = float(t_data.get('precio_adulto_nacional', 0))
                 ce = float(t_data.get('precio_adulto_extranjero', 0))
                 nuevo_t['costo_nac'] = cn
-                nuevo_t['costo_nac_est'] = float(t_data.get('precio_estudiante_nacional', cn - 70.0))
-                nuevo_t['costo_nac_pcd'] = float(t_data.get('precio_pcd_nacional', cn - 70.0))
-                nuevo_t['costo_nac_nino'] = float(t_data.get('precio_nino_nacional', cn - 40.0))
+                nuevo_t['costo_nac_est'] = float(t_data.get('precio_estudiante_nacional') or (cn - 70.0))
+                nuevo_t['costo_nac_pcd'] = float(t_data.get('precio_pcd_nacional') or (cn - 70.0))
+                nuevo_t['costo_nac_nino'] = float(t_data.get('precio_nino_nacional') or (cn - 40.0))
                 nuevo_t['costo_ext'] = ce
-                nuevo_t['costo_ext_est'] = float(t_data.get('precio_estudiante_extranjero', ce - 20.0))
-                nuevo_t['costo_ext_pcd'] = float(t_data.get('precio_pcd_extranjero', ce - 20.0))
-                nuevo_t['costo_ext_nino'] = float(t_data.get('precio_nino_extranjero', ce - 15.0))
+                nuevo_t['costo_ext_est'] = float(t_data.get('precio_estudiante_extranjero') or (ce - 20.0))
+                nuevo_t['costo_ext_pcd'] = float(t_data.get('precio_pcd_extranjero') or (ce - 20.0))
+                nuevo_t['costo_ext_nino'] = float(t_data.get('precio_nino_extranjero') or (ce - 15.0))
 
                 if "MACHU PICCHU" in t_data['nombre'].upper():
-                    cc = float(t_data.get('precio_adulto_can', ce - 20.0))
+                    cc = float(t_data.get('precio_adulto_can') or (ce - 20.0))
                 else:
-                    cc = float(t_data.get('precio_adulto_can', ce))
+                    cc = float(t_data.get('precio_adulto_can') or ce)
                 
                 nuevo_t['costo_can'] = cc
-                nuevo_t['costo_can_est'] = float(t_data.get('precio_estudiante_can', cc - 20.0))
-                nuevo_t['costo_can_pcd'] = float(t_data.get('precio_pcd_can', cc - 20.0))
-                nuevo_t['costo_can_nino'] = float(t_data.get('precio_nino_can', cc - 15.0))
+                nuevo_t['costo_can_est'] = float(t_data.get('precio_estudiante_can') or (cc - 20.0))
+                nuevo_t['costo_can_pcd'] = float(t_data.get('precio_pcd_can') or (cc - 20.0))
+                nuevo_t['costo_can_nino'] = float(t_data.get('precio_nino_can') or (cc - 15.0))
                 
                 # MAPEO DE TEXTOS (SQL -> Ventas Session)
                 nuevo_t['descripcion'] = t_data.get('itinerario_texto', '')
@@ -984,11 +984,11 @@ def render_ventas_ui():
                     calc_upgrades = total_hotel_grupo / max(1, total_pasajeros)
                 
                 if sel_tren_gen == "Tren Local":
-                    calc_tren = u_t_local
+                    calc_tren = u_t_local / tc if tipo_t != "Nacional" else u_t_local
                 elif sel_tren_gen == "Vistadome":
-                    calc_tren = (u_t_v * tc) if tipo_t == "Nacional" else u_t_v
+                    calc_tren = u_t_v * tc if tipo_t == "Nacional" else u_t_v
                 elif sel_tren_gen == "Observatory":
-                    calc_tren = (u_t_o * tc) if tipo_t == "Nacional" else u_t_o
+                    calc_tren = u_t_o * tc if tipo_t == "Nacional" else u_t_o
                 else:
                     calc_tren = 0
 
@@ -1043,9 +1043,18 @@ def render_ventas_ui():
                 total_can_a += (t.get('costo_can_pcd', t.get('costo_can', 0)-20) * factor_a * c_pc_can)
                 total_can_a += (t.get('costo_can_nino', t.get('costo_can', 0)-15) * factor_a * c_ni_can)
 
-            real_nac = total_nac + m_extra_nac + (calc_upgrades + calc_tren) * pasajeros_nac
-            real_ext = total_ext + m_extra_ext + (calc_upgrades + calc_tren) * pasajeros_ext
-            real_can = total_can + m_extra_can + (calc_upgrades + calc_tren) * pasajeros_can
+            # Lógica de Upgrades por Moneda (Garantizar consistencia)
+            # Upgrades base están en USD (Hotel) o según selección (Tren)
+            # calc_upgrades siempre es USD (viene de hotel_grupo en USD)
+            
+            # Para Nacionales: Todo debe estar en Soles
+            up_nac = (calc_upgrades * tc) + (calc_tren if tipo_t == "Nacional" else calc_tren * tc)
+            # Para Extranjeros/CAN: Todo debe estar en USD
+            up_ext = calc_upgrades + (calc_tren if tipo_t != "Nacional" else calc_tren / tc)
+
+            real_nac = total_nac + m_extra_nac + (up_nac * pasajeros_nac)
+            real_ext = total_ext + m_extra_ext + (up_ext * pasajeros_ext)
+            real_can = total_can + m_extra_can + (up_ext * pasajeros_can)
             
             # Variables base para el PDF y UI (sin extras ni upgrades iniciales, se añaden según modo)
             total_nac_pp = total_nac / max(1, pasajeros_nac)
@@ -1092,7 +1101,11 @@ def render_ventas_ui():
                 st.caption(f"**{pasajeros_can}** pasajeros | Prom: **USD {avg_can_pp:,.2f}**")
             
             # El monto de referencia es la suma de TODOS los reales (Nac + Ext + CAN)
-            monto_t_ref = (real_nac + real_ext + real_can)
+            # El monto de referencia para la base de datos se guarda en la moneda principal (Soles si hay nac, USD sino)
+            if pasajeros_nac > 0:
+                monto_t_ref = real_nac + (real_ext + real_can) * tc
+            else:
+                monto_t_ref = real_ext + real_can
             
             st.divider()
             
