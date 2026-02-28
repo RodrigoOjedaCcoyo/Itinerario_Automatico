@@ -511,7 +511,7 @@ def update_tour_master(id_tour, data):
 
 
 def create_new_tour(
-    nombre, descripcion, highlights_text,
+    nombre, descripcion,
     precio_nac, precio_ext, precio_can,
     incluye_text="", no_incluye_text="",
     duracion_dias=1, duracion_horas=0,
@@ -529,8 +529,8 @@ def create_new_tour(
 
     try:
         # 1. Transformar textos largos a la estructura JSON esperada por UI
-        # UI espera { "itinerario": "texto largo" } o listas
-        hl_json = {"itinerario": descripcion, "lugares": [h.strip() for h in highlights_text.split(",") if h.strip()]}
+        # UI espera { "itinerario": "texto largo" }
+        hl_json = {"itinerario": descripcion}
         inc_json = {"incluye": [i.strip() for i in incluye_text.split(",") if i.strip()]}
         no_inc_json = {"no_incluye": [n.strip() for n in no_incluye_text.split(",") if n.strip()]}
 

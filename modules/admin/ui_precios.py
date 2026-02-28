@@ -85,15 +85,6 @@ def render_admin_precios_ui():
                                 n_hora = st.text_input("Hora Inicio (HH:MM:SS)", value=t.get('hora_inicio', '08:00:00')[:8], key=f"ed_hora_{id_tour}")
 
                         st.markdown("**📝 Textos del Itinerario**")
-                        # Pre-procesar listas para el input de texto
-                        raw_h = t.get('highlights', [])
-                        # Si es el nuevo formato dict {"itinerario":..., "lugares":...}
-                        if isinstance(raw_h, dict):
-                            high_list = raw_h.get('lugares', raw_h.get('highlights', raw_h.get('itinerario_lista', [])))
-                        else:
-                            high_list = raw_h if isinstance(raw_h, list) else []
-                            
-                        high_str = ", ".join(high_list) if isinstance(high_list, list) else ""
                         
                         raw_i = t.get('servicios_incluidos', []) 
                         inc_str = ", ".join(raw_i) if isinstance(raw_i, list) else ""
@@ -101,7 +92,6 @@ def render_admin_precios_ui():
                         raw_ni = t.get('servicios_no_incluidos', [])
                         no_inc_str = ", ".join(raw_ni) if isinstance(raw_ni, list) else ""
 
-                        new_high = st.text_input("Highlights / Atractivos", value=high_str, key=f"ed_high_{id_tour}")
                         new_inc = st.text_input("Incluye", value=inc_str, key=f"ed_inc_{id_tour}")
                         new_no_inc = st.text_input("No Incluye", value=no_inc_str, key=f"ed_noinc_{id_tour}")
 
@@ -127,7 +117,7 @@ def render_admin_precios_ui():
                                 "categoria": n_categoria,
                                 "carpeta_img": n_img,
                                 "hora_inicio": n_hora if ":" in n_hora else f"{n_hora}:00:00", # Asegurar formato TIME
-                                "highlights": {"itinerario": new_desc, "lugares": [h.strip() for h in new_high.split(",") if h.strip()]},
+                                "highlights": {"itinerario": new_desc},
                                 "servicios_incluidos": {"incluye": [i.strip() for i in new_inc.split(",") if i.strip()]},
                                 "servicios_no_incluidos": {"no_incluye": [n.strip() for n in new_no_inc.split(",") if n.strip()]}
                             }
@@ -195,7 +185,6 @@ def render_admin_precios_ui():
                     f_hora = st.text_input("Hora Inicio", value="08:00:00")
 
             st.markdown("**📝 Textos (Separados por comas)**")
-            f_high = st.text_input("Highlights / Atractivos")
             f_inc = st.text_input("Qué incluye")
             f_no_inc = st.text_input("Qué NO incluye")
             
@@ -206,7 +195,7 @@ def render_admin_precios_ui():
                     st.error(f"❌ La descripción es muy larga ({len(f_desc.split())} palabras). Máximo 100.")
                 else:
                     success, msg = create_new_tour(
-                        nombre=f_nombre, descripcion=f_desc, highlights_text=f_high,
+                        nombre=f_nombre, descripcion=f_desc,
                         precio_nac=f_p_nac, precio_ext=f_p_ext, precio_can=f_p_can,
                         incluye_text=f_inc, no_incluye_text=f_no_inc,
                         duracion_dias=f_dias, duracion_horas=f_horas,
