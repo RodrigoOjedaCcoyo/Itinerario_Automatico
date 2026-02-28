@@ -751,6 +751,10 @@ def render_ventas_ui():
                             tour['costo_nac'] = col_n.number_input(f"Nac (S/)", value=float(tour.get('costo_nac', 0)), key=f"cn_{tour_id}", disabled=is_disabled)
                             tour['costo_ext'] = col_e.number_input(f"Ext ($)", value=float(tour.get('costo_ext', 0)), key=f"ce_{tour_id}", disabled=is_disabled)
                             tour['costo_can'] = tour['costo_ext']
+                            
+                            # Campo de Carpeta de Imágenes (Visible solo si se activa edición para no saturar)
+                            if modo_edicion:
+                                tour['carpeta_img'] = st.text_input("📁 Carpeta Imágenes (Assets)", value=tour.get('carpeta_img', 'general'), key=f"img_folder_{tour_id}", help="Nombre de la carpeta en assets/img/tours/ para este día.")
                         
                         # --- MEJORA: Tarifas por Categoría (Ahora más visible) ---
                         if modo_edicion:
@@ -1158,32 +1162,18 @@ def render_ventas_ui():
                         package_img_folder = st.session_state.get('f_package_img', '')
                         fallback_cover = os.path.join(base_dir, "assets", "images", "fallback_cover.jpg")
                         
-                        cover_img = fallback_cover
-                        
-                        # PRIORIDAD 1: Imagen específica del paquete (Base de Datos)
-                        if package_img_folder:
-                            # Buscamos cualquier jpg dentro de la carpeta especificada en assets/images/covers/
-                            target_path = os.path.join(base_dir, "assets", "images", "covers", package_img_folder)
-                            if os.path.exists(target_path):
-                                potential_files = [f for f in os.listdir(target_path) if f.lower().endswith(('.jpg', '.jpeg', '.png', '.webp'))]
-                                if potential_files:
-                                    cover_img = os.path.join(target_path, potential_files[0])
-                        
-                        # PRIORIDAD 2: Si no hay carpeta o está vacía, usar lógica por defecto de categorías
-                        if cover_img == fallback_cover:
-                            if target_cat == "Perú para el Mundo":
-                                cover_1 = os.path.join(base_dir, "assets", "images", "covers", "peru_mundo.jpg")
-                                if os.path.exists(cover_1): cover_img = cover_1
-                            elif target_cat == "Cusco Tradicional":
-                                cover_2 = os.path.join(base_dir, "assets", "images", "covers", "cusco_tradicional.jpg")
-                                if os.path.exists(cover_2): cover_img = cover_2
-
-                        # Títulos de portada (Pueden ser dinámicos luego)
+                        # Lógica estricta de portadas según requerimiento del usuario (Solo 2 opciones)
                         if target_cat == "Perú para el Mundo":
+                            cover_img = os.path.join(base_dir, "assets", "images", "covers", "peru_mundo.jpg")
                             t1, t2 = "PERÚ", "PARA EL MUNDO"
-                        elif target_cat == "Cusco Tradicional":
-                            t1, t2 = "CUSCO", "TRADICIONAL"
                         else:
+                            # Por defecto a Cusco Tradicional (Cualquier otra categoría o "Cusco Tradicional")
+                            cover_img = os.path.join(base_dir, "assets", "images", "covers", "cusco_tradicional.jpg")
+                            t1, t2 = "CUSCO", "TRADICIONAL"
+                        
+                        # Si por alguna razón los archivos de portada no existen, usar fallback
+                        if not os.path.exists(cover_img):
+                            cover_img = fallback_cover
                             t1, t2 = target_cat.upper(), "ITINERARIO"
                         
                         # Logo
@@ -1194,15 +1184,15 @@ def render_ventas_ui():
                         days_data = []
                         for i, tour in enumerate(st.session_state.itinerario):
                             titulo_actual = tour.get('titulo', '').upper()
+                            # PRIORIDAD 1: Carpeta ya asignada en el tour (especialmente si el usuario la editó en Ventas)
+                            # PRIORIDAD 2: Sincronización por título si no hay carpeta o es 'general'
+                            
                             carpeta = tour.get('carpeta_img', 'general')
                             
-                            # SINCRONIZACIÓN INTELIGENTE: 
-                            # Si el usuario cambió el título manualmente, intentamos buscar la carpeta correcta
-                            if tours_db:
-                                # Caso: Buscar por nombre en catalogo
-                                match_t = next((t for t in tours_db if t['nombre'].upper() == titulo_actual), None)
+                            if (carpeta == 'general' or not carpeta) and tours_db:
+                                match_t = next((t for t in tours_db if t['nombre'].upper().strip() == titulo_actual.strip()), None)
                                 if match_t:
-                                    carpeta = match_t.get('carpeta_img', carpeta)
+                                    carpeta = match_t.get('carpeta_img', 'general')
 
                             imgs = obtener_imagenes_tour(carpeta)
                             

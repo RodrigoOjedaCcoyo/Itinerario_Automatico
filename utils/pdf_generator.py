@@ -42,6 +42,9 @@ def get_image_as_base64(path):
     """Convierte imagen a Base64 asegurando compatibilidad total."""
     img_path = find_image(path)
     if not img_path:
+        # Si no es un archivo local pero es una URL, devolverla tal cual
+        if isinstance(path, str) and (path.startswith('http://') or path.startswith('https://')):
+            return path
         return ""
     try:
         ext = img_path.suffix[1:].lower()
