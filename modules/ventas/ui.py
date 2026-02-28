@@ -524,9 +524,12 @@ def render_ventas_ui():
                             ce = float(t_f.get('precio_adulto_extranjero', 0))
                             nuevo_t['costo_nac'] = cn
                             nuevo_t['costo_nac_est'] = float(t_f.get('precio_estudiante_nacional', cn - 70.0))
+                            nuevo_t['costo_nac_pcd'] = float(t_f.get('precio_pcd_nacional', cn - 70.0))
                             nuevo_t['costo_nac_nino'] = float(t_f.get('precio_nino_nacional', cn - 40.0))
+                            
                             nuevo_t['costo_ext'] = ce
                             nuevo_t['costo_ext_est'] = float(t_f.get('precio_estudiante_extranjero', ce - 20.0))
+                            nuevo_t['costo_ext_pcd'] = float(t_f.get('precio_pcd_extranjero', ce - 20.0))
                             nuevo_t['costo_ext_nino'] = float(t_f.get('precio_nino_extranjero', ce - 15.0))
 
                             if "MACHU PICCHU" in t_f['nombre'].upper():
@@ -536,6 +539,7 @@ def render_ventas_ui():
                             
                             nuevo_t['costo_can'] = cc
                             nuevo_t['costo_can_est'] = float(t_f.get('precio_estudiante_can', cc - 20.0))
+                            nuevo_t['costo_can_pcd'] = float(t_f.get('precio_pcd_can', cc - 20.0))
                             nuevo_t['costo_can_nino'] = float(t_f.get('precio_nino_can', cc - 15.0))
                             
                             # MAPEO DE TEXTOS (SQL -> Ventas Session)
@@ -579,9 +583,11 @@ def render_ventas_ui():
                 ce = float(t_data.get('precio_adulto_extranjero', 0))
                 nuevo_t['costo_nac'] = cn
                 nuevo_t['costo_nac_est'] = float(t_data.get('precio_estudiante_nacional', cn - 70.0))
+                nuevo_t['costo_nac_pcd'] = float(t_data.get('precio_pcd_nacional', cn - 70.0))
                 nuevo_t['costo_nac_nino'] = float(t_data.get('precio_nino_nacional', cn - 40.0))
                 nuevo_t['costo_ext'] = ce
                 nuevo_t['costo_ext_est'] = float(t_data.get('precio_estudiante_extranjero', ce - 20.0))
+                nuevo_t['costo_ext_pcd'] = float(t_data.get('precio_pcd_extranjero', ce - 20.0))
                 nuevo_t['costo_ext_nino'] = float(t_data.get('precio_nino_extranjero', ce - 15.0))
 
                 if "MACHU PICCHU" in t_data['nombre'].upper():
@@ -591,6 +597,7 @@ def render_ventas_ui():
                 
                 nuevo_t['costo_can'] = cc
                 nuevo_t['costo_can_est'] = float(t_data.get('precio_estudiante_can', cc - 20.0))
+                nuevo_t['costo_can_pcd'] = float(t_data.get('precio_pcd_can', cc - 20.0))
                 nuevo_t['costo_can_nino'] = float(t_data.get('precio_nino_can', cc - 15.0))
                 
                 # MAPEO DE TEXTOS (SQL -> Ventas Session)
@@ -1001,29 +1008,35 @@ def render_ventas_ui():
             for t in st.session_state.itinerario:
                 # Nacionales (Aplicando factor de margen)
                 total_nac += (t.get('costo_nac', 0) * factor_m * c_ad_nac)
-                total_nac += (t.get('costo_nac_est', t.get('costo_nac', 0)-70) * factor_m * (c_es_nac + c_pc_nac))
+                total_nac += (t.get('costo_nac_est', t.get('costo_nac', 0)-70) * factor_m * c_es_nac)
+                total_nac += (t.get('costo_nac_pcd', t.get('costo_nac', 0)-70) * factor_m * c_pc_nac)
                 total_nac += (t.get('costo_nac_nino', t.get('costo_nac', 0)-40) * factor_m * c_ni_nac)
                 
                 total_nac_a += (t.get('costo_nac', 0) * factor_a * c_ad_nac)
-                total_nac_a += (t.get('costo_nac_est', t.get('costo_nac', 0)-70) * factor_a * (c_es_nac + c_pc_nac))
+                total_nac_a += (t.get('costo_nac_est', t.get('costo_nac', 0)-70) * factor_a * c_es_nac)
+                total_nac_a += (t.get('costo_nac_pcd', t.get('costo_nac', 0)-70) * factor_a * c_pc_nac)
                 total_nac_a += (t.get('costo_nac_nino', t.get('costo_nac', 0)-40) * factor_a * c_ni_nac)
 
                 # Extranjeros (Aplicando factor de margen)
                 total_ext += (t.get('costo_ext', 0) * factor_m * c_ad_ext)
-                total_ext += (t.get('costo_ext_est', t.get('costo_ext', 0)-20) * factor_m * (c_es_ext + c_pc_ext))
+                total_ext += (t.get('costo_ext_est', t.get('costo_ext', 0)-20) * factor_m * c_es_ext)
+                total_ext += (t.get('costo_ext_pcd', t.get('costo_ext', 0)-20) * factor_m * c_pc_ext)
                 total_ext += (t.get('costo_ext_nino', t.get('costo_ext', 0)-15) * factor_m * c_ni_ext)
 
                 total_ext_a += (t.get('costo_ext', 0) * factor_a * c_ad_ext)
-                total_ext_a += (t.get('costo_ext_est', t.get('costo_ext', 0)-20) * factor_a * (c_es_ext + c_pc_ext))
+                total_ext_a += (t.get('costo_ext_est', t.get('costo_ext', 0)-20) * factor_a * c_es_ext)
+                total_ext_a += (t.get('costo_ext_pcd', t.get('costo_ext', 0)-20) * factor_a * c_pc_ext)
                 total_ext_a += (t.get('costo_ext_nino', t.get('costo_ext', 0)-15) * factor_a * c_ni_ext)
 
                 # CAN (Aplicando factor de margen)
                 total_can += (t.get('costo_can', 0) * factor_m * c_ad_can)
-                total_can += (t.get('costo_can_est', t.get('costo_can', 0)-20) * factor_m * (c_es_can + c_pc_can))
+                total_can += (t.get('costo_can_est', t.get('costo_can', 0)-20) * factor_m * c_es_can)
+                total_can += (t.get('costo_can_pcd', t.get('costo_can', 0)-20) * factor_m * c_pc_can)
                 total_can += (t.get('costo_can_nino', t.get('costo_can', 0)-15) * factor_m * c_ni_can)
 
                 total_can_a += (t.get('costo_can', 0) * factor_a * c_ad_can)
-                total_can_a += (t.get('costo_can_est', t.get('costo_can', 0)-20) * factor_a * (c_es_can + c_pc_can))
+                total_can_a += (t.get('costo_can_est', t.get('costo_can', 0)-20) * factor_a * c_es_can)
+                total_can_a += (t.get('costo_can_pcd', t.get('costo_can', 0)-20) * factor_a * c_pc_can)
                 total_can_a += (t.get('costo_can_nino', t.get('costo_can', 0)-15) * factor_a * c_ni_can)
 
             real_nac = total_nac + m_extra_nac + (calc_upgrades + calc_tren) * pasajeros_nac
