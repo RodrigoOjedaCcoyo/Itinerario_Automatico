@@ -353,9 +353,10 @@ def render_ventas_ui():
         # Actualizar precios al cambiar origen
         if tipo_t != st.session_state.origen_previo:
             for tour in st.session_state.itinerario:
-                t_base = next((t for t in tours_db if t['titulo'] == tour['titulo']), None)
+                # Sincronizar con catálogo si ha cambiado el precio maestro
+                t_base = next((t for t in tours_db if t['nombre'] == tour.get('titulo', tour.get('nombre'))), None)
                 if t_base:
-                    tour['costo'] = t_base['costo_nacional'] if "Nacional" in tipo_t else t_base['costo_extranjero']
+                    tour['costo'] = t_base['precio_adulto_nacional'] if "Nacional" in tipo_t else t_base['precio_adulto_extranjero']
             st.session_state.origen_previo = tipo_t
             st.rerun()
         
@@ -504,26 +505,28 @@ def render_ventas_ui():
                     missing_tours = []
                     for t_n in pkg_final['tours']:
                         # Búsqueda robusta (sin espacios, sin mayúsculas/minúsculas)
-                        t_f = next((t for t in tours_db if t['titulo'].strip().upper() == t_n.strip().upper()), None)
+                        t_f = next((t for t in tours_db if t['nombre'].strip().upper() == t_n.strip().upper()), None)
                         if t_f:
                             nuevo_t = t_f.copy()
-                            cn = float(t_f.get('costo_nacional', 0))
-                            ce = float(t_f.get('costo_extranjero', 0))
+                            # Mapeo de paridad: SQL -> Sesión de ventas
+                            nuevo_t['titulo'] = t_f.get('nombre')
+                            cn = float(t_f.get('precio_adulto_nacional', 0))
+                            ce = float(t_f.get('precio_adulto_extranjero', 0))
                             nuevo_t['costo_nac'] = cn
-                            nuevo_t['costo_nac_est'] = cn - 70.0
-                            nuevo_t['costo_nac_nino'] = cn - 40.0
+                            nuevo_t['costo_nac_est'] = float(t_f.get('precio_estudiante_nacional', cn - 70.0))
+                            nuevo_t['costo_nac_nino'] = float(t_f.get('precio_nino_nacional', cn - 40.0))
                             nuevo_t['costo_ext'] = ce
-                            nuevo_t['costo_ext_est'] = ce - 20.0
-                            nuevo_t['costo_ext_nino'] = ce - 15.0
+                            nuevo_t['costo_ext_est'] = float(t_f.get('precio_estudiante_extranjero', ce - 20.0))
+                            nuevo_t['costo_ext_nino'] = float(t_f.get('precio_nino_extranjero', ce - 15.0))
 
-                            if "MACHU PICCHU" in t_f['titulo'].upper():
-                                cc = ce - 20.0
+                            if "MACHU PICCHU" in t_f['nombre'].upper():
+                                cc = float(t_f.get('precio_adulto_can', ce - 20.0))
                             else:
-                                cc = ce
+                                cc = float(t_f.get('precio_adulto_can', ce))
                             
                             nuevo_t['costo_can'] = cc
-                            nuevo_t['costo_can_est'] = cc - 20.0
-                            nuevo_t['costo_can_nino'] = cc - 15.0
+                            nuevo_t['costo_can_est'] = float(t_f.get('precio_estudiante_can', cc - 20.0))
+                            nuevo_t['costo_can_nino'] = float(t_f.get('precio_nino_can', cc - 15.0))
                             
                             # ID único para persistencia de widgets
                             if 'id' not in nuevo_t:
@@ -549,29 +552,30 @@ def render_ventas_ui():
                     st.error("❌ Error al identificar el paquete seleccionado.")
         
         st.subheader("📍 Agregar Tour Individual")
-        tour_nombres = [t['titulo'] for t in tours_db]
+        tour_nombres = [t['nombre'] for t in tours_db]
         tour_sel = st.selectbox("Seleccione un tour", ["-- Seleccione --"] + tour_nombres)
         if tour_sel != "-- Seleccione --" and st.button("Agregar Tour"):
-            t_data = next((t for t in tours_db if t['titulo'] == tour_sel), None)
+            t_data = next((t for t in tours_db if t['nombre'] == tour_sel), None)
             if t_data:
                 nuevo_t = t_data.copy()
-                cn = float(t_data.get('costo_nacional', 0))
-                ce = float(t_data.get('costo_extranjero', 0))
+                nuevo_t['titulo'] = t_data.get('nombre')
+                cn = float(t_data.get('precio_adulto_nacional', 0))
+                ce = float(t_data.get('precio_adulto_extranjero', 0))
                 nuevo_t['costo_nac'] = cn
-                nuevo_t['costo_nac_est'] = cn - 70.0
-                nuevo_t['costo_nac_nino'] = cn - 40.0
+                nuevo_t['costo_nac_est'] = float(t_data.get('precio_estudiante_nacional', cn - 70.0))
+                nuevo_t['costo_nac_nino'] = float(t_data.get('precio_nino_nacional', cn - 40.0))
                 nuevo_t['costo_ext'] = ce
-                nuevo_t['costo_ext_est'] = ce - 20.0
-                nuevo_t['costo_ext_nino'] = ce - 15.0
+                nuevo_t['costo_ext_est'] = float(t_data.get('precio_estudiante_extranjero', ce - 20.0))
+                nuevo_t['costo_ext_nino'] = float(t_data.get('precio_nino_extranjero', ce - 15.0))
 
-                if "MACHU PICCHU" in t_data['titulo'].upper():
-                    cc = ce - 20.0
+                if "MACHU PICCHU" in t_data['nombre'].upper():
+                    cc = float(t_data.get('precio_adulto_can', ce - 20.0))
                 else:
-                    cc = ce
+                    cc = float(t_data.get('precio_adulto_can', ce))
                 
                 nuevo_t['costo_can'] = cc
-                nuevo_t['costo_can_est'] = cc - 20.0
-                nuevo_t['costo_can_nino'] = cc - 15.0
+                nuevo_t['costo_can_est'] = float(t_data.get('precio_estudiante_can', cc - 20.0))
+                nuevo_t['costo_can_nino'] = float(t_data.get('precio_nino_can', cc - 15.0))
                 
                 # ID único para persistencia de widgets
                 nuevo_t['id'] = str(uuid.uuid4())
@@ -644,7 +648,7 @@ def render_ventas_ui():
                 c_content, c_btns = st.columns([0.88, 0.12])
                 
                 with c_content:
-                    es_mp = "MACHU PICCHU" in tour['titulo'].upper()
+                    es_mp = "MACHU PICCHU" in tour.get('titulo', '').upper()
                     
                     current_date = fecha_inicio + timedelta(days=i)
                     date_str = current_date.strftime('%d/%m/%Y')
@@ -863,7 +867,7 @@ def render_ventas_ui():
             sel_tren_gen = "Expedition"
 
             # Verificar si existe MP en el itinerario de forma global (usado por métricas y General)
-            has_mp = any("MACHU PICCHU" in t.get('titulo', '').upper() for t in st.session_state.itinerario)
+            has_mp = any("MACHU PICCHU" in t.get('titulo', t.get('nombre', '')).upper() for t in st.session_state.itinerario)
 
             if estrategia_v == "General":
                 with st.container(border=True):
@@ -1132,7 +1136,8 @@ def render_ventas_ui():
                             # SINCRONIZACIÓN INTELIGENTE: 
                             # Si el usuario cambió el título manualmente, intentamos buscar la carpeta correcta
                             if tours_db:
-                                match_t = next((t for t in tours_db if t['titulo'].upper() == titulo_actual), None)
+                                # Caso: Buscar por nombre en catalogo
+                                match_t = next((t for t in tours_db if t['nombre'].upper() == titulo_actual), None)
                                 if match_t:
                                     carpeta = match_t.get('carpeta_img', carpeta)
 
