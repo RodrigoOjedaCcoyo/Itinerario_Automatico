@@ -66,9 +66,9 @@ def render_admin_precios_ui():
                                     n_est_can = st.number_input("CAN (USD)", value=float(t.get('costo_can_est', 0.0)), key=f"ed_nec_{id_tour}")
                                 with c_adv3:
                                     st.markdown("**PCD**")
-                                    n_pcd_nac = st.number_input("Nac (S/)", value=0.0, key=f"ed_npn_{id_tour}")
-                                    n_pcd_ext = st.number_input("Ext (USD)", value=0.0, key=f"ed_npe_{id_tour}")
-                                    n_pcd_can = st.number_input("CAN (USD)", value=0.0, key=f"ed_npc_{id_tour}")
+                                    n_pcd_nac = st.number_input("Nac (S/)", value=float(t.get('costo_nac_pcd', 0.0)), key=f"ed_npn_{id_tour}")
+                                    n_pcd_ext = st.number_input("Ext (USD)", value=float(t.get('costo_ext_pcd', 0.0)), key=f"ed_npe_{id_tour}")
+                                    n_pcd_can = st.number_input("CAN (USD)", value=float(t.get('costo_can_pcd', 0.0)), key=f"ed_npc_{id_tour}")
                         
                         with c_adv_main2:
                             with st.expander("🛠️ Configuración Técnica"):
@@ -86,9 +86,20 @@ def render_admin_precios_ui():
 
                         st.markdown("**📝 Textos del Itinerario**")
                         # Pre-procesar listas para el input de texto
-                        high_str = ", ".join(t.get('highlights', [])) if isinstance(t.get('highlights'), list) else ""
-                        inc_str = ", ".join(t.get('servicios', [])) if isinstance(t.get('servicios'), list) else ""
-                        no_inc_str = ", ".join(t.get('servicios_no_incluye', [])) if isinstance(t.get('servicios_no_incluye'), list) else ""
+                        raw_h = t.get('highlights', [])
+                        # Si es el nuevo formato dict {"itinerario":..., "lugares":...}
+                        if isinstance(raw_h, dict):
+                            high_list = raw_h.get('lugares', raw_h.get('highlights', raw_h.get('itinerario_lista', [])))
+                        else:
+                            high_list = raw_h if isinstance(raw_h, list) else []
+                            
+                        high_str = ", ".join(high_list) if isinstance(high_list, list) else ""
+                        
+                        raw_i = t.get('servicios', []) # Clave en el dict devuelto por get_available_tours
+                        inc_str = ", ".join(raw_i) if isinstance(raw_i, list) else ""
+                        
+                        raw_ni = t.get('servicios_no_incluye', [])
+                        no_inc_str = ", ".join(raw_ni) if isinstance(raw_ni, list) else ""
 
                         new_high = st.text_input("Highlights / Atractivos", value=high_str, key=f"ed_high_{id_tour}")
                         new_inc = st.text_input("Incluye", value=inc_str, key=f"ed_inc_{id_tour}")
@@ -115,7 +126,7 @@ def render_admin_precios_ui():
                                 "dificultad": n_dificultad,
                                 "categoria": n_categoria,
                                 "carpeta_img": n_img,
-                                "hora_inicio": n_hora,
+                                "hora_inicio": n_hora.split()[0] if " " in n_hora else n_hora, # Quitar AM/PM si existe
                                 "highlights": {"itinerario": new_desc, "lugares": [h.strip() for h in new_high.split(",") if h.strip()]},
                                 "servicios_incluidos": {"incluye": [i.strip() for i in new_inc.split(",") if i.strip()]},
                                 "servicios_no_incluidos": {"no_incluye": [n.strip() for n in new_no_inc.split(",") if n.strip()]}

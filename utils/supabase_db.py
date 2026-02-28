@@ -223,18 +223,7 @@ def populate_catalog():
     except Exception as e:
         print(f"Error al leer catálogo: {e}")
         return False
-# ORPHANED CODE REMOVED TO FIX INDENTATION ERROR
-#                         vínculos.append({
-#                             "id_paquete": id_paquete,
-#                             "id_tour": id_tour,
-#                             "orden": idx + 1
-#                         })
-#                 if vínculos:
-#                     supabase.table("paquete_tour").insert(vínculos).execute()
-#         return True
-#     except Exception as e:
-#         print(f"Error en poblacion: {e}")
-#         return False
+
 
 
 def extract_json_list(data, keys_priority):
@@ -245,8 +234,14 @@ def extract_json_list(data, keys_priority):
         for k in keys_priority:
             if k in data and isinstance(data[k], list):
                 return data[k]
-        # Fallback: devolver valores si es una lista plana disfrazada
+        # Si no hay lista en las claves, pero el dict tiene valores, ver si hay alguna otra lista
+        for val in data.values():
+            if isinstance(val, list): return val
         return []
+    if isinstance(data, str):
+        # Si es un string con comas, convertir a lista
+        if "," in data: return [i.strip() for i in data.split(",") if i.strip()]
+        return [data.strip()]
     return []
 
 def get_available_tours():
@@ -269,7 +264,7 @@ def get_available_tours():
                 final_highlights = []
                 # Buscar dentro de highlights
                 if raw_highlights_db:
-                    final_highlights = extract_json_list(raw_highlights_db, ["Lo que visitarás", "lugares", "atractivos"])
+                    final_highlights = extract_json_list(raw_highlights_db, ["itinerario_lista", "lugares", "atractivos", "highlights", "puntos", "Lo que visitarás"])
                 
                 # 2. Parsear Servicios
                 servicios_in = extract_json_list(t.get("servicios_incluidos"), ["incluye", "servicios"])
@@ -331,6 +326,11 @@ def get_available_tours():
                     "costo_ext_nino": float(t.get("precio_nino_extranjero") or 0),
                     "costo_can_est": float(t.get("precio_estudiante_can") or 0),
                     "costo_can_nino": float(t.get("precio_nino_can") or 0),
+                    "costo_nac_pcd": float(t.get("precio_pcd_nacional") or 0),
+                    "costo_ext_pcd": float(t.get("precio_pcd_extranjero") or 0),
+                    "costo_can_pcd": float(t.get("precio_pcd_can") or 0),
+                    "duracion_dias": t.get("duracion_dias") or 1,
+                    "duracion_horas": t.get("duracion_horas") or 0,
                     "carpeta_img": t.get("carpeta_img") or "general",
                     "hora_inicio": formatted_hora,
                     # Campos técnicos adicionales
