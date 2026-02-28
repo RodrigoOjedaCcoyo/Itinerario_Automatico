@@ -127,10 +127,10 @@ def render_admin_precios_ui():
                                 else:
                                     success, msg = update_tour_master(id_tour, update_data)
                                     if success:
-                                    st.success(f"✅ '{new_nombre}' actualizado correctamente.")
-                                    st.rerun()
-                                else:
-                                    st.error(f"Error: {msg}")
+                                        st.success(f"✅ '{new_nombre}' actualizado correctamente.")
+                                        st.rerun()
+                                    else:
+                                        st.error(f"Error: {msg}")
 
     with tab2:
         st.markdown("### ➕ Ingresar Nuevo Tour al Catálogo")
