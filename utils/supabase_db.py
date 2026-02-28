@@ -275,8 +275,14 @@ def get_available_tours():
                 rich_itinerary = ""
                 
                 # Intentar sacar el texto del itinerario/experiencia de los JSONs
-                if isinstance(raw_highlights_db, dict) and "itinerario" in raw_highlights_db:
-                    rich_itinerary = raw_highlights_db["itinerario"]
+                if isinstance(raw_highlights_db, dict):
+                    if "itinerario" in raw_highlights_db:
+                        rich_itinerary = raw_highlights_db["itinerario"]
+                    elif "itinerario_texto" in raw_highlights_db:
+                        rich_itinerary = raw_highlights_db["itinerario_texto"]
+                elif isinstance(raw_highlights_db, str) and raw_highlights_db.strip():
+                    # Si ya es un texto plano, lo usamos directamente
+                    rich_itinerary = raw_highlights_db
                 
                 # Si encontramos texto enriquecido, lo usamos
                 if rich_itinerary:
@@ -570,9 +576,13 @@ def create_new_tour(
         }
         
         res = supabase.table("tour").insert(data).execute()
-        return True, "Tour creado con éxito"
+        
+        if res.data:
+            return True, "Tour creado con éxito"
+        else:
+            return False, f"Respuesta vacía de la base de datos: {res}"
     except Exception as e:
-        return False, str(e)
+        return False, f"Error de excepción: {str(e)}"
 
 def create_master_package(nombre, descripcion, dias, noches, tours_vinculados, precio_sugerido=0, destino="", temporada=""):
     """

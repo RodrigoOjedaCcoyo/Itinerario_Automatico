@@ -528,6 +528,12 @@ def render_ventas_ui():
                             nuevo_t['costo_can_est'] = float(t_f.get('precio_estudiante_can', cc - 20.0))
                             nuevo_t['costo_can_nino'] = float(t_f.get('precio_nino_can', cc - 15.0))
                             
+                            # MAPEO DE TEXTOS (SQL -> Ventas Session)
+                            nuevo_t['descripcion'] = t_f.get('itinerario_texto', '')
+                            nuevo_t['servicios'] = t_f.get('servicios_incluidos', [])
+                            nuevo_t['servicios_no_incluye'] = t_f.get('servicios_no_incluidos', [])
+                            nuevo_t['hora_inicio'] = t_f.get('hora_inicio', '08:00 AM')
+                            
                             # ID único para persistencia de widgets
                             if 'id' not in nuevo_t:
                                 nuevo_t['id'] = str(uuid.uuid4())
@@ -576,6 +582,12 @@ def render_ventas_ui():
                 nuevo_t['costo_can'] = cc
                 nuevo_t['costo_can_est'] = float(t_data.get('precio_estudiante_can', cc - 20.0))
                 nuevo_t['costo_can_nino'] = float(t_data.get('precio_nino_can', cc - 15.0))
+                
+                # MAPEO DE TEXTOS (SQL -> Ventas Session)
+                nuevo_t['descripcion'] = t_data.get('itinerario_texto', '')
+                nuevo_t['servicios'] = t_data.get('servicios_incluidos', [])
+                nuevo_t['servicios_no_incluye'] = t_data.get('servicios_no_incluidos', [])
+                nuevo_t['hora_inicio'] = t_data.get('hora_inicio', '08:00 AM')
                 
                 # ID único para persistencia de widgets
                 nuevo_t['id'] = str(uuid.uuid4())

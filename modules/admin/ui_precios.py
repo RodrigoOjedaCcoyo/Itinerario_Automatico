@@ -210,9 +210,14 @@ def render_admin_precios_ui():
                         carpeta_img=f_img, hora_inicio=f_hora
                     )
                     if success:
-                        st.success(f"✅ Tour '{f_nombre}' creado.")
-                        st.rerun()
-                    else: st.error(f"Error: {msg}")
+                        st.success(f"✅ Tour '{f_nombre}' creado con éxito.")
+                        st.info("💡 Pulsa el botón superior 'Refrescar Catálogo' para ver los cambios.")
+                        if st.button("Ver catálogo actualizado"):
+                            st.rerun()
+                    else: 
+                        st.error(f"❌ Error al crear: {msg}")
+                        with st.expander("Ver detalle del error"):
+                            st.code(msg)
 
     with tab3:
         st.markdown("### 📦 Armar Nuevo Paquete Maestro")
