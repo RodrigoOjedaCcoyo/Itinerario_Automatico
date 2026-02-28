@@ -815,9 +815,7 @@ def render_ventas_ui():
             ma5, ma6, ma7, ma8 = st.columns(4)
             margen_antes_pct = ma5.number_input("% Margen (Antes)", value=float(st.session_state.get('f_margen_antes', 40.0)), step=1.0, key="f_margen_antes", help="Margen para el precio tachado (efecto de oferta).")
             
-            st.session_state.f_nota_precio = st.text_input("📝 Nota de Precio Global (Exclusivo en PDF)", value=st.session_state.get('f_nota_precio', 'INCLUYE TOUR'), key="global_nota_precio", help="Esta nota aparecerá en la sección de precios del PDF para todos los tours.")
-            
-            st.session_state.f_notas_finales = st.text_area("✍️ Notas Finales del Vendedor (Última Hoja)", value=st.session_state.get('f_notas_finales', ''), key="global_notas_finales", height=100, help="Escribe aquí recomendaciones breves o especificaciones finales para el cliente.")
+            st.markdown('<div style="margin-top: -10px;"></div>', unsafe_allow_html=True)
 
             # Cálculo automático base de noches si el valor es 0 o el estado no existe
             auto_noches = max(0, len(st.session_state.itinerario) - 1)
@@ -1073,9 +1071,17 @@ def render_ventas_ui():
             
             # --- NUEVA SECCIÓN: NOTA DE PRECIO GLOBAL ---
             st.session_state.f_nota_precio = st.text_input(
-                "📝 Nota de Precio (Aparecerá en el PDF)", 
+                "📝 Nota de Precio (Sección de Precios)", 
                 value=st.session_state.get('f_nota_precio', "INCLUYE TOUR"),
-                help="Ej: INCLUYE TOUR, No incluye vuelos, etc."
+                help="Ej: INCLUYE TOUR, No incluye vuelos, etc. Aparece junto a los montos."
+            )
+            
+            st.session_state.f_notas_finales = st.text_area(
+                "✍️ Notas Finales / Especificaciones (Última Hoja)", 
+                value=st.session_state.get('f_notas_finales', ''), 
+                key="global_notas_finales", 
+                height=120, 
+                help="Escriba aquí las indicaciones breves que irán en la última hoja del PDF."
             )
             
             st.divider()
