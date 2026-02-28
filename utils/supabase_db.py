@@ -292,48 +292,56 @@ def get_available_tours():
                     
                     desc = cleaned
 
-                # 4. Formatear Hora
+                # 4. Formatear Hora (Normalizar a 24h HH:MM:SS para SQL)
                 raw_hora = t.get("hora_inicio")
-                formatted_hora = "08:00 AM"
+                formatted_hora = "08:00:00"
                 if raw_hora:
                     try:
-                        # Si viene como timestamp ISO '2026-01-01 08:00:00-05'
+                        # Si viene como timestamp ISO o tiene zona horaria
                         if "T" in str(raw_hora) or "-" in str(raw_hora):
-                            # Intento simple de parserDate
                             from dateutil import parser
                             dt = parser.parse(str(raw_hora))
-                            formatted_hora = dt.strftime("%I:%M %p")
+                            formatted_hora = dt.strftime("%H:%M:%S")
                         else:
-                            # Asumimos que ya es string corto o time
-                             formatted_hora = str(raw_hora)
+                            # Asegurar que sea HH:MM:SS (truncar o completar)
+                            s_hora = str(raw_hora).strip()
+                            if len(s_hora) == 5: # HH:MM
+                                formatted_hora = f"{s_hora}:00"
+                            else:
+                                formatted_hora = s_hora[:8]
                     except:
-                        formatted_hora = str(raw_hora)
+                        formatted_hora = str(raw_hora)[:8]
 
                 tours.append({
                     "id_tour": t.get("id_tour"),
-                    "titulo": t.get("nombre", "Sin Nombre"),
-                    "descripcion": desc,
+                    "nombre": t.get("nombre", "Sin Nombre"),
+                    "itinerario_texto": desc, # Descripción virtual desde highlights
                     "highlights": final_highlights,
-                    "servicios": servicios_in,
-                    "servicios_no_incluye": servicios_out,
-                    "costo_nacional": float(t.get("precio_adulto_nacional") or t.get("precio_nacional") or 0),
-                    "costo_extranjero": float(t.get("precio_adulto_extranjero") or t.get("precio_base_usd") or 0),
-                    "costo_can": float(t.get("precio_adulto_can") or 0),
-                    # Precios detallados por categoría
-                    "costo_nac_est": float(t.get("precio_estudiante_nacional") or 0),
-                    "costo_nac_nino": float(t.get("precio_nino_nacional") or 0),
-                    "costo_ext_est": float(t.get("precio_estudiante_extranjero") or 0),
-                    "costo_ext_nino": float(t.get("precio_nino_extranjero") or 0),
-                    "costo_can_est": float(t.get("precio_estudiante_can") or 0),
-                    "costo_can_nino": float(t.get("precio_nino_can") or 0),
-                    "costo_nac_pcd": float(t.get("precio_pcd_nacional") or 0),
-                    "costo_ext_pcd": float(t.get("precio_pcd_extranjero") or 0),
-                    "costo_can_pcd": float(t.get("precio_pcd_can") or 0),
+                    "servicios_incluidos": servicios_in,
+                    "servicios_no_incluidos": servicios_out,
+                    
+                    # Matriz 12 Precios (Nombres exactos SQL)
+                    "precio_adulto_nacional": float(t.get("precio_adulto_nacional") or 0),
+                    "precio_adulto_extranjero": float(t.get("precio_adulto_extranjero") or 0),
+                    "precio_adulto_can": float(t.get("precio_adulto_can") or 0),
+                    
+                    "precio_nino_nacional": float(t.get("precio_nino_nacional") or 0),
+                    "precio_nino_extranjero": float(t.get("precio_nino_extranjero") or 0),
+                    "precio_nino_can": float(t.get("precio_nino_can") or 0),
+                    
+                    "precio_estudiante_nacional": float(t.get("precio_estudiante_nacional") or 0),
+                    "precio_estudiante_extranjero": float(t.get("precio_estudiante_extranjero") or 0),
+                    "precio_estudiante_can": float(t.get("precio_estudiante_can") or 0),
+                    
+                    "precio_pcd_nacional": float(t.get("precio_pcd_nacional") or 0),
+                    "precio_pcd_extranjero": float(t.get("precio_pcd_extranjero") or 0),
+                    "precio_pcd_can": float(t.get("precio_pcd_can") or 0),
+
+                    # Metadatos
                     "duracion_dias": t.get("duracion_dias") or 1,
                     "duracion_horas": t.get("duracion_horas") or 0,
                     "carpeta_img": t.get("carpeta_img") or "general",
                     "hora_inicio": formatted_hora,
-                    # Campos técnicos adicionales
                     "dificultad": t.get("dificultad") or "FACIL",
                     "categoria": t.get("categoria") or "General"
                 })

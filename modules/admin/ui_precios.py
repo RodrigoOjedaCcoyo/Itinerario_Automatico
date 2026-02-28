@@ -20,22 +20,22 @@ def render_admin_precios_ui():
             search = st.text_input("🔍 Buscar por nombre", "").lower()
 
             for idx, t in enumerate(tours_db):
-                if search and search not in t['titulo'].lower():
+                if search and search not in t['nombre'].lower():
                     continue
 
                 id_tour = t.get('id_tour')
                 if not id_tour: continue
 
-                with st.expander(f"📦 {t['titulo']}"):
+                with st.expander(f"📦 {t['nombre']}"):
                     with st.form(f"form_edit_{id_tour}_{idx}"):
                         col_e1, col_e2 = st.columns([2, 1])
                         with col_e1:
-                            new_nombre = st.text_input("Nombre del Tour", value=t['titulo'])
+                            new_nombre = st.text_input("Nombre del Tour", value=t['nombre'])
                             
-                            # Validación de palabras en descripción
-                            current_desc = t.get('description', t.get('descripcion', ""))
+                            # Validación de palabras en 'itinerario' (dentro de highlights JSONB)
+                            current_desc = t.get('itinerario_texto', "")
                             word_count = len(current_desc.split())
-                            desc_label = f"Descripción (Itinerario) - {word_count}/100 palabras"
+                            desc_label = f"Texto del Itinerario (Highlights) - {word_count}/100 palabras"
                             
                             new_desc = st.text_area(desc_label, value=current_desc, height=150)
                             
@@ -44,9 +44,9 @@ def render_admin_precios_ui():
                                 st.error(f"⚠️ ¡Atención! La descripción tiene {new_word_count} palabras. El límite para el PDF es de 100.")
                         with col_e2:
                             st.markdown("**💰 Precios Base (Adulto)**")
-                            new_p_nac = st.number_input("Nacional (S/)", value=float(t.get('costo_nacional', 0.0)), step=1.0, key=f"ed_nac_{id_tour}")
-                            new_p_ext = st.number_input("Extranjero (USD)", value=float(t.get('costo_extranjero', 0.0)), step=1.0, key=f"ed_ext_{id_tour}")
-                            new_p_can = st.number_input("CAN (USD)", value=float(t.get('costo_can', 0.0)), step=1.0, key=f"ed_can_{id_tour}")
+                            new_p_nac = st.number_input("Nacional (S/)", value=float(t.get('precio_adulto_nacional', 0.0)), step=1.0, key=f"ed_nac_{id_tour}")
+                            new_p_ext = st.number_input("Extranjero (USD)", value=float(t.get('precio_adulto_extranjero', 0.0)), step=1.0, key=f"ed_ext_{id_tour}")
+                            new_p_can = st.number_input("CAN (USD)", value=float(t.get('precio_adulto_can', 0.0)), step=1.0, key=f"ed_can_{id_tour}")
 
                         # --- DETALLES AVANZADOS ---
                         c_adv_main1, c_adv_main2 = st.columns(2)
@@ -56,19 +56,19 @@ def render_admin_precios_ui():
                                 c_adv1, c_adv2, c_adv3 = st.columns(3)
                                 with c_adv1:
                                     st.markdown("**Niños**")
-                                    n_nino_nac = st.number_input("Nac (S/)", value=float(t.get('costo_nac_nino', 0.0)), key=f"ed_nnn_{id_tour}")
-                                    n_nino_ext = st.number_input("Ext (USD)", value=float(t.get('costo_ext_nino', 0.0)), key=f"ed_nne_{id_tour}")
-                                    n_nino_can = st.number_input("CAN (USD)", value=float(t.get('costo_can_nino', 0.0)), key=f"ed_nnc_{id_tour}")
+                                    n_nino_nac = st.number_input("Nac (S/)", value=float(t.get('precio_nino_nacional', 0.0)), key=f"ed_nnn_{id_tour}")
+                                    n_nino_ext = st.number_input("Ext (USD)", value=float(t.get('precio_nino_extranjero', 0.0)), key=f"ed_nne_{id_tour}")
+                                    n_nino_can = st.number_input("CAN (USD)", value=float(t.get('precio_nino_can', 0.0)), key=f"ed_nnc_{id_tour}")
                                 with c_adv2:
                                     st.markdown("**Estudiantes**")
-                                    n_est_nac = st.number_input("Nac (S/)", value=float(t.get('costo_nac_est', 0.0)), key=f"ed_nen_{id_tour}")
-                                    n_est_ext = st.number_input("Ext (USD)", value=float(t.get('costo_ext_est', 0.0)), key=f"ed_nee_{id_tour}")
-                                    n_est_can = st.number_input("CAN (USD)", value=float(t.get('costo_can_est', 0.0)), key=f"ed_nec_{id_tour}")
+                                    n_est_nac = st.number_input("Nac (S/)", value=float(t.get('precio_estudiante_nacional', 0.0)), key=f"ed_nen_{id_tour}")
+                                    n_est_ext = st.number_input("Ext (USD)", value=float(t.get('precio_estudiante_extranjero', 0.0)), key=f"ed_nee_{id_tour}")
+                                    n_est_can = st.number_input("CAN (USD)", value=float(t.get('precio_estudiante_can', 0.0)), key=f"ed_nec_{id_tour}")
                                 with c_adv3:
                                     st.markdown("**PCD**")
-                                    n_pcd_nac = st.number_input("Nac (S/)", value=float(t.get('costo_nac_pcd', 0.0)), key=f"ed_npn_{id_tour}")
-                                    n_pcd_ext = st.number_input("Ext (USD)", value=float(t.get('costo_ext_pcd', 0.0)), key=f"ed_npe_{id_tour}")
-                                    n_pcd_can = st.number_input("CAN (USD)", value=float(t.get('costo_can_pcd', 0.0)), key=f"ed_npc_{id_tour}")
+                                    n_pcd_nac = st.number_input("Nac (S/)", value=float(t.get('precio_pcd_nacional', 0.0)), key=f"ed_npn_{id_tour}")
+                                    n_pcd_ext = st.number_input("Ext (USD)", value=float(t.get('precio_pcd_extranjero', 0.0)), key=f"ed_npe_{id_tour}")
+                                    n_pcd_can = st.number_input("CAN (USD)", value=float(t.get('precio_pcd_can', 0.0)), key=f"ed_npc_{id_tour}")
                         
                         with c_adv_main2:
                             with st.expander("🛠️ Configuración Técnica"):
@@ -82,7 +82,7 @@ def render_admin_precios_ui():
                                     n_categoria = st.text_input("Categoría", value=t.get('categoria', 'General'), key=f"ed_cat_{id_tour}")
                                 
                                 n_img = st.text_input("Carpeta Imágenes", value=t.get('carpeta_img', 'general'), key=f"ed_img_{id_tour}")
-                                n_hora = st.text_input("Hora Inicio (HH:MM)", value=t.get('hora_inicio', '08:00:00')[:8], key=f"ed_hora_{id_tour}")
+                                n_hora = st.text_input("Hora Inicio (HH:MM:SS)", value=t.get('hora_inicio', '08:00:00')[:8], key=f"ed_hora_{id_tour}")
 
                         st.markdown("**📝 Textos del Itinerario**")
                         # Pre-procesar listas para el input de texto
@@ -95,10 +95,10 @@ def render_admin_precios_ui():
                             
                         high_str = ", ".join(high_list) if isinstance(high_list, list) else ""
                         
-                        raw_i = t.get('servicios', []) # Clave en el dict devuelto por get_available_tours
+                        raw_i = t.get('servicios_incluidos', []) 
                         inc_str = ", ".join(raw_i) if isinstance(raw_i, list) else ""
                         
-                        raw_ni = t.get('servicios_no_incluye', [])
+                        raw_ni = t.get('servicios_no_incluidos', [])
                         no_inc_str = ", ".join(raw_ni) if isinstance(raw_ni, list) else ""
 
                         new_high = st.text_input("Highlights / Atractivos", value=high_str, key=f"ed_high_{id_tour}")
@@ -126,7 +126,7 @@ def render_admin_precios_ui():
                                 "dificultad": n_dificultad,
                                 "categoria": n_categoria,
                                 "carpeta_img": n_img,
-                                "hora_inicio": n_hora.split()[0] if " " in n_hora else n_hora, # Quitar AM/PM si existe
+                                "hora_inicio": n_hora if ":" in n_hora else f"{n_hora}:00:00", # Asegurar formato TIME
                                 "highlights": {"itinerario": new_desc, "lugares": [h.strip() for h in new_high.split(",") if h.strip()]},
                                 "servicios_incluidos": {"incluye": [i.strip() for i in new_inc.split(",") if i.strip()]},
                                 "servicios_no_incluidos": {"no_incluye": [n.strip() for n in new_no_inc.split(",") if n.strip()]}
@@ -149,7 +149,7 @@ def render_admin_precios_ui():
             col_t1, col_t2 = st.columns([2, 1])
             with col_t1:
                 f_nombre = st.text_input("Nombre del Tour *", placeholder="Ej: Full Day Paracas e Ica")
-                f_desc = st.text_area("Descripción Principal (Máx 100 palabras) *", placeholder="Escribe el itinerario o resumen...")
+                f_desc = st.text_area("Texto Itinerario (Se guardará en 'highlights') *", placeholder="Escribe el itinerario o resumen...")
                 
                 f_word_count = len(f_desc.split())
                 if f_word_count > 0:
@@ -245,7 +245,7 @@ def render_admin_precios_ui():
                 p_precio_sug = st.number_input("Precio Sugerido (Opcional)", min_value=0.0, value=0.0)
             
             st.write("Selecciona los tours:")
-            opciones_tours = {t['titulo']: t['id_tour'] for t in tours_db}
+            opciones_tours = {t['nombre']: t['id_tour'] for t in tours_db}
             seleccionados = st.multiselect("Tours del Catálogo", options=list(opciones_tours.keys()))
             
             tours_vinculados = []
