@@ -1044,13 +1044,13 @@ def render_ventas_ui():
                 total_can_a += (t.get('costo_can_nino', t.get('costo_can', 0)-15) * factor_a * c_ni_can)
 
             # Lógica de Upgrades por Moneda (Garantizar consistencia)
-            # Upgrades base están en USD (Hotel) o según selección (Tren)
-            # calc_upgrades siempre es USD (viene de hotel_grupo en USD)
+            # Si el origen es Nacional, los inputs de hotel están en Soles (calc_upgrades es Soles).
+            # Si el origen es Extranjero o Mixto, los inputs están en USD (calc_upgrades es USD).
             
             # Para Nacionales: Todo debe estar en Soles
-            up_nac = (calc_upgrades * tc) + (calc_tren if tipo_t == "Nacional" else calc_tren * tc)
+            up_nac = (calc_upgrades if tipo_t == "Nacional" else calc_upgrades * tc) + (calc_tren if tipo_t == "Nacional" else calc_tren * tc)
             # Para Extranjeros/CAN: Todo debe estar en USD
-            up_ext = calc_upgrades + (calc_tren if tipo_t != "Nacional" else calc_tren / tc)
+            up_ext = (calc_upgrades if tipo_t != "Nacional" else calc_upgrades / tc) + (calc_tren if tipo_t != "Nacional" else calc_tren / tc)
 
             real_nac = total_nac + m_extra_nac + (up_nac * pasajeros_nac)
             real_ext = total_ext + m_extra_ext + (up_ext * pasajeros_ext)
@@ -1067,9 +1067,9 @@ def render_ventas_ui():
             avg_can_pp = real_can / max(1, pasajeros_can)
 
             # Promedios con el factor de "Antes"
-            real_nac_a = total_nac_a + m_extra_nac + (calc_upgrades + calc_tren) * pasajeros_nac
-            real_ext_a = total_ext_a + m_extra_ext + (calc_upgrades + calc_tren) * pasajeros_ext
-            real_can_a = total_can_a + m_extra_can + (calc_upgrades + calc_tren) * pasajeros_can
+            real_nac_a = total_nac_a + m_extra_nac + (up_nac * pasajeros_nac)
+            real_ext_a = total_ext_a + m_extra_ext + (up_ext * pasajeros_ext)
+            real_can_a = total_can_a + m_extra_can + (up_ext * pasajeros_can)
             avg_nac_a_pp = real_nac_a / max(1, pasajeros_nac)
             avg_ext_a_pp = real_ext_a / max(1, pasajeros_ext)
             avg_can_a_pp = real_can_a / max(1, pasajeros_can)
