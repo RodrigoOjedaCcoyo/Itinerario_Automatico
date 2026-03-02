@@ -453,6 +453,17 @@
                         style="font-size: 2.8rem; line-height: 1; color: var(--color-primary); font-weight: 900;">{{
                         precios.nac.total }}</span>
                 </div>
+                {% if precios.nac and precios.nac.lista_det %}
+                <div style="margin-top: 10px; border-top: 1px solid rgba(0,0,0,0.05); padding-top: 10px;">
+                    {% for label, monto in precios.nac.lista_det.items() %}
+                    <div
+                        style="display: flex; justify-content: space-between; font-size: 0.85rem; color: #555; margin-bottom: 2px;">
+                        <span>{{ label }}:</span>
+                        <span style="font-weight: 700;">S/ {{ monto }}</span>
+                    </div>
+                    {% endfor %}
+                </div>
+                {% endif %}
             </div>
             <div class="offer-footer"
                 style="background: #f8f9fa; color: #2d3436; font-weight: 700; border-top: 1px solid #eee; text-transform: uppercase;">
@@ -461,29 +472,76 @@
         </div>
         {% endif %}
 
-        {% if precios.ext %}
+        {% if precios.ext or precios.can %}
         <div class="luxury-offer-card featured"
             style="flex: 1; position: relative; border: 3px solid var(--color-primary); overflow: visible;">
             <div class="offer-badge"
                 style="background: #eb4d4b; color: white; font-weight: 900; transform: rotate(-5deg); left: -10px; top: -15px; padding: 8px 15px; box-shadow: 0 4px 10px rgba(0,0,0,0.2);">
                 ¡SÚPER PRECIO!</div>
-            <div class="offer-type" style="margin-top: 15px; font-weight: 800; color: #2d3436;">TARIFA INTERNACIONAL
+            <div class="offer-type" style="margin-top: 15px; font-weight: 800; color: #2d3436;">TARIFA INTERNACIONAL /
+                CAN
             </div>
 
             <div class="offer-price-box" style="padding: 10px 5px;">
                 {% if show_antes_pdf %}
                 <div style="margin-bottom: 5px;">
-                    <span style="color: #999; text-decoration: line-through; font-size: 1.2rem; font-weight: 600;">USD
-                        {{ precios_antes.ext.total }}</span>
+                    <span style="color: #999; text-decoration: line-through; font-size: 1.2rem; font-weight: 600;">
+                        USD {{ (precios_antes.ext.total if (precios_antes.ext and precios.ext) else
+                        (precios_antes.can.total if (precios_antes.can and precios.can) else '0.00')) }}
+                    </span>
                 </div>
                 {% endif %}
-                <div style="display: flex; align-items: center; justify-content: center; gap: 5px;">
-                    <span class="offer-currency"
-                        style="font-size: 1.5rem; color: var(--color-primary); font-weight: 800;">USD</span>
-                    <span class="offer-amount"
-                        style="font-size: 2.8rem; line-height: 1; color: var(--color-primary); font-weight: 900;">{{
-                        precios.ext.total }}</span>
+
+                {% if precios.ext %}
+                <div style="margin-bottom: 15px;">
+                    <div
+                        style="font-size: 0.75rem; color: #888; font-weight: 700; text-transform: uppercase; margin-bottom: 5px;">
+                        Extranjero</div>
+                    <div style="display: flex; align-items: center; justify-content: center; gap: 5px;">
+                        <span class="offer-currency"
+                            style="font-size: 1.5rem; color: var(--color-primary); font-weight: 800;">USD</span>
+                        <span class="offer-amount"
+                            style="font-size: 2.8rem; line-height: 1; color: var(--color-primary); font-weight: 900;">{{
+                            precios.ext.total }}</span>
+                    </div>
+                    {% if precios.ext.lista_det %}
+                    <div style="margin-top: 5px; border-top: 1px solid rgba(0,0,0,0.05); padding-top: 5px;">
+                        {% for label, monto in precios.ext.lista_det.items() %}
+                        <div style="display: flex; justify-content: space-between; font-size: 0.82rem; color: #555;">
+                            <span>{{ label }}:</span>
+                            <span style="font-weight: 700;">USD {{ monto }}</span>
+                        </div>
+                        {% endfor %}
+                    </div>
+                    {% endif %}
                 </div>
+                {% endif %}
+
+                {% if precios.can %}
+                <div
+                    style="{% if precios.ext %}margin-top: 15px; border-top: 2px dashed #eee; padding-top: 15px;{% endif %}">
+                    <div
+                        style="font-size: 0.75rem; color: #888; font-weight: 700; text-transform: uppercase; margin-bottom: 5px;">
+                        Comunidad Andina (CAN)</div>
+                    <div style="display: flex; align-items: center; justify-content: center; gap: 5px;">
+                        <span class="offer-currency"
+                            style="font-size: 1.5rem; color: #2d3436; font-weight: 800;">USD</span>
+                        <span class="offer-amount"
+                            style="font-size: 2.5rem; line-height: 1; color: #2d3436; font-weight: 800;">{{
+                            precios.can.total }}</span>
+                    </div>
+                    {% if precios.can.lista_det %}
+                    <div style="margin-top: 5px; border-top: 1px solid rgba(0,0,0,0.05); padding-top: 5px;">
+                        {% for label, monto in precios.can.lista_det.items() %}
+                        <div style="display: flex; justify-content: space-between; font-size: 0.82rem; color: #555;">
+                            <span>{{ label }}:</span>
+                            <span style="font-weight: 700;">USD {{ monto }}</span>
+                        </div>
+                        {% endfor %}
+                    </div>
+                    {% endif %}
+                </div>
+                {% endif %}
             </div>
             <div class="offer-footer"
                 style="background: #f8f9fa; color: #2d3436; font-weight: 700; border-top: 1px solid #eee; text-transform: uppercase;">

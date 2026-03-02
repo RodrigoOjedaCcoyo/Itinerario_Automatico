@@ -1084,14 +1084,53 @@ def render_ventas_ui():
             avg_can_a_pp = math.ceil((total_can_a + m_extra_can) / max(1, pasajeros_can) + up_ext)
             real_can_a = avg_can_a_pp * pasajeros_can
 
-            # --- DICCIONARIOS PARA EL PDF (Solo cuando es Opciones) ---
+            # --- DICCIONARIOS PARA EL PDF (Detalles por Pasajero) ---
+            # Pre-calcular sumas para eficiencia
+            cost_nac_ad = sum(t.get('costo_nac', 0) for t in st.session_state.itinerario)
+            cost_nac_es = sum(t.get('costo_nac_est', t.get('costo_nac', 0)-70) for t in st.session_state.itinerario)
+            cost_nac_pc = sum(t.get('costo_nac_pcd', t.get('costo_nac', 0)-70) for t in st.session_state.itinerario)
+            cost_nac_ni = sum(t.get('costo_nac_nino', t.get('costo_nac', 0)-40) for t in st.session_state.itinerario)
+
+            cost_ext_ad = sum(t.get('costo_ext', 0) for t in st.session_state.itinerario)
+            cost_ext_es = sum(t.get('costo_ext_est', t.get('costo_ext', 0)-20) for t in st.session_state.itinerario)
+            cost_ext_pc = sum(t.get('costo_ext_pcd', t.get('costo_ext', 0)-20) for t in st.session_state.itinerario)
+            cost_ext_ni = sum(t.get('costo_ext_nino', t.get('costo_ext', 0)-15) for t in st.session_state.itinerario)
+
+            cost_can_ad = sum(t.get('costo_can', 0) for t in st.session_state.itinerario)
+            cost_can_es = sum(t.get('costo_can_est', t.get('costo_can', 0)-20) for t in st.session_state.itinerario)
+            cost_can_pc = sum(t.get('costo_can_pcd', t.get('costo_can', 0)-20) for t in st.session_state.itinerario)
+            cost_can_ni = sum(t.get('costo_can_nino', t.get('costo_can', 0)-15) for t in st.session_state.itinerario)
+
+            # Nacional
+            det_nac = {}
+            if c_ad_nac > 0: det_nac['Adulto'] = f"{math.ceil((cost_nac_ad * factor_m) + (m_extra_nac/max(1, pasajeros_nac)) + up_nac):,.2f}"
+            if c_es_nac > 0: det_nac['Estudiante'] = f"{math.ceil((cost_nac_es * factor_m) + (m_extra_nac/max(1, pasajeros_nac)) + up_nac):,.2f}"
+            if c_pc_nac > 0: det_nac['PCD'] = f"{math.ceil((cost_nac_pc * factor_m) + (m_extra_nac/max(1, pasajeros_nac)) + up_nac):,.2f}"
+            if c_ni_nac > 0: det_nac['Niño'] = f"{math.ceil((cost_nac_ni * factor_m) + (m_extra_nac/max(1, pasajeros_nac)) + up_nac):,.2f}"
+
+            # Extranjero
+            det_ext = {}
+            if c_ad_ext > 0: det_ext['Adulto'] = f"{math.ceil((cost_ext_ad * factor_m) + (m_extra_ext/max(1, pasajeros_ext)) + up_ext):,.2f}"
+            if c_es_ext > 0: det_ext['Estudiante'] = f"{math.ceil((cost_ext_es * factor_m) + (m_extra_ext/max(1, pasajeros_ext)) + up_ext):,.2f}"
+            if c_pc_ext > 0: det_ext['PCD'] = f"{math.ceil((cost_ext_pc * factor_m) + (m_extra_ext/max(1, pasajeros_ext)) + up_ext):,.2f}"
+            if c_ni_ext > 0: det_ext['Niño'] = f"{math.ceil((cost_ext_ni * factor_m) + (m_extra_ext/max(1, pasajeros_ext)) + up_ext):,.2f}"
+
+            # CAN
+            det_can = {}
+            if c_ad_can > 0: det_can['Adulto'] = f"{math.ceil((cost_can_ad * factor_m) + (m_extra_can/max(1, pasajeros_can)) + up_ext):,.2f}"
+            if c_es_can > 0: det_can['Estudiante'] = f"{math.ceil((cost_can_es * factor_m) + (m_extra_can/max(1, pasajeros_can)) + up_ext):,.2f}"
+            if c_pc_can > 0: det_can['PCD'] = f"{math.ceil((cost_can_pc * factor_m) + (m_extra_can/max(1, pasajeros_can)) + up_ext):,.2f}"
+            if c_ni_can > 0: det_can['Niño'] = f"{math.ceil((cost_can_ni * factor_m) + (m_extra_can/max(1, pasajeros_can)) + up_ext):,.2f}"
+
             precios = {
-                'nac': {'total': f"{avg_nac_pp:,.2f}"} if pasajeros_nac > 0 else None,
-                'ext': {'total': f"{avg_ext_pp:,.2f}"} if (pasajeros_ext + pasajeros_can) > 0 else None
+                'nac': {'total': f"{avg_nac_pp:,.2f}", 'lista_det': det_nac} if pasajeros_nac > 0 else None,
+                'ext': {'total': f"{avg_ext_pp:,.2f}", 'lista_det': det_ext} if pasajeros_ext > 0 else None,
+                'can': {'total': f"{avg_can_pp:,.2f}", 'lista_det': det_can} if pasajeros_can > 0 else None
             }
             precios_antes = {
                 'nac': {'total': f"{avg_nac_a_pp:,.2f}"} if pasajeros_nac > 0 else None,
-                'ext': {'total': f"{avg_ext_a_pp:,.2f}"} if (pasajeros_ext + pasajeros_can) > 0 else None
+                'ext': {'total': f"{avg_ext_a_pp:,.2f}"} if pasajeros_ext > 0 else None,
+                'can': {'total': f"{avg_can_a_pp:,.2f}"} if pasajeros_can > 0 else None
             }
             
             col_res1, col_res2, col_res3 = st.columns(3)
