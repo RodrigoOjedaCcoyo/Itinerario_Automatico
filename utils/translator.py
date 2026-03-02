@@ -79,12 +79,14 @@ def translate_itinerary(itinerary_data, target_lang="English"):
             import json
             translations = json.loads(response_json.choices[0].message.content)
             
-            # Crear copia del día con traducciones
+            # Crear copia del día con todas las propiedades originales (incluyendo images, numero, fecha, etc.)
             new_day = day.copy()
-            new_day['titulo'] = translations.get('titulo', day['titulo'])
-            new_day['descripcion'] = translations.get('descripcion', day['descripcion'])
-            new_day['servicios'] = translations.get('servicios', day['servicios'])
-            new_day['servicios_no_incluye'] = translations.get('servicios_no_incluye', day['servicios_no_incluye'])
+            
+            # Aplicar traducciones sobre la copia
+            new_day['titulo'] = translations.get('titulo', day.get('titulo'))
+            new_day['descripcion'] = translations.get('descripcion', day.get('descripcion'))
+            new_day['servicios'] = translations.get('servicios', day.get('servicios'))
+            new_day['servicios_no_incluye'] = translations.get('servicios_no_incluye', day.get('servicios_no_incluye', []))
             
             processed_days.append(new_day)
             
