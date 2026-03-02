@@ -1392,64 +1392,36 @@ def render_ventas_ui():
                             
                             # FILTRAR POR ORIGEN: Solo mostrar lo que el usuario ha elegido como Origen principal
                             if tipo_t in ["Nacional", "Mixto"] and pasajeros_nac > 0:
-                                b_nac = total_nac_pp + (extra_nac/max(1, pasajeros_nac))
-                                if estrategia_v == "General": b_nac += (calc_upgrades + calc_tren)
                                 precios_cierre_list.append({
                                     'label': 'TOTAL NACIONAL',
                                     'simbolo': 'S/',
-                                    'monto_total': f"{b_nac * pasajeros_nac:,.2f}",
-                                    'monto_pp': f"{b_nac:,.2f}"
+                                    'monto_total': f"{real_nac:,.2f}",
+                                    'monto_pp': f"{avg_nac_pp:,.2f}"
                                 })
 
                             if tipo_t in ["Extranjero", "Mixto"]:
-                                # Combinar Extranjero y CAN en una sola línea de cierre
-                                total_ext_can = 0
-                                breakdown_label = []
-                                num_total_int = 0
-                                
-                                # Cálculo para Extranjero
+                                # Cálculo unificado para Extranjero + CAN
                                 if pasajeros_ext > 0:
-                                    b_ext = total_ext_pp + (extra_ext/max(1, pasajeros_ext))
-                                    if estrategia_v == "General": b_ext += (calc_upgrades + calc_tren)
-                                    total_ext_can += (b_ext * pasajeros_ext)
-                                    num_total_int += pasajeros_ext
-                                    breakdown_label.append(f"{pasajeros_ext} Ext. (USD {b_ext:,.2f})")
-                                
-                                # Cálculo para CAN
-                                if pasajeros_can > 0:
-                                    b_can = total_can_pp + (extra_can/max(1, pasajeros_can))
-                                    if estrategia_v == "General": b_can += (calc_upgrades + calc_tren)
-                                    total_ext_can += (b_can * pasajeros_can)
-                                    num_total_int += pasajeros_can
-                                    breakdown_label.append(f"{pasajeros_can} CAN (USD {b_can:,.2f})")
-                                
-                                if total_ext_can > 0:
-                                    # Una sola entrada que suma ambos
-                                    monto_pp_final = ""
-                                    if pasajeros_ext > 0 and pasajeros_can > 0:
-                                        monto_pp_final = f"Ver desglose: {', '.join(breakdown_label)}"
-                                    elif pasajeros_ext > 0:
-                                        monto_pp_final = f"USD {total_ext_can / pasajeros_ext:,.2f} c/u"
-                                    else:
-                                        monto_pp_final = f"USD {total_ext_can / pasajeros_can:,.2f} c/u"
-
                                     precios_cierre_list.append({
-                                        'label': 'TOTAL EXTRANJEROS / CAN',
-                                        'simbolo': 'USD',
-                                        'monto_total': f"{total_ext_can:,.2f}",
-                                        'monto_pp': monto_pp_final
+                                        'label': 'TOTAL EXTRANJERO',
+                                        'simbolo': '$',
+                                        'monto_total': f"{real_ext:,.2f}",
+                                        'monto_pp': f"{avg_ext_pp:,.2f}"
+                                    })
+                                if pasajeros_can > 0:
+                                    precios_cierre_list.append({
+                                        'label': 'TOTAL COMUNIDAD ANDINA',
+                                        'simbolo': '$',
+                                        'monto_total': f"{real_can:,.2f}",
+                                        'monto_pp': f"{avg_can_pp:,.2f}"
                                     })
                             
-                            # Fallback para base_final (usado en comparativas)
-                            base_final = total_ext_pp + (extra_ext/max(1, pasajeros_ext))
-                            base_antes = (total_ext_a / max(1, pasajeros_ext)) + (extra_ext/max(1, pasajeros_ext))
-                            if tipo_t == "Nacional": 
-                                base_final = total_nac_pp + (extra_nac/max(1, pasajeros_nac))
-                                base_antes = (total_nac_a / max(1, pasajeros_nac)) + (extra_nac/max(1, pasajeros_nac))
-                            
-                            if estrategia_v == "General": 
-                                base_final += (calc_upgrades + calc_tren)
-                                base_antes += (calc_upgrades + calc_tren)
+                            # Sincronización de base_final (usado en comparativas/metadatos)
+                            # Ya estan redondeados en avg_xxx_pp
+                            # Base para Matrices (Solo tours + extras, sin upgrades que se suman en calc_m)
+                            base_final = (total_nac + m_extra_nac) / max(1, pasajeros_nac) if tipo_t == "Nacional" else (total_ext + m_extra_ext) / max(1, pasajeros_ext)
+                            base_antes = (total_nac_a + m_extra_nac) / max(1, pasajeros_nac) if tipo_t == "Nacional" else (total_ext_a + m_extra_ext) / max(1, pasajeros_ext)
+                            base_ext_final = (total_ext + m_extra_ext) / max(1, pasajeros_ext)
                             
 
                             
@@ -1466,15 +1438,17 @@ def render_ventas_ui():
 
                             # Matrix Calculation
                             def calc_m(base, extra_t, extra_h_n):
-                                return base + extra_t + (extra_h_n * num_noches)
+                                return math.ceil(base + extra_t + (extra_h_n * num_noches))
 
                             pricing_matrix = {}
                             matrix_antes = {}
                             pricing_matrix_ext = {} # Nueva matriz para modo Mixto
 
                             # Calculamos base_ext para el modo Mixto
-                            base_ext_final = total_ext_pp + (extra_ext/max(1, pasajeros_ext))
-                            if estrategia_v == "General": base_ext_final += (calc_upgrades + calc_tren)
+                            if estrategia_v == "General": 
+                                base_final += (calc_upgrades + calc_tren)
+                                base_antes += (calc_upgrades + calc_tren)
+                                base_ext_final += (calc_upgrades + calc_tren)
 
                             if tipo_t == "Nacional" or tipo_t == "Mixto":
                                 pricing_matrix['tren_local'] = {
@@ -1569,32 +1543,26 @@ def render_ventas_ui():
                             # --- NUEVA SECCIÓN: DESGLOSE ESTRUCTURADO PARA EXTRACCIÓN (FACTURACIÓN) ---
                             items_ingreso = []
                             if pasajeros_nac > 0:
-                                b_nac_final = total_nac_pp + (extra_nac/max(1, pasajeros_nac))
-                                if estrategia_v == "General": b_nac_final += (calc_upgrades + calc_tren)
                                 items_ingreso.append({
                                     "descripcion": f"Pax Nacional ({pasajeros_nac})",
                                     "cantidad": pasajeros_nac,
-                                    "precio_unitario": round(b_nac_final, 2),
+                                    "precio_unitario": avg_nac_pp,
                                     "tipo": "NACIONAL"
                                 })
                             
                             if pasajeros_ext > 0:
-                                b_ext_final = total_ext_pp + (extra_ext/max(1, pasajeros_ext))
-                                if estrategia_v == "General": b_ext_final += (calc_upgrades + calc_tren)
                                 items_ingreso.append({
                                     "descripcion": f"Pax Extranjero ({pasajeros_ext})",
                                     "cantidad": pasajeros_ext,
-                                    "precio_unitario": round(b_ext_final, 2),
+                                    "precio_unitario": avg_ext_pp,
                                     "tipo": "EXTRANJERO"
                                 })
                                 
                             if pasajeros_can > 0:
-                                b_can_final = total_can_pp + (extra_can/max(1, pasajeros_can))
-                                if estrategia_v == "General": b_can_final += (calc_upgrades + calc_tren)
                                 items_ingreso.append({
                                     "descripcion": f"Pax CAN ({pasajeros_can})",
                                     "cantidad": pasajeros_can,
-                                    "precio_unitario": round(b_can_final, 2),
+                                    "precio_unitario": avg_can_pp,
                                     "tipo": "CAN"
                                 })
 
@@ -1678,13 +1646,13 @@ def render_ventas_ui():
                                 'fuente': origen_lead,
                                 'estrategia': estrategia_v, 
                                 'estado': "Cotización",
-                                'logo_url': os.path.abspath(os.path.join("assets", "img", "logo.png")),
-                                'logo_cover_url': os.path.abspath(os.path.join("assets", "img", "logo_white.png")),
-                                'llama_img': os.path.abspath(os.path.join("assets", "img", "llama_icon.png")),
-                                'llama_purchase_img': os.path.abspath(os.path.join("assets", "img", "llama_purchase.png")),
-                                'train_exp_img': os.path.abspath(os.path.join("assets", "img", "tours", "expedition.jpg")),
-                                'train_vis_img': os.path.abspath(os.path.join("assets", "img", "tours", "vistadome.jpg")),
-                                'train_obs_img': os.path.abspath(os.path.join("assets", "img", "tours", "observatory.jpg")),
+                                'logo_url': os.path.abspath(os.path.join("assets", "images", "logo_background.png")),
+                                'logo_cover_url': os.path.abspath(os.path.join("assets", "images", "logo_background.png")),
+                                'llama_img': os.path.abspath(os.path.join("assets", "images", "llama_purchase.png")),
+                                'llama_purchase_img': os.path.abspath(os.path.join("assets", "images", "llama_purchase.png")),
+                                'train_exp_img': os.path.abspath(os.path.join("assets", "images", "train_expedition.png")),
+                                'train_vis_img': os.path.abspath(os.path.join("assets", "images", "train_vistadome.png")),
+                                'train_obs_img': os.path.abspath(os.path.join("assets", "images", "train_observatory.png")),
                                 'detalle_ingresos': items_ingreso,
                                 'control_interno': control_interno, # <--- EL ACTIVO PARA ANÁLISIS
                                 'total_final_calculado': round(monto_t_ref, 2),
