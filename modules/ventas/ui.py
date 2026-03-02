@@ -1106,6 +1106,45 @@ def render_ventas_ui():
                 cost_margined_can_pc += (c_can_pc * f_m_t)
                 cost_margined_can_ni += (c_can_ni * f_m_t)
 
+            # Lógica de Upgrades por Moneda (Garantizar consistencia)
+            # Si el origen es Nacional, los inputs de hotel están en Soles (calc_upgrades es Soles).
+            # Si el origen es Extranjero o Mixto, los inputs están en USD (calc_upgrades es USD).
+            
+            # Para Nacionales: Todo debe estar en Soles
+            up_nac = (calc_upgrades if tipo_t == "Nacional" else calc_upgrades * tc) + (calc_tren if tipo_t == "Nacional" else calc_tren * tc)
+            # Para Extranjeros/CAN: Todo debe estar en USD
+            up_ext = (calc_upgrades if tipo_t != "Nacional" else calc_upgrades / tc) + (calc_tren if tipo_t != "Nacional" else calc_tren / tc)
+
+            # Variables base para análisis interno (Solo costos de tours, sin hotel/tren)
+            total_nac_pp = total_nac / max(1, pasajeros_nac)
+            total_ext_pp = total_ext / max(1, pasajeros_ext)
+            total_can_pp = total_can / max(1, pasajeros_can)
+
+            # Lógica de Redondeo Unificado: Redondear el promedio por persona hacia arriba y derivar el total
+            # Esto evita discrepancias visuales de (Total != Promedio * Pax)
+            
+            # Nacional
+            avg_nac_pp = math.ceil((total_nac + m_extra_nac) / max(1, pasajeros_nac) + up_nac)
+            real_nac = avg_nac_pp * pasajeros_nac
+            
+            # Extranjero
+            avg_ext_pp = math.ceil((total_ext + m_extra_ext) / max(1, pasajeros_ext) + up_ext)
+            real_ext = avg_ext_pp * pasajeros_ext
+            
+            # CAN
+            avg_can_pp = math.ceil((total_can + m_extra_can) / max(1, pasajeros_can) + up_ext)
+            real_can = avg_can_pp * pasajeros_can
+
+            # Promedios con el factor de "Antes" (También unificados)
+            avg_nac_a_pp = math.ceil((total_nac_a + m_extra_nac) / max(1, pasajeros_nac) + up_nac)
+            real_nac_a = avg_nac_a_pp * pasajeros_nac
+            
+            avg_ext_a_pp = math.ceil((total_ext_a + m_extra_ext) / max(1, pasajeros_ext) + up_ext)
+            real_ext_a = avg_ext_a_pp * pasajeros_ext
+            
+            avg_can_a_pp = math.ceil((total_can_a + m_extra_can) / max(1, pasajeros_can) + up_ext)
+            real_can_a = avg_can_a_pp * pasajeros_can
+
             # Nacional
             det_nac = {}
             if c_ad_nac > 0: det_nac['Adulto'] = f"{math.ceil(cost_margined_nac_ad + (m_extra_nac/max(1, pasajeros_nac)) + up_nac):,.2f}"
