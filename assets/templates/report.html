@@ -440,10 +440,11 @@
             <div class="offer-type" style="margin-top: 15px; font-weight: 800; color: #2d3436;">TARIFA NACIONAL</div>
 
             <div class="offer-price-box" style="padding: 10px 5px;">
-                {% if show_antes_pdf %}
+                {% if show_antes_pdf and precios_antes.nac %}
                 <div style="margin-bottom: 5px;">
-                    <span style="color: #999; text-decoration: line-through; font-size: 1.2rem; font-weight: 600;">S/ {{
-                        precios_antes.nac.total }}</span>
+                    <span style="color: #999; text-decoration: line-through; font-size: 1.2rem; font-weight: 600;">
+                        S/ {{ precios_antes.nac.total }}
+                    </span>
                 </div>
                 {% endif %}
                 <div style="display: flex; align-items: center; justify-content: center; gap: 5px;">
@@ -487,7 +488,7 @@
                 <div style="margin-bottom: 5px;">
                     <span style="color: #999; text-decoration: line-through; font-size: 1.2rem; font-weight: 600;">
                         USD {{ (precios_antes.ext.total if (precios_antes.ext and precios.ext) else
-                        (precios_antes.can.total if (precios_antes.can and precios.can) else '0.00')) }}
+                        (precios_antes.can.total if (precios_antes.can and precios.can) else '')) }}
                     </span>
                 </div>
                 {% endif %}
@@ -518,8 +519,9 @@
                 {% endif %}
 
                 {% if precios.can %}
-                <div
-                    style="{% if precios.ext %}margin-top: 15px; border-top: 2px dashed #eee; padding-top: 15px;{% endif %}">
+                {% set can_style = 'margin-top: 15px; border-top: 2px dashed #eee; padding-top: 15px;' if precios.ext
+                else '' %}
+                <div style="{{ can_style }}">
                     <div
                         style="font-size: 0.75rem; color: #888; font-weight: 700; text-transform: uppercase; margin-bottom: 5px;">
                         Comunidad Andina (CAN)</div>

@@ -724,8 +724,9 @@ def render_ventas_ui():
                             tour['costo_ext'] = col_e.number_input(f"Ext ($)", value=float(tour.get('costo_ext', 0)), key=f"ce_{tour_id}", disabled=is_disabled)
                             tour['costo_can'] = col_c.number_input(f"CAN ($)", value=float(tour.get('costo_can', 0)), key=f"cc_{tour_id}", disabled=is_disabled)
                             
-                            # Margen individual por tour
-                            tour['margen_individual'] = col_h.number_input(f"% Margen", value=float(tour.get('margen_individual', m_pct_view)), step=1.0, key=f"margen_{tour_id}", disabled=is_disabled, help="Margen de venta para este tour específico. Por defecto usa el margen global.")
+                            # Margen individual por tour opcional
+                            tour['usar_margen_propio'] = col_h.checkbox("Activar Margen", value=tour.get('usar_margen_propio', False), key=f"use_m_{tour_id}", disabled=is_disabled)
+                            tour['margen_individual'] = col_h.number_input(f"% Margen", value=float(tour.get('margen_individual', m_pct_view)), step=1.0, key=f"margen_{tour_id}", disabled=not tour.get('usar_margen_propio') or is_disabled, help="Si está activado, usa este margen. Si no, usa el global.")
                             
                             st.markdown("---")
                             # Campo movido a la sección de resumen global abajo
@@ -757,8 +758,9 @@ def render_ventas_ui():
                             tour['costo_ext'] = col_e.number_input(f"Ext ($)", value=float(tour.get('costo_ext', 0)), key=f"ce_{tour_id}", disabled=is_disabled)
                             tour['costo_can'] = tour['costo_ext']
                             
-                            # Margen individual por tour
-                            tour['margen_individual'] = col_h.number_input(f"% Margen", value=float(tour.get('margen_individual', m_pct_view)), step=1.0, key=f"margen_{tour_id}", disabled=is_disabled, help="Margen de venta para este tour específico.")
+                            # Margen individual por tour opcional
+                            tour['usar_margen_propio'] = col_h.checkbox("Activar Margen", value=tour.get('usar_margen_propio', False), key=f"use_m_{tour_id}", disabled=is_disabled)
+                            tour['margen_individual'] = col_h.number_input(f"% Margen", value=float(tour.get('margen_individual', m_pct_view)), step=1.0, key=f"margen_{tour_id}", disabled=not tour.get('usar_margen_propio') or is_disabled, help="Si está activado, usa este margen. Si no, usa el global.")
                             
                             # Campo de Carpeta de Imágenes (Visible solo si se activa edición para no saturar)
                             if modo_edicion:
@@ -1035,8 +1037,9 @@ def render_ventas_ui():
 
             for t in st.session_state.itinerario:
                 # Determinar factor de margen para ESTE tour
-                m_tour = t.get('margen_individual')
-                if m_tour is None:
+                if t.get('usar_margen_propio', False):
+                    m_tour = t.get('margen_individual', margen_pct)
+                else:
                     m_tour = margen_pct
                 
                 f_m_t = 1 + (m_tour / 100)
