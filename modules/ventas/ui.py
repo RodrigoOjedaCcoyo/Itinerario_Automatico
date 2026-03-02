@@ -684,14 +684,14 @@ def render_ventas_ui():
                     date_str = current_date.strftime('%d/%m/%Y')
                     header_icon = "⭐" if modo_s == "B2B" else "📍" 
                     
-                    # Precios marginados para el encabezado
-                    p_nac_m = tour.get('costo_nac', 0) * f_m_view
-                    p_ext_m = tour.get('costo_ext', 0) * f_m_view
-                    p_can_m = tour.get('costo_can', 0) * f_m_view
+                    # Precios marginados para el encabezado (Redondeo solicitado)
+                    p_nac_m = math.ceil(tour.get('costo_nac', 0) * f_m_view)
+                    p_ext_m = math.ceil(tour.get('costo_ext', 0) * f_m_view)
+                    p_can_m = math.ceil(tour.get('costo_can', 0) * f_m_view)
                     
-                    # Precios "Antes" para visualización
-                    p_nac_a = tour.get('costo_nac', 0) * f_m_antes_view
-                    p_ext_a = tour.get('costo_ext', 0) * f_m_antes_view
+                    # Precios "Antes" para visualización (Redondeo solicitado)
+                    p_nac_a = math.ceil(tour.get('costo_nac', 0) * f_m_antes_view)
+                    p_ext_a = math.ceil(tour.get('costo_ext', 0) * f_m_antes_view)
                     
                     show_antes = m_antes_view > m_pct_view
                     
