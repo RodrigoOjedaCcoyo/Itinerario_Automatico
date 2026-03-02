@@ -124,10 +124,10 @@ def translate_itinerary(itinerary_data, target_lang="English"):
         "titulo": "Guía del Viajero",
         "subtitulo": "PREPARA TU AVENTURA",
         "secciones": [
-            {"nombre": "SALUD Y PROTECCIÓN", "items": ["BLOQUEADOR SOLAR SPF 50+", "REPELENTE DE INSECTOS", "MEDICACIÓN PERSONAL", "TOALLITAS HÚMEDAS"]}
+            {"nombre": "SALUD Y PROTECCIÓN", "lista": ["BLOQUEADOR SOLAR SPF 50+", "REPELENTE DE INSECTOS", "MEDICACIÓN PERSONAL", "TOALLITAS HÚMEDAS"]}
         ],
         "secciones_extra": [
-            {"nombre": "ROPA Y EQUIPO", "items": ["CAMISAS DE MANGA LARGA", "PANTALONES CÓMODOS", "CHAQUETA DE LLUVIA / PONCHO", "MOCHILA LIGERA"]}
+            {"nombre": "ROPA Y EQUIPO", "lista": ["CAMISAS DE MANGA LARGA", "PANTALONES CÓMODOS", "CHAQUETA DE LLUVIA / PONCHO", "MOCHILA LIGERA"]}
         ],
         "mensaje_final": "<p style='margin: 0; font-size: 1.1rem; color: #2d3436; font-weight: 600;'>✨ <strong>¡Prepárate para vivir una experiencia inolvidable!</strong> ✨</p><p style='margin: 10px 0 0 0; font-size: 0.9rem; color: #636e72;'>Cada detalle cuenta para que tu viaje sea perfecto. ¡Nos vemos pronto en Cusco!</p>"
     })
