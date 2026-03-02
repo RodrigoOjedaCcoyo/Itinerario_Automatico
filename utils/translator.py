@@ -102,7 +102,7 @@ def translate_itinerary(itinerary_data, target_lang="English"):
                     {"role": "user", "content": f"Traduce al {target_lang}: {itinerary_data.get('nota_precio')}"}
                 ]
             )
-            itinerary_data['nota_precio'] = res_note.choices[0].message.content
+            itinerary_data['nota_precio'] = res_np.choices[0].message.content
         except: pass
 
     # 4. Traducir NOTAS FINALES (Personalizadas)
@@ -124,17 +124,22 @@ def translate_itinerary(itinerary_data, target_lang="English"):
         "titulo": "Guía del Viajero",
         "subtitulo": "PREPARA TU AVENTURA",
         "secciones": [
-            {"nombre": "SALUD Y PROTECCIÓN", "items": ["BLOQUEADOR SOLAR SPF 50+", "REPELENTE DE INSECTOS", "MEDICACIÓN PERSONAL"]},
+            {"nombre": "SALUD Y PROTECCIÓN", "items": ["BLOQUEADOR SOLAR SPF 50+", "REPELENTE DE INSECTOS", "MEDICACIÓN PERSONAL", "TOALLITAS HÚMEDAS"]}
+        ],
+        "secciones_extra": [
             {"nombre": "ROPA Y EQUIPO", "items": ["CAMISAS DE MANGA LARGA", "PANTALONES CÓMODOS", "CHAQUETA DE LLUVIA / PONCHO", "MOCHILA LIGERA"]}
         ],
-        "mensaje": "¡Prepárate para vivir una experiencia inolvidable! Cada detalle cuenta para que tu viaje sea perfecto. ¡Nos vemos pronto en Cusco!"
+        "mensaje_final": "<p style='margin: 0; font-size: 1.1rem; color: #2d3436; font-weight: 600;'>✨ <strong>¡Prepárate para vivir una experiencia inolvidable!</strong> ✨</p><p style='margin: 10px 0 0 0; font-size: 0.9rem; color: #636e72;'>Cada detalle cuenta para que tu viaje sea perfecto. ¡Nos vemos pronto en Cusco!</p>"
     })
 
     politicas_base = itinerary_data.get('politicas', {
-        "titulo": "Términos de Reserva",
-        "reserva": "La reserva del paquete turístico es con el 50%. El 50% restante lo tendrás que pagar hasta un día antes de iniciar el primer tour.",
-        "anulacion": "La anulación se debe realizar con anticipación. Ingresos a Machupicchu, vías y cambios o devoluciones solo en casos excepcionales.",
-        "condiciones": ["Habitación Individual (SGL): Suplemento aplica.", "Pasaporte vigente obligatorio."],
+        "titulo_reserva": "RESERVA",
+        "reserva": "<strong>La reserva del paquete turístico es con el 50%.</strong><br>El 50% restante lo tendrás que pagar hasta un día antes de iniciar el primer tour.<br><br><strong>Método de pago:</strong><br>Depósito o trasferencia a la cuenta de la empresa.",
+        "titulo_anulacion": "ANULACIÓN",
+        "anulacion": "La anulación se debe realizar con anticipación. Ingresos a Machupicchu, vías y cambios o devoluciones solo en casos excepcionales.<br><strong>Menor a 15 días antes de su llegada, No hay devolución.</strong>",
+        "titulo_condiciones": "CONDICIONES ADICIONALES",
+        "condiciones": ["Habitación Individual (SGL): Suplemento aplica.", "Infantes (menores de 2 años): Gratis.", "Pasaporte vigente obligatorio."],
+        "titulo_reglamento": "REGLAMENTO MACHU PICCHU",
         "reglamento_mp": "Los boletos son válidos para un solo ingreso. Los pasajeros suelen permanecer entre 2 a 3 horas."
     })
 

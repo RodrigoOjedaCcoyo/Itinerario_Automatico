@@ -1601,11 +1601,31 @@ def render_ventas_ui():
                                 'days': days_data,
                                 'precios_cierre': precios_cierre_list,
                                 'precios': precios,
+                                'precios_antes': precios_antes,
                                 'promociones': [],
                                 'nota_p': translated_data.get('nota_precio', st.session_state.get('f_nota_precio', 'INCLUYE TOUR')) if idioma_pdf != "Español" else st.session_state.get('f_nota_precio', 'INCLUYE TOUR'),
                                 'notas_finales': notas_a_procesar,
-                                'guia_viajero': translated_data.get('guia_viajero') if idioma_pdf != "Español" else None,
-                                'politicas': translated_data.get('politicas') if idioma_pdf != "Español" else None
+                                'guia_viajero': translated_data.get('guia_viajero') if idioma_pdf != "Español" else {
+                                    "titulo": "Guía del Viajero",
+                                    "subtitulo": "PREPARA TU AVENTURA",
+                                    "secciones": [
+                                        {"nombre": "SALUD Y PROTECCIÓN", "items": ["BLOQUEADOR SOLAR SPF 50+", "REPELENTE DE INSECTOS", "MEDICACIÓN PERSONAL", "TOALLITAS HÚMEDAS"]}
+                                    ],
+                                    "secciones_extra": [
+                                        {"nombre": "ROPA Y EQUIPO", "items": ["CAMISAS DE MANGA LARGA", "PANTALONES CÓMODOS", "CHAQUETA DE LLUVIA / PONCHO", "MOCHILA LIGERA"]}
+                                    ],
+                                    "mensaje_final": "<p style='margin: 0; font-size: 1.1rem; color: #2d3436; font-weight: 600;'>✨ <strong>¡Prepárate para vivir una experiencia inolvidable!</strong> ✨</p><p style='margin: 10px 0 0 0; font-size: 0.9rem; color: #636e72;'>Cada detalle cuenta para que tu viaje sea perfecto. ¡Nos vemos pronto en Cusco!</p>"
+                                },
+                                'politicas': translated_data.get('politicas') if idioma_pdf != "Español" else {
+                                    "titulo_reserva": "RESERVA",
+                                    "reserva": "<strong>La reserva del paquete turístico es con el 50%.</strong><br>El 50% restante lo tendrás que pagar hasta un día antes de iniciar el primer tour.<br><br><strong>Método de pago:</strong><br>Depósito o trasferencia a la cuenta de la empresa.",
+                                    "titulo_anulacion": "ANULACIÓN",
+                                    "anulacion": "La anulación se debe realizar con anticipación. Ingresos a Machupicchu, vías y cambios o devoluciones solo en casos excepcionales.<br><strong>Menor a 15 días antes de su llegada, No hay devolución.</strong>",
+                                    "titulo_condiciones": "CONDICIONES ADICIONALES",
+                                    "condiciones": ["Habitación Individual (SGL): Suplemento aplica.", "Infantes (menores de 2 años): Gratis.", "Pasaporte vigente obligatorio."],
+                                    "titulo_reglamento": "REGLAMENTO MACHU PICCHU",
+                                    "reglamento_mp": "Los boletos son válidos para un solo ingreso. Los pasajeros suelen permanecer entre 2 a 3 horas."
+                                }
                             }
 
                             # 2. Guardar en Supabase y obtener ID de vinculación
