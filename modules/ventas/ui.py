@@ -725,7 +725,7 @@ def render_ventas_ui():
                             tour['costo_can'] = col_c.number_input(f"CAN ($)", value=float(tour.get('costo_can', 0)), key=f"cc_{tour_id}", disabled=is_disabled)
                             
                             # Margen individual por tour
-                            tour['margen_individual'] = col_h.number_input(f"% Margen", value=float(tour.get('margen_individual', margen_pct)), step=1.0, key=f"margen_{tour_id}", disabled=is_disabled, help="Margen de venta para este tour específico. Por defecto usa el margen global.")
+                            tour['margen_individual'] = col_h.number_input(f"% Margen", value=float(tour.get('margen_individual', m_pct_view)), step=1.0, key=f"margen_{tour_id}", disabled=is_disabled, help="Margen de venta para este tour específico. Por defecto usa el margen global.")
                             
                             st.markdown("---")
                             # Campo movido a la sección de resumen global abajo
@@ -758,7 +758,7 @@ def render_ventas_ui():
                             tour['costo_can'] = tour['costo_ext']
                             
                             # Margen individual por tour
-                            tour['margen_individual'] = col_h.number_input(f"% Margen", value=float(tour.get('margen_individual', margen_pct)), step=1.0, key=f"margen_{tour_id}", disabled=is_disabled, help="Margen de venta para este tour específico.")
+                            tour['margen_individual'] = col_h.number_input(f"% Margen", value=float(tour.get('margen_individual', m_pct_view)), step=1.0, key=f"margen_{tour_id}", disabled=is_disabled, help="Margen de venta para este tour específico.")
                             
                             # Campo de Carpeta de Imágenes (Visible solo si se activa edición para no saturar)
                             if modo_edicion:
