@@ -1,5 +1,6 @@
 import streamlit as st
 import os
+import math
 import uuid
 import json
 from datetime import datetime, timedelta
@@ -1061,18 +1062,18 @@ def render_ventas_ui():
             total_ext_pp = total_ext / max(1, pasajeros_ext)
             total_can_pp = total_can / max(1, pasajeros_can)
 
-            # Para mostrar en la UI los precios promedio con todo incluido
-            avg_nac_pp = real_nac / max(1, pasajeros_nac)
-            avg_ext_pp = real_ext / max(1, pasajeros_ext)
-            avg_can_pp = real_can / max(1, pasajeros_can)
+            # Para mostrar en la UI los precios promedio con todo incluido (Redondeo hacia arriba solicitado)
+            avg_nac_pp = math.ceil(real_nac / max(1, pasajeros_nac))
+            avg_ext_pp = math.ceil(real_ext / max(1, pasajeros_ext))
+            avg_can_pp = math.ceil(real_can / max(1, pasajeros_can))
 
             # Promedios con el factor de "Antes"
             real_nac_a = total_nac_a + m_extra_nac + (up_nac * pasajeros_nac)
             real_ext_a = total_ext_a + m_extra_ext + (up_ext * pasajeros_ext)
             real_can_a = total_can_a + m_extra_can + (up_ext * pasajeros_can)
-            avg_nac_a_pp = real_nac_a / max(1, pasajeros_nac)
-            avg_ext_a_pp = real_ext_a / max(1, pasajeros_ext)
-            avg_can_a_pp = real_can_a / max(1, pasajeros_can)
+            avg_nac_a_pp = math.ceil(real_nac_a / max(1, pasajeros_nac))
+            avg_ext_a_pp = math.ceil(real_ext_a / max(1, pasajeros_ext))
+            avg_can_a_pp = math.ceil(real_can_a / max(1, pasajeros_can))
 
             # --- DICCIONARIOS PARA EL PDF (Solo cuando es Opciones) ---
             precios = {
