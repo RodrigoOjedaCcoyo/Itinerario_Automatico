@@ -1180,7 +1180,7 @@ def render_ventas_ui():
             st.markdown("🌐 **Idioma del Itinerario**")
             idioma_pdf = st.selectbox(
                 "Soporta traducción automática con IA", 
-                ["Español", "English", "Français", "Deutsch", "Português", "Italiano"],
+                ["Español", "English", "Français", "Deutsch", "Português", "Italiano", "日本語 (Japonés)"],
                 key="f_idioma_itinerario"
             )
             

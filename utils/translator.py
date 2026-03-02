@@ -22,10 +22,11 @@ def translate_itinerary(itinerary_data, target_lang="English"):
     Tu tarea es traducir el contenido de un itinerario de viaje del Español al {target_lang}.
     
     Reglas:
-    1. Mantén un tono profesional y acogedor.
-    2. No traduzcas nombres propios de lugares (ej: 'Machu Picchu', 'Ollantaytambo') a menos que tengan una traducción estándar clara (ej: 'Sacred Valley').
-    3. Devuelve los resultados en el mismo formato estructurado que recibas (JSON-like).
-    4. NO traduzcas números, fechas ni códigos de moneda.
+    1. Mantén un tono profesional, elegante y acogedor para una agencia de viajes premium.
+    2. TOTALMENTE PROHIBIDO traducir nombres propios de lugares, atractivos turísticos o sitios arqueológicos (ej: 'Machu Picchu', 'Ollantaytambo', 'Sacsayhuaman', 'Qorikancha', 'Pisaq'). Estos deben permanecer EXACTAMENTE igual en el texto traducido.
+    3. Solo traduce términos generales como 'Sacred Valley' por 'Valle Sagrado' si es estrictamente necesario para la fluidez, pero prioriza los nombres originales.
+    4. Devuelve los resultados en el mismo formato estructurado que recibas (JSON-object).
+    5. NO traduzcas bajo ninguna circunstancia números, fechas, horas, ni símbolos de moneda (S/, $, USD).
     """
 
     # Extraer textos para traducir
