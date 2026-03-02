@@ -724,6 +724,9 @@ def render_ventas_ui():
                             tour['costo_ext'] = col_e.number_input(f"Ext ($)", value=float(tour.get('costo_ext', 0)), key=f"ce_{tour_id}", disabled=is_disabled)
                             tour['costo_can'] = col_c.number_input(f"CAN ($)", value=float(tour.get('costo_can', 0)), key=f"cc_{tour_id}", disabled=is_disabled)
                             
+                            # Margen individual por tour
+                            tour['margen_individual'] = col_h.number_input(f"% Margen", value=float(tour.get('margen_individual', margen_pct)), step=1.0, key=f"margen_{tour_id}", disabled=is_disabled, help="Margen de venta para este tour específico. Por defecto usa el margen global.")
+                            
                             st.markdown("---")
                             # Campo movido a la sección de resumen global abajo
                             
@@ -753,6 +756,9 @@ def render_ventas_ui():
                             tour['costo_nac'] = col_n.number_input(f"Nac (S/)", value=float(tour.get('costo_nac', 0)), key=f"cn_{tour_id}", disabled=is_disabled)
                             tour['costo_ext'] = col_e.number_input(f"Ext ($)", value=float(tour.get('costo_ext', 0)), key=f"ce_{tour_id}", disabled=is_disabled)
                             tour['costo_can'] = tour['costo_ext']
+                            
+                            # Margen individual por tour
+                            tour['margen_individual'] = col_h.number_input(f"% Margen", value=float(tour.get('margen_individual', margen_pct)), step=1.0, key=f"margen_{tour_id}", disabled=is_disabled, help="Margen de venta para este tour específico.")
                             
                             # Campo de Carpeta de Imágenes (Visible solo si se activa edición para no saturar)
                             if modo_edicion:
@@ -1011,116 +1017,115 @@ def render_ventas_ui():
             total_ext_a = 0.0
             total_can_a = 0.0
 
+            # Acumuladores marginados para el detalle por pasajero del PDF
+            cost_margined_nac_ad = 0.0
+            cost_margined_nac_es = 0.0
+            cost_margined_nac_pc = 0.0
+            cost_margined_nac_ni = 0.0
+
+            cost_margined_ext_ad = 0.0
+            cost_margined_ext_es = 0.0
+            cost_margined_ext_pc = 0.0
+            cost_margined_ext_ni = 0.0
+
+            cost_margined_can_ad = 0.0
+            cost_margined_can_es = 0.0
+            cost_margined_can_pc = 0.0
+            cost_margined_can_ni = 0.0
+
             for t in st.session_state.itinerario:
-                # Nacionales (Aplicando factor de margen)
-                total_nac += (t.get('costo_nac', 0) * factor_m * c_ad_nac)
-                total_nac += (t.get('costo_nac_est', t.get('costo_nac', 0)-70) * factor_m * c_es_nac)
-                total_nac += (t.get('costo_nac_pcd', t.get('costo_nac', 0)-70) * factor_m * c_pc_nac)
-                total_nac += (t.get('costo_nac_nino', t.get('costo_nac', 0)-40) * factor_m * c_ni_nac)
+                # Determinar factor de margen para ESTE tour
+                m_tour = t.get('margen_individual')
+                if m_tour is None:
+                    m_tour = margen_pct
                 
-                total_nac_a += (t.get('costo_nac', 0) * factor_a * c_ad_nac)
-                total_nac_a += (t.get('costo_nac_est', t.get('costo_nac', 0)-70) * factor_a * c_es_nac)
-                total_nac_a += (t.get('costo_nac_pcd', t.get('costo_nac', 0)-70) * factor_a * c_pc_nac)
-                total_nac_a += (t.get('costo_nac_nino', t.get('costo_nac', 0)-40) * factor_a * c_ni_nac)
+                f_m_t = 1 + (m_tour / 100)
+                f_a = factor_a # El margen de "antes" se mantiene global por ahora para simplicidad
 
-                # Extranjeros (Aplicando factor de margen)
-                total_ext += (t.get('costo_ext', 0) * factor_m * c_ad_ext)
-                total_ext += (t.get('costo_ext_est', t.get('costo_ext', 0)-20) * factor_m * c_es_ext)
-                total_ext += (t.get('costo_ext_pcd', t.get('costo_ext', 0)-20) * factor_m * c_pc_ext)
-                total_ext += (t.get('costo_ext_nino', t.get('costo_ext', 0)-15) * factor_m * c_ni_ext)
+                # Precios base (costo)
+                c_nac = t.get('costo_nac', 0)
+                c_nac_es = t.get('costo_nac_est', c_nac - 70)
+                c_nac_pc = t.get('costo_nac_pcd', c_nac - 70)
+                c_nac_ni = t.get('costo_nac_nino', c_nac - 40)
 
-                total_ext_a += (t.get('costo_ext', 0) * factor_a * c_ad_ext)
-                total_ext_a += (t.get('costo_ext_est', t.get('costo_ext', 0)-20) * factor_a * c_es_ext)
-                total_ext_a += (t.get('costo_ext_pcd', t.get('costo_ext', 0)-20) * factor_a * c_pc_ext)
-                total_ext_a += (t.get('costo_ext_nino', t.get('costo_ext', 0)-15) * factor_a * c_ni_ext)
+                c_ext = t.get('costo_ext', 0)
+                c_ext_es = t.get('costo_ext_est', c_ext - 20)
+                c_ext_pc = t.get('costo_ext_pcd', c_ext - 20)
+                c_ext_ni = t.get('costo_ext_nino', c_ext - 15)
 
-                # CAN (Aplicando factor de margen)
-                total_can += (t.get('costo_can', 0) * factor_m * c_ad_can)
-                total_can += (t.get('costo_can_est', t.get('costo_can', 0)-20) * factor_m * c_es_can)
-                total_can += (t.get('costo_can_pcd', t.get('costo_can', 0)-20) * factor_m * c_pc_can)
-                total_can += (t.get('costo_can_nino', t.get('costo_can', 0)-15) * factor_m * c_ni_can)
+                c_can = t.get('costo_can', 0)
+                c_can_es = t.get('costo_can_est', c_can - 20)
+                c_can_pc = t.get('costo_can_pcd', c_can - 20)
+                c_can_ni = t.get('costo_can_nino', c_can - 15)
 
-                total_can_a += (t.get('costo_can', 0) * factor_a * c_ad_can)
-                total_can_a += (t.get('costo_can_est', t.get('costo_can', 0)-20) * factor_a * c_es_can)
-                total_can_a += (t.get('costo_can_pcd', t.get('costo_can', 0)-20) * factor_a * c_pc_can)
-                total_can_a += (t.get('costo_can_nino', t.get('costo_can', 0)-15) * factor_a * c_ni_can)
+                # Acumulación para Totales Venta (con margen individual)
+                total_nac += (c_nac * f_m_t * c_ad_nac)
+                total_nac += (c_nac_es * f_m_t * c_es_nac)
+                total_nac += (c_nac_pc * f_m_t * c_pc_nac)
+                total_nac += (c_nac_ni * f_m_t * c_ni_nac)
 
-            # Lógica de Upgrades por Moneda (Garantizar consistencia)
-            # Si el origen es Nacional, los inputs de hotel están en Soles (calc_upgrades es Soles).
-            # Si el origen es Extranjero o Mixto, los inputs están en USD (calc_upgrades es USD).
-            
-            # Para Nacionales: Todo debe estar en Soles
-            up_nac = (calc_upgrades if tipo_t == "Nacional" else calc_upgrades * tc) + (calc_tren if tipo_t == "Nacional" else calc_tren * tc)
-            # Para Extranjeros/CAN: Todo debe estar en USD
-            up_ext = (calc_upgrades if tipo_t != "Nacional" else calc_upgrades / tc) + (calc_tren if tipo_t != "Nacional" else calc_tren / tc)
+                total_ext += (c_ext * f_m_t * c_ad_ext)
+                total_ext += (c_ext_es * f_m_t * c_es_ext)
+                total_ext += (c_ext_pc * f_m_t * c_pc_ext)
+                total_ext += (c_ext_ni * f_m_t * c_ni_ext)
 
-            # Variables base para análisis interno (Solo costos de tours, sin hotel/tren)
-            total_nac_pp = total_nac / max(1, pasajeros_nac)
-            total_ext_pp = total_ext / max(1, pasajeros_ext)
-            total_can_pp = total_can / max(1, pasajeros_can)
+                total_can += (c_can * f_m_t * c_ad_can)
+                total_can += (c_can_es * f_m_t * c_es_can)
+                total_can += (c_can_pc * f_m_t * c_pc_can)
+                total_can += (c_can_ni * f_m_t * c_ni_can)
 
-            # Lógica de Redondeo Unificado: Redondear el promedio por persona hacia arriba y derivar el total
-            # Esto evita discrepancias visuales de (Total != Promedio * Pax)
-            
-            # Nacional
-            avg_nac_pp = math.ceil((total_nac + m_extra_nac) / max(1, pasajeros_nac) + up_nac)
-            real_nac = avg_nac_pp * pasajeros_nac
-            
-            # Extranjero
-            avg_ext_pp = math.ceil((total_ext + m_extra_ext) / max(1, pasajeros_ext) + up_ext)
-            real_ext = avg_ext_pp * pasajeros_ext
-            
-            # CAN
-            avg_can_pp = math.ceil((total_can + m_extra_can) / max(1, pasajeros_can) + up_ext)
-            real_can = avg_can_pp * pasajeros_can
+                # Acumulación para Totales "Antes" (con margen global 'factor_a')
+                total_nac_a += (c_nac * f_a * c_ad_nac)
+                total_nac_a += (c_nac_es * f_a * c_es_nac)
+                total_nac_a += (c_nac_pc * f_a * c_pc_nac)
+                total_nac_a += (c_nac_ni * f_a * c_ni_nac)
 
-            # Promedios con el factor de "Antes" (También unificados)
-            avg_nac_a_pp = math.ceil((total_nac_a + m_extra_nac) / max(1, pasajeros_nac) + up_nac)
-            real_nac_a = avg_nac_a_pp * pasajeros_nac
-            
-            avg_ext_a_pp = math.ceil((total_ext_a + m_extra_ext) / max(1, pasajeros_ext) + up_ext)
-            real_ext_a = avg_ext_a_pp * pasajeros_ext
-            
-            avg_can_a_pp = math.ceil((total_can_a + m_extra_can) / max(1, pasajeros_can) + up_ext)
-            real_can_a = avg_can_a_pp * pasajeros_can
+                total_ext_a += (c_ext * f_a * c_ad_ext)
+                total_ext_a += (c_ext_es * f_a * c_es_ext)
+                total_ext_a += (c_ext_pc * f_a * c_pc_ext)
+                total_ext_a += (c_ext_ni * f_a * c_ni_ext)
 
-            # --- DICCIONARIOS PARA EL PDF (Detalles por Pasajero) ---
-            # Pre-calcular sumas para eficiencia
-            cost_nac_ad = sum(t.get('costo_nac', 0) for t in st.session_state.itinerario)
-            cost_nac_es = sum(t.get('costo_nac_est', t.get('costo_nac', 0)-70) for t in st.session_state.itinerario)
-            cost_nac_pc = sum(t.get('costo_nac_pcd', t.get('costo_nac', 0)-70) for t in st.session_state.itinerario)
-            cost_nac_ni = sum(t.get('costo_nac_nino', t.get('costo_nac', 0)-40) for t in st.session_state.itinerario)
+                total_can_a += (c_can * f_a * c_ad_can)
+                total_can_a += (c_can_es * f_a * c_es_can)
+                total_can_a += (c_can_pc * f_a * c_pc_can)
+                total_can_a += (c_can_ni * f_a * c_ni_can)
 
-            cost_ext_ad = sum(t.get('costo_ext', 0) for t in st.session_state.itinerario)
-            cost_ext_es = sum(t.get('costo_ext_est', t.get('costo_ext', 0)-20) for t in st.session_state.itinerario)
-            cost_ext_pc = sum(t.get('costo_ext_pcd', t.get('costo_ext', 0)-20) for t in st.session_state.itinerario)
-            cost_ext_ni = sum(t.get('costo_ext_nino', t.get('costo_ext', 0)-15) for t in st.session_state.itinerario)
+                # Acumulación Marginada para Detalle por Pasajero
+                cost_margined_nac_ad += (c_nac * f_m_t)
+                cost_margined_nac_es += (c_nac_es * f_m_t)
+                cost_margined_nac_pc += (c_nac_pc * f_m_t)
+                cost_margined_nac_ni += (c_nac_ni * f_m_t)
 
-            cost_can_ad = sum(t.get('costo_can', 0) for t in st.session_state.itinerario)
-            cost_can_es = sum(t.get('costo_can_est', t.get('costo_can', 0)-20) for t in st.session_state.itinerario)
-            cost_can_pc = sum(t.get('costo_can_pcd', t.get('costo_can', 0)-20) for t in st.session_state.itinerario)
-            cost_can_ni = sum(t.get('costo_can_nino', t.get('costo_can', 0)-15) for t in st.session_state.itinerario)
+                cost_margined_ext_ad += (c_ext * f_m_t)
+                cost_margined_ext_es += (c_ext_es * f_m_t)
+                cost_margined_ext_pc += (c_ext_pc * f_m_t)
+                cost_margined_ext_ni += (c_ext_ni * f_m_t)
+
+                cost_margined_can_ad += (c_can * f_m_t)
+                cost_margined_can_es += (c_can_es * f_m_t)
+                cost_margined_can_pc += (c_can_pc * f_m_t)
+                cost_margined_can_ni += (c_can_ni * f_m_t)
 
             # Nacional
             det_nac = {}
-            if c_ad_nac > 0: det_nac['Adulto'] = f"{math.ceil((cost_nac_ad * factor_m) + (m_extra_nac/max(1, pasajeros_nac)) + up_nac):,.2f}"
-            if c_es_nac > 0: det_nac['Estudiante'] = f"{math.ceil((cost_nac_es * factor_m) + (m_extra_nac/max(1, pasajeros_nac)) + up_nac):,.2f}"
-            if c_pc_nac > 0: det_nac['PCD'] = f"{math.ceil((cost_nac_pc * factor_m) + (m_extra_nac/max(1, pasajeros_nac)) + up_nac):,.2f}"
-            if c_ni_nac > 0: det_nac['Niño'] = f"{math.ceil((cost_nac_ni * factor_m) + (m_extra_nac/max(1, pasajeros_nac)) + up_nac):,.2f}"
+            if c_ad_nac > 0: det_nac['Adulto'] = f"{math.ceil(cost_margined_nac_ad + (m_extra_nac/max(1, pasajeros_nac)) + up_nac):,.2f}"
+            if c_es_nac > 0: det_nac['Estudiante'] = f"{math.ceil(cost_margined_nac_es + (m_extra_nac/max(1, pasajeros_nac)) + up_nac):,.2f}"
+            if c_pc_nac > 0: det_nac['PCD'] = f"{math.ceil(cost_margined_nac_pc + (m_extra_nac/max(1, pasajeros_nac)) + up_nac):,.2f}"
+            if c_ni_nac > 0: det_nac['Niño'] = f"{math.ceil(cost_margined_nac_ni + (m_extra_nac/max(1, pasajeros_nac)) + up_nac):,.2f}"
 
             # Extranjero
             det_ext = {}
-            if c_ad_ext > 0: det_ext['Adulto'] = f"{math.ceil((cost_ext_ad * factor_m) + (m_extra_ext/max(1, pasajeros_ext)) + up_ext):,.2f}"
-            if c_es_ext > 0: det_ext['Estudiante'] = f"{math.ceil((cost_ext_es * factor_m) + (m_extra_ext/max(1, pasajeros_ext)) + up_ext):,.2f}"
-            if c_pc_ext > 0: det_ext['PCD'] = f"{math.ceil((cost_ext_pc * factor_m) + (m_extra_ext/max(1, pasajeros_ext)) + up_ext):,.2f}"
-            if c_ni_ext > 0: det_ext['Niño'] = f"{math.ceil((cost_ext_ni * factor_m) + (m_extra_ext/max(1, pasajeros_ext)) + up_ext):,.2f}"
+            if c_ad_ext > 0: det_ext['Adulto'] = f"{math.ceil(cost_margined_ext_ad + (m_extra_ext/max(1, pasajeros_ext)) + up_ext):,.2f}"
+            if c_es_ext > 0: det_ext['Estudiante'] = f"{math.ceil(cost_margined_ext_es + (m_extra_ext/max(1, pasajeros_ext)) + up_ext):,.2f}"
+            if c_pc_ext > 0: det_ext['PCD'] = f"{math.ceil(cost_margined_ext_pc + (m_extra_ext/max(1, pasajeros_ext)) + up_ext):,.2f}"
+            if c_ni_ext > 0: det_ext['Niño'] = f"{math.ceil(cost_margined_ext_ni + (m_extra_ext/max(1, pasajeros_ext)) + up_ext):,.2f}"
 
             # CAN
             det_can = {}
-            if c_ad_can > 0: det_can['Adulto'] = f"{math.ceil((cost_can_ad * factor_m) + (m_extra_can/max(1, pasajeros_can)) + up_ext):,.2f}"
-            if c_es_can > 0: det_can['Estudiante'] = f"{math.ceil((cost_can_es * factor_m) + (m_extra_can/max(1, pasajeros_can)) + up_ext):,.2f}"
-            if c_pc_can > 0: det_can['PCD'] = f"{math.ceil((cost_can_pc * factor_m) + (m_extra_can/max(1, pasajeros_can)) + up_ext):,.2f}"
-            if c_ni_can > 0: det_can['Niño'] = f"{math.ceil((cost_can_ni * factor_m) + (m_extra_can/max(1, pasajeros_can)) + up_ext):,.2f}"
+            if c_ad_can > 0: det_can['Adulto'] = f"{math.ceil(cost_margined_can_ad + (m_extra_can/max(1, pasajeros_can)) + up_ext):,.2f}"
+            if c_es_can > 0: det_can['Estudiante'] = f"{math.ceil(cost_margined_can_es + (m_extra_can/max(1, pasajeros_can)) + up_ext):,.2f}"
+            if c_pc_can > 0: det_can['PCD'] = f"{math.ceil(cost_margined_can_pc + (m_extra_can/max(1, pasajeros_can)) + up_ext):,.2f}"
+            if c_ni_can > 0: det_can['Niño'] = f"{math.ceil(cost_margined_can_ni + (m_extra_can/max(1, pasajeros_can)) + up_ext):,.2f}"
 
             precios = {
                 'nac': {'total': f"{avg_nac_pp:,.2f}", 'lista_det': det_nac} if pasajeros_nac > 0 else None,
@@ -1631,8 +1636,13 @@ def render_ventas_ui():
                                 'fuente': origen_lead,
                                 'estrategia': estrategia_v, 
                                 'estado': "Cotización",
-                                'logo_url': logo_path,
-                                'logo_cover_url': logo_path,
+                                'logo_url': os.path.abspath(os.path.join("assets", "img", "logo.png")),
+                                'logo_cover_url': os.path.abspath(os.path.join("assets", "img", "logo_white.png")),
+                                'llama_img': os.path.abspath(os.path.join("assets", "img", "llama_icon.png")),
+                                'llama_purchase_img': os.path.abspath(os.path.join("assets", "img", "llama_purchase.png")),
+                                'train_exp_img': os.path.abspath(os.path.join("assets", "img", "tours", "expedition.jpg")),
+                                'train_vis_img': os.path.abspath(os.path.join("assets", "img", "tours", "vistadome.jpg")),
+                                'train_obs_img': os.path.abspath(os.path.join("assets", "img", "tours", "observatory.jpg")),
                                 'detalle_ingresos': items_ingreso,
                                 'control_interno': control_interno, # <--- EL ACTIVO PARA ANÁLISIS
                                 'total_final_calculado': round(monto_t_ref, 2),
