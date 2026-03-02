@@ -1053,27 +1053,35 @@ def render_ventas_ui():
             # Para Extranjeros/CAN: Todo debe estar en USD
             up_ext = (calc_upgrades if tipo_t != "Nacional" else calc_upgrades / tc) + (calc_tren if tipo_t != "Nacional" else calc_tren / tc)
 
-            real_nac = total_nac + m_extra_nac + (up_nac * pasajeros_nac)
-            real_ext = total_ext + m_extra_ext + (up_ext * pasajeros_ext)
-            real_can = total_can + m_extra_can + (up_ext * pasajeros_can)
-            
-            # Variables base para el PDF y UI (sin extras ni upgrades iniciales, se añaden según modo)
+            # Variables base para análisis interno (Solo costos de tours, sin hotel/tren)
             total_nac_pp = total_nac / max(1, pasajeros_nac)
             total_ext_pp = total_ext / max(1, pasajeros_ext)
             total_can_pp = total_can / max(1, pasajeros_can)
 
-            # Para mostrar en la UI los precios promedio con todo incluido (Redondeo hacia arriba solicitado)
-            avg_nac_pp = math.ceil(real_nac / max(1, pasajeros_nac))
-            avg_ext_pp = math.ceil(real_ext / max(1, pasajeros_ext))
-            avg_can_pp = math.ceil(real_can / max(1, pasajeros_can))
+            # Lógica de Redondeo Unificado: Redondear el promedio por persona hacia arriba y derivar el total
+            # Esto evita discrepancias visuales de (Total != Promedio * Pax)
+            
+            # Nacional
+            avg_nac_pp = math.ceil((total_nac + m_extra_nac) / max(1, pasajeros_nac) + up_nac)
+            real_nac = avg_nac_pp * pasajeros_nac
+            
+            # Extranjero
+            avg_ext_pp = math.ceil((total_ext + m_extra_ext) / max(1, pasajeros_ext) + up_ext)
+            real_ext = avg_ext_pp * pasajeros_ext
+            
+            # CAN
+            avg_can_pp = math.ceil((total_can + m_extra_can) / max(1, pasajeros_can) + up_ext)
+            real_can = avg_can_pp * pasajeros_can
 
-            # Promedios con el factor de "Antes"
-            real_nac_a = total_nac_a + m_extra_nac + (up_nac * pasajeros_nac)
-            real_ext_a = total_ext_a + m_extra_ext + (up_ext * pasajeros_ext)
-            real_can_a = total_can_a + m_extra_can + (up_ext * pasajeros_can)
-            avg_nac_a_pp = math.ceil(real_nac_a / max(1, pasajeros_nac))
-            avg_ext_a_pp = math.ceil(real_ext_a / max(1, pasajeros_ext))
-            avg_can_a_pp = math.ceil(real_can_a / max(1, pasajeros_can))
+            # Promedios con el factor de "Antes" (También unificados)
+            avg_nac_a_pp = math.ceil((total_nac_a + m_extra_nac) / max(1, pasajeros_nac) + up_nac)
+            real_nac_a = avg_nac_a_pp * pasajeros_nac
+            
+            avg_ext_a_pp = math.ceil((total_ext_a + m_extra_ext) / max(1, pasajeros_ext) + up_ext)
+            real_ext_a = avg_ext_a_pp * pasajeros_ext
+            
+            avg_can_a_pp = math.ceil((total_can_a + m_extra_can) / max(1, pasajeros_can) + up_ext)
+            real_can_a = avg_can_a_pp * pasajeros_can
 
             # --- DICCIONARIOS PARA EL PDF (Solo cuando es Opciones) ---
             precios = {
