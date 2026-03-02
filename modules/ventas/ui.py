@@ -18,6 +18,7 @@ from utils.supabase_db import (
     delete_custom_package,
     get_service_templates
 )
+from utils.translator import translate_itinerary
 
 # --- ELIMINADAS FUNCIONES DE PERSISTENCIA LOCAL (AHORA ES CLOUD) ---
 
@@ -1175,6 +1176,14 @@ def render_ventas_ui():
                 st.success("¡Formulario limpiado por completo!")
                 st.rerun()
             
+            # --- SELECTOR DE IDIOMA PARA EL PDF ---
+            st.markdown("🌐 **Idioma del Itinerario**")
+            idioma_pdf = st.selectbox(
+                "Soporta traducción automática con IA", 
+                ["Español", "English", "Français", "Deutsch", "Português", "Italiano"],
+                key="f_idioma_itinerario"
+            )
+            
             if c_btn1.button("🔥 GENERAR ITINERARIO PDF"):
                 if celular and st.session_state.itinerario:
                     with st.spinner("Generando PDF con Edge..."):
@@ -1202,9 +1211,31 @@ def render_ventas_ui():
                         logo_orig = "Captura de pantalla 2026-01-05 102612.png"
                         logo_path = os.path.abspath(logo_orig if os.path.exists(logo_orig) else os.path.join("assets", "images", "logo_background.png"))
                         
+                        # --- TRADUCCIÓN CON IA (Si aplica) ---
+                        itinerario_a_procesar = st.session_state.itinerario
+                        notas_a_procesar = st.session_state.get('f_notas_finales', '')
+                        
+                        if idioma_pdf != "Español":
+                            with st.status(f"🌐 Traducción Inteligente al {idioma_pdf}...", expanded=True) as status:
+                                st.write("Conectando con la IA...")
+                                data_to_translate = {
+                                    'days': itinerario_a_procesar,
+                                    'notas_finales': notas_a_procesar
+                                }
+                                translated_data, error = translate_itinerary(data_to_translate, idioma_pdf)
+                                
+                                if error:
+                                    st.error(f"Error en traducción: {error}")
+                                    st.warning("Se generará en Español por defecto.")
+                                else:
+                                    itinerario_a_procesar = translated_data['days']
+                                    notas_a_procesar = translated_data['notas_finales']
+                                    st.success("¡Traducción completada con éxito!")
+                                status.update(label="Traducción lista ✅", state="complete")
+
                         # Preparar días con imágenes
                         days_data = []
-                        for i, tour in enumerate(st.session_state.itinerario):
+                        for i, tour in enumerate(itinerario_a_procesar):
                             titulo_actual = tour.get('titulo', '').upper()
                             # PRIORIDAD 1: Carpeta ya asignada en el tour (especialmente si el usuario la editó en Ventas)
                             # PRIORIDAD 2: Sincronización por título si no hay carpeta o es 'general'
@@ -1569,10 +1600,9 @@ def render_ventas_ui():
                                 'days': days_data,
                                 'precios_cierre': precios_cierre_list,
                                 'precios': precios,
-                                'precios_antes': precios_antes,
-                                'canal': st.session_state.get('f_tipo_cliente', 'B2C'),
-                                'nota_p': st.session_state.get('f_nota_precio', ''),
-                                'notas_finales': st.session_state.get('f_notas_finales', '')
+                                'promociones': [],
+                                'nota_p': st.session_state.get('f_nota_precio', 'INCLUYE TOUR'),
+                                'notas_finales': notas_a_procesar # Usar la versión traducida si aplica
                             }
 
                             # 2. Guardar en Supabase y obtener ID de vinculación
