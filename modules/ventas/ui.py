@@ -1220,7 +1220,8 @@ def render_ventas_ui():
                                 st.write("Conectando con la IA...")
                                 data_to_translate = {
                                     'days': itinerario_a_procesar,
-                                    'notas_finales': notas_a_procesar
+                                    'notas_finales': notas_a_procesar,
+                                    'nota_precio': st.session_state.get('f_nota_precio', 'INCLUYE TOUR')
                                 }
                                 translated_data, error = translate_itinerary(data_to_translate, idioma_pdf)
                                 
@@ -1601,8 +1602,10 @@ def render_ventas_ui():
                                 'precios_cierre': precios_cierre_list,
                                 'precios': precios,
                                 'promociones': [],
-                                'nota_p': st.session_state.get('f_nota_precio', 'INCLUYE TOUR'),
-                                'notas_finales': notas_a_procesar # Usar la versión traducida si aplica
+                                'nota_p': translated_data.get('nota_precio', st.session_state.get('f_nota_precio', 'INCLUYE TOUR')) if idioma_pdf != "Español" else st.session_state.get('f_nota_precio', 'INCLUYE TOUR'),
+                                'notas_finales': notas_a_procesar,
+                                'guia_viajero': translated_data.get('guia_viajero') if idioma_pdf != "Español" else None,
+                                'politicas': translated_data.get('politicas') if idioma_pdf != "Español" else None
                             }
 
                             # 2. Guardar en Supabase y obtener ID de vinculación

@@ -529,43 +529,35 @@
                     <div class="exclusive-rates-badge">TARIFAS EXCLUSIVAS PARA PERUANOS</div>
 
                     <div class="policy-card">
-                        <div class="policy-card-title">💳 RESERVA</div>
+                        <div class="policy-card-title">💳 {{ politicas.titulo_reserva | default('RESERVA') }}</div>
                         <div class="policy-card-body">
-                            <strong>La reserva del paquete turístico es con el 50%.</strong><br>
-                            El 50% restante lo tendrás que pagar hasta un día antes de iniciar el primer tour.<br><br>
-                            <strong>Método de pago:</strong><br>
-                            Contamos con todos los métodos de pagos del mercado.<br>
-                            Depósito o trasferencia a la cuenta de la empresa.<br>
-                            Incluido en los métodos de pago la tarjeta y cargos de depósito.
+                            {{ politicas.reserva | safe }}
                         </div>
                     </div>
 
                     <div class="policy-card" style="margin-top: 20px;">
-                        <div class="policy-card-title">🕒 ANULACIÓN DEL PAQUETE TURÍSTICO</div>
+                        <div class="policy-card-title">🕒 {{ politicas.titulo_anulacion | default('ANULACIÓN') }}</div>
                         <div class="policy-card-body">
-                            La anulación se debe realizar con anticipación.<br>
-                            Ingreso a Machupicchu, vías y cambios o devoluciones, solo en casos excepcionales hay
-                            cambios como desastres naturales o paralizaciones.<br>
-                            Vías turísticas y los Boletos de Machupicchu penalidades, solo en casos excepcionales hay
-                            cambios como desastres naturales o paralizaciones.<br>
-                            <strong>Menor a 15 días antes de su llegada, No hay devolución.</strong>
+                            {{ politicas.anulacion | safe }}
                         </div>
                     </div>
                 </td>
                 <td style="width: 45%; vertical-align: top; text-align: center;">
                     <div class="policy-card" style="text-align: left; margin-bottom: 20px;">
-                        <div class="policy-card-title">📋 CONDICIONES ADICIONALES</div>
+                        <div class="policy-card-title">📋 {{ politicas.titulo_condiciones | default('CONDICIONES
+                            ADICIONALES') }}</div>
                         <div class="policy-card-body">
-                            - Habitación individual (SGL): Suplemento de <strong>S/ 35 o $10</strong> por noche.<br>
-                            - Menores de 2 años: Gratis (comparten asiento/cama).
+                            {% for c in politicas.condiciones %}
+                            - {{ c }}<br>
+                            {% endfor %}
                         </div>
                     </div>
 
                     <div class="regulation-box" style="text-align: left; margin-bottom: 30px;">
-                        <div class="regulation-title">🏛️ REGLAMENTO MACHU PICCHU</div>
+                        <div class="regulation-title">🏛️ {{ politicas.titulo_reglamento | default('REGLAMENTO MACHU
+                            PICCHU') }}</div>
                         <div class="regulation-text">
-                            El ticket de ingreso es válido para un solo ingreso. Los pasajeros suelen permanecer entre 2
-                            a 3 horas en el Santuario Histórico para su conservación.
+                            {{ politicas.reglamento_mp }}
                         </div>
                     </div>
 
@@ -598,29 +590,19 @@
                     <h2 style="margin: 0 0 15px 0; font-size: 1.5rem; text-align: center; font-weight: 900;">🌟
                         RECOMENDACIONES</h2>
 
+                    {% for seccion in guia_viajero.secciones %}
                     <div
                         style="background: rgba(255,255,255,0.15); padding: 15px; border-radius: 10px; margin-bottom: 15px;">
                         <h3
                             style="margin: 0 0 10px 0; font-size: 1rem; font-weight: 800; border-bottom: 2px solid rgba(255,255,255,0.3); padding-bottom: 5px;">
-                            SALUD Y PROTECCIÓN</h3>
+                            {{ seccion.nombre }}</h3>
                         <ul style="margin: 0; padding-left: 20px; line-height: 1.8;">
-                            <li>PROTECTOR SOLAR SPF 50+</li>
-                            <li>REPELENTE DE INSECTOS</li>
-                            <li>CREMA HIDRATANTE FACIAL</li>
-                            <li>MEDICACIÓN PERSONAL</li>
-                            <li>BOTIQUÍN BÁSICO</li>
+                            {% for item in seccion.items %}
+                            <li>{{ item }}</li>
+                            {% endfor %}
                         </ul>
                     </div>
-
-                    <div style="background: rgba(255,255,255,0.15); padding: 15px; border-radius: 10px;">
-                        <h3
-                            style="margin: 0 0 10px 0; font-size: 1rem; font-weight: 800; border-bottom: 2px solid rgba(255,255,255,0.3); padding-bottom: 5px;">
-                            HIGIENE</h3>
-                        <ul style="margin: 0; padding-left: 20px; line-height: 1.8;">
-                            <li>CEPILLO Y PASTA DENTAL</li>
-                            <li>TOALLITAS HÚMEDAS</li>
-                        </ul>
-                    </div>
+                    {% endfor %}
                 </div>
             </div>
 
@@ -631,29 +613,19 @@
                     <h2 style="margin: 0 0 15px 0; font-size: 1.5rem; text-align: center; font-weight: 900;">🎒 EQUIPAJE
                     </h2>
 
+                    {% for seccion in guia_viajero.secciones_extra | default([]) %}
                     <div
                         style="background: rgba(255,255,255,0.1); padding: 15px; border-radius: 10px; margin-bottom: 15px;">
                         <h3
                             style="margin: 0 0 10px 0; font-size: 1rem; font-weight: 800; border-bottom: 2px solid rgba(255,255,255,0.3); padding-bottom: 5px;">
-                            INDUMENTARIA</h3>
+                            {{ seccion.nombre }}</h3>
                         <ul style="margin: 0; padding-left: 20px; line-height: 1.8;">
-                            <li>CAMISETAS MANGA LARGA</li>
-                            <li>PANTALONES CONFORTABLES</li>
-                            <li>CHUBASQUERO (LLUVIA)</li>
-                            <li>SOMBRERO PARA EL SOL</li>
-                            <li>PAÑO GRUESO Y SUAVE</li>
+                            {% for item in seccion.items %}
+                            <li>{{ item }}</li>
+                            {% endfor %}
                         </ul>
                     </div>
-
-                    <div style="background: rgba(255,255,255,0.1); padding: 15px; border-radius: 10px;">
-                        <h3
-                            style="margin: 0 0 10px 0; font-size: 1rem; font-weight: 800; border-bottom: 2px solid rgba(255,255,255,0.3); padding-bottom: 5px;">
-                            ACCESORIOS</h3>
-                        <ul style="margin: 0; padding-left: 20px; line-height: 1.8;">
-                            <li>MOCHILA DE VIAJE LIGERA</li>
-                            <li>CARGADOR DE TELÉFONO</li>
-                        </ul>
-                    </div>
+                    {% endfor %}
                 </div>
             </div>
         </div>
@@ -687,46 +659,36 @@
                 <tr>
                     <td style="width: 55%; vertical-align: top; padding-right: 30px;">
                         <div class="policy-card">
-                            <div class="policy-card-title">💳 RESERVA</div>
+                            <div class="policy-card-title">💳 {{ politicas.titulo_reserva | default('RESERVA') }}</div>
                             <div class="policy-card-body">
-                                <strong>La reserva del paquete turístico es con el 50%.</strong><br>
-                                El 50% restante lo tendrás que pagar hasta un día antes de iniciar el primer
-                                tour.<br><br>
-                                <strong>Método de pago:</strong><br>
-                                Contamos con todos los métodos de pagos del mercado.<br>
-                                Depósito o trasferencia a la cuenta de la empresa.<br>
-                                Incluido en los métodos de pago la tarjeta y cargos de depósito.
+                                {{ politicas.reserva | safe }}
                             </div>
                         </div>
 
                         <div class="policy-card" style="margin-top: 20px;">
-                            <div class="policy-card-title">🕒 ANULACIÓN DEL PAQUETE TURÍSTICO</div>
+                            <div class="policy-card-title">🕒 {{ politicas.titulo_anulacion | default('ANULACIÓN') }}
+                            </div>
                             <div class="policy-card-body">
-                                La anulación se debe realizar con anticipación.<br>
-                                Ingreso a Machupicchu, vías y cambios o devoluciones, solo en casos excepcionales hay
-                                cambios como desastres naturales o paralizaciones.<br>
-                                Vías turísticas y los Boletos de Machupicchu penalidades, solo en casos excepcionales
-                                hay
-                                cambios como desastres naturales o paralizaciones.<br>
-                                <strong>Menor a 15 días antes de su llegada, No hay devolución.</strong>
+                                {{ politicas.anulacion | safe }}
                             </div>
                         </div>
                     </td>
                     <td style="width: 45%; vertical-align: top; text-align: center;">
                         <div class="policy-card" style="text-align: left; margin-bottom: 20px;">
-                            <div class="policy-card-title">📋 CONDICIONES ADICIONALES</div>
+                            <div class="policy-card-title">📋 {{ politicas.titulo_condiciones | default('CONDICIONES
+                                ADICIONALES') }}</div>
                             <div class="policy-card-body">
-                                - Habitación Individual (SGL): Suplemento de <strong>$50 USD</strong> por noche.<br>
-                                - Infantes (menores de 2 años): Sin costo (comparten asiento/cama).<br>
-                                - Pasaporte vigente es obligatorio para todos los tickets.
+                                {% for c in politicas.condiciones %}
+                                - {{ c }}<br>
+                                {% endfor %}
                             </div>
                         </div>
 
                         <div class="regulation-box" style="text-align: left; margin-bottom: 30px;">
-                            <div class="regulation-title">🏛️ REGLAMENTO MACHU PICCHU</div>
+                            <div class="regulation-title">🏛️ {{ politicas.titulo_reglamento | default('REGLAMENTO MACHU
+                                PICCHU') }}</div>
                             <div class="regulation-text">
-                                Los boletos de ingreso son válidos para un solo ingreso. Los pasajeros suelen permanecer
-                                entre 2 a 3 horas dentro del Santuario para apoyar su conservación y uso sostenible.
+                                {{ politicas.reglamento_mp }}
                             </div>
                         </div>
 
@@ -762,17 +724,18 @@
                     <h2 style="margin: 0 0 15px 0; font-size: 1.5rem; text-align: center; font-weight: 900;">🌟
                         RECOMENDACIONES</h2>
 
+                    {% for seccion in guia_viajero.secciones %}
                     <div style="background: rgba(255,255,255,0.15); padding: 15px; border-radius: 10px;">
                         <h3
                             style="margin: 0 0 10px 0; font-size: 1rem; font-weight: 800; border-bottom: 2px solid rgba(255,255,255,0.3); padding-bottom: 5px;">
-                            SALUD Y PROTECCIÓN</h3>
+                            {{ seccion.nombre }}</h3>
                         <ul style="margin: 0; padding-left: 20px; line-height: 1.8;">
-                            <li>BLOQUEADOR SOLAR SPF 50+</li>
-                            <li>REPELENTE DE INSECTOS</li>
-                            <li>MEDICACIÓN PERSONAL</li>
-                            <li>TOALLITAS HÚMEDAS Y DESINFECTANTE</li>
+                            {% for item in seccion.items %}
+                            <li>{{ item }}</li>
+                            {% endfor %}
                         </ul>
                     </div>
+                    {% endfor %}
                 </div>
             </div>
 
@@ -783,18 +746,18 @@
                     <h2 style="margin: 0 0 15px 0; font-size: 1.5rem; text-align: center; font-weight: 900;">🎒 EQUIPAJE
                     </h2>
 
+                    {% for seccion in guia_viajero.secciones_extra | default([]) %}
                     <div style="background: rgba(255,255,255,0.1); padding: 15px; border-radius: 10px;">
                         <h3
                             style="margin: 0 0 10px 0; font-size: 1rem; font-weight: 800; border-bottom: 2px solid rgba(255,255,255,0.3); padding-bottom: 5px;">
-                            ROPA Y EQUIPO</h3>
+                            {{ seccion.nombre }}</h3>
                         <ul style="margin: 0; padding-left: 20px; line-height: 1.8;">
-                            <li>CAMISAS DE MANGA LARGA</li>
-                            <li>PANTALONES CÓMODOS</li>
-                            <li>CHAQUETA DE LLUVIA / PONCHO</li>
-                            <li>CARGADOR PORTÁTIL</li>
-                            <li>MOCHILA LIGERA</li>
+                            {% for item in seccion.items %}
+                            <li>{{ item }}</li>
+                            {% endfor %}
                         </ul>
                     </div>
+                    {% endfor %}
                 </div>
             </div>
         </div>

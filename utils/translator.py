@@ -92,22 +92,76 @@ def translate_itinerary(itinerary_data, target_lang="English"):
             print(f"Error traduciendo día: {e}")
             processed_days.append(day)
 
-    # Traducir Notas Finales si existen
-    translated_itinerary = itinerary_data.copy()
-    translated_itinerary['days'] = processed_days
-    
-    if itinerary_data.get('notas_finales'):
+    # 3. Traducir NOTA DE PRECIO
+    if itinerary_data.get('nota_precio'):
         try:
-            note_prompt = f"Traduce al {target_lang}: {itinerary_data.get('notas_finales')}"
-            res_note = client.chat.completions.create(
+            res_np = client.chat.completions.create(
                 model="gpt-4o-mini",
                 messages=[
                     {"role": "system", "content": system_prompt},
-                    {"role": "user", "content": note_prompt}
+                    {"role": "user", "content": f"Traduce al {target_lang}: {itinerary_data.get('nota_precio')}"}
                 ]
             )
-            translated_itinerary['notas_finales'] = res_note.choices[0].message.content
-        except:
-            pass
-            
-    return translated_itinerary, None
+            itinerary_data['nota_precio'] = res_note.choices[0].message.content
+        except: pass
+
+    # 4. Traducir NOTAS FINALES (Personalizadas)
+    if itinerary_data.get('notas_finales'):
+        try:
+            res_nf = client.chat.completions.create(
+                model="gpt-4o-mini",
+                messages=[
+                    {"role": "system", "content": system_prompt},
+                    {"role": "user", "content": f"Traduce al {target_lang}: {itinerary_data.get('notas_finales')}"}
+                ]
+            )
+            itinerary_data['notas_finales'] = res_nf.choices[0].message.content
+        except: pass
+
+    # 5. Traducir BLOQUES ESTÁTICOS (Guía y Políticas)
+    # Definimos los bloques base en español si no vienen en el data
+    guia_base = itinerary_data.get('guia_viajero', {
+        "titulo": "Guía del Viajero",
+        "subtitulo": "PREPARA TU AVENTURA",
+        "secciones": [
+            {"nombre": "SALUD Y PROTECCIÓN", "items": ["BLOQUEADOR SOLAR SPF 50+", "REPELENTE DE INSECTOS", "MEDICACIÓN PERSONAL"]},
+            {"nombre": "ROPA Y EQUIPO", "items": ["CAMISAS DE MANGA LARGA", "PANTALONES CÓMODOS", "CHAQUETA DE LLUVIA / PONCHO", "MOCHILA LIGERA"]}
+        ],
+        "mensaje": "¡Prepárate para vivir una experiencia inolvidable! Cada detalle cuenta para que tu viaje sea perfecto. ¡Nos vemos pronto en Cusco!"
+    })
+
+    politicas_base = itinerary_data.get('politicas', {
+        "titulo": "Términos de Reserva",
+        "reserva": "La reserva del paquete turístico es con el 50%. El 50% restante lo tendrás que pagar hasta un día antes de iniciar el primer tour.",
+        "anulacion": "La anulación se debe realizar con anticipación. Ingresos a Machupicchu, vías y cambios o devoluciones solo en casos excepcionales.",
+        "condiciones": ["Habitación Individual (SGL): Suplemento aplica.", "Pasaporte vigente obligatorio."],
+        "reglamento_mp": "Los boletos son válidos para un solo ingreso. Los pasajeros suelen permanecer entre 2 a 3 horas."
+    })
+
+    try:
+        # Traducir Guía
+        json_guia = client.chat.completions.create(
+            model="gpt-4o-mini",
+            response_format={ "type": "json_object" },
+            messages=[
+                {"role": "system", "content": system_prompt},
+                {"role": "user", "content": f"Traduce este objeto de guía al {target_lang}: {json.dumps(guia_base)}"}
+            ]
+        )
+        itinerary_data['guia_viajero'] = json.loads(json_guia.choices[0].message.content)
+
+        # Traducir Políticas
+        json_pol = client.chat.completions.create(
+            model="gpt-4o-mini",
+            response_format={ "type": "json_object" },
+            messages=[
+                {"role": "system", "content": system_prompt},
+                {"role": "user", "content": f"Traduce este objeto de políticas al {target_lang}: {json.dumps(politicas_base)}"}
+            ]
+        )
+        itinerary_data['politicas'] = json.loads(json_pol.choices[0].message.content)
+    except:
+        itinerary_data['guia_viajero'] = guia_base
+        itinerary_data['politicas'] = politicas_base
+
+    return itinerary_data, None
