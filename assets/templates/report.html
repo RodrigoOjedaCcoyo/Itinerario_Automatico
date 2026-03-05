@@ -406,179 +406,185 @@
                     </div>
                 </div>
             </div>
-        </div>
 
-        {% if nota_p %}
-        <div class="price-note"
-            style="margin-top: 20px; padding: 12px; border-radius: 8px; border: 1px dashed #ccc; background: #fafafa; font-size: 0.9rem; color: #444; text-align: center;">
-            📌 <strong>Nota sobre la inversión:</strong> {{ nota_p }}
-        </div>
-        {% endif %}
-    </div>
-    {% else %}
-    <div
-        style="position: absolute; top: 15%; left: 50%; transform: translateX(-50%); width: 85%; opacity: 0.04; z-index: -1;">
-        <img src="{{ logo_url }}" style="width: 100%;">
-    </div>
+            {% if nota_p %}
+            <div class="price-note"
+                style="margin-top: 20px; padding: 12px; border-radius: 8px; border: 1px dashed #ccc; background: #fafafa; font-size: 0.9rem; color: #444; text-align: center;">
+                📌 <strong>Nota sobre la inversión:</strong> {{ nota_p }}
+            </div>
+            {% endif %}
+            {% else %}
+            <div
+                style="position: absolute; top: 15%; left: 50%; transform: translateX(-50%); width: 85%; opacity: 0.04; z-index: -1;">
+                <img src="{{ logo_url }}" style="width: 100%;">
+            </div>
 
-    <div style="text-align: center; margin-bottom: 40px;">
-        <span
-            style="background: var(--color-primary); color: white; padding: 5px 15px; border-radius: 20px; font-size: 0.8rem; font-weight: 800; letter-spacing: 2px;">OFERTA
-            DE LANZAMIENTO</span>
-        <h1 class="price-main-title" style="margin-top: 10px;">Propuesta de Inversión</h1>
-        <p style="color: #666; font-size: 1.1rem; letter-spacing: 1px;">TARIFAS PREFERENCIALES POR PERSONA</p>
-    </div>
+            <div style="text-align: center; margin-bottom: 40px;">
+                <span
+                    style="background: var(--color-primary); color: white; padding: 5px 15px; border-radius: 20px; font-size: 0.8rem; font-weight: 800; letter-spacing: 2px;">OFERTA
+                    DE LANZAMIENTO</span>
+                <h1 class="price-main-title" style="margin-top: 10px;">Propuesta de Inversión</h1>
+                <p style="color: #666; font-size: 1.1rem; letter-spacing: 1px;">TARIFAS PREFERENCIALES POR PERSONA</p>
+            </div>
 
-    <div class="luxury-offer-container"
-        style="display: flex; gap: 10px; justify-content: center; align-items: stretch; margin-top: 20px;">
-        {% if precios.nac %}
-        <div class="luxury-offer-card featured"
-            style="flex: 1; position: relative; border: 3px solid var(--color-primary); overflow: visible;">
-            <div class="offer-badge"
-                style="background: #eb4d4b; color: white; font-weight: 900; transform: rotate(-5deg); left: -10px; top: -15px; padding: 8px 15px; box-shadow: 0 4px 10px rgba(0,0,0,0.2);">
-                ¡SÚPER PRECIO!</div>
-            <div class="offer-type" style="margin-top: 15px; font-weight: 800; color: #2d3436;">TARIFA NACIONAL</div>
-
-            <div class="offer-price-box" style="padding: 10px 5px;">
-                {% if show_antes_pdf and precios_antes.nac %}
-                <div style="margin-bottom: 5px;">
-                    <span style="color: #999; text-decoration: line-through; font-size: 1.2rem; font-weight: 600;">
-                        S/ {{ precios_antes.nac.total }}
-                    </span>
-                </div>
-                {% endif %}
-                <div style="display: flex; align-items: center; justify-content: center; gap: 5px;">
-                    <span class="offer-currency"
-                        style="font-size: 1.5rem; color: var(--color-primary); font-weight: 800;">S/</span>
-                    <span class="offer-amount"
-                        style="font-size: 2.8rem; line-height: 1; color: var(--color-primary); font-weight: 900;">{{
-                        precios.nac.total }}</span>
-                </div>
-                {% if precios.nac and precios.nac.lista_det %}
-                <div style="margin-top: 10px; border-top: 1px solid rgba(0,0,0,0.05); padding-top: 10px;">
-                    {% for label, monto in precios.nac.lista_det.items() %}
-                    <div
-                        style="display: flex; justify-content: space-between; font-size: 0.85rem; color: #555; margin-bottom: 2px;">
-                        <span>{{ label }}:</span>
-                        <span style="font-weight: 700;">S/ {{ monto }}</span>
+            <div class="luxury-offer-container"
+                style="display: flex; gap: 10px; justify-content: center; align-items: stretch; margin-top: 20px;">
+                {% if precios.nac %}
+                <div class="luxury-offer-card featured"
+                    style="flex: 1; position: relative; border: 3px solid var(--color-primary); overflow: visible;">
+                    <div class="offer-badge"
+                        style="background: #eb4d4b; color: white; font-weight: 900; transform: rotate(-5deg); left: -10px; top: -15px; padding: 8px 15px; box-shadow: 0 4px 10px rgba(0,0,0,0.2);">
+                        ¡SÚPER PRECIO!</div>
+                    <div class="offer-type" style="margin-top: 15px; font-weight: 800; color: #2d3436;">TARIFA NACIONAL
                     </div>
-                    {% endfor %}
-                </div>
-                {% endif %}
-            </div>
-            <div class="offer-footer"
-                style="background: #f8f9fa; color: #2d3436; font-weight: 700; border-top: 1px solid #eee; text-transform: uppercase;">
-                TOTAL POR PASAJERO
-            </div>
-        </div>
-        {% endif %}
 
-        {% if precios.ext or precios.can %}
-        <div class="luxury-offer-card featured"
-            style="flex: 1; position: relative; border: 3px solid var(--color-primary); overflow: visible;">
-            <div class="offer-badge"
-                style="background: #eb4d4b; color: white; font-weight: 900; transform: rotate(-5deg); left: -10px; top: -15px; padding: 8px 15px; box-shadow: 0 4px 10px rgba(0,0,0,0.2);">
-                ¡SÚPER PRECIO!</div>
-            <div class="offer-type" style="margin-top: 15px; font-weight: 800; color: #2d3436;">TARIFA INTERNACIONAL /
-                CAN
-            </div>
-
-            <div class="offer-price-box" style="padding: 10px 5px;">
-                {% if show_antes_pdf %}
-                <div style="margin-bottom: 5px;">
-                    <span style="color: #999; text-decoration: line-through; font-size: 1.2rem; font-weight: 600;">
-                        USD {{ (precios_antes.ext.total if (precios_antes.ext and precios.ext) else
-                        (precios_antes.can.total if (precios_antes.can and precios.can) else '')) }}
-                    </span>
-                </div>
-                {% endif %}
-
-                {% if precios.ext %}
-                <div style="margin-bottom: 15px;">
-                    <div
-                        style="font-size: 0.75rem; color: #888; font-weight: 700; text-transform: uppercase; margin-bottom: 5px;">
-                        Extranjero</div>
-                    <div style="display: flex; align-items: center; justify-content: center; gap: 5px;">
-                        <span class="offer-currency"
-                            style="font-size: 1.5rem; color: var(--color-primary); font-weight: 800;">USD</span>
-                        <span class="offer-amount"
-                            style="font-size: 2.8rem; line-height: 1; color: var(--color-primary); font-weight: 900;">{{
-                            precios.ext.total }}</span>
-                    </div>
-                    {% if precios.ext.lista_det %}
-                    <div style="margin-top: 5px; border-top: 1px solid rgba(0,0,0,0.05); padding-top: 5px;">
-                        {% for label, monto in precios.ext.lista_det.items() %}
-                        <div style="display: flex; justify-content: space-between; font-size: 0.82rem; color: #555;">
-                            <span>{{ label }}:</span>
-                            <span style="font-weight: 700;">USD {{ monto }}</span>
+                    <div class="offer-price-box" style="padding: 10px 5px;">
+                        {% if show_antes_pdf and precios_antes.nac %}
+                        <div style="margin-bottom: 5px;">
+                            <span
+                                style="color: #999; text-decoration: line-through; font-size: 1.2rem; font-weight: 600;">
+                                S/ {{ precios_antes.nac.total }}
+                            </span>
                         </div>
-                        {% endfor %}
-                    </div>
-                    {% endif %}
-                </div>
-                {% endif %}
-
-                {% if precios.can %}
-                {% if precios.ext %}
-                <div style="margin-top: 15px; border-top: 2px dashed #eee; padding-top: 15px;">
-                    {% else %}
-                    <div>
                         {% endif %}
-                        <div
-                            style="font-size: 0.75rem; color: #888; font-weight: 700; text-transform: uppercase; margin-bottom: 5px;">
-                            Comunidad Andina (CAN)</div>
                         <div style="display: flex; align-items: center; justify-content: center; gap: 5px;">
                             <span class="offer-currency"
-                                style="font-size: 1.5rem; color: #2d3436; font-weight: 800;">USD</span>
+                                style="font-size: 1.5rem; color: var(--color-primary); font-weight: 800;">S/</span>
                             <span class="offer-amount"
-                                style="font-size: 2.5rem; line-height: 1; color: #2d3436; font-weight: 800;">{{
-                                precios.can.total }}</span>
+                                style="font-size: 2.8rem; line-height: 1; color: var(--color-primary); font-weight: 900;">{{
+                                precios.nac.total }}</span>
                         </div>
-                        {% if precios.can.lista_det %}
-                        <div style="margin-top: 5px; border-top: 1px solid rgba(0,0,0,0.05); padding-top: 5px;">
-                            {% for label, monto in precios.can.lista_det.items() %}
+                        {% if precios.nac and precios.nac.lista_det %}
+                        <div style="margin-top: 10px; border-top: 1px solid rgba(0,0,0,0.05); padding-top: 10px;">
+                            {% for label, monto in precios.nac.lista_det.items() %}
                             <div
-                                style="display: flex; justify-content: space-between; font-size: 0.82rem; color: #555;">
+                                style="display: flex; justify-content: space-between; font-size: 0.85rem; color: #555; margin-bottom: 2px;">
                                 <span>{{ label }}:</span>
-                                <span style="font-weight: 700;">USD {{ monto }}</span>
+                                <span style="font-weight: 700;">S/ {{ monto }}</span>
                             </div>
                             {% endfor %}
                         </div>
                         {% endif %}
                     </div>
+                    <div class="offer-footer"
+                        style="background: #f8f9fa; color: #2d3436; font-weight: 700; border-top: 1px solid #eee; text-transform: uppercase;">
+                        TOTAL POR PASAJERO
+                    </div>
+                </div>
+                {% endif %}
+
+                {% if precios.ext or precios.can %}
+                <div class="luxury-offer-card featured"
+                    style="flex: 1; position: relative; border: 3px solid var(--color-primary); overflow: visible;">
+                    <div class="offer-badge"
+                        style="background: #eb4d4b; color: white; font-weight: 900; transform: rotate(-5deg); left: -10px; top: -15px; padding: 8px 15px; box-shadow: 0 4px 10px rgba(0,0,0,0.2);">
+                        ¡SÚPER PRECIO!</div>
+                    <div class="offer-type" style="margin-top: 15px; font-weight: 800; color: #2d3436;">TARIFA
+                        INTERNACIONAL /
+                        CAN
+                    </div>
+
+                    <div class="offer-price-box" style="padding: 10px 5px;">
+                        {% if show_antes_pdf %}
+                        <div style="margin-bottom: 5px;">
+                            <span
+                                style="color: #999; text-decoration: line-through; font-size: 1.2rem; font-weight: 600;">
+                                USD {{ (precios_antes.ext.total if (precios_antes.ext and precios.ext) else
+                                (precios_antes.can.total if (precios_antes.can and precios.can) else '')) }}
+                            </span>
+                        </div>
+                        {% endif %}
+
+                        {% if precios.ext %}
+                        <div style="margin-bottom: 15px;">
+                            <div
+                                style="font-size: 0.75rem; color: #888; font-weight: 700; text-transform: uppercase; margin-bottom: 5px;">
+                                Extranjero</div>
+                            <div style="display: flex; align-items: center; justify-content: center; gap: 5px;">
+                                <span class="offer-currency"
+                                    style="font-size: 1.5rem; color: var(--color-primary); font-weight: 800;">USD</span>
+                                <span class="offer-amount"
+                                    style="font-size: 2.8rem; line-height: 1; color: var(--color-primary); font-weight: 900;">{{
+                                    precios.ext.total }}</span>
+                            </div>
+                            {% if precios.ext.lista_det %}
+                            <div style="margin-top: 5px; border-top: 1px solid rgba(0,0,0,0.05); padding-top: 5px;">
+                                {% for label, monto in precios.ext.lista_det.items() %}
+                                <div
+                                    style="display: flex; justify-content: space-between; font-size: 0.82rem; color: #555;">
+                                    <span>{{ label }}:</span>
+                                    <span style="font-weight: 700;">USD {{ monto }}</span>
+                                </div>
+                                {% endfor %}
+                            </div>
+                            {% endif %}
+                        </div>
+                        {% endif %}
+
+                        {% if precios.can %}
+                        {% if precios.ext %}
+                        <div style="margin-top: 15px; border-top: 2px dashed #eee; padding-top: 15px;">
+                            {% else %}
+                            <div>
+                                {% endif %}
+                                <div
+                                    style="font-size: 0.75rem; color: #888; font-weight: 700; text-transform: uppercase; margin-bottom: 5px;">
+                                    Comunidad Andina (CAN)</div>
+                                <div style="display: flex; align-items: center; justify-content: center; gap: 5px;">
+                                    <span class="offer-currency"
+                                        style="font-size: 1.5rem; color: #2d3436; font-weight: 800;">USD</span>
+                                    <span class="offer-amount"
+                                        style="font-size: 2.5rem; line-height: 1; color: #2d3436; font-weight: 800;">{{
+                                        precios.can.total }}</span>
+                                </div>
+                                {% if precios.can.lista_det %}
+                                <div style="margin-top: 5px; border-top: 1px solid rgba(0,0,0,0.05); padding-top: 5px;">
+                                    {% for label, monto in precios.can.lista_det.items() %}
+                                    <div
+                                        style="display: flex; justify-content: space-between; font-size: 0.82rem; color: #555;">
+                                        <span>{{ label }}:</span>
+                                        <span style="font-weight: 700;">USD {{ monto }}</span>
+                                    </div>
+                                    {% endfor %}
+                                </div>
+                                {% endif %}
+                            </div>
+                            {% endif %}
+                        </div>
+                        <div class="offer-footer"
+                            style="background: #f8f9fa; color: #2d3436; font-weight: 700; border-top: 1px solid #eee; text-transform: uppercase;">
+                            TOTAL POR PASAJERO
+                        </div>
+                    </div>
                     {% endif %}
                 </div>
-                <div class="offer-footer"
-                    style="background: #f8f9fa; color: #2d3436; font-weight: 700; border-top: 1px solid #eee; text-transform: uppercase;">
-                    TOTAL POR PASAJERO
-                </div>
-            </div>
-            {% endif %}
-        </div>
 
-        <div class="pricing-complements-container" style="margin-top: 40px; display: flex; gap: 20px;">
-            <div class="complement-box" style="flex: 1; background: #fffcf0; border: 1px solid #ffeaa7;">
-                <div class="complement-title" style="color: #d35400;">🚀 DISPONIBILIDAD</div>
-                <div class="complement-content">
-                    Esta tarifa especial está sujeta a cambios según la disponibilidad de espacios al momento de la
-                    reserva.
+                <div class="pricing-complements-container" style="margin-top: 40px; display: flex; gap: 20px;">
+                    <div class="complement-box" style="flex: 1; background: #fffcf0; border: 1px solid #ffeaa7;">
+                        <div class="complement-title" style="color: #d35400;">🚀 DISPONIBILIDAD</div>
+                        <div class="complement-content">
+                            Esta tarifa especial está sujeta a cambios según la disponibilidad de espacios al momento de
+                            la
+                            reserva.
+                        </div>
+                    </div>
+                    <div class="complement-box" style="flex: 1; background: #f0fff4; border: 1px solid #c6f6d5;">
+                        <div class="complement-title" style="color: #27ae60;">📅 VALIDEZ</div>
+                        <div class="complement-content">
+                            Oferta válida para reservas confirmadas en las próximas **48 horas**.
+                        </div>
+                    </div>
                 </div>
-            </div>
-            <div class="complement-box" style="flex: 1; background: #f0fff4; border: 1px solid #c6f6d5;">
-                <div class="complement-title" style="color: #27ae60;">📅 VALIDEZ</div>
-                <div class="complement-content">
-                    Oferta válida para reservas confirmadas en las próximas **48 horas**.
-                </div>
-            </div>
-        </div>
 
-        {% if nota_p %}
-        <div class="price-note"
-            style="margin-top: 30px; padding: 15px; border-radius: 12px; border: 2px dashed var(--color-primary); background: #f0f7f7; font-size: 0.95rem; color: #2c3e50; text-align: center;">
-            ✨ <strong>Nota del Experto:</strong> {{ nota_p }}
+                {% if nota_p %}
+                <div class="price-note"
+                    style="margin-top: 30px; padding: 15px; border-radius: 12px; border: 2px dashed var(--color-primary); background: #f0f7f7; font-size: 0.95rem; color: #2c3e50; text-align: center;">
+                    ✨ <strong>Nota del Experto:</strong> {{ nota_p }}
+                </div>
+                {% endif %}
+                {% endif %}
+            </div>
         </div>
-        {% endif %}
-        {% endif %}
 
 
         <!-- SECCIÓN DE ANEXOS PREMIUM -->
