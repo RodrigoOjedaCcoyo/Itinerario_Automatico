@@ -206,26 +206,6 @@ def get_last_itinerary_by_phone(phone: str):
         print(f"Error consultando Cerebro: {e}")
         return None
 
-def populate_catalog():
-    """Puebla la tabla tour con el contenido del archivo Itinerarios/Datos.sql"""
-    supabase = get_supabase_client()
-    if not supabase: return False
-    
-    try:
-        sql_file = os.path.join("Itinerarios", "Datos.sql")
-        if not os.path.exists(sql_file):
-            print(f"Error: {sql_file} no existe.")
-            return False
-            
-        # Nota: La ejecución real de SQL complejo con JSONB se maneja mejor desde el Editor SQL de Supabase.
-        # He movido las imágenes y preparado la estructura.
-        return True
-    except Exception as e:
-        print(f"Error al leer catálogo: {e}")
-        return False
-
-
-
 def extract_json_list(data, keys_priority):
     """Helper para extraer listas de estructuras JSON variadas."""
     if not data: return []

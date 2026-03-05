@@ -519,214 +519,86 @@
                 {% endif %}
 
                 {% if precios.can %}
-                {% set can_style = 'margin-top: 15px; border-top: 2px dashed #eee; padding-top: 15px;' if precios.ext
-                else '' %}
-                <div style="{{ can_style }}">
-                    <div
-                        style="font-size: 0.75rem; color: #888; font-weight: 700; text-transform: uppercase; margin-bottom: 5px;">
-                        Comunidad Andina (CAN)</div>
-                    <div style="display: flex; align-items: center; justify-content: center; gap: 5px;">
-                        <span class="offer-currency"
-                            style="font-size: 1.5rem; color: #2d3436; font-weight: 800;">USD</span>
-                        <span class="offer-amount"
-                            style="font-size: 2.5rem; line-height: 1; color: #2d3436; font-weight: 800;">{{
-                            precios.can.total }}</span>
-                    </div>
-                    {% if precios.can.lista_det %}
-                    <div style="margin-top: 5px; border-top: 1px solid rgba(0,0,0,0.05); padding-top: 5px;">
-                        {% for label, monto in precios.can.lista_det.items() %}
-                        <div style="display: flex; justify-content: space-between; font-size: 0.82rem; color: #555;">
-                            <span>{{ label }}:</span>
-                            <span style="font-weight: 700;">USD {{ monto }}</span>
+                {% if precios.ext %}
+                <div style="margin-top: 15px; border-top: 2px dashed #eee; padding-top: 15px;">
+                    {% else %}
+                    <div>
+                        {% endif %}
+                        <div
+                            style="font-size: 0.75rem; color: #888; font-weight: 700; text-transform: uppercase; margin-bottom: 5px;">
+                            Comunidad Andina (CAN)</div>
+                        <div style="display: flex; align-items: center; justify-content: center; gap: 5px;">
+                            <span class="offer-currency"
+                                style="font-size: 1.5rem; color: #2d3436; font-weight: 800;">USD</span>
+                            <span class="offer-amount"
+                                style="font-size: 2.5rem; line-height: 1; color: #2d3436; font-weight: 800;">{{
+                                precios.can.total }}</span>
                         </div>
-                        {% endfor %}
+                        {% if precios.can.lista_det %}
+                        <div style="margin-top: 5px; border-top: 1px solid rgba(0,0,0,0.05); padding-top: 5px;">
+                            {% for label, monto in precios.can.lista_det.items() %}
+                            <div
+                                style="display: flex; justify-content: space-between; font-size: 0.82rem; color: #555;">
+                                <span>{{ label }}:</span>
+                                <span style="font-weight: 700;">USD {{ monto }}</span>
+                            </div>
+                            {% endfor %}
+                        </div>
+                        {% endif %}
                     </div>
                     {% endif %}
                 </div>
-                {% endif %}
+                <div class="offer-footer"
+                    style="background: #f8f9fa; color: #2d3436; font-weight: 700; border-top: 1px solid #eee; text-transform: uppercase;">
+                    TOTAL POR PASAJERO
+                </div>
             </div>
-            <div class="offer-footer"
-                style="background: #f8f9fa; color: #2d3436; font-weight: 700; border-top: 1px solid #eee; text-transform: uppercase;">
-                TOTAL POR PASAJERO
+            {% endif %}
+        </div>
+
+        <div class="pricing-complements-container" style="margin-top: 40px; display: flex; gap: 20px;">
+            <div class="complement-box" style="flex: 1; background: #fffcf0; border: 1px solid #ffeaa7;">
+                <div class="complement-title" style="color: #d35400;">🚀 DISPONIBILIDAD</div>
+                <div class="complement-content">
+                    Esta tarifa especial está sujeta a cambios según la disponibilidad de espacios al momento de la
+                    reserva.
+                </div>
             </div>
+            <div class="complement-box" style="flex: 1; background: #f0fff4; border: 1px solid #c6f6d5;">
+                <div class="complement-title" style="color: #27ae60;">📅 VALIDEZ</div>
+                <div class="complement-content">
+                    Oferta válida para reservas confirmadas en las próximas **48 horas**.
+                </div>
+            </div>
+        </div>
+
+        {% if nota_p %}
+        <div class="price-note"
+            style="margin-top: 30px; padding: 15px; border-radius: 12px; border: 2px dashed var(--color-primary); background: #f0f7f7; font-size: 0.95rem; color: #2c3e50; text-align: center;">
+            ✨ <strong>Nota del Experto:</strong> {{ nota_p }}
         </div>
         {% endif %}
-    </div>
+        {% endif %}
 
-    <div class="pricing-complements-container" style="margin-top: 40px; display: flex; gap: 20px;">
-        <div class="complement-box" style="flex: 1; background: #fffcf0; border: 1px solid #ffeaa7;">
-            <div class="complement-title" style="color: #d35400;">🚀 DISPONIBILIDAD</div>
-            <div class="complement-content">
-                Esta tarifa especial está sujeta a cambios según la disponibilidad de espacios al momento de la reserva.
-            </div>
-        </div>
-        <div class="complement-box" style="flex: 1; background: #f0fff4; border: 1px solid #c6f6d5;">
-            <div class="complement-title" style="color: #27ae60;">📅 VALIDEZ</div>
-            <div class="complement-content">
-                Oferta válida para reservas confirmadas en las próximas **48 horas**.
-            </div>
-        </div>
-    </div>
 
-    {% if nota_p %}
-    <div class="price-note"
-        style="margin-top: 30px; padding: 15px; border-radius: 12px; border: 2px dashed var(--color-primary); background: #f0f7f7; font-size: 0.95rem; color: #2c3e50; text-align: center;">
-        ✨ <strong>Nota del Experto:</strong> {{ nota_p }}
-    </div>
-    {% endif %}
-    {% endif %}
-
-    </div>
-    </div>
-
-    <!-- SECCIÓN DE ANEXOS PREMIUM -->
-    {% if es_nacional %}
-    <!-- ANEXO NACIONAL - PÁGINA 1: CONDICIONES -->
-    <div class="page-container premium-appendix-page">
-        <div class="decor-top-right"></div>
-        <div class="decor-bottom-left"></div>
-        <div class="logo-container">
-            <img src="{{ logo_url }}" alt="Logo">
-        </div>
-
-        <h1 class="premium-title-main">Términos de Reserva</h1>
-
-        <table style="width: 100%; border-collapse: collapse;">
-            <tr>
-                <td style="width: 55%; vertical-align: top; padding-right: 30px;">
-                    <div class="premium-section-header">INFORMACIÓN DE COMPRA DEL PAQUETE TURÍSTICO</div>
-                    <div class="exclusive-rates-badge">TARIFAS EXCLUSIVAS PARA PERUANOS</div>
-
-                    <div class="policy-card">
-                        <div class="policy-card-title">💳 {{ politicas.titulo_reserva | default('RESERVA') }}</div>
-                        <div class="policy-card-body">
-                            {{ politicas.reserva | safe }}
-                        </div>
-                    </div>
-
-                    <div class="policy-card" style="margin-top: 20px;">
-                        <div class="policy-card-title">🕒 {{ politicas.titulo_anulacion | default('ANULACIÓN') }}</div>
-                        <div class="policy-card-body">
-                            {{ politicas.anulacion | safe }}
-                        </div>
-                    </div>
-                </td>
-                <td style="width: 45%; vertical-align: top; text-align: center;">
-                    <div class="policy-card" style="text-align: left; margin-bottom: 20px;">
-                        <div class="policy-card-title">📋 {{ politicas.titulo_condiciones | default('CONDICIONES
-                            ADICIONALES') }}</div>
-                        <div class="policy-card-body">
-                            {% for c in politicas.condiciones %}
-                            - {{ c }}<br>
-                            {% endfor %}
-                        </div>
-                    </div>
-
-                    <div class="regulation-box" style="text-align: left; margin-bottom: 30px;">
-                        <div class="regulation-title">🏛️ {{ politicas.titulo_reglamento | default('REGLAMENTO MACHU
-                            PICCHU') }}</div>
-                        <div class="regulation-text">
-                            {{ politicas.reglamento_mp }}
-                        </div>
-                    </div>
-
-                    <div style="margin-top: 10px;">
-                        <img src="{{ llama_purchase_img }}" class="premium-llama-footer" style="width: 140px;">
-                        <p style="margin-top: 10px; font-weight: 800; color: var(--color-primary); font-size: 1.2rem;">
-                            ¡TODO LISTO!</p>
-                    </div>
-                </td>
-            </tr>
-        </table>
-    </div>
-
-    <!-- NUEVA PÁGINA: RECOMENDACIONES Y EQUIPAJE -->
-    <div class="page-container premium-appendix-page">
-        <div class="decor-top-right"></div>
-        <div class="decor-bottom-left"></div>
-        <div class="logo-container">
-            <img src="{{ logo_url }}" alt="Logo">
-        </div>
-
-        <h1 class="premium-title-main">Guía del Viajero</h1>
-        <div class="premium-section-header">PREPARA TU AVENTURA</div>
-
-        <div style="display: flex; gap: 30px; margin-top: 30px;">
-            <!-- Columna Izquierda: Recomendaciones -->
-            <div style="flex: 1;">
-                <div
-                    style="background: linear-gradient(135deg, #55b7b0 0%, #3d9691 100%); color: white; padding: 20px; border-radius: 15px; margin-bottom: 25px;">
-                    <h2 style="margin: 0 0 15px 0; font-size: 1.5rem; text-align: center; font-weight: 900;">🌟
-                        RECOMENDACIONES</h2>
-
-                    {% for seccion in guia_viajero.secciones %}
-                    <div
-                        style="background: rgba(255,255,255,0.15); padding: 15px; border-radius: 10px; margin-bottom: 15px;">
-                        <h3
-                            style="margin: 0 0 10px 0; font-size: 1rem; font-weight: 800; border-bottom: 2px solid rgba(255,255,255,0.3); padding-bottom: 5px;">
-                            {{ seccion.nombre }}</h3>
-                        <ul style="margin: 0; padding-left: 20px; line-height: 1.8;">
-                            {% for item in seccion.lista %}
-                            <li>{{ item }}</li>
-                            {% endfor %}
-                        </ul>
-                    </div>
-                    {% endfor %}
-                </div>
+        <!-- SECCIÓN DE ANEXOS PREMIUM -->
+        {% if es_nacional %}
+        <!-- ANEXO NACIONAL - PÁGINA 1: CONDICIONES -->
+        <div class="page-container premium-appendix-page">
+            <div class="decor-top-right"></div>
+            <div class="decor-bottom-left"></div>
+            <div class="logo-container">
+                <img src="{{ logo_url }}" alt="Logo">
             </div>
 
-            <!-- Columna Derecha: Equipaje -->
-            <div style="flex: 1;">
-                <div
-                    style="background: linear-gradient(135deg, #2d3436 0%, #000000 100%); color: white; padding: 20px; border-radius: 15px; margin-bottom: 25px;">
-                    <h2 style="margin: 0 0 15px 0; font-size: 1.5rem; text-align: center; font-weight: 900;">🎒 EQUIPAJE
-                    </h2>
+            <h1 class="premium-title-main">Términos de Reserva</h1>
 
-                    {% for seccion in guia_viajero.secciones_extra | default([]) %}
-                    <div
-                        style="background: rgba(255,255,255,0.1); padding: 15px; border-radius: 10px; margin-bottom: 15px;">
-                        <h3
-                            style="margin: 0 0 10px 0; font-size: 1rem; font-weight: 800; border-bottom: 2px solid rgba(255,255,255,0.3); padding-bottom: 5px;">
-                            {{ seccion.nombre }}</h3>
-                        <ul style="margin: 0; padding-left: 20px; line-height: 1.8;">
-                            {% for item in seccion.lista %}
-                            <li>{{ item }}</li>
-                            {% endfor %}
-                        </ul>
-                    </div>
-                    {% endfor %}
-                </div>
-            </div>
-        </div>
-
-        <!-- Mensaje motivacional -->
-        <div
-            style="text-align: center; margin-top: 30px; padding: 20px; background: #f8f9fa; border-radius: 15px; border-left: 5px solid var(--color-primary);">
-            <p style="margin: 0; font-size: 1.1rem; color: #2d3436; font-weight: 600;">
-                ✨ <strong>¡Prepárate para vivir una experiencia inolvidable!</strong> ✨
-            </p>
-            <p style="margin: 10px 0 0 0; font-size: 0.9rem; color: #636e72;">
-                Cada detalle cuenta para que tu viaje sea perfecto. ¡Nos vemos pronto en Cusco!
-            </p>
-        </div>
-    </div>
-    {% else %}
-    <!-- ANEXO EXTRANJERO - PÁGINA 1: CONTRATO INTERNACIONAL -->
-    <div class="page-container premium-appendix-page">
-        <div class="decor-top-right"></div>
-        <div class="decor-bottom-left"></div>
-        <div class="logo-container">
-            <img src="{{ logo_url }}" alt="Logo">
-        </div>
-
-        <h1 class="premium-title-main">Información de Compra</h1>
-
-        <div style="padding: 0 40px;">
-            <div class="exclusive-rates-badge">INFORMACIÓN DE COMPRA DEL PAQUETE DE VIAJE</div>
-
-            <table style="width: 100%; border-collapse: collapse; margin-top: 20px;">
+            <table style="width: 100%; border-collapse: collapse;">
                 <tr>
                     <td style="width: 55%; vertical-align: top; padding-right: 30px;">
+                        <div class="premium-section-header">INFORMACIÓN DE COMPRA DEL PAQUETE TURÍSTICO</div>
+                        <div class="exclusive-rates-badge">TARIFAS EXCLUSIVAS PARA PERUANOS</div>
+
                         <div class="policy-card">
                             <div class="policy-card-title">💳 {{ politicas.titulo_reserva | default('RESERVA') }}</div>
                             <div class="policy-card-body">
@@ -762,123 +634,260 @@
                         </div>
 
                         <div style="margin-top: 10px;">
-                            <img src="{{ llama_purchase_img }}"
-                                style="width: 100px; border-radius: 50%; border: 3px solid #eee;">
-                            <h3 style="color: var(--color-primary); margin: 10px 0 0 0;">Viaje con Confianza</h3>
-                            <p style="font-size: 0.8rem; color: #666;">Nuestro equipo se encarga de cada detalle por
-                                usted.</p>
+                            <img src="{{ llama_purchase_img }}" class="premium-llama-footer" style="width: 140px;">
+                            <p
+                                style="margin-top: 10px; font-weight: 800; color: var(--color-primary); font-size: 1.2rem;">
+                                ¡TODO LISTO!</p>
                         </div>
                     </td>
                 </tr>
             </table>
         </div>
-    </div>
 
-    <!-- NUEVA PÁGINA: RECOMENDACIONES Y EQUIPAJE (EXTRANJEROS) -->
-    <div class="page-container premium-appendix-page">
-        <div class="decor-top-right"></div>
-        <div class="decor-bottom-left"></div>
-        <div class="logo-container">
-            <img src="{{ logo_url }}" alt="Logo">
-        </div>
+        <!-- NUEVA PÁGINA: RECOMENDACIONES Y EQUIPAJE -->
+        <div class="page-container premium-appendix-page">
+            <div class="decor-top-right"></div>
+            <div class="decor-bottom-left"></div>
+            <div class="logo-container">
+                <img src="{{ logo_url }}" alt="Logo">
+            </div>
 
-        <h1 class="premium-title-main">Guía del Viajero</h1>
-        <div class="premium-section-header">PREPARA TU AVENTURA</div>
+            <h1 class="premium-title-main">Guía del Viajero</h1>
+            <div class="premium-section-header">PREPARA TU AVENTURA</div>
 
-        <div style="display: flex; gap: 30px; margin-top: 30px;">
-            <!-- Columna Izquierda: Recomendaciones -->
-            <div style="flex: 1;">
-                <div
-                    style="background: linear-gradient(135deg, #55b7b0 0%, #3d9691 100%); color: white; padding: 20px; border-radius: 15px; margin-bottom: 25px;">
-                    <h2 style="margin: 0 0 15px 0; font-size: 1.5rem; text-align: center; font-weight: 900;">🌟
-                        RECOMENDACIONES</h2>
+            <div style="display: flex; gap: 30px; margin-top: 30px;">
+                <!-- Columna Izquierda: Recomendaciones -->
+                <div style="flex: 1;">
+                    <div
+                        style="background: linear-gradient(135deg, #55b7b0 0%, #3d9691 100%); color: white; padding: 20px; border-radius: 15px; margin-bottom: 25px;">
+                        <h2 style="margin: 0 0 15px 0; font-size: 1.5rem; text-align: center; font-weight: 900;">🌟
+                            RECOMENDACIONES</h2>
 
-                    {% for seccion in guia_viajero.secciones %}
-                    <div style="background: rgba(255,255,255,0.15); padding: 15px; border-radius: 10px;">
-                        <h3
-                            style="margin: 0 0 10px 0; font-size: 1rem; font-weight: 800; border-bottom: 2px solid rgba(255,255,255,0.3); padding-bottom: 5px;">
-                            {{ seccion.nombre }}</h3>
-                        <ul style="margin: 0; padding-left: 20px; line-height: 1.8;">
-                            {% for item in seccion.lista %}
-                            <li>{{ item }}</li>
-                            {% endfor %}
-                        </ul>
+                        {% for seccion in guia_viajero.secciones %}
+                        <div
+                            style="background: rgba(255,255,255,0.15); padding: 15px; border-radius: 10px; margin-bottom: 15px;">
+                            <h3
+                                style="margin: 0 0 10px 0; font-size: 1rem; font-weight: 800; border-bottom: 2px solid rgba(255,255,255,0.3); padding-bottom: 5px;">
+                                {{ seccion.nombre }}</h3>
+                            <ul style="margin: 0; padding-left: 20px; line-height: 1.8;">
+                                {% for item in seccion.lista %}
+                                <li>{{ item }}</li>
+                                {% endfor %}
+                            </ul>
+                        </div>
+                        {% endfor %}
                     </div>
-                    {% endfor %}
+                </div>
+
+                <!-- Columna Derecha: Equipaje -->
+                <div style="flex: 1;">
+                    <div
+                        style="background: linear-gradient(135deg, #2d3436 0%, #000000 100%); color: white; padding: 20px; border-radius: 15px; margin-bottom: 25px;">
+                        <h2 style="margin: 0 0 15px 0; font-size: 1.5rem; text-align: center; font-weight: 900;">🎒
+                            EQUIPAJE
+                        </h2>
+
+                        {% for seccion in guia_viajero.secciones_extra | default([]) %}
+                        <div
+                            style="background: rgba(255,255,255,0.1); padding: 15px; border-radius: 10px; margin-bottom: 15px;">
+                            <h3
+                                style="margin: 0 0 10px 0; font-size: 1rem; font-weight: 800; border-bottom: 2px solid rgba(255,255,255,0.3); padding-bottom: 5px;">
+                                {{ seccion.nombre }}</h3>
+                            <ul style="margin: 0; padding-left: 20px; line-height: 1.8;">
+                                {% for item in seccion.lista %}
+                                <li>{{ item }}</li>
+                                {% endfor %}
+                            </ul>
+                        </div>
+                        {% endfor %}
+                    </div>
                 </div>
             </div>
 
-            <!-- Columna Derecha: Equipaje -->
-            <div style="flex: 1;">
-                <div
-                    style="background: linear-gradient(135deg, #2d3436 0%, #000000 100%); color: white; padding: 20px; border-radius: 15px; margin-bottom: 25px;">
-                    <h2 style="margin: 0 0 15px 0; font-size: 1.5rem; text-align: center; font-weight: 900;">🎒 EQUIPAJE
-                    </h2>
-
-                    {% for seccion in guia_viajero.secciones_extra | default([]) %}
-                    <div style="background: rgba(255,255,255,0.1); padding: 15px; border-radius: 10px;">
-                        <h3
-                            style="margin: 0 0 10px 0; font-size: 1rem; font-weight: 800; border-bottom: 2px solid rgba(255,255,255,0.3); padding-bottom: 5px;">
-                            {{ seccion.nombre }}</h3>
-                        <ul style="margin: 0; padding-left: 20px; line-height: 1.8;">
-                            {% for item in seccion.lista %}
-                            <li>{{ item }}</li>
-                            {% endfor %}
-                        </ul>
-                    </div>
-                    {% endfor %}
-                </div>
-            </div>
-        </div>
-
-        <!-- Mensaje motivacional -->
-        <div
-            style="text-align: center; margin-top: 30px; padding: 20px; background: #f8f9fa; border-radius: 15px; border-left: 5px solid var(--color-primary);">
-            <p style="margin: 0; font-size: 1.1rem; color: #2d3436; font-weight: 600;">
-                ✨ <strong>¡Prepárate para vivir una experiencia inolvidable!</strong> ✨
-            </p>
-            <p style="margin: 10px 0 0 0; font-size: 0.9rem; color: #636e72;">
-                Cada detalle cuenta para que tu viaje sea perfecto. ¡Nos vemos pronto en Cusco!
-            </p>
-        </div>
-
-        {% if notas_finales %}
-        <!-- Notas finales personalizadas por el vendedor -->
-        <div
-            style="margin-top: 25px; padding: 15px; border: 1.5px dashed #55b7b0; border-radius: 12px; background: rgba(85, 183, 176, 0.03);">
+            <!-- Mensaje motivacional -->
             <div
-                style="font-size: 0.75rem; color: #55b7b0; font-weight: 800; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 8px;">
-                📝 Notas Adicionales:
+                style="text-align: center; margin-top: 30px; padding: 20px; background: #f8f9fa; border-radius: 15px; border-left: 5px solid var(--color-primary);">
+                <p style="margin: 0; font-size: 1.1rem; color: #2d3436; font-weight: 600;">
+                    ✨ <strong>¡Prepárate para vivir una experiencia inolvidable!</strong> ✨
+                </p>
+                <p style="margin: 10px 0 0 0; font-size: 0.9rem; color: #636e72;">
+                    Cada detalle cuenta para que tu viaje sea perfecto. ¡Nos vemos pronto en Cusco!
+                </p>
             </div>
-            <div style="font-size: 0.95rem; color: #444; line-height: 1.5; font-style: italic;">
-                "{{ notas_finales }}"
+        </div>
+        {% else %}
+        <!-- ANEXO EXTRANJERO - PÁGINA 1: CONTRATO INTERNACIONAL -->
+        <div class="page-container premium-appendix-page">
+            <div class="decor-top-right"></div>
+            <div class="decor-bottom-left"></div>
+            <div class="logo-container">
+                <img src="{{ logo_url }}" alt="Logo">
             </div>
+
+            <h1 class="premium-title-main">Información de Compra</h1>
+
+            <div style="padding: 0 40px;">
+                <div class="exclusive-rates-badge">INFORMACIÓN DE COMPRA DEL PAQUETE DE VIAJE</div>
+
+                <table style="width: 100%; border-collapse: collapse; margin-top: 20px;">
+                    <tr>
+                        <td style="width: 55%; vertical-align: top; padding-right: 30px;">
+                            <div class="policy-card">
+                                <div class="policy-card-title">💳 {{ politicas.titulo_reserva | default('RESERVA') }}
+                                </div>
+                                <div class="policy-card-body">
+                                    {{ politicas.reserva | safe }}
+                                </div>
+                            </div>
+
+                            <div class="policy-card" style="margin-top: 20px;">
+                                <div class="policy-card-title">🕒 {{ politicas.titulo_anulacion | default('ANULACIÓN')
+                                    }}
+                                </div>
+                                <div class="policy-card-body">
+                                    {{ politicas.anulacion | safe }}
+                                </div>
+                            </div>
+                        </td>
+                        <td style="width: 45%; vertical-align: top; text-align: center;">
+                            <div class="policy-card" style="text-align: left; margin-bottom: 20px;">
+                                <div class="policy-card-title">📋 {{ politicas.titulo_condiciones | default('CONDICIONES
+                                    ADICIONALES') }}</div>
+                                <div class="policy-card-body">
+                                    {% for c in politicas.condiciones %}
+                                    - {{ c }}<br>
+                                    {% endfor %}
+                                </div>
+                            </div>
+
+                            <div class="regulation-box" style="text-align: left; margin-bottom: 30px;">
+                                <div class="regulation-title">🏛️ {{ politicas.titulo_reglamento | default('REGLAMENTO
+                                    MACHU
+                                    PICCHU') }}</div>
+                                <div class="regulation-text">
+                                    {{ politicas.reglamento_mp }}
+                                </div>
+                            </div>
+
+                            <div style="margin-top: 10px;">
+                                <img src="{{ llama_purchase_img }}"
+                                    style="width: 100px; border-radius: 50%; border: 3px solid #eee;">
+                                <h3 style="color: var(--color-primary); margin: 10px 0 0 0;">Viaje con Confianza</h3>
+                                <p style="font-size: 0.8rem; color: #666;">Nuestro equipo se encarga de cada detalle por
+                                    usted.</p>
+                            </div>
+                        </td>
+                    </tr>
+                </table>
+            </div>
+        </div>
+
+        <!-- NUEVA PÁGINA: RECOMENDACIONES Y EQUIPAJE (EXTRANJEROS) -->
+        <div class="page-container premium-appendix-page">
+            <div class="decor-top-right"></div>
+            <div class="decor-bottom-left"></div>
+            <div class="logo-container">
+                <img src="{{ logo_url }}" alt="Logo">
+            </div>
+
+            <h1 class="premium-title-main">Guía del Viajero</h1>
+            <div class="premium-section-header">PREPARA TU AVENTURA</div>
+
+            <div style="display: flex; gap: 30px; margin-top: 30px;">
+                <!-- Columna Izquierda: Recomendaciones -->
+                <div style="flex: 1;">
+                    <div
+                        style="background: linear-gradient(135deg, #55b7b0 0%, #3d9691 100%); color: white; padding: 20px; border-radius: 15px; margin-bottom: 25px;">
+                        <h2 style="margin: 0 0 15px 0; font-size: 1.5rem; text-align: center; font-weight: 900;">🌟
+                            RECOMENDACIONES</h2>
+
+                        {% for seccion in guia_viajero.secciones %}
+                        <div style="background: rgba(255,255,255,0.15); padding: 15px; border-radius: 10px;">
+                            <h3
+                                style="margin: 0 0 10px 0; font-size: 1rem; font-weight: 800; border-bottom: 2px solid rgba(255,255,255,0.3); padding-bottom: 5px;">
+                                {{ seccion.nombre }}</h3>
+                            <ul style="margin: 0; padding-left: 20px; line-height: 1.8;">
+                                {% for item in seccion.lista %}
+                                <li>{{ item }}</li>
+                                {% endfor %}
+                            </ul>
+                        </div>
+                        {% endfor %}
+                    </div>
+                </div>
+
+                <!-- Columna Derecha: Equipaje -->
+                <div style="flex: 1;">
+                    <div
+                        style="background: linear-gradient(135deg, #2d3436 0%, #000000 100%); color: white; padding: 20px; border-radius: 15px; margin-bottom: 25px;">
+                        <h2 style="margin: 0 0 15px 0; font-size: 1.5rem; text-align: center; font-weight: 900;">🎒
+                            EQUIPAJE
+                        </h2>
+
+                        {% for seccion in guia_viajero.secciones_extra | default([]) %}
+                        <div style="background: rgba(255,255,255,0.1); padding: 15px; border-radius: 10px;">
+                            <h3
+                                style="margin: 0 0 10px 0; font-size: 1rem; font-weight: 800; border-bottom: 2px solid rgba(255,255,255,0.3); padding-bottom: 5px;">
+                                {{ seccion.nombre }}</h3>
+                            <ul style="margin: 0; padding-left: 20px; line-height: 1.8;">
+                                {% for item in seccion.lista %}
+                                <li>{{ item }}</li>
+                                {% endfor %}
+                            </ul>
+                        </div>
+                        {% endfor %}
+                    </div>
+                </div>
+            </div>
+
+            <!-- Mensaje motivacional -->
+            <div
+                style="text-align: center; margin-top: 30px; padding: 20px; background: #f8f9fa; border-radius: 15px; border-left: 5px solid var(--color-primary);">
+                <p style="margin: 0; font-size: 1.1rem; color: #2d3436; font-weight: 600;">
+                    ✨ <strong>¡Prepárate para vivir una experiencia inolvidable!</strong> ✨
+                </p>
+                <p style="margin: 10px 0 0 0; font-size: 0.9rem; color: #636e72;">
+                    Cada detalle cuenta para que tu viaje sea perfecto. ¡Nos vemos pronto en Cusco!
+                </p>
+            </div>
+
+            {% if notas_finales %}
+            <!-- Notas finales personalizadas por el vendedor -->
+            <div
+                style="margin-top: 25px; padding: 15px; border: 1.5px dashed #55b7b0; border-radius: 12px; background: rgba(85, 183, 176, 0.03);">
+                <div
+                    style="font-size: 0.75rem; color: #55b7b0; font-weight: 800; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 8px;">
+                    📝 Notas Adicionales:
+                </div>
+                <div style="font-size: 0.95rem; color: #444; line-height: 1.5; font-style: italic;">
+                    "{{ notas_finales }}"
+                </div>
+            </div>
+            {% endif %}
         </div>
         {% endif %}
-    </div>
-    {% endif %}
 
-    <style>
-        .day-date-row {
-            display: flex;
-            align-items: baseline;
-            gap: 15px;
-            margin-bottom: 5px;
-        }
+        <style>
+            .day-date-row {
+                display: flex;
+                align-items: baseline;
+                gap: 15px;
+                margin-bottom: 5px;
+            }
 
-        .day-number {
-            font-size: 1.8rem;
-            color: #55b7b0;
-            font-weight: 800;
-            text-transform: uppercase;
-        }
+            .day-number {
+                font-size: 1.8rem;
+                color: #55b7b0;
+                font-weight: 800;
+                text-transform: uppercase;
+            }
 
-        .day-date {
-            font-size: 1.2rem;
-            color: #55b7b0;
-            font-weight: 700;
-        }
-    </style>
+            .day-date {
+                font-size: 1.2rem;
+                color: #55b7b0;
+                font-weight: 700;
+            }
+        </style>
 </body>
 
 </html>
