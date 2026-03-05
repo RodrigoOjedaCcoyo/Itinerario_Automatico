@@ -1635,7 +1635,7 @@ def render_ventas_ui():
                                 'pasajero': (nombre.upper() if nombre else ""),
                                 'fechas': rango_fechas.upper(),
                                 'usa_fechas': usa_fechas,
-                                'pricing_matrix': pricing_matrix,
+                                'matriz': pricing_matrix,
                                 'matriz_ext': pricing_matrix_ext,
                                 'matrix_antes': matrix_antes,
                                 'origen': tipo_t,
