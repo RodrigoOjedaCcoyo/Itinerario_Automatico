@@ -12,7 +12,6 @@ from utils.supabase_db import (
     get_available_tours, 
     get_available_packages,
     get_vendedores,
-    populate_catalog,
     save_custom_package,
     get_custom_packages,
     delete_custom_package,
