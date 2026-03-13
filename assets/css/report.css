@@ -345,8 +345,9 @@ body {
 .img-3 {
     width: 175px;
     height: 175px;
-    top: 100px;
+    top: 380px;
     right: 50px;
+    left: 0px;
 }
 
 .img-4 {
