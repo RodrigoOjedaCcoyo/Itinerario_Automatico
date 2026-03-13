@@ -287,8 +287,8 @@ body {
 .collage-container {
     position: absolute;
     top: 150px;
-    right: -20px;
-    width: 320px;
+    right: 15px;
+    width: 280px;
     height: 850px;
     z-index: 2;
 }
