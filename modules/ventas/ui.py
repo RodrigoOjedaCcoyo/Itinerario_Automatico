@@ -546,7 +546,7 @@ def render_ventas_ui():
                     
                     if found_tours:
                         st.session_state.itinerario = found_tours
-                        st.session_state.f_categoria = cat_sel # Asegurar categoría al cargar
+                        # st.session_state.f_categoria ya no se actualiza porque "Línea de Producto" no existe
                         if missing_tours:
                             st.warning(f"⚠️ Algunos tours no se encontraron en el catálogo general: {', '.join(missing_tours)}")
                         st.success(f"✅ Paquete '{pkg_final['nombre']}' cargado con {len(found_tours)} tours.")
