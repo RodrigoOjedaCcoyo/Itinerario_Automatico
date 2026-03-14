@@ -1292,8 +1292,7 @@ def render_ventas_ui():
             
             portada_sel = st.selectbox(
                 "Diseño de portada a mostrar",
-                list(opciones_portadas.keys()),
-                key="f_portada"
+                list(opciones_portadas.keys())
             )
             
             if c_btn1.button("🔥 GENERAR ITINERARIO PDF"):
