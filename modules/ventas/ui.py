@@ -1271,6 +1271,31 @@ def render_ventas_ui():
                 key="f_idioma_itinerario"
             )
             
+            # --- SELECTOR DE PORTADA PARA EL PDF ---
+            st.markdown("🖼️ **Portada del PDF**")
+            # --- LÓGICA DINÁMICA DE PORTADAS (AUTO-LECTURA DESDE CARPETA) ---
+            covers_dir = os.path.join(os.getcwd(), "assets", "images", "covers")
+            opciones_portadas = {}
+            
+            # Buscar todos los archivos .jpg en la carpeta covers
+            if os.path.exists(covers_dir):
+                for archivo in os.listdir(covers_dir):
+                    if archivo.lower().endswith(".jpg"):
+                        # Convertir nombre de archivo (ej. inka_jungle_trek.jpg) a título legible (Inka Jungle Trek)
+                        nombre_base = os.path.splitext(archivo)[0]
+                        nombre_limpio = nombre_base.replace("_", " ").title()
+                        opciones_portadas[nombre_limpio] = archivo
+            
+            # Si por alguna razón la carpeta está vacía, poner un fallback
+            if not opciones_portadas:
+                opciones_portadas["Cusco Tradicional"] = "cusco_tradicional.jpg"
+            
+            portada_sel = st.selectbox(
+                "Diseño de portada a mostrar",
+                list(opciones_portadas.keys()),
+                key="f_portada"
+            )
+            
             if c_btn1.button("🔥 GENERAR ITINERARIO PDF"):
                 if celular and st.session_state.itinerario:
                     with st.spinner("Generando PDF con Edge..."):
@@ -1279,20 +1304,30 @@ def render_ventas_ui():
                         target_cat = st.session_state.get('f_categoria', 'Cusco Tradicional')
                         package_img_folder = st.session_state.get('f_package_img', '')
                         fallback_cover = os.path.join(base_dir, "assets", "images", "fallback_cover.jpg")
+                        # Buscar el archivo de imagen basándose en la selección automática
+                        archivo_img = opciones_portadas.get(portada_sel, "cusco_tradicional.jpg")
+                        cover_img = os.path.join(base_dir, "assets", "images", "covers", archivo_img)
                         
-                        # Lógica estricta de portadas según requerimiento del usuario (Solo 2 opciones)
-                        if target_cat == "Perú para el Mundo":
-                            cover_img = os.path.join(base_dir, "assets", "images", "covers", "peru_mundo.jpg")
-                            t1, t2 = "PERÚ", "PARA EL MUNDO"
+                        # Generar títulos T1 y T2 dinámicamente cortando el nombre seleccionado por la mitad
+                        palabras = portada_sel.upper().split()
+                        if len(palabras) >= 2:
+                            mitad = len(palabras) // 2
+                            # Casos especiales para portadas muy largas de 3 palabras (Ej: Perú Para El Mundo)
+                            if len(palabras) == 4:
+                                mitad = 2
+                            elif len(palabras) == 3:
+                                mitad = 1 # Ej: INKA (t1) / JUNGLE TREK (t2)
+                                
+                            t1 = " ".join(palabras[:mitad])
+                            t2 = " ".join(palabras[mitad:])
                         else:
-                            # Por defecto a Cusco Tradicional (Cualquier otra categoría o "Cusco Tradicional")
-                            cover_img = os.path.join(base_dir, "assets", "images", "covers", "cusco_tradicional.jpg")
-                            t1, t2 = "CUSCO", "TRADICIONAL"
+                            # Solo 1 palabra
+                            t1 = palabras[0] if palabras else "TU"
+                            t2 = "ITINERARIO"
                         
-                        # Si por alguna razón los archivos de portada no existen, usar fallback
+                        # Si por alguna razón los archivos de portada no existen, usar el respaldo (fallback)
                         if not os.path.exists(cover_img):
                             cover_img = fallback_cover
-                            t1, t2 = target_cat.upper(), "ITINERARIO"
                         
                         # Logo
                         logo_orig = "Captura de pantalla 2026-01-05 102612.png"
