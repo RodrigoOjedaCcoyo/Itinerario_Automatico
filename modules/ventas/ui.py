@@ -10,7 +10,7 @@ import locale
 import re
 import math
 from pathlib import Path
-from utils.pdf_generator import render_itinerary_pdf
+from utils.pdf_generator import generate_pdf
 from utils.supabase_db import (
     get_catalog,
     sync_tours_force,
@@ -1750,29 +1750,24 @@ def render_ventas_ui():
                                 else:
                                     st.error("❌ Fallo crítico al sincronizar con la base de datos cloud.")
                             
-                            # 3. Generar PDF (Vía API Go / WeasyPrint / Playwright Local como Respaldo)
+                            # 3. Generar PDF Localmente (Original)
                             st.info("Generando Documento PDF final...")
                             
-                            # La nueva implementación retorna un objeto en bytes en lugar de la ruta física clásica, 
-                            # ya que puede provenir de Edge o fallback local
-                            pdf_bytes, err = render_itinerary_pdf(full_itinerary_data)
+                            pdf_path = generate_pdf(full_itinerary_data)
                             
                             if itinerary_id:
                                 st.info(f"🔑 **CÓDIGO DE VINCULACIÓN:** `{itinerary_id}`")
                                 st.caption("Copia este ID y pégalo en el Registro de Venta para importar toda la información automáticamente.")
 
-                            if err:
-                                st.error(f"❌ Error al generar el PDF: {err}")
-                            elif pdf_bytes:
+                            with open(pdf_path, "rb") as file:
                                 st.download_button(
                                     label="📥 Descargar PDF Final",
-                                    data=pdf_bytes,
+                                    data=file,
                                     file_name=f"Itinerario_{nombre.replace(' ', '_') if nombre else 'Generico'}.pdf",
                                     mime="application/pdf"
                                 )
-                                st.success(f"¡Itinerario listo para {nombre if nombre else 'el cliente'}!")
-                            else:
-                                st.error("No se generó el PDF. Intente nuevamente.")
+                            st.success(f"¡Itinerario listo para {nombre if nombre else 'el cliente'}!")
+
                         except Exception as e:
                             st.error(f"Error procesando: {e}")
                 else:
