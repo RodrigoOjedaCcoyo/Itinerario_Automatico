@@ -488,26 +488,13 @@ def render_ventas_ui():
         st.divider()
         
         st.subheader("🎁 Cargar Paquete Sugerido")
-        # Generar líneas dinámicas desde el catálogo de paquetes
-        lineas_raw = sorted(list(set([p.get('destino', 'Otros') for p in paquetes_db])))
-        # Priorizar nombres conocidos si existen
-        prioridad = ["Cusco Tradicional", "Perú para el Mundo"]
-        lineas = [l for l in prioridad if l in lineas_raw] + [l for l in lineas_raw if l not in prioridad]
-        if not lineas: lineas = ["-- No hay paquetes --"]
         
-        idx_cat = lineas.index(st.session_state.f_categoria) if st.session_state.f_categoria in lineas else 0
-        cat_sel = st.selectbox("Elija Línea de Producto", lineas, index=idx_cat)
-        st.session_state.f_categoria = cat_sel
-        
-        if cat_sel and cat_sel != "-- No hay paquetes --":
-            # Filtrado por el campo destino (Línea de Producto)
-            pkgs_filtered = [p for p in paquetes_db if p.get('destino') == cat_sel]
-            
-            # Formatear opciones de duración: "Nombre (XD/XN)"
-            opciones_pkg = {p['nombre']: p for p in pkgs_filtered}
+        # Eliminar lógica de Línea de Producto, cargar todos los paquetes directamente
+        if paquetes_db:
+            opciones_pkg = {p['nombre']: p for p in paquetes_db}
             pkg_name_sel = st.selectbox("Seleccione el Paquete", list(opciones_pkg.keys()))
             
-            if pkgs_filtered and st.button("🚀 Cargar Itinerario", use_container_width=True):
+            if st.button("🚀 Cargar Itinerario", use_container_width=True):
                 pkg_final = opciones_pkg.get(pkg_name_sel)
                 if pkg_final:
                     # Guardar la imagen de portada asignada al paquete
