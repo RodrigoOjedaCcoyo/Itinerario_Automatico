@@ -12,11 +12,6 @@ import math
 from pathlib import Path
 from utils.pdf_generator import generate_pdf
 from utils.supabase_db import (
-    get_catalog,
-    sync_tours_force,
-    get_itineraries,
-    get_itinerary_by_id,
-    save_itinerary,
     save_itinerary_v2,
     get_last_itinerary_by_phone,
     get_available_tours,
