@@ -109,11 +109,6 @@
 
         <!-- EL CAMINO SERPIENTE -->
         <div class="collage-container">
-            <!-- Pin Mapa Superior -->
-            <svg class="pin-icon pin-top" viewBox="0 0 24 24">
-                <circle cx="12" cy="12" r="10" fill="white" stroke="#2d3436" stroke-width="2.5" />
-                <circle cx="12" cy="12" r="4" fill="#2d3436" />
-            </svg>
 
             <!-- SVG del Camino -->
             <svg class="serpent-path-svg" viewBox="0 0 320 850" preserveAspectRatio="none">
@@ -129,11 +124,6 @@
             <div class="circular-img img-{{ loop.index }}" style="background-image: url('{{ img }}');"></div>
             {% endfor %}
 
-            <!-- Pin Mapa Inferior -->
-            <svg class="pin-icon pin-bottom" viewBox="0 0 24 24">
-                <circle cx="12" cy="12" r="10" fill="white" stroke="#2d3436" stroke-width="2.5" />
-                <circle cx="12" cy="12" r="4" fill="#2d3436" />
-            </svg>
         </div>
     </div>
     {% endfor %}
