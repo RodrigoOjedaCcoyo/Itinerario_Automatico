@@ -52,7 +52,7 @@ def get_svg_icon(text, default_key='default_in'):
     return ICON_MAP[default_key]
 
 def get_opciones_portadas():
-    \"\"\"Establece las portadas leyendo dinámicamente la carpeta assets/images/covers\"\"\"
+    """Establece las portadas leyendo dinámicamente la carpeta assets/images/covers"""
     base_dir = os.getcwd()
     covers_path = os.path.join(base_dir, "assets", "images", "covers")
     
