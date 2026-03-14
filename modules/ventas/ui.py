@@ -1290,10 +1290,19 @@ def render_ventas_ui():
             if not opciones_portadas:
                 opciones_portadas["Cusco Tradicional"] = "cusco_tradicional.jpg"
             
+            # Inicializar estado persistente para la portada si no existe
+            if 'portada_seleccionada_independiente' not in st.session_state:
+                st.session_state.portada_seleccionada_independiente = list(opciones_portadas.keys())[0] if opciones_portadas else ""
+
             portada_sel = st.selectbox(
                 "Diseño de portada a mostrar",
-                list(opciones_portadas.keys())
+                list(opciones_portadas.keys()),
+                index=list(opciones_portadas.keys()).index(st.session_state.portada_seleccionada_independiente) if st.session_state.portada_seleccionada_independiente in opciones_portadas else 0,
+                key="key_selector_portada_independiente"
             )
+            
+            # Guardar siempre la última selección
+            st.session_state.portada_seleccionada_independiente = portada_sel
             
             if c_btn1.button("🔥 GENERAR ITINERARIO PDF"):
                 if celular and st.session_state.itinerario:
