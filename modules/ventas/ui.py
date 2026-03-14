@@ -502,9 +502,12 @@ def render_ventas_ui():
         fecha_fin = fecha_inicio + timedelta(days=max(0, num_dias - 1))
         # Rango para la portada
         if usa_fechas:
-            rango_fechas = f"Del {fecha_inicio.strftime('%d/%m')} al {fecha_fin.strftime('%d/%m, %Y')}"
+            rango_fechas = f"{fecha_inicio.strftime('%d/%m')} al {fecha_fin.strftime('%d/%m, %Y')}"
         else:
-            rango_fechas = f"{num_dias} DÍAS / {max(0, num_dias-1)} NOCHES"
+            if num_dias == 1:
+                rango_fechas = "1 DÍA"
+            else:
+                rango_fechas = f"{num_dias} DÍAS / {max(0, num_dias-1)} NOCHES"
 
         # --- ELIMINADA SECCIÓN ANTIGUA DE PAQUETES LOCALES ---
         
@@ -1682,7 +1685,7 @@ def render_ventas_ui():
                                 'origen': tipo_t,
                                 'show_antes_pdf': show_antes_pdf,
                                 'simbolo_moneda': curr_sym,
-                                'duracion': f"{len(st.session_state.itinerario)}D / {num_noches}N",
+                                'duracion': "1 DÍA" if len(st.session_state.itinerario) == 1 else f"{len(st.session_state.itinerario)}D / {num_noches}N",
                                 'cover_url': os.path.abspath(cover_img),
                                 'vendedor': vendedor,
                                 'celular_cliente': celular,
