@@ -1,15 +1,25 @@
 import streamlit as st
 import os
-import math
-import uuid
+import io
 import json
+import uuid
+import tempfile
 from datetime import datetime, timedelta
+import time
+import locale
+import re
+import math
 from pathlib import Path
-from utils.pdf_generator import generate_pdf
+from utils.pdf_generator import render_itinerary_pdf, generate_pdf
 from utils.supabase_db import (
-    save_itinerary_v2, 
-    get_last_itinerary_by_phone, 
-    get_available_tours, 
+    get_catalog,
+    sync_tours_force,
+    get_itineraries,
+    get_itinerary_by_id,
+    save_itinerary,
+    save_itinerary_v2,
+    get_last_itinerary_by_phone,
+    get_available_tours,
     get_available_packages,
     get_vendedores,
     save_custom_package,
@@ -489,10 +499,31 @@ def render_ventas_ui():
         
         st.subheader("🎁 Cargar Paquete Sugerido")
         
+        # --- SELECTOR DE PORTADA (Global) ---
+        opciones_portadas = {
+            "Cusco Tradicional": ("cusco_tradicional.jpg", "CUSCO", "TRADICIONAL"),
+            "Perú para el Mundo": ("peru_mundo.jpg", "PERÚ", "PARA EL MUNDO"),
+            "Rutas Trekkings": ("trekkings.jpg", "RUTAS", "TREKKING"),
+            "Inka Jungle Trek": ("inka_jungle.jpg", "INKA", "JUNGLE"),
+            "Salkantay Trek": ("salkantay.jpg", "RUTA", "SALKANTAY"),
+            "Lares Trek": ("lares.jpg", "VALLE", "DE LARES"),
+            "Arequipa & Colca": ("arequipa.jpg", "RUTAS DEL", "SUR"),
+            "Tambopata": ("tambopata.jpg", "SELVA", "AMAZÓNICA"),
+            "Puno & Titicaca": ("puno.jpg", "LAGO", "TITICACA"),
+            "Ica & Paracas": ("ica_paracas.jpg", "DESIERTO", "Y MAR"),
+            "Paquete Genérico": ("generico.jpg", "TU PRÓXIMA", "AVENTURA")
+        }
+
+        portada_sel = st.selectbox(
+            "🖼️ Elija Portada para el PDF",
+            list(opciones_portadas.keys()),
+            key="user_selected_cover" # Streamlit recordará automáticamente esta selección
+        )
+        
         # Eliminar lógica de Línea de Producto, cargar todos los paquetes directamente
         if paquetes_db:
             opciones_pkg = {p['nombre']: p for p in paquetes_db}
-            pkg_name_sel = st.selectbox("Seleccione el Paquete", list(opciones_pkg.keys()))
+            pkg_name_sel = st.selectbox("📦 Seleccione el Paquete", list(opciones_pkg.keys()))
             
             if st.button("🚀 Cargar Itinerario", use_container_width=True):
                 pkg_final = opciones_pkg.get(pkg_name_sel)
@@ -1258,9 +1289,12 @@ def render_ventas_ui():
                 key="f_idioma_itinerario"
             )
             
-            # --- SELECTOR DE PORTADA PARA EL PDF ---
-            st.markdown("🖼️ **Portada del PDF**")
-            # Catálogo estático de portadas para mantener nombres precisos e independientes del archivo
+            # (La selección de portada ahora se encuentra en el panel superior, al elegir el paquete)
+            
+            # Obtener el valor actual del selector global vía session_state
+            portada_sel = st.session_state.get('user_selected_cover', 'Cusco Tradicional')
+            
+            # Catálogo de portadas (Redefinido aquí para simplificar el uso del getter en PDF)
             opciones_portadas = {
                 "Cusco Tradicional": ("cusco_tradicional.jpg", "CUSCO", "TRADICIONAL"),
                 "Perú para el Mundo": ("peru_mundo.jpg", "PERÚ", "PARA EL MUNDO"),
@@ -1275,11 +1309,6 @@ def render_ventas_ui():
                 "Paquete Genérico": ("generico.jpg", "TU PRÓXIMA", "AVENTURA")
             }
 
-            portada_sel = st.selectbox(
-                "Diseño de portada a mostrar",
-                list(opciones_portadas.keys()),
-                key="user_selected_cover" # Streamlit recordará automáticamente esta selección
-            )
             
             if c_btn1.button("🔥 GENERAR ITINERARIO PDF"):
                 if celular and st.session_state.itinerario:
@@ -1292,9 +1321,25 @@ def render_ventas_ui():
                         # Buscar la tupla exacta en el catálogo mapeado
                         datos_portada = opciones_portadas.get(portada_sel)
                         if datos_portada:
-                            archivo_img, t1, t2 = datos_portada
+                            archivo_img, _t1_dummy, _t2_dummy = datos_portada
                         else:
-                            archivo_img, t1, t2 = "cusco_tradicional.jpg", "CUSCO", "TRADICIONAL"
+                            archivo_img = "cusco_tradicional.jpg"
+                            
+                        # Limpiar el nombre del paquete para usarlo de título: 
+                        # Remover cosas como "8D/7N" o "08D/07N" usando Expresiones Regulares
+                        nombre_limpio = pkg_name_sel if 'pkg_name_sel' in locals() else "TU PRÓXIMA AVENTURA"
+                        nombre_limpio = re.sub(r'\b\d{1,2}D(?:/|-)?\d{1,2}N\b', '', nombre_limpio, flags=re.IGNORECASE).strip()
+                        
+                        # Dividir el nombre limpio en dos líneas si es muy largo, priorizando T1
+                        palabras = nombre_limpio.split()
+                        if len(palabras) > 2:
+                            mitad = len(palabras) // 2
+                            t1 = " ".join(palabras[:mitad]).upper()
+                            t2 = " ".join(palabras[mitad:]).upper()
+                        elif len(palabras) == 2:
+                            t1, t2 = palabras[0].upper(), palabras[1].upper()
+                        else:
+                            t1, t2 = nombre_limpio.upper(), ""
                             
                         cover_img = os.path.join(base_dir, "assets", "images", "covers", archivo_img)
                         
