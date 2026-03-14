@@ -51,6 +51,24 @@ def get_svg_icon(text, default_key='default_in'):
             return svg
     return ICON_MAP[default_key]
 
+def get_opciones_portadas():
+    \"\"\"Establece las portadas leyendo dinámicamente la carpeta assets/images/covers\"\"\"
+    base_dir = os.getcwd()
+    covers_path = os.path.join(base_dir, "assets", "images", "covers")
+    
+    opciones = {}
+    if os.path.exists(covers_path):
+        for file in os.listdir(covers_path):
+            if file.lower().endswith(('.jpg', '.jpeg', '.png')):
+                # Nombre amigable: "mi_portada_cusco.jpg" -> "Mi Portada Cusco"
+                display_name = file.rsplit('.', 1)[0].replace('_', ' ').title()
+                opciones[display_name] = (file, "TU PRÓXIMA", "AVENTURA")
+    
+    if not opciones:
+        opciones["Portada Genérica"] = ("fallback_cover.jpg", "TU PRÓXIMA", "AVENTURA")
+        
+    return opciones
+
 def format_tour_time(raw_time):
     """Convierte un string de tiempo técnico (ej. 08:00:00) a un formato amigable (ej. 08:00 AM)"""
     if not raw_time:
@@ -495,19 +513,7 @@ def render_ventas_ui():
         st.subheader("🎁 Cargar Paquete Sugerido")
         
         # --- SELECTOR DE PORTADA (Global) ---
-        opciones_portadas = {
-            "Cusco Tradicional": ("cusco_tradicional.jpg", "CUSCO", "TRADICIONAL"),
-            "Perú para el Mundo": ("peru_mundo.jpg", "PERÚ", "PARA EL MUNDO"),
-            "Rutas Trekkings": ("trekkings.jpg", "RUTAS", "TREKKING"),
-            "Inka Jungle Trek": ("inka_jungle.jpg", "INKA", "JUNGLE"),
-            "Salkantay Trek": ("salkantay.jpg", "RUTA", "SALKANTAY"),
-            "Lares Trek": ("lares.jpg", "VALLE", "DE LARES"),
-            "Arequipa & Colca": ("arequipa.jpg", "RUTAS DEL", "SUR"),
-            "Tambopata": ("tambopata.jpg", "SELVA", "AMAZÓNICA"),
-            "Puno & Titicaca": ("puno.jpg", "LAGO", "TITICACA"),
-            "Ica & Paracas": ("ica_paracas.jpg", "DESIERTO", "Y MAR"),
-            "Paquete Genérico": ("generico.jpg", "TU PRÓXIMA", "AVENTURA")
-        }
+        opciones_portadas = get_opciones_portadas()
 
         portada_sel = st.selectbox(
             "🖼️ Elija Portada para el PDF",
@@ -1289,20 +1295,8 @@ def render_ventas_ui():
             # Obtener el valor actual del selector global vía session_state
             portada_sel = st.session_state.get('user_selected_cover', 'Cusco Tradicional')
             
-            # Catálogo de portadas (Redefinido aquí para simplificar el uso del getter en PDF)
-            opciones_portadas = {
-                "Cusco Tradicional": ("cusco_tradicional.jpg", "CUSCO", "TRADICIONAL"),
-                "Perú para el Mundo": ("peru_mundo.jpg", "PERÚ", "PARA EL MUNDO"),
-                "Rutas Trekkings": ("trekkings.jpg", "RUTAS", "TREKKING"),
-                "Inka Jungle Trek": ("inka_jungle.jpg", "INKA", "JUNGLE"),
-                "Salkantay Trek": ("salkantay.jpg", "RUTA", "SALKANTAY"),
-                "Lares Trek": ("lares.jpg", "VALLE", "DE LARES"),
-                "Arequipa & Colca": ("arequipa.jpg", "RUTAS DEL", "SUR"),
-                "Tambopata": ("tambopata.jpg", "SELVA", "AMAZÓNICA"),
-                "Puno & Titicaca": ("puno.jpg", "LAGO", "TITICACA"),
-                "Ica & Paracas": ("ica_paracas.jpg", "DESIERTO", "Y MAR"),
-                "Paquete Genérico": ("generico.jpg", "TU PRÓXIMA", "AVENTURA")
-            }
+            # Catálogo de portadas dinámico
+            opciones_portadas = get_opciones_portadas()
 
             
             if c_btn1.button("🔥 GENERAR ITINERARIO PDF"):
