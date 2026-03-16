@@ -304,6 +304,8 @@ def render_ventas_ui():
             
         with ld_col2:
             st.markdown("<div style='height: 10px;'></div>", unsafe_allow_html=True) # Espaciado 
+            estrategias = ["Opciones", "Matriz", "General"]
+            idx_e = estrategias.index(st.session_state.f_estrategia) if st.session_state.f_estrategia in estrategias else 0
             estrategia_v = st.radio("Estrategia de Venta", estrategias, index=idx_e, horizontal=True)
             st.session_state.f_estrategia = estrategia_v
 
