@@ -169,9 +169,28 @@
                         {{ p.label }}</h2>
                     <div class="total-price" style="font-size: 3.5rem; font-weight: 900; color: #2d3436;">{{
                         p.simbolo }} {{ p.monto_total }}</div>
+                    
+                    {% if p.detalles %}
+                    <!-- DESGLOSE TIPO BOLETA -->
+                    <div class="breakdown-receipt" style="margin-top: 20px; border-top: 1px dashed #cccccc; padding-top: 15px;">
+                        {% for d in p.detalles %}
+                        <div class="receipt-row" style="display: flex; justify-content: space-between; align-items: baseline; margin-bottom: 8px;">
+                            <div style="text-align: left;">
+                                <span style="font-weight: 800; color: #2d3436; font-size: 1.1rem;">{{ d.cant }}</span>
+                                <span style="font-size: 0.95rem; color: #636e72; margin-left: 5px; text-transform: uppercase;">{{ d.cat }}</span>
+                                <span style="font-size: 0.8rem; color: #b2bec3; margin-left: 10px;">({{ p.simbolo }} {{ d.precio }} c/u)</span>
+                            </div>
+                            <div style="font-weight: 700; color: #2d3436; font-size: 1.05rem;">
+                                {{ p.simbolo }} {{ d.subtotal }}
+                            </div>
+                        </div>
+                        {% endfor %}
+                    </div>
+                    {% else %}
                     <div style="margin-top: 8px; font-size: 0.9rem; color: #777; font-weight: 600;">
                         Inversión por persona: {{ p.simbolo }} {{ p.monto_pp }}
                     </div>
+                    {% endif %}
                 </div>
                 {% endfor %}
                 {% endif %}

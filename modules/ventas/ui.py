@@ -1463,33 +1463,80 @@ def render_ventas_ui():
                             else: # Mixto
                                 base_raw = total_ext_pp + (extra_ext/max(1, pasajeros_ext))
 
-                            # Lista de precios de cierre para el PDF
+                            # Lista de precios de cierre para el PDF con desglose detallado
                             precios_cierre_list = []
                             
+                            def get_p_detalles(m_extra, n_pax, up_val, counts_list, prices_list, cats_labels):
+                                d = []
+                                shared_extra = m_extra / max(1, n_pax)
+                                for i, c in enumerate(counts_list):
+                                    if c > 0:
+                                        p_unit = math.ceil(prices_list[i] + shared_extra + up_val)
+                                        d.append({
+                                            'cat': cats_labels[i],
+                                            'cant': c,
+                                            'precio': f"{p_unit:,.2f}",
+                                            'subtotal': f"{p_unit * c:,.2f}"
+                                        })
+                                return d
+
+                            labels_pax = ["Adulto", "Estudiante", "PCD", "Niño"]
+
                             # FILTRAR POR ORIGEN: Solo mostrar lo que el usuario ha elegido como Origen principal
                             if tipo_t in ["Nacional", "Mixto"] and pasajeros_nac > 0:
+                                d_nac = get_p_detalles(m_extra_nac, pasajeros_nac, up_nac, 
+                                                     [c_ad_nac, c_es_nac, c_pc_nac, c_ni_nac],
+                                                     [(total_nac_ad / max(1, c_ad_nac)) if c_ad_nac > 0 else 0 for total_nac_ad in [
+                                                         sum(math.ceil(t.get('costo_nac', 0) * f_m_t) for t in st.session_state.itinerario),
+                                                         sum(math.ceil(t.get('costo_nac_est', t.get('costo_nac', 0)-70) * f_m_t) for t in st.session_state.itinerario),
+                                                         sum(math.ceil(t.get('costo_nac_pcd', t.get('costo_nac', 0)-70) * f_m_t) for t in st.session_state.itinerario),
+                                                         sum(math.ceil(t.get('costo_nac_nino', t.get('costo_nac', 0)-40) * f_m_t) for t in st.session_state.itinerario)
+                                                     ]], labels_pax)
+                                
                                 precios_cierre_list.append({
                                     'label': 'TOTAL NACIONAL',
                                     'simbolo': 'S/',
                                     'monto_total': f"{real_nac:,.2f}",
-                                    'monto_pp': f"{avg_nac_pp:,.2f}"
+                                    'monto_pp': f"{avg_nac_pp:,.2f}",
+                                    'detalles': d_nac
                                 })
 
                             if tipo_t in ["Extranjero", "Mixto"]:
-                                # Cálculo unificado para Extranjero + CAN
                                 if pasajeros_ext > 0:
+                                    d_ext = get_p_detalles(m_extra_ext, pasajeros_ext, up_ext, 
+                                                         [c_ad_ext, c_es_ext, c_pc_ext, c_ni_ext],
+                                                         [(total_ext_cat / max(1, c_ext_cat)) if c_ext_cat > 0 else 0 for c_ext_cat, total_ext_cat in zip(
+                                                             [c_ad_ext, c_es_ext, c_pc_ext, c_ni_ext],
+                                                             [sum(math.ceil(t.get('costo_ext', 0) * f_m_t) for t in st.session_state.itinerario),
+                                                              sum(math.ceil(t.get('costo_ext_est', t.get('costo_ext', 0)-20) * f_m_t) for t in st.session_state.itinerario),
+                                                              sum(math.ceil(t.get('costo_ext_pcd', t.get('costo_ext', 0)-20) * f_m_t) for t in st.session_state.itinerario),
+                                                              sum(math.ceil(t.get('costo_ext_nino', t.get('costo_ext', 0)-15) * f_m_t) for t in st.session_state.itinerario)]
+                                                         )], labels_pax)
+                                    
                                     precios_cierre_list.append({
                                         'label': 'TOTAL EXTRANJERO',
                                         'simbolo': '$',
                                         'monto_total': f"{real_ext:,.2f}",
-                                        'monto_pp': f"{avg_ext_pp:,.2f}"
+                                        'monto_pp': f"{avg_ext_pp:,.2f}",
+                                        'detalles': d_ext
                                     })
                                 if pasajeros_can > 0:
+                                    d_can = get_p_detalles(m_extra_can, pasajeros_can, up_ext, 
+                                                         [c_ad_can, c_es_can, c_pc_can, c_ni_can],
+                                                         [(total_can_cat / max(1, c_can_cat)) if c_can_cat > 0 else 0 for c_can_cat, total_can_cat in zip(
+                                                             [c_ad_can, c_es_can, c_pc_can, c_ni_can],
+                                                             [sum(math.ceil(t.get('costo_can', 0) * f_m_t) for t in st.session_state.itinerario),
+                                                              sum(math.ceil(t.get('costo_can_est', t.get('costo_can', 0)-20) * f_m_t) for t in st.session_state.itinerario),
+                                                              sum(math.ceil(t.get('costo_can_pcd', t.get('costo_can', 0)-20) * f_m_t) for t in st.session_state.itinerario),
+                                                              sum(math.ceil(t.get('costo_can_nino', t.get('costo_can', 0)-15) * f_m_t) for t in st.session_state.itinerario)]
+                                                         )], labels_pax)
+                                    
                                     precios_cierre_list.append({
                                         'label': 'TOTAL COMUNIDAD ANDINA',
                                         'simbolo': '$',
                                         'monto_total': f"{real_can:,.2f}",
-                                        'monto_pp': f"{avg_can_pp:,.2f}"
+                                        'monto_pp': f"{avg_can_pp:,.2f}",
+                                        'detalles': d_can
                                     })
                             
                             # Sincronización de base_final (usado en comparativas/metadatos)
