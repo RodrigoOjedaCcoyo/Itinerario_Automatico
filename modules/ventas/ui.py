@@ -309,6 +309,13 @@ def render_ventas_ui():
             estrategia_v = st.radio("Estrategia de Venta", estrategias, index=idx_e, horizontal=True)
             st.session_state.f_estrategia = estrategia_v
 
+            # --- SELECTOR DE MONEDA GLOBAL ---
+            currency_display = st.selectbox("🌐 Moneda de Presentación", ["Soles (S/)", "Dólares ($)"], 
+                                          index=1 if st.session_state.get('f_moneda_pdf') == "Dólares ($)" else 0,
+                                          key="sel_curr_global",
+                                          help="Elija la moneda en la que se mostrarán los precios en el PDF.")
+            st.session_state.f_moneda_pdf = currency_display
+
             if estrategia_v == "Matriz":
                 # Inyectar CSS para asegurar visibilidad del texto en multiselect
                 st.markdown("""
@@ -978,9 +985,6 @@ def render_ventas_ui():
                         
                         sel_tren_gen = cg2.selectbox("Tipo de Tren", opciones_tren, key="sel_t_gen")
 
-                st.markdown("🌐 **Moneda de Presentación**")
-                currency_display = st.selectbox("Elegir moneda para el reporte PDF", ["Soles (S/)", "Dólares ($)"], key="sel_curr_gen")
-                st.session_state.f_moneda_pdf = currency_display
                     
 
 
@@ -1259,26 +1263,40 @@ def render_ventas_ui():
             }
             
             col_res1, col_res2, col_res3 = st.columns(3)
+            
+            # Sub-función para renderizar el desglose en cada columna
+            def render_col_breakdown(title, pax_total, val_total, p_dict, counts_dict, icon):
+                st.markdown(f"### {icon} {title}")
+                if pax_total > 0:
+                    st.markdown(f"## {sym_target} {val_total:,.2f}")
+                    st.caption(f"**Total {title}** ({pax_total} pax)")
+                    if p_dict and 'lista_det' in p_dict:
+                        for label, monto_str in p_dict['lista_det'].items():
+                            # Encontrar la cantidad para este label
+                            q = counts_dict.get(label, 0)
+                            if q > 0:
+                                st.write(f"{q} x {label}: **{sym_target} {monto_str}**")
+                else:
+                    st.write("---")
+                    st.caption("Sin pasajeros")
+
             with col_res1:
-                st.markdown("### 🇵🇪 Nacional")
-                val_nac = convert_val(real_nac, False)
-                prom_nac = convert_val(avg_nac_pp, False)
-                st.markdown(f"## {sym_target} {val_nac:,.2f}")
-                st.caption(f"**{pasajeros_nac}** pasajeros | Prom: **{sym_target} {prom_nac:,.2f}**")
+                counts_nac = {'Adulto': c_ad_nac, 'Estudiante': c_es_nac, 'PCD': c_pc_nac, 'Niño': c_ni_nac}
+                render_col_breakdown("Nacional", pasajeros_nac, convert_val(real_nac, False), precios.get('nac'), counts_nac, "🇵🇪")
             
             with col_res2:
-                st.markdown("### 🌎 Extranjero")
-                val_ext = convert_val(real_ext, True)
-                prom_ext = convert_val(avg_ext_pp, True)
-                st.markdown(f"## {sym_target} {val_ext:,.2f}")
-                st.caption(f"**{pasajeros_ext}** pasajeros | Prom: **{sym_target} {prom_ext:,.2f}**")
+                counts_ext = {'Adulto': c_ad_ext, 'Estudiante': c_es_ext, 'PCD': c_pc_ext, 'Niño': c_ni_ext}
+                render_col_breakdown("Extranjero", pasajeros_ext, convert_val(real_ext, True), precios.get('ext'), counts_ext, "🌎")
             
             with col_res3:
-                st.markdown("### 🤝 CAN")
-                val_can = convert_val(real_can, True)
-                prom_can = convert_val(avg_can_pp, True)
-                st.markdown(f"## {sym_target} {val_can:,.2f}")
-                st.caption(f"**{pasajeros_can}** pasajeros | Prom: **{sym_target} {prom_can:,.2f}**")
+                counts_can = {'Adulto': c_ad_can, 'Estudiante': c_es_can, 'PCD': c_pc_can, 'Niño': c_ni_can}
+                render_col_breakdown("CAN", pasajeros_can, convert_val(real_can, True), precios.get('can'), counts_can, "🤝")
+
+            # TOTAL GENERAL (Consolidado)
+            st.markdown("---")
+            total_general_conv = convert_val(real_nac, False) + convert_val(real_ext, True) + convert_val(real_can, True)
+            st.markdown(f"## 💰 Inversión Total: {sym_target} {total_general_conv:,.2f}")
+            st.caption(f"Suma de todos los pasajeros ({pasajeros_nac+pasajeros_ext+pasajeros_can} pax) en {st.session_state.f_moneda_pdf}")
             
             # El monto de referencia es la suma de TODOS los reales (Nac + Ext + CAN)
             # El monto de referencia para la base de datos se guarda en la moneda principal (Soles si hay nac, USD sino)
