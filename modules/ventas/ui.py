@@ -310,10 +310,10 @@ def render_ventas_ui():
             st.session_state.f_estrategia = estrategia_v
 
             # --- SELECTOR DE MONEDA GLOBAL ---
-            currency_display = st.selectbox("🌐 Moneda de Presentación", ["Soles (S/)", "Dólares ($)"], 
-                                          index=1 if st.session_state.get('f_moneda_pdf') == "Dólares ($)" else 0,
+            currency_display = st.selectbox("🌐 Moneda de Presentación", ["Soles (S/)", "Dólares ($)", "Moneda Original (S/ y $)"], 
+                                          index=0 if st.session_state.get('f_moneda_pdf') == "Soles (S/)" else (1 if st.session_state.get('f_moneda_pdf') == "Dólares ($)" else 2),
                                           key="sel_curr_global",
-                                          help="Elija la moneda en la que se mostrarán los precios en el PDF.")
+                                          help="Elija la moneda en la que se mostrarán los precios en el PDF. 'Original' mantiene S/ para nacionales y $ para extranjeros.")
             st.session_state.f_moneda_pdf = currency_display
 
             if estrategia_v == "Matriz":
@@ -1231,11 +1231,15 @@ def render_ventas_ui():
             if c_ni_can > 0: det_can['Niño'] = f"{math.ceil(cost_margined_can_ni + (m_extra_can/max(1, pasajeros_can)) + up_ext):,.2f}"
 
             # Define target currency settings globally for the current calculations
-            target_is_usd = (st.session_state.get('f_moneda_pdf', "Soles (S/)") == "Dólares ($)")
+            mode_curr = st.session_state.get('f_moneda_pdf', "Soles (S/)")
+            target_is_usd = (mode_curr == "Dólares ($)")
+            target_is_mixed = (mode_curr == "Moneda Original (S/ y $)")
             sym_target = "$" if target_is_usd else "S/"
 
             # Legacy dictionaries for older PDF parts (Respecting target currency)
             def convert_val(orig_val, orig_is_usd):
+                if target_is_mixed:
+                    return orig_val # No conversion in mixed mode
                 if orig_is_usd and not target_is_usd: # USD -> Soles
                     return math.ceil(orig_val * tc)
                 elif not orig_is_usd and target_is_usd: # Soles -> USD
@@ -1265,37 +1269,48 @@ def render_ventas_ui():
             col_res1, col_res2, col_res3 = st.columns(3)
             
             # Sub-función para renderizar el desglose en cada columna
-            def render_col_breakdown(title, pax_total, val_total, p_dict, counts_dict, icon):
+            def render_col_breakdown(title, pax_total, val_total, p_dict, counts_dict, icon, is_ext=False):
                 st.markdown(f"### {icon} {title}")
+                # Determinar símbolo específico si es modo mixto
+                sym_col = sym_target
+                if target_is_mixed:
+                    sym_col = "$" if is_ext else "S/"
+                
                 if pax_total > 0:
-                    st.markdown(f"## {sym_target} {val_total:,.2f}")
+                    st.markdown(f"## {sym_col} {val_total:,.2f}")
                     st.caption(f"**Total {title}** ({pax_total} pax)")
                     if p_dict and 'lista_det' in p_dict:
                         for label, monto_str in p_dict['lista_det'].items():
                             # Encontrar la cantidad para este label
                             q = counts_dict.get(label, 0)
                             if q > 0:
-                                st.write(f"{q} x {label}: **{sym_target} {monto_str}**")
+                                st.write(f"{q} x {label}: **{sym_col} {monto_str}**")
                 else:
                     st.write("---")
                     st.caption("Sin pasajeros")
 
             with col_res1:
                 counts_nac = {'Adulto': c_ad_nac, 'Estudiante': c_es_nac, 'PCD': c_pc_nac, 'Niño': c_ni_nac}
-                render_col_breakdown("Nacional", pasajeros_nac, convert_val(real_nac, False), precios.get('nac'), counts_nac, "🇵🇪")
+                render_col_breakdown("Nacional", pasajeros_nac, convert_val(real_nac, False), precios.get('nac'), counts_nac, "🇵🇪", is_ext=False)
             
             with col_res2:
                 counts_ext = {'Adulto': c_ad_ext, 'Estudiante': c_es_ext, 'PCD': c_pc_ext, 'Niño': c_ni_ext}
-                render_col_breakdown("Extranjero", pasajeros_ext, convert_val(real_ext, True), precios.get('ext'), counts_ext, "🌎")
+                render_col_breakdown("Extranjero", pasajeros_ext, convert_val(real_ext, True), precios.get('ext'), counts_ext, "🌎", is_ext=True)
             
             with col_res3:
                 counts_can = {'Adulto': c_ad_can, 'Estudiante': c_es_can, 'PCD': c_pc_can, 'Niño': c_ni_can}
-                render_col_breakdown("CAN", pasajeros_can, convert_val(real_can, True), precios.get('can'), counts_can, "🤝")
+                render_col_breakdown("CAN", pasajeros_can, convert_val(real_can, True), precios.get('can'), counts_can, "🤝", is_ext=True)
 
             # TOTAL GENERAL (Consolidado)
             st.markdown("---")
-            total_general_conv = convert_val(real_nac, False) + convert_val(real_ext, True) + convert_val(real_can, True)
-            st.markdown(f"## 💰 Inversión Total: {sym_target} {total_general_conv:,.2f}")
+            if target_is_mixed:
+                tot_s = convert_val(real_nac, False)
+                tot_d = convert_val(real_ext, True) + convert_val(real_can, True)
+                st.markdown(f"## 💰 Inversión Total: S/ {tot_s:,.2f} + $ {tot_d:,.2f}")
+            else:
+                total_general_conv = convert_val(real_nac, False) + convert_val(real_ext, True) + convert_val(real_can, True)
+                st.markdown(f"## 💰 Inversión Total: {sym_target} {total_general_conv:,.2f}")
+            
             st.caption(f"Suma de todos los pasajeros ({pasajeros_nac+pasajeros_ext+pasajeros_can} pax) en {st.session_state.f_moneda_pdf}")
             
             # El monto de referencia es la suma de TODOS los reales (Nac + Ext + CAN)
@@ -1501,7 +1516,7 @@ def render_ventas_ui():
                         try:
                             # 1. Preparar data completa
                             # USAR EL VALOR MANUAL DE NOCHES RECIÉN DEFINIDO
-                            # num_noches ya fue definido arriba en la UI
+                            num_noches = st.session_state.get('f_num_noches', len(st.session_state.itinerario))
                             curr_sym = sym_target
                             
                             # Base Price calculation for the primary category
@@ -1524,7 +1539,9 @@ def render_ventas_ui():
                                         p_unit_orig = prices_list[i] + shared_extra + up_val
                                         
                                         # Conversión si es necesario
-                                        if orig_is_usd and not target_is_usd: # USD -> Soles
+                                        if target_is_mixed:
+                                            p_unit_fin = math.ceil(p_unit_orig)
+                                        elif orig_is_usd and not target_is_usd: # USD -> Soles
                                             p_unit_fin = math.ceil(p_unit_orig * tc)
                                         elif not orig_is_usd and target_is_usd: # Soles -> USD
                                             p_unit_fin = math.ceil(p_unit_orig / tc) if tc > 0 else math.ceil(p_unit_orig)
@@ -1553,16 +1570,22 @@ def render_ventas_ui():
                                                                ]], labels_pax, orig_is_usd=False)
                                 
                                 # Calcular monto total convertido para el label
-                                if not target_is_usd:
+                                if target_is_mixed:
+                                    m_pp_nac = avg_nac_pp
+                                    m_total_nac = real_nac
+                                    sym_nac = "S/"
+                                elif not target_is_usd:
                                     m_total_nac = real_nac
                                     m_pp_nac = avg_nac_pp
+                                    sym_nac = sym_target
                                 else:
                                     m_pp_nac = math.ceil(avg_nac_pp / tc) if tc > 0 else avg_nac_pp
                                     m_total_nac = m_pp_nac * pasajeros_nac
+                                    sym_nac = sym_target
 
                                 precios_cierre_list.append({
                                     'label': 'TOTAL NACIONAL',
-                                    'simbolo': sym_target,
+                                    'simbolo': sym_nac,
                                     'monto_total': f"{m_total_nac:,.2f}",
                                     'monto_pp': f"{m_pp_nac:,.2f}",
                                     'detalles': d_nac
@@ -1580,16 +1603,22 @@ def render_ventas_ui():
                                                                         sum(math.ceil(t.get('costo_ext_nino', t.get('costo_ext', 0)-15) * f_m_t) for t in st.session_state.itinerario)]
                                                                    )], labels_pax, orig_is_usd=True)
                                     
-                                    if target_is_usd:
+                                    if target_is_mixed:
+                                        m_pp_ext = avg_ext_pp
+                                        m_total_ext = real_ext
+                                        sym_ext = "$"
+                                    elif target_is_usd:
                                         m_total_ext = real_ext
                                         m_pp_ext = avg_ext_pp
+                                        sym_ext = sym_target
                                     else:
                                         m_pp_ext = math.ceil(avg_ext_pp * tc)
                                         m_total_ext = m_pp_ext * pasajeros_ext
+                                        sym_ext = sym_target
 
                                     precios_cierre_list.append({
                                         'label': 'TOTAL EXTRANJERO',
-                                        'simbolo': sym_target,
+                                        'simbolo': sym_ext,
                                         'monto_total': f"{m_total_ext:,.2f}",
                                         'monto_pp': f"{m_pp_ext:,.2f}",
                                         'detalles': d_ext
@@ -1605,16 +1634,22 @@ def render_ventas_ui():
                                                                         sum(math.ceil(t.get('costo_can_nino', t.get('costo_can', 0)-15) * f_m_t) for t in st.session_state.itinerario)]
                                                                    )], labels_pax, orig_is_usd=True)
                                     
-                                    if target_is_usd:
+                                    if target_is_mixed:
+                                        m_pp_can = avg_can_pp
+                                        m_total_can = real_can
+                                        sym_can = "$"
+                                    elif target_is_usd:
                                         m_total_can = real_can
                                         m_pp_can = avg_can_pp
+                                        sym_can = sym_target
                                     else:
                                         m_pp_can = math.ceil(avg_can_pp * tc)
                                         m_total_can = m_pp_can * pasajeros_can
+                                        sym_can = sym_target
 
                                     precios_cierre_list.append({
-                                        'label': 'TOTAL COMUNIDAD ANDINA',
-                                        'simbolo': sym_target,
+                                        'label': 'TOTAL CAN',
+                                        'simbolo': sym_can,
                                         'monto_total': f"{m_total_can:,.2f}",
                                         'monto_pp': f"{m_pp_can:,.2f}",
                                         'detalles': d_can
@@ -1646,7 +1681,9 @@ def render_ventas_ui():
                                 total_orig = base + extra_t + (extra_h_n * num_noches)
                                 
                                 # Conversión si es necesario
-                                if orig_is_usd and not target_is_usd: # USD -> Soles
+                                if target_is_mixed:
+                                    total_fin = math.ceil(total_orig)
+                                elif orig_is_usd and not target_is_usd: # USD -> Soles
                                     total_fin = math.ceil(total_orig * tc)
                                 elif not orig_is_usd and target_is_usd: # Soles -> USD
                                     total_fin = math.ceil(total_orig / tc) if tc > 0 else math.ceil(total_orig)
