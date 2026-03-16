@@ -188,8 +188,14 @@ def render_ventas_ui():
     if 'u_h2' not in st.session_state: st.session_state.u_h2 = 40.0
     if 'u_h3' not in st.session_state: st.session_state.u_h3 = 70.0
     if 'u_h4' not in st.session_state: st.session_state.u_h4 = 110.0
+    if 'u_h2_sol' not in st.session_state: st.session_state.u_h2_sol = 150.0
+    if 'u_h3_sol' not in st.session_state: st.session_state.u_h3_sol = 260.0
+    if 'u_h4_sol' not in st.session_state: st.session_state.u_h4_sol = 410.0
+
     if 'u_t_v' not in st.session_state: st.session_state.u_t_v = 90.0
     if 'u_t_o' not in st.session_state: st.session_state.u_t_o = 140.0
+    if 'u_t_v_sol' not in st.session_state: st.session_state.u_t_v_sol = 340.0
+    if 'u_t_o_sol' not in st.session_state: st.session_state.u_t_o_sol = 530.0
     if 'u_t_local' not in st.session_state: st.session_state.u_t_local = 0.0
     # Inicialización de Ajuste Global
     if 'f_extra_nac' not in st.session_state: st.session_state.f_extra_nac = 0.0
@@ -790,21 +796,29 @@ def render_ventas_ui():
                             # Campo movido a la sección de resumen global abajo
                             
                             # --- Suplementos de Tren (Localizados en MP) ---
-                            st.markdown("🚅 **Suplementos de Tren**")
-                            ct1, ct2, ct3 = st.columns(3)
+                            st.markdown("🚅 **Suplementos de Tren (Manual)**")
                             
-                            # Vistadome
-                            val_v = ct1.number_input("Vistadome ($)", value=float(st.session_state.u_t_v), key=f"utv_{tour_id}", disabled=is_disabled)
-                            st.session_state.u_t_v = val_v
+                            # Layout con columnas para Soles y Dólares
+                            ct_labels, ct_sol, ct_usd = st.columns([1, 1.5, 1.5])
                             
-                            # Observatory
-                            val_o = ct2.number_input("Observatory ($)", value=float(st.session_state.u_t_o), key=f"uto_{tour_id}", disabled=is_disabled)
-                            st.session_state.u_t_o = val_o
+                            ct_labels.markdown("<div style='height: 35px;'></div>Vistadome<br><div style='height: 15px;'></div>Observatory", unsafe_allow_html=True)
                             
-                            # Tren Local (Solo Nacionales)
-                            if tipo_t == "Nacional":
-                                val_l = ct3.number_input("Tren Local (S/)", value=float(st.session_state.get('u_t_local', 0.0)), key=f"utl_{tour_id}", disabled=is_disabled, help="Costo fijo o diferencia por persona para el Tren Local")
-                                st.session_state.u_t_local = val_l
+                            with ct_sol:
+                                val_v_sol = st.number_input("Vistadome (S/)", value=float(st.session_state.get('u_t_v_sol', 340.0)), key=f"utv_sol_{tour_id}", disabled=is_disabled)
+                                val_o_sol = st.number_input("Observatory (S/)", value=float(st.session_state.get('u_t_o_sol', 530.0)), key=f"uto_sol_{tour_id}", disabled=is_disabled)
+                                st.session_state.u_t_v_sol = val_v_sol
+                                st.session_state.u_t_o_sol = val_o_sol
+                                
+                                # Tren Local (Solo Nacionales)
+                                if tipo_t == "Nacional" or tipo_t == "Mixto":
+                                    val_l = st.number_input("Tren Local (S/)", value=float(st.session_state.get('u_t_local', 0.0)), key=f"utl_{tour_id}", disabled=is_disabled)
+                                    st.session_state.u_t_local = val_l
+
+                            with ct_usd:
+                                val_v_usd = st.number_input("Vistadome ($)", value=float(st.session_state.get('u_t_v', 90.0)), key=f"utv_usd_{tour_id}", disabled=is_disabled)
+                                val_o_usd = st.number_input("Observatory ($)", value=float(st.session_state.get('u_t_o', 140.0)), key=f"uto_usd_{tour_id}", disabled=is_disabled)
+                                st.session_state.u_t_v = val_v_usd
+                                st.session_state.u_t_o = val_o_usd
                         else:
                             col_t1, col_n, col_e, col_h = st.columns([2, 0.8, 0.8, 0.8])
                             tour['titulo'] = col_t1.text_input(f"Título día {i+1}", tour['titulo'], key=f"title_{tour_id}", disabled=is_disabled)
@@ -921,47 +935,52 @@ def render_ventas_ui():
             precio_cierre_over = 0.0
 
             with st.expander("🏨 Configuración de Costos de Upgrades", expanded=(estrategia_v in ["Matriz", "Opciones"])):
-                st.caption("Define el costo por persona/noche según el tipo de habitación para cada categoría.")
+                st.caption("Define el costo por persona/noche según el tipo de habitación para cada categoría. **Carga manual de precios (Sin conversiones automáticas).**")
                 
-                curr = "S/" if tipo_t == "Nacional" else "$"
-                
-                # Definir Pestañas por Categoría para que sea más limpio
+                # Definir Pestañas por Categoría
                 tab2, tab3, tab4 = st.tabs(["Hotel 2*", "Hotel 3*", "Hotel 4*"])
                 
+                def render_hotel_inputs(cat_key, sign, state_prefix):
+                    cc1, cc2, cc3 = st.columns(3)
+                    sgl = cc1.number_input(f"Simple ({sign})", value=float(st.session_state.get(f'u_h{cat_key}_sgl_{state_prefix}', 60.0 if state_prefix == "usd" else 220.0)), key=f"uh{cat_key}_sgl_{state_prefix}")
+                    dbl = cc2.number_input(f"Doble ({sign})", value=float(st.session_state.get(f'u_h{cat_key}_dbl_{state_prefix}', 40.0 if state_prefix == "usd" else 150.0)), key=f"uh{cat_key}_dbl_{state_prefix}")
+                    mat = cc3.number_input(f"Matrim. ({sign})", value=float(st.session_state.get(f'u_h{cat_key}_mat_{state_prefix}', 40.0 if state_prefix == "usd" else 150.0)), key=f"uh{cat_key}_mat_{state_prefix}")
+                    cc4, cc5, _ = st.columns(3)
+                    tpl = cc4.number_input(f"Triple ({sign})", value=float(st.session_state.get(f'u_h{cat_key}_tpl_{state_prefix}', 35.0 if state_prefix == "usd" else 130.0)), key=f"uh{cat_key}_tpl_{state_prefix}")
+                    cua = cc5.number_input(f"Cuádruple ({sign})", value=float(st.session_state.get(f'u_h{cat_key}_cua_{state_prefix}', 30.0 if state_prefix == "usd" else 110.0)), key=f"uh{cat_key}_cua_{state_prefix}")
+                    return sgl, dbl, mat, tpl, cua
+
+                # Hotel 2*
                 with tab2:
-                    cc2_1, cc2_2, cc2_3 = st.columns(3)
-                    u_h2_sgl = cc2_1.number_input(f"Simple ({curr})", value=float(st.session_state.get('u_h2_sgl', 60.0)), key="uh2_sgl")
-                    u_h2_dbl = cc2_2.number_input(f"Doble ({curr})", value=float(st.session_state.get('u_h2_dbl', 40.0)), key="uh2_dbl")
-                    u_h2_mat = cc2_3.number_input(f"Matrim. ({curr})", value=float(st.session_state.get('u_h2_mat', 40.0)), key="uh2_mat")
-                    cc2_4, cc2_5, _ = st.columns(3)
-                    u_h2_tpl = cc2_4.number_input(f"Triple ({curr})", value=float(st.session_state.get('u_h2_tpl', 35.0)), key="uh2_tpl")
-                    u_h2_cua = cc2_5.number_input(f"Cuádruple ({curr})", value=float(st.session_state.get('u_h2_cua', 30.0)), key="uh2_cua")
+                    st.markdown("🇵🇪 **Nacionales (Soles)**")
+                    u_h2_sgl_sol, u_h2_dbl_sol, u_h2_mat_sol, u_h2_tpl_sol, u_h2_cua_sol = render_hotel_inputs("2", "S/", "sol")
+                    st.markdown("🌎 **Extranjeros (USD)**")
+                    u_h2_sgl_usd, u_h2_dbl_usd, u_h2_mat_usd, u_h2_tpl_usd, u_h2_cua_usd = render_hotel_inputs("2", "$", "usd")
                 
+                # Hotel 3*
                 with tab3:
-                    cc3_1, cc3_2, cc3_3 = st.columns(3)
-                    u_h3_sgl = cc3_1.number_input(f"Simple ({curr})", value=float(st.session_state.get('u_h3_sgl', 100.0)), key="uh3_sgl")
-                    u_h3_dbl = cc3_2.number_input(f"Doble ({curr})", value=float(st.session_state.get('u_h3_dbl', 70.0)), key="uh3_dbl")
-                    u_h3_mat = cc3_3.number_input(f"Matrim. ({curr})", value=float(st.session_state.get('u_h3_mat', 70.0)), key="uh3_mat")
-                    cc3_4, cc3_5, _ = st.columns(3)
-                    u_h3_tpl = cc3_4.number_input(f"Triple ({curr})", value=float(st.session_state.get('u_h3_tpl', 65.0)), key="uh3_tpl")
-                    u_h3_cua = cc3_5.number_input(f"Cuádruple ({curr})", value=float(st.session_state.get('u_h3_cua', 60.0)), key="uh3_cua")
+                    st.markdown("🇵🇪 **Nacionales (Soles)**")
+                    u_h3_sgl_sol, u_h3_dbl_sol, u_h3_mat_sol, u_h3_tpl_sol, u_h3_cua_sol = render_hotel_inputs("3", "S/", "sol")
+                    st.markdown("🌎 **Extranjeros (USD)**")
+                    u_h3_sgl_usd, u_h3_dbl_usd, u_h3_mat_usd, u_h3_tpl_usd, u_h3_cua_usd = render_hotel_inputs("3", "$", "usd")
 
+                # Hotel 4*
                 with tab4:
-                    cc4_1, cc4_2, cc4_3 = st.columns(3)
-                    u_h4_sgl = cc4_1.number_input(f"Simple ({curr})", value=float(st.session_state.get('u_h4_sgl', 180.0)), key="uh4_sgl")
-                    u_h4_dbl = cc4_2.number_input(f"Doble ({curr})", value=float(st.session_state.get('u_h4_dbl', 110.0)), key="uh4_dbl")
-                    u_h4_mat = cc4_3.number_input(f"Matrim. ({curr})", value=float(st.session_state.get('u_h4_mat', 110.0)), key="uh4_mat")
-                    cc4_4, cc4_5, _ = st.columns(3)
-                    u_h4_tpl = cc4_4.number_input(f"Triple ({curr})", value=float(st.session_state.get('u_h4_tpl', 100.0)), key="uh4_tpl")
-                    u_h4_cua = cc4_5.number_input(f"Cuádruple ({curr})", value=float(st.session_state.get('u_h4_cua', 90.0)), key="uh4_cua")
+                    st.markdown("🇵🇪 **Nacionales (Soles)**")
+                    u_h4_sgl_sol, u_h4_dbl_sol, u_h4_mat_sol, u_h4_tpl_sol, u_h4_cua_sol = render_hotel_inputs("4", "S/", "sol")
+                    st.markdown("🌎 **Extranjeros (USD)**")
+                    u_h4_sgl_usd, u_h4_dbl_usd, u_h4_mat_usd, u_h4_tpl_usd, u_h4_cua_usd = render_hotel_inputs("4", "$", "usd")
 
-                st.session_state.u_h2_sgl = u_h2_sgl; st.session_state.u_h2_dbl = u_h2_dbl; st.session_state.u_h2_mat = u_h2_mat; st.session_state.u_h2_tpl = u_h2_tpl; st.session_state.u_h2_cua = u_h2_cua
-                st.session_state.u_h3_sgl = u_h3_sgl; st.session_state.u_h3_dbl = u_h3_dbl; st.session_state.u_h3_mat = u_h3_mat; st.session_state.u_h3_tpl = u_h3_tpl; st.session_state.u_h3_cua = u_h3_cua
-                st.session_state.u_h4_sgl = u_h4_sgl; st.session_state.u_h4_dbl = u_h4_dbl; st.session_state.u_h4_mat = u_h4_mat; st.session_state.u_h4_tpl = u_h4_tpl; st.session_state.u_h4_cua = u_h4_cua
-                
-                st.session_state.u_h2 = u_h2
-                st.session_state.u_h3 = u_h3
-                st.session_state.u_h4 = u_h4
+                # Guardar en session state (Soles)
+                st.session_state.u_h2_sgl_sol = u_h2_sgl_sol; st.session_state.u_h2_dbl_sol = u_h2_dbl_sol; st.session_state.u_h2_mat_sol = u_h2_mat_sol; st.session_state.u_h2_tpl_sol = u_h2_tpl_sol; st.session_state.u_h2_cua_sol = u_h2_cua_sol
+                st.session_state.u_h3_sgl_sol = u_h3_sgl_sol; st.session_state.u_h3_dbl_sol = u_h3_dbl_sol; st.session_state.u_h3_mat_sol = u_h3_mat_sol; st.session_state.u_h3_tpl_sol = u_h3_tpl_sol; st.session_state.u_h3_cua_sol = u_h3_cua_sol
+                st.session_state.u_h4_sgl_sol = u_h4_sgl_sol; st.session_state.u_h4_dbl_sol = u_h4_dbl_sol; st.session_state.u_h4_mat_sol = u_h4_mat_sol; st.session_state.u_h4_tpl_sol = u_h4_tpl_sol; st.session_state.u_h4_cua_sol = u_h4_cua_sol
+
+                # Guardar en session state (USD) - Mapeamos a las keys originales para compatibilidad si es necesario, 
+                # pero idealmente usaremos las específicas. Por ahora usaremos las específicas.
+                st.session_state.u_h2_sgl_usd = u_h2_sgl_usd; st.session_state.u_h2_dbl_usd = u_h2_dbl_usd; st.session_state.u_h2_mat_usd = u_h2_mat_usd; st.session_state.u_h2_tpl_usd = u_h2_tpl_usd; st.session_state.u_h2_cua_usd = u_h2_cua_usd
+                st.session_state.u_h3_sgl_usd = u_h3_sgl_usd; st.session_state.u_h3_dbl_usd = u_h3_dbl_usd; st.session_state.u_h3_mat_usd = u_h3_mat_usd; st.session_state.u_h3_tpl_usd = u_h3_tpl_usd; st.session_state.u_h3_cua_usd = u_h3_cua_usd
+                st.session_state.u_h4_sgl_usd = u_h4_sgl_usd; st.session_state.u_h4_dbl_usd = u_h4_dbl_usd; st.session_state.u_h4_mat_usd = u_h4_mat_usd; st.session_state.u_h4_tpl_usd = u_h4_tpl_usd; st.session_state.u_h4_cua_usd = u_h4_cua_usd
                 # Suplementos de Tren movidos a la tarjeta de MP
 
             sel_hotel_gen = "Sin Hotel"
@@ -1021,11 +1040,15 @@ def render_ventas_ui():
                 pasajeros_can = c_ad_can + c_es_can + c_pc_can + c_ni_can
                 # Keep all category counts as they are
 
-            # Lógica de Upgrades
-            # RECUPERAR VALORES GLOBALES ACTUALIZADOS (Crucial para el cálculo)
-            u_t_v = st.session_state.u_t_v
-            u_t_o = st.session_state.u_t_o
-            u_t_local = st.session_state.u_t_local
+            # Lógica de Upgrades (RECUPERAR VALORES SEGÚN ORIGEN)
+            # Soles
+            u_t_v_sol = st.session_state.get('u_t_v_sol', 0.0)
+            u_t_o_sol = st.session_state.get('u_t_o_sol', 0.0)
+            u_t_local = st.session_state.get('u_t_local', 0.0)
+            
+            # Dólares
+            u_t_v_usd = st.session_state.get('u_t_v', 0.0) # Key original para USD
+            u_t_o_usd = st.session_state.get('u_t_o', 0.0) # Key original para USD
 
             calc_upgrades = 0.0
             calc_tren = 0.0
@@ -1053,11 +1076,11 @@ def render_ventas_ui():
                     calc_upgrades = total_hotel_grupo / max(1, total_pasajeros)
                 
                 if sel_tren_gen == "Tren Local":
-                    calc_tren = u_t_local / tc if tipo_t != "Nacional" else u_t_local
+                    calc_tren = u_t_local
                 elif sel_tren_gen == "Vistadome":
-                    calc_tren = u_t_v * tc if tipo_t == "Nacional" else u_t_v
+                    calc_tren = u_t_v_sol if tipo_t == "Nacional" else u_t_v_usd
                 elif sel_tren_gen == "Observatory":
-                    calc_tren = u_t_o * tc if tipo_t == "Nacional" else u_t_o
+                    calc_tren = u_t_o_sol if tipo_t == "Nacional" else u_t_o_usd
                 else:
                     calc_tren = 0
 
@@ -1728,24 +1751,46 @@ def render_ventas_ui():
 
 
 
+                            # Recuperar upgrades para Nacionales (Soles)
+                            uh2_s = st.session_state.get('u_h2_sol', 0.0)
+                            uh3_s = st.session_state.get('u_h3_sol', 0.0)
+                            uh4_s = st.session_state.get('u_h4_sol', 0.0)
+                            utv_s = st.session_state.get('u_t_v_sol', 0.0)
+                            uto_s = st.session_state.get('u_t_o_sol', 0.0)
+
+                            # Recuperar upgrades para Extranjeros (USD - Keys originales para compatibilidad)
+                            uh2_u = st.session_state.get('u_h2_usd', st.session_state.get('u_h2', 0.0))
+                            uh3_u = st.session_state.get('u_h3_usd', st.session_state.get('u_h3', 0.0))
+                            uh4_u = st.session_state.get('u_h4_usd', st.session_state.get('u_h4', 0.0))
+                            utv_u = st.session_state.get('u_t_v', 0.0)
+                            uto_u = st.session_state.get('u_t_o', 0.0)
+
+                            # Definir qué upgrades usar para el PDF principal según tipo_t
+                            if tipo_t == "Nacional":
+                                uh2, uh3, uh4 = uh2_s, uh3_s, uh4_s
+                                utv, uto = utv_s, uto_s
+                            else:
+                                uh2, uh3, uh4 = uh2_u, uh3_u, uh4_u
+                                utv, uto = utv_u, uto_u
+
                             pricing_matrix.update({
                                 'expedition': {
                                     'sin': calc_m_converted(base_final, 0, 0, orig_is_usd=(tipo_t != "Nacional")),
-                                    'h2': calc_m_converted(base_final, 0, u_h2, orig_is_usd=(tipo_t != "Nacional")),
-                                    'h3': calc_m_converted(base_final, 0, u_h3, orig_is_usd=(tipo_t != "Nacional")),
-                                    'h4': calc_m_converted(base_final, 0, u_h4, orig_is_usd=(tipo_t != "Nacional"))
+                                    'h2': calc_m_converted(base_final, 0, uh2, orig_is_usd=(tipo_t != "Nacional")),
+                                    'h3': calc_m_converted(base_final, 0, uh3, orig_is_usd=(tipo_t != "Nacional")),
+                                    'h4': calc_m_converted(base_final, 0, uh4, orig_is_usd=(tipo_t != "Nacional"))
                                 },
                                 'vistadome': {
-                                    'sin': calc_m_converted(base_final, u_t_v * (tc if tipo_t in ['Nacional', 'Mixto'] else 1), 0, orig_is_usd=(tipo_t != "Nacional")),
-                                    'h2': calc_m_converted(base_final, u_t_v * (tc if tipo_t in ['Nacional', 'Mixto'] else 1), u_h2, orig_is_usd=(tipo_t != "Nacional")),
-                                    'h3': calc_m_converted(base_final, u_t_v * (tc if tipo_t in ['Nacional', 'Mixto'] else 1), u_h3, orig_is_usd=(tipo_t != "Nacional")),
-                                    'h4': calc_m_converted(base_final, u_t_v * (tc if tipo_t in ['Nacional', 'Mixto'] else 1), u_h4, orig_is_usd=(tipo_t != "Nacional"))
+                                    'sin': calc_m_converted(base_final, utv, 0, orig_is_usd=(tipo_t != "Nacional")),
+                                    'h2': calc_m_converted(base_final, utv, uh2, orig_is_usd=(tipo_t != "Nacional")),
+                                    'h3': calc_m_converted(base_final, utv, uh3, orig_is_usd=(tipo_t != "Nacional")),
+                                    'h4': calc_m_converted(base_final, utv, uh4, orig_is_usd=(tipo_t != "Nacional"))
                                 },
                                 'observatory': {
-                                    'sin': calc_m_converted(base_final, u_t_o * (tc if tipo_t in ['Nacional', 'Mixto'] else 1), 0, orig_is_usd=(tipo_t != "Nacional")),
-                                    'h2': calc_m_converted(base_final, u_t_o * (tc if tipo_t in ['Nacional', 'Mixto'] else 1), u_h2, orig_is_usd=(tipo_t != "Nacional")),
-                                    'h3': calc_m_converted(base_final, u_t_o * (tc if tipo_t in ['Nacional', 'Mixto'] else 1), u_h3, orig_is_usd=(tipo_t != "Nacional")),
-                                    'h4': calc_m_converted(base_final, u_t_o * (tc if tipo_t in ['Nacional', 'Mixto'] else 1), u_h4, orig_is_usd=(tipo_t != "Nacional"))
+                                    'sin': calc_m_converted(base_final, uto, 0, orig_is_usd=(tipo_t != "Nacional")),
+                                    'h2': calc_m_converted(base_final, uto, uh2, orig_is_usd=(tipo_t != "Nacional")),
+                                    'h3': calc_m_converted(base_final, uto, uh3, orig_is_usd=(tipo_t != "Nacional")),
+                                    'h4': calc_m_converted(base_final, uto, uh4, orig_is_usd=(tipo_t != "Nacional"))
                                 }
                             })
 
@@ -1753,21 +1798,21 @@ def render_ventas_ui():
                                 pricing_matrix_ext.update({
                                     'expedition': {
                                         'sin': calc_m_converted(base_ext_final, 0, 0, orig_is_usd=True),
-                                        'h2': calc_m_converted(base_ext_final, 0, u_h2, orig_is_usd=True),
-                                        'h3': calc_m_converted(base_ext_final, 0, u_h3, orig_is_usd=True),
-                                        'h4': calc_m_converted(base_ext_final, 0, u_h4, orig_is_usd=True)
+                                        'h2': calc_m_converted(base_ext_final, 0, uh2_u, orig_is_usd=True),
+                                        'h3': calc_m_converted(base_ext_final, 0, uh3_u, orig_is_usd=True),
+                                        'h4': calc_m_converted(base_ext_final, 0, uh4_u, orig_is_usd=True)
                                     },
                                     'vistadome': {
-                                        'sin': calc_m_converted(base_ext_final, u_t_v, 0, orig_is_usd=True),
-                                        'h2': calc_m_converted(base_ext_final, u_t_v, u_h2, orig_is_usd=True),
-                                        'h3': calc_m_converted(base_ext_final, u_t_v, u_h3, orig_is_usd=True),
-                                        'h4': calc_m_converted(base_ext_final, u_t_v, u_h4, orig_is_usd=True)
+                                        'sin': calc_m_converted(base_ext_final, utv_u, 0, orig_is_usd=True),
+                                        'h2': calc_m_converted(base_ext_final, utv_u, uh2_u, orig_is_usd=True),
+                                        'h3': calc_m_converted(base_ext_final, utv_u, uh3_u, orig_is_usd=True),
+                                        'h4': calc_m_converted(base_ext_final, utv_u, uh4_u, orig_is_usd=True)
                                     },
                                     'observatory': {
-                                        'sin': calc_m_converted(base_ext_final, u_t_o, 0, orig_is_usd=True),
-                                        'h2': calc_m_converted(base_ext_final, u_t_o, u_h2, orig_is_usd=True),
-                                        'h3': calc_m_converted(base_ext_final, u_t_o, u_h3, orig_is_usd=True),
-                                        'h4': calc_m_converted(base_ext_final, u_t_o, u_h4, orig_is_usd=True)
+                                        'sin': calc_m_converted(base_ext_final, uto_u, 0, orig_is_usd=True),
+                                        'h2': calc_m_converted(base_ext_final, uto_u, uh2_u, orig_is_usd=True),
+                                        'h3': calc_m_converted(base_ext_final, uto_u, uh3_u, orig_is_usd=True),
+                                        'h4': calc_m_converted(base_ext_final, uto_u, uh4_u, orig_is_usd=True)
                                     }
                                 })
 
@@ -1775,21 +1820,21 @@ def render_ventas_ui():
                                 matrix_antes.update({
                                     'expedition': {
                                         'sin': calc_m_converted(base_antes, 0, 0, orig_is_usd=(tipo_t != "Nacional")),
-                                        'h2': calc_m_converted(base_antes, 0, u_h2, orig_is_usd=(tipo_t != "Nacional")),
-                                        'h3': calc_m_converted(base_antes, 0, u_h3, orig_is_usd=(tipo_t != "Nacional")),
-                                        'h4': calc_m_converted(base_antes, 0, u_h4, orig_is_usd=(tipo_t != "Nacional"))
+                                        'h2': calc_m_converted(base_antes, 0, uh2, orig_is_usd=(tipo_t != "Nacional")),
+                                        'h3': calc_m_converted(base_antes, 0, uh3, orig_is_usd=(tipo_t != "Nacional")),
+                                        'h4': calc_m_converted(base_antes, 0, uh4, orig_is_usd=(tipo_t != "Nacional"))
                                     },
                                     'vistadome': {
-                                        'sin': calc_m_converted(base_antes, u_t_v * (tc if tipo_t == 'Nacional' else 1), 0, orig_is_usd=(tipo_t != "Nacional")),
-                                        'h2': calc_m_converted(base_antes, u_t_v * (tc if tipo_t == 'Nacional' else 1), u_h2, orig_is_usd=(tipo_t != "Nacional")),
-                                        'h3': calc_m_converted(base_antes, u_t_v * (tc if tipo_t == 'Nacional' else 1), u_h3, orig_is_usd=(tipo_t != "Nacional")),
-                                        'h4': calc_m_converted(base_antes, u_t_v * (tc if tipo_t == 'Nacional' else 1), u_h4, orig_is_usd=(tipo_t != "Nacional"))
+                                        'sin': calc_m_converted(base_antes, utv, 0, orig_is_usd=(tipo_t != "Nacional")),
+                                        'h2': calc_m_converted(base_antes, utv, uh2, orig_is_usd=(tipo_t != "Nacional")),
+                                        'h3': calc_m_converted(base_antes, utv, uh3, orig_is_usd=(tipo_t != "Nacional")),
+                                        'h4': calc_m_converted(base_antes, utv, uh4, orig_is_usd=(tipo_t != "Nacional"))
                                     },
                                     'observatory': {
-                                        'sin': calc_m_converted(base_antes, u_t_o * (tc if tipo_t == 'Nacional' else 1), 0, orig_is_usd=(tipo_t != "Nacional")),
-                                        'h2': calc_m_converted(base_antes, u_t_o * (tc if tipo_t == 'Nacional' else 1), u_h2, orig_is_usd=(tipo_t != "Nacional")),
-                                        'h3': calc_m_converted(base_antes, u_t_o * (tc if tipo_t == 'Nacional' else 1), u_h3, orig_is_usd=(tipo_t != "Nacional")),
-                                        'h4': calc_m_converted(base_antes, u_t_o * (tc if tipo_t == 'Nacional' else 1), u_h4, orig_is_usd=(tipo_t != "Nacional"))
+                                        'sin': calc_m_converted(base_antes, uto, 0, orig_is_usd=(tipo_t != "Nacional")),
+                                        'h2': calc_m_converted(base_antes, uto, uh2, orig_is_usd=(tipo_t != "Nacional")),
+                                        'h3': calc_m_converted(base_antes, uto, uh3, orig_is_usd=(tipo_t != "Nacional")),
+                                        'h4': calc_m_converted(base_antes, uto, uh4, orig_is_usd=(tipo_t != "Nacional"))
                                     }
                                 })                            
                             # --- NUEVA SECCIÓN: DESGLOSE ESTRUCTURADO PARA EXTRACCIÓN (FACTURACIÓN) ---
