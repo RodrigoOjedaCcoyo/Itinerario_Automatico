@@ -243,7 +243,7 @@
 
             <div class="luxury-pricing-container">
                 <div class="luxury-pricing-grid">
-                    {% if (es_nacional or origen == 'Mixto') and matriz.tren_local %}
+                    {% if (es_nacional or origen == 'Mixto') and matriz.tren_local and 'Tren Local' in trenes_activos %}
                     <div class="luxury-card">
                         <div class="luxury-card-header" style="background: #000; color: #fff; padding: 25px 10px;">
                             <span class="train-label" style="color: #aaa;">EXPERIENCIA</span>
@@ -251,33 +251,26 @@
                         </div>
                         <div class="luxury-pricing-rows">
                             {% if origen == 'Mixto' %}
-                            {{ render_price_item("Sin Hotel", matriz.tren_local.sin, "S/", "", None,
-                            matriz_ext.tren_local.sin) }}
-                            {{ render_price_item("Hotel 2★", matriz.tren_local.h2, "S/", "★★", None,
-                            matriz_ext.tren_local.h2) }}
-                            {{ render_price_item("Hotel 3★", matriz.tren_local.h3, "S/", "★★★", None,
-                            matriz_ext.tren_local.h3) }}
-                            {{ render_price_item("Hotel 4★", matriz.tren_local.h4, "S/", "★★★★", None,
-                            matriz_ext.tren_local.h4) }}
+                                {% if "Sin Hotel" in cats_activas %}{{ render_price_item("Sin Hotel", matriz.tren_local.sin, "S/", "", None, matriz_ext.tren_local.sin) }}{% endif %}
+                                {% if "Hotel 2*" in cats_activas %}{{ render_price_item("Hotel 2★", matriz.tren_local.h2, "S/", "★★", None, matriz_ext.tren_local.h2) }}{% endif %}
+                                {% if "Hotel 3*" in cats_activas %}{{ render_price_item("Hotel 3★", matriz.tren_local.h3, "S/", "★★★", None, matriz_ext.tren_local.h3) }}{% endif %}
+                                {% if "Hotel 4*" in cats_activas %}{{ render_price_item("Hotel 4★", matriz.tren_local.h4, "S/", "★★★★", None, matriz_ext.tren_local.h4) }}{% endif %}
                             {% elif show_antes_pdf %}
-                            {{ render_price_item("Sin Hotel", matriz.tren_local.sin, "S/", "",
-                            matrix_antes.tren_local.sin) }}
-                            {{ render_price_item("Hotel 2★", matriz.tren_local.h2, "S/", "★★",
-                            matrix_antes.tren_local.h2) }}
-                            {{ render_price_item("Hotel 3★", matriz.tren_local.h3, "S/", "★★★",
-                            matrix_antes.tren_local.h3) }}
-                            {{ render_price_item("Hotel 4★", matriz.tren_local.h4, "S/", "★★★★",
-                            matrix_antes.tren_local.h4) }}
+                                {% if "Sin Hotel" in cats_activas %}{{ render_price_item("Sin Hotel", matriz.tren_local.sin, "S/", "", matrix_antes.tren_local.sin) }}{% endif %}
+                                {% if "Hotel 2*" in cats_activas %}{{ render_price_item("Hotel 2★", matriz.tren_local.h2, "S/", "★★", matrix_antes.tren_local.h2) }}{% endif %}
+                                {% if "Hotel 3*" in cats_activas %}{{ render_price_item("Hotel 3★", matriz.tren_local.h3, "S/", "★★★", matrix_antes.tren_local.h3) }}{% endif %}
+                                {% if "Hotel 4*" in cats_activas %}{{ render_price_item("Hotel 4★", matriz.tren_local.h4, "S/", "★★★★", matrix_antes.tren_local.h4) }}{% endif %}
                             {% else %}
-                            {{ render_price_item("Sin Hotel", matriz.tren_local.sin, "S/", "") }}
-                            {{ render_price_item("Hotel 2★", matriz.tren_local.h2, "S/", "★★") }}
-                            {{ render_price_item("Hotel 3★", matriz.tren_local.h3, "S/", "★★★") }}
-                            {{ render_price_item("Hotel 4★", matriz.tren_local.h4, "S/", "★★★★") }}
+                                {% if "Sin Hotel" in cats_activas %}{{ render_price_item("Sin Hotel", matriz.tren_local.sin, "S/", "") }}{% endif %}
+                                {% if "Hotel 2*" in cats_activas %}{{ render_price_item("Hotel 2★", matriz.tren_local.h2, "S/", "★★") }}{% endif %}
+                                {% if "Hotel 3*" in cats_activas %}{{ render_price_item("Hotel 3★", matriz.tren_local.h3, "S/", "★★★") }}{% endif %}
+                                {% if "Hotel 4*" in cats_activas %}{{ render_price_item("Hotel 4★", matriz.tren_local.h4, "S/", "★★★★") }}{% endif %}
                             {% endif %}
                         </div>
                     </div>
                     {% endif %}
 
+                    {% if 'Expedition' in trenes_activos %}
                     <div class="luxury-card">
                         <div class="luxury-card-header" style="padding: 25px 10px;">
                             <span class="train-label">EXPERIENCIA</span>
@@ -286,32 +279,26 @@
                         <div class="luxury-pricing-rows" style="border-top: 2px solid #f0f0f0;">
                             {% set sym = simbolo_moneda %}
                             {% if origen == 'Mixto' %}
-                            {{ render_price_item("Sin Hotel", matriz.expedition.sin, "S/", "", None,
-                            matriz_ext.expedition.sin) }}
-                            {{ render_price_item("Hotel 2★", matriz.expedition.h2, "S/", "★★", None,
-                            matriz_ext.expedition.h2) }}
-                            {{ render_price_item("Hotel 3★", matriz.expedition.h3, "S/", "★★★", None,
-                            matriz_ext.expedition.h3) }}
-                            {{ render_price_item("Hotel 4★", matriz.expedition.h4, "S/", "★★★★", None,
-                            matriz_ext.expedition.h4) }}
+                                {% if "Sin Hotel" in cats_activas %}{{ render_price_item("Sin Hotel", matriz.expedition.sin, "S/", "", None, matriz_ext.expedition.sin) }}{% endif %}
+                                {% if "Hotel 2*" in cats_activas %}{{ render_price_item("Hotel 2★", matriz.expedition.h2, "S/", "★★", None, matriz_ext.expedition.h2) }}{% endif %}
+                                {% if "Hotel 3*" in cats_activas %}{{ render_price_item("Hotel 3★", matriz.expedition.h3, "S/", "★★★", None, matriz_ext.expedition.h3) }}{% endif %}
+                                {% if "Hotel 4*" in cats_activas %}{{ render_price_item("Hotel 4★", matriz.expedition.h4, "S/", "★★★★", None, matriz_ext.expedition.h4) }}{% endif %}
                             {% elif show_antes_pdf %}
-                            {{ render_price_item("Sin Hotel", matriz.expedition.sin, sym, "",
-                            matrix_antes.expedition.sin) }}
-                            {{ render_price_item("Hotel 2★", matriz.expedition.h2, sym, "★★",
-                            matrix_antes.expedition.h2) }}
-                            {{ render_price_item("Hotel 3★", matriz.expedition.h3, sym, "★★★",
-                            matrix_antes.expedition.h3) }}
-                            {{ render_price_item("Hotel 4★", matriz.expedition.h4, sym, "★★★★",
-                            matrix_antes.expedition.h4) }}
+                                {% if "Sin Hotel" in cats_activas %}{{ render_price_item("Sin Hotel", matriz.expedition.sin, sym, "", matrix_antes.expedition.sin) }}{% endif %}
+                                {% if "Hotel 2*" in cats_activas %}{{ render_price_item("Hotel 2★", matriz.expedition.h2, sym, "★★", matrix_antes.expedition.h2) }}{% endif %}
+                                {% if "Hotel 3*" in cats_activas %}{{ render_price_item("Hotel 3★", matriz.expedition.h3, sym, "★★★", matrix_antes.expedition.h3) }}{% endif %}
+                                {% if "Hotel 4*" in cats_activas %}{{ render_price_item("Hotel 4★", matriz.expedition.h4, sym, "★★★★", matrix_antes.expedition.h4) }}{% endif %}
                             {% else %}
-                            {{ render_price_item("Sin Hotel", matriz.expedition.sin, sym, "") }}
-                            {{ render_price_item("Hotel 2★", matriz.expedition.h2, sym, "★★") }}
-                            {{ render_price_item("Hotel 3★", matriz.expedition.h3, sym, "★★★") }}
-                            {{ render_price_item("Hotel 4★", matriz.expedition.h4, sym, "★★★★") }}
+                                {% if "Sin Hotel" in cats_activas %}{{ render_price_item("Sin Hotel", matriz.expedition.sin, sym, "") }}{% endif %}
+                                {% if "Hotel 2*" in cats_activas %}{{ render_price_item("Hotel 2★", matriz.expedition.h2, sym, "★★") }}{% endif %}
+                                {% if "Hotel 3*" in cats_activas %}{{ render_price_item("Hotel 3★", matriz.expedition.h3, sym, "★★★") }}{% endif %}
+                                {% if "Hotel 4*" in cats_activas %}{{ render_price_item("Hotel 4★", matriz.expedition.h4, sym, "★★★★") }}{% endif %}
                             {% endif %}
                         </div>
                     </div>
+                    {% endif %}
 
+                    {% if 'Vistadome' in trenes_activos %}
                     <div class="luxury-card featured">
                         <div class="featured-badge">MÁS ELEGIDO</div>
                         <div class="luxury-card-header"
@@ -321,35 +308,26 @@
                         </div>
                         <div class="luxury-pricing-rows">
                             {% if origen == 'Mixto' %}
-                            {{ render_price_item("Sin Hotel", matriz.vistadome.sin, "S/", "", None,
-                            matriz_ext.vistadome.sin) }}
-                            {{ render_price_item("Hotel 2★", matriz.vistadome.h2, "S/", "★★", None,
-                            matriz_ext.vistadome.h2) }}
-                            {{ render_price_item("Hotel 3★", matriz.vistadome.h3, "S/", "★★★", None,
-                            matriz_ext.vistadome.h3) }}
-                            {{ render_price_item("Hotel 4★", matriz.vistadome.h4, "S/", "★★★★", None,
-                            matriz_ext.vistadome.h4) }}
+                                {% if "Sin Hotel" in cats_activas %}{{ render_price_item("Sin Hotel", matriz.vistadome.sin, "S/", "", None, matriz_ext.vistadome.sin) }}{% endif %}
+                                {% if "Hotel 2*" in cats_activas %}{{ render_price_item("Hotel 2★", matriz.vistadome.h2, "S/", "★★", None, matriz_ext.vistadome.h2) }}{% endif %}
+                                {% if "Hotel 3*" in cats_activas %}{{ render_price_item("Hotel 3★", matriz.vistadome.h3, "S/", "★★★", None, matriz_ext.vistadome.h3) }}{% endif %}
+                                {% if "Hotel 4*" in cats_activas %}{{ render_price_item("Hotel 4★", matriz.vistadome.h4, "S/", "★★★★", None, matriz_ext.vistadome.h4) }}{% endif %}
                             {% elif show_antes_pdf %}
-                            {{ render_price_item("Sin Hotel", matriz.vistadome.sin, sym, "",
-                            matrix_antes.vistadome.sin)
-                            }}
-                            {{ render_price_item("Hotel 2★", matriz.vistadome.h2, sym, "★★",
-                            matrix_antes.vistadome.h2)
-                            }}
-                            {{ render_price_item("Hotel 3★", matriz.vistadome.h3, sym, "★★★",
-                            matrix_antes.vistadome.h3)
-                            }}
-                            {{ render_price_item("Hotel 4★", matriz.vistadome.h4, sym, "★★★★",
-                            matrix_antes.vistadome.h4) }}
+                                {% if "Sin Hotel" in cats_activas %}{{ render_price_item("Sin Hotel", matriz.vistadome.sin, sym, "", matrix_antes.vistadome.sin) }}{% endif %}
+                                {% if "Hotel 2*" in cats_activas %}{{ render_price_item("Hotel 2★", matriz.vistadome.h2, sym, "★★", matrix_antes.vistadome.h2) }}{% endif %}
+                                {% if "Hotel 3*" in cats_activas %}{{ render_price_item("Hotel 3★", matriz.vistadome.h3, sym, "★★★", matrix_antes.vistadome.h3) }}{% endif %}
+                                {% if "Hotel 4*" in cats_activas %}{{ render_price_item("Hotel 4★", matriz.vistadome.h4, sym, "★★★★", matrix_antes.vistadome.h4) }}{% endif %}
                             {% else %}
-                            {{ render_price_item("Sin Hotel", matriz.vistadome.sin, sym, "") }}
-                            {{ render_price_item("Hotel 2★", matriz.vistadome.h2, sym, "★★") }}
-                            {{ render_price_item("Hotel 3★", matriz.vistadome.h3, sym, "★★★") }}
-                            {{ render_price_item("Hotel 4★", matriz.vistadome.h4, sym, "★★★★") }}
+                                {% if "Sin Hotel" in cats_activas %}{{ render_price_item("Sin Hotel", matriz.vistadome.sin, sym, "") }}{% endif %}
+                                {% if "Hotel 2*" in cats_activas %}{{ render_price_item("Hotel 2★", matriz.vistadome.h2, sym, "★★") }}{% endif %}
+                                {% if "Hotel 3*" in cats_activas %}{{ render_price_item("Hotel 3★", matriz.vistadome.h3, sym, "★★★") }}{% endif %}
+                                {% if "Hotel 4*" in cats_activas %}{{ render_price_item("Hotel 4★", matriz.vistadome.h4, sym, "★★★★") }}{% endif %}
                             {% endif %}
                         </div>
                     </div>
+                    {% endif %}
 
+                    {% if 'Observatory' in trenes_activos %}
                     <div class="luxury-card">
                         <div class="luxury-card-header" style="padding: 25px 10px;">
                             <span class="train-label">EXPERIENCIA</span>
@@ -357,31 +335,24 @@
                         </div>
                         <div class="luxury-pricing-rows" style="border-top: 2px solid #f0f0f0;">
                             {% if origen == 'Mixto' %}
-                            {{ render_price_item("Sin Hotel", matriz.observatory.sin, "S/", "", None,
-                            matriz_ext.observatory.sin) }}
-                            {{ render_price_item("Hotel 2★", matriz.observatory.h2, "S/", "★★", None,
-                            matriz_ext.observatory.h2) }}
-                            {{ render_price_item("Hotel 3★", matriz.observatory.h3, "S/", "★★★", None,
-                            matriz_ext.observatory.h3) }}
-                            {{ render_price_item("Hotel 4★", matriz.observatory.h4, "S/", "★★★★", None,
-                            matriz_ext.observatory.h4) }}
+                                {% if "Sin Hotel" in cats_activas %}{{ render_price_item("Sin Hotel", matriz.observatory.sin, "S/", "", None, matriz_ext.observatory.sin) }}{% endif %}
+                                {% if "Hotel 2*" in cats_activas %}{{ render_price_item("Hotel 2★", matriz.observatory.h2, "S/", "★★", None, matriz_ext.observatory.h2) }}{% endif %}
+                                {% if "Hotel 3*" in cats_activas %}{{ render_price_item("Hotel 3★", matriz.observatory.h3, "S/", "★★★", None, matriz_ext.observatory.h3) }}{% endif %}
+                                {% if "Hotel 4*" in cats_activas %}{{ render_price_item("Hotel 4★", matriz.observatory.h4, "S/", "★★★★", None, matriz_ext.observatory.h4) }}{% endif %}
                             {% elif show_antes_pdf %}
-                            {{ render_price_item("Sin Hotel", matriz.observatory.sin, sym, "",
-                            matrix_antes.observatory.sin) }}
-                            {{ render_price_item("Hotel 2★", matriz.observatory.h2, sym, "★★",
-                            matrix_antes.observatory.h2) }}
-                            {{ render_price_item("Hotel 3★", matriz.observatory.h3, sym, "★★★",
-                            matrix_antes.observatory.h3) }}
-                            {{ render_price_item("Hotel 4★", matriz.observatory.h4, sym, "★★★★",
-                            matrix_antes.observatory.h4) }}
+                                {% if "Sin Hotel" in cats_activas %}{{ render_price_item("Sin Hotel", matriz.observatory.sin, sym, "", matrix_antes.observatory.sin) }}{% endif %}
+                                {% if "Hotel 2*" in cats_activas %}{{ render_price_item("Hotel 2★", matriz.observatory.h2, sym, "★★", matrix_antes.observatory.h2) }}{% endif %}
+                                {% if "Hotel 3*" in cats_activas %}{{ render_price_item("Hotel 3★", matriz.observatory.h3, sym, "★★★", matrix_antes.observatory.h3) }}{% endif %}
+                                {% if "Hotel 4*" in cats_activas %}{{ render_price_item("Hotel 4★", matriz.observatory.h4, sym, "★★★★", matrix_antes.observatory.h4) }}{% endif %}
                             {% else %}
-                            {{ render_price_item("Sin Hotel", matriz.observatory.sin, sym, "") }}
-                            {{ render_price_item("Hotel 2★", matriz.observatory.h2, sym, "★★") }}
-                            {{ render_price_item("Hotel 3★", matriz.observatory.h3, sym, "★★★") }}
-                            {{ render_price_item("Hotel 4★", matriz.observatory.h4, sym, "★★★★") }}
+                                {% if "Sin Hotel" in cats_activas %}{{ render_price_item("Sin Hotel", matriz.observatory.sin, sym, "") }}{% endif %}
+                                {% if "Hotel 2*" in cats_activas %}{{ render_price_item("Hotel 2★", matriz.observatory.h2, sym, "★★") }}{% endif %}
+                                {% if "Hotel 3*" in cats_activas %}{{ render_price_item("Hotel 3★", matriz.observatory.h3, sym, "★★★") }}{% endif %}
+                                {% if "Hotel 4*" in cats_activas %}{{ render_price_item("Hotel 4★", matriz.observatory.h4, sym, "★★★★") }}{% endif %}
                             {% endif %}
                         </div>
                     </div>
+                    {% endif %}
                 </div>
 
                 <!-- COMPLEMENTOS DE PRECIO (INVADIENDO ESPACIO PARA LIBERAR ANEXOS) -->

@@ -304,10 +304,23 @@ def render_ventas_ui():
             
         with ld_col2:
             st.markdown("<div style='height: 10px;'></div>", unsafe_allow_html=True) # Espaciado 
-            estrategias = ["Opciones", "Matriz", "General"]
-            idx_e = estrategias.index(st.session_state.f_estrategia) if st.session_state.f_estrategia in estrategias else 0
             estrategia_v = st.radio("Estrategia de Venta", estrategias, index=idx_e, horizontal=True)
             st.session_state.f_estrategia = estrategia_v
+
+            if estrategia_v == "Matriz":
+                options_h = ["Sin Hotel", "Hotel 2*", "Hotel 3*", "Hotel 4*"]
+                options_t = ["Tren Local", "Expedition", "Vistadome", "Observatory"]
+                
+                # Inicializar si no existen para evitar errores de default
+                if 'cats_activas' not in st.session_state: st.session_state.cats_activas = options_h
+                if 'trenes_activos' not in st.session_state: st.session_state.trenes_activos = options_t
+                
+                f_c1, f_c2 = st.columns(2)
+                cats_activas = f_c1.multiselect("Hoteles en PDF", options_h, default=st.session_state.cats_activas, key="ms_cats")
+                trenes_activos = f_c2.multiselect("Trenes en PDF", options_t, default=st.session_state.trenes_activos, key="ms_trenes")
+                
+                st.session_state.cats_activas = cats_activas
+                st.session_state.trenes_activos = trenes_activos
 
         # El vendedor se obtiene automáticamente de la sesión
         vendedor = st.session_state.get("vendedor_name", "Anonimo")
@@ -1690,7 +1703,9 @@ def render_ventas_ui():
                                 'vendedor': vendedor,
                                 'celular_cliente': celular,
                                 'fuente': origen_lead,
-                                'estrategia': estrategia_v, 
+                                'estrategia': estrategia_v,
+                                'cats_activas': st.session_state.get('cats_activas', []),
+                                'trenes_activos': st.session_state.get('trenes_activos', []),
                                 'estado': "Cotización",
                                 'logo_url': os.path.abspath(os.path.join("assets", "images", "logo_background.png")),
                                 'logo_cover_url': os.path.abspath(os.path.join("assets", "images", "logo_background.png")),
