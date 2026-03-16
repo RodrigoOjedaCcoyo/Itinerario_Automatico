@@ -977,6 +977,10 @@ def render_ventas_ui():
                             opciones_tren.insert(0, "Tren Local")
                         
                         sel_tren_gen = cg2.selectbox("Tipo de Tren", opciones_tren, key="sel_t_gen")
+
+                st.markdown("🌐 **Moneda de Presentación**")
+                currency_display = st.selectbox("Elegir moneda para el reporte PDF", ["Soles (S/)", "Dólares ($)"], key="sel_curr_gen")
+                st.session_state.f_moneda_pdf = currency_display
                     
 
 
@@ -1222,32 +1226,55 @@ def render_ventas_ui():
             if c_pc_can > 0: det_can['PCD'] = f"{math.ceil(cost_margined_can_pc + (m_extra_can/max(1, pasajeros_can)) + up_ext):,.2f}"
             if c_ni_can > 0: det_can['Niño'] = f"{math.ceil(cost_margined_can_ni + (m_extra_can/max(1, pasajeros_can)) + up_ext):,.2f}"
 
+            # Legacy dictionaries for older PDF parts (Respecting target currency)
+            def convert_val(orig_val, orig_is_usd):
+                if orig_is_usd and not target_is_usd: # USD -> Soles
+                    return math.ceil(orig_val * tc)
+                elif not orig_is_usd and target_is_usd: # Soles -> USD
+                    return math.ceil(orig_val / tc) if tc > 0 else math.ceil(orig_val)
+                return orig_val
+
+            def convert_det(det_dict, orig_is_usd):
+                new_det = {}
+                for k, v in det_dict.items():
+                    # v is a formatted string "1,234.56"
+                    clean_v = float(v.replace(',', ''))
+                    conv_v = convert_val(clean_v, orig_is_usd)
+                    new_det[k] = f"{conv_v:,.2f}"
+                return new_det
+
             precios = {
-                'nac': {'total': f"{avg_nac_pp:,.2f}", 'lista_det': det_nac} if pasajeros_nac > 0 else None,
-                'ext': {'total': f"{avg_ext_pp:,.2f}", 'lista_det': det_ext} if pasajeros_ext > 0 else None,
-                'can': {'total': f"{avg_can_pp:,.2f}", 'lista_det': det_can} if pasajeros_can > 0 else None
+                'nac': {'total': f"{convert_val(avg_nac_pp, False):,.2f}", 'lista_det': convert_det(det_nac, False)} if pasajeros_nac > 0 else None,
+                'ext': {'total': f"{convert_val(avg_ext_pp, True):,.2f}", 'lista_det': convert_det(det_ext, True)} if pasajeros_ext > 0 else None,
+                'can': {'total': f"{convert_val(avg_can_pp, True):,.2f}", 'lista_det': convert_det(det_can, True)} if pasajeros_can > 0 else None
             }
             precios_antes = {
-                'nac': {'total': f"{avg_nac_a_pp:,.2f}"} if pasajeros_nac > 0 else None,
-                'ext': {'total': f"{avg_ext_a_pp:,.2f}"} if pasajeros_ext > 0 else None,
-                'can': {'total': f"{avg_can_a_pp:,.2f}"} if pasajeros_can > 0 else None
+                'nac': {'total': f"{convert_val(avg_nac_a_pp, False):,.2f}"} if pasajeros_nac > 0 else None,
+                'ext': {'total': f"{convert_val(avg_ext_a_pp, True):,.2f}"} if pasajeros_ext > 0 else None,
+                'can': {'total': f"{convert_val(avg_can_a_pp, True):,.2f}"} if pasajeros_can > 0 else None
             }
             
             col_res1, col_res2, col_res3 = st.columns(3)
             with col_res1:
                 st.markdown("### 🇵🇪 Nacional")
-                st.markdown(f"## S/ {real_nac:,.2f}")
-                st.caption(f"**{pasajeros_nac}** pasajeros | Prom: **S/ {avg_nac_pp:,.2f}**")
+                val_nac = convert_val(real_nac, False)
+                prom_nac = convert_val(avg_nac_pp, False)
+                st.markdown(f"## {sym_target} {val_nac:,.2f}")
+                st.caption(f"**{pasajeros_nac}** pasajeros | Prom: **{sym_target} {prom_nac:,.2f}**")
             
             with col_res2:
                 st.markdown("### 🌎 Extranjero")
-                st.markdown(f"## USD {real_ext:,.2f}")
-                st.caption(f"**{pasajeros_ext}** pasajeros | Prom: **USD {avg_ext_pp:,.2f}**")
+                val_ext = convert_val(real_ext, True)
+                prom_ext = convert_val(avg_ext_pp, True)
+                st.markdown(f"## {sym_target} {val_ext:,.2f}")
+                st.caption(f"**{pasajeros_ext}** pasajeros | Prom: **{sym_target} {prom_ext:,.2f}**")
             
             with col_res3:
                 st.markdown("### 🤝 CAN")
-                st.markdown(f"## USD {real_can:,.2f}")
-                st.caption(f"**{pasajeros_can}** pasajeros | Prom: **USD {avg_can_pp:,.2f}**")
+                val_can = convert_val(real_can, True)
+                prom_can = convert_val(avg_can_pp, True)
+                st.markdown(f"## {sym_target} {val_can:,.2f}")
+                st.caption(f"**{pasajeros_can}** pasajeros | Prom: **{sym_target} {prom_can:,.2f}**")
             
             # El monto de referencia es la suma de TODOS los reales (Nac + Ext + CAN)
             # El monto de referencia para la base de datos se guarda en la moneda principal (Soles si hay nac, USD sino)
@@ -1453,7 +1480,7 @@ def render_ventas_ui():
                             # 1. Preparar data completa
                             # USAR EL VALOR MANUAL DE NOCHES RECIÉN DEFINIDO
                             # num_noches ya fue definido arriba en la UI
-                            curr_sym = "S/" if tipo_t == "Nacional" else "$"
+                            curr_sym = sym_target
                             
                             # Base Price calculation for the primary category
                             if tipo_t == "Nacional":
@@ -1463,20 +1490,32 @@ def render_ventas_ui():
                             else: # Mixto
                                 base_raw = total_ext_pp + (extra_ext/max(1, pasajeros_ext))
 
-                            # Lista de precios de cierre para el PDF con desglose detallado
+                            # Lista de precios de cierre para el PDF con desglose detallado y CURRENCY CONVERSION
                             precios_cierre_list = []
-                            
-                            def get_p_detalles(m_extra, n_pax, up_val, counts_list, prices_list, cats_labels):
+                            target_is_usd = (st.session_state.get('f_moneda_pdf', "Soles (S/)") == "Dólares ($)")
+                            sym_target = "$" if target_is_usd else "S/"
+
+                            def get_p_detalles_converted(m_extra, n_pax, up_val, counts_list, prices_list, cats_labels, orig_is_usd):
                                 d = []
                                 shared_extra = m_extra / max(1, n_pax)
                                 for i, c in enumerate(counts_list):
                                     if c > 0:
-                                        p_unit = math.ceil(prices_list[i] + shared_extra + up_val)
+                                        # Precio base en su moneda original
+                                        p_unit_orig = prices_list[i] + shared_extra + up_val
+                                        
+                                        # Conversión si es necesario
+                                        if orig_is_usd and not target_is_usd: # USD -> Soles
+                                            p_unit_fin = math.ceil(p_unit_orig * tc)
+                                        elif not orig_is_usd and target_is_usd: # Soles -> USD
+                                            p_unit_fin = math.ceil(p_unit_orig / tc) if tc > 0 else math.ceil(p_unit_orig)
+                                        else: # Misma moneda
+                                            p_unit_fin = math.ceil(p_unit_orig)
+                                            
                                         d.append({
                                             'cat': cats_labels[i],
                                             'cant': c,
-                                            'precio': f"{p_unit:,.2f}",
-                                            'subtotal': f"{p_unit * c:,.2f}"
+                                            'precio': f"{p_unit_fin:,.2f}",
+                                            'subtotal': f"{p_unit_fin * c:,.2f}"
                                         })
                                 return d
 
@@ -1484,58 +1523,80 @@ def render_ventas_ui():
 
                             # FILTRAR POR ORIGEN: Solo mostrar lo que el usuario ha elegido como Origen principal
                             if tipo_t in ["Nacional", "Mixto"] and pasajeros_nac > 0:
-                                d_nac = get_p_detalles(m_extra_nac, pasajeros_nac, up_nac, 
-                                                     [c_ad_nac, c_es_nac, c_pc_nac, c_ni_nac],
-                                                     [(total_nac_ad / max(1, c_ad_nac)) if c_ad_nac > 0 else 0 for total_nac_ad in [
-                                                         sum(math.ceil(t.get('costo_nac', 0) * f_m_t) for t in st.session_state.itinerario),
-                                                         sum(math.ceil(t.get('costo_nac_est', t.get('costo_nac', 0)-70) * f_m_t) for t in st.session_state.itinerario),
-                                                         sum(math.ceil(t.get('costo_nac_pcd', t.get('costo_nac', 0)-70) * f_m_t) for t in st.session_state.itinerario),
-                                                         sum(math.ceil(t.get('costo_nac_nino', t.get('costo_nac', 0)-40) * f_m_t) for t in st.session_state.itinerario)
-                                                     ]], labels_pax)
+                                d_nac = get_p_detalles_converted(m_extra_nac, pasajeros_nac, up_nac, 
+                                                               [c_ad_nac, c_es_nac, c_pc_nac, c_ni_nac],
+                                                               [(total_nac_ad / max(1, c_ad_nac)) if c_ad_nac > 0 else 0 for total_nac_ad in [
+                                                                   sum(math.ceil(t.get('costo_nac', 0) * f_m_t) for t in st.session_state.itinerario),
+                                                                   sum(math.ceil(t.get('costo_nac_est', t.get('costo_nac', 0)-70) * f_m_t) for t in st.session_state.itinerario),
+                                                                   sum(math.ceil(t.get('costo_nac_pcd', t.get('costo_nac', 0)-70) * f_m_t) for t in st.session_state.itinerario),
+                                                                   sum(math.ceil(t.get('costo_nac_nino', t.get('costo_nac', 0)-40) * f_m_t) for t in st.session_state.itinerario)
+                                                               ]], labels_pax, orig_is_usd=False)
                                 
+                                # Calcular monto total convertido para el label
+                                if not target_is_usd:
+                                    m_total_nac = real_nac
+                                    m_pp_nac = avg_nac_pp
+                                else:
+                                    m_pp_nac = math.ceil(avg_nac_pp / tc) if tc > 0 else avg_nac_pp
+                                    m_total_nac = m_pp_nac * pasajeros_nac
+
                                 precios_cierre_list.append({
                                     'label': 'TOTAL NACIONAL',
-                                    'simbolo': 'S/',
-                                    'monto_total': f"{real_nac:,.2f}",
-                                    'monto_pp': f"{avg_nac_pp:,.2f}",
+                                    'simbolo': sym_target,
+                                    'monto_total': f"{m_total_nac:,.2f}",
+                                    'monto_pp': f"{m_pp_nac:,.2f}",
                                     'detalles': d_nac
                                 })
 
                             if tipo_t in ["Extranjero", "Mixto"]:
                                 if pasajeros_ext > 0:
-                                    d_ext = get_p_detalles(m_extra_ext, pasajeros_ext, up_ext, 
-                                                         [c_ad_ext, c_es_ext, c_pc_ext, c_ni_ext],
-                                                         [(total_ext_cat / max(1, c_ext_cat)) if c_ext_cat > 0 else 0 for c_ext_cat, total_ext_cat in zip(
-                                                             [c_ad_ext, c_es_ext, c_pc_ext, c_ni_ext],
-                                                             [sum(math.ceil(t.get('costo_ext', 0) * f_m_t) for t in st.session_state.itinerario),
-                                                              sum(math.ceil(t.get('costo_ext_est', t.get('costo_ext', 0)-20) * f_m_t) for t in st.session_state.itinerario),
-                                                              sum(math.ceil(t.get('costo_ext_pcd', t.get('costo_ext', 0)-20) * f_m_t) for t in st.session_state.itinerario),
-                                                              sum(math.ceil(t.get('costo_ext_nino', t.get('costo_ext', 0)-15) * f_m_t) for t in st.session_state.itinerario)]
-                                                         )], labels_pax)
+                                    d_ext = get_p_detalles_converted(m_extra_ext, pasajeros_ext, up_ext, 
+                                                                   [c_ad_ext, c_es_ext, c_pc_ext, c_ni_ext],
+                                                                   [(total_ext_cat / max(1, c_ext_cat)) if c_ext_cat > 0 else 0 for c_ext_cat, total_ext_cat in zip(
+                                                                       [c_ad_ext, c_es_ext, c_pc_ext, c_ni_ext],
+                                                                       [sum(math.ceil(t.get('costo_ext', 0) * f_m_t) for t in st.session_state.itinerario),
+                                                                        sum(math.ceil(t.get('costo_ext_est', t.get('costo_ext', 0)-20) * f_m_t) for t in st.session_state.itinerario),
+                                                                        sum(math.ceil(t.get('costo_ext_pcd', t.get('costo_ext', 0)-20) * f_m_t) for t in st.session_state.itinerario),
+                                                                        sum(math.ceil(t.get('costo_ext_nino', t.get('costo_ext', 0)-15) * f_m_t) for t in st.session_state.itinerario)]
+                                                                   )], labels_pax, orig_is_usd=True)
                                     
+                                    if target_is_usd:
+                                        m_total_ext = real_ext
+                                        m_pp_ext = avg_ext_pp
+                                    else:
+                                        m_pp_ext = math.ceil(avg_ext_pp * tc)
+                                        m_total_ext = m_pp_ext * pasajeros_ext
+
                                     precios_cierre_list.append({
                                         'label': 'TOTAL EXTRANJERO',
-                                        'simbolo': '$',
-                                        'monto_total': f"{real_ext:,.2f}",
-                                        'monto_pp': f"{avg_ext_pp:,.2f}",
+                                        'simbolo': sym_target,
+                                        'monto_total': f"{m_total_ext:,.2f}",
+                                        'monto_pp': f"{m_pp_ext:,.2f}",
                                         'detalles': d_ext
                                     })
                                 if pasajeros_can > 0:
-                                    d_can = get_p_detalles(m_extra_can, pasajeros_can, up_ext, 
-                                                         [c_ad_can, c_es_can, c_pc_can, c_ni_can],
-                                                         [(total_can_cat / max(1, c_can_cat)) if c_can_cat > 0 else 0 for c_can_cat, total_can_cat in zip(
-                                                             [c_ad_can, c_es_can, c_pc_can, c_ni_can],
-                                                             [sum(math.ceil(t.get('costo_can', 0) * f_m_t) for t in st.session_state.itinerario),
-                                                              sum(math.ceil(t.get('costo_can_est', t.get('costo_can', 0)-20) * f_m_t) for t in st.session_state.itinerario),
-                                                              sum(math.ceil(t.get('costo_can_pcd', t.get('costo_can', 0)-20) * f_m_t) for t in st.session_state.itinerario),
-                                                              sum(math.ceil(t.get('costo_can_nino', t.get('costo_can', 0)-15) * f_m_t) for t in st.session_state.itinerario)]
-                                                         )], labels_pax)
+                                    d_can = get_p_detalles_converted(m_extra_can, pasajeros_can, up_ext, 
+                                                                   [c_ad_can, c_es_can, c_pc_can, c_ni_can],
+                                                                   [(total_can_cat / max(1, c_can_cat)) if c_can_cat > 0 else 0 for c_can_cat, total_can_cat in zip(
+                                                                       [c_ad_can, c_es_can, c_pc_can, c_ni_can],
+                                                                       [sum(math.ceil(t.get('costo_can', 0) * f_m_t) for t in st.session_state.itinerario),
+                                                                        sum(math.ceil(t.get('costo_can_est', t.get('costo_can', 0)-20) * f_m_t) for t in st.session_state.itinerario),
+                                                                        sum(math.ceil(t.get('costo_can_pcd', t.get('costo_can', 0)-20) * f_m_t) for t in st.session_state.itinerario),
+                                                                        sum(math.ceil(t.get('costo_can_nino', t.get('costo_can', 0)-15) * f_m_t) for t in st.session_state.itinerario)]
+                                                                   )], labels_pax, orig_is_usd=True)
                                     
+                                    if target_is_usd:
+                                        m_total_can = real_can
+                                        m_pp_can = avg_can_pp
+                                    else:
+                                        m_pp_can = math.ceil(avg_can_pp * tc)
+                                        m_total_can = m_pp_can * pasajeros_can
+
                                     precios_cierre_list.append({
                                         'label': 'TOTAL COMUNIDAD ANDINA',
-                                        'simbolo': '$',
-                                        'monto_total': f"{real_can:,.2f}",
-                                        'monto_pp': f"{avg_can_pp:,.2f}",
+                                        'simbolo': sym_target,
+                                        'monto_total': f"{m_total_can:,.2f}",
+                                        'monto_pp': f"{m_pp_can:,.2f}",
                                         'detalles': d_can
                                     })
                             
@@ -1559,9 +1620,20 @@ def render_ventas_ui():
                             else: # Estrategia "Opciones"
                                 show_antes_pdf = margen_antes_pct > margen_pct
 
-                            # Matrix Calculation
-                            def calc_m(base, extra_t, extra_h_n):
-                                return math.ceil(base + extra_t + (extra_h_n * num_noches))
+                            # Matrix Calculation with CURRENCY CONVERSION
+                            def calc_m_converted(base, extra_t, extra_h_n, orig_is_usd):
+                                # Total en moneda original
+                                total_orig = base + extra_t + (extra_h_n * num_noches)
+                                
+                                # Conversión si es necesario
+                                if orig_is_usd and not target_is_usd: # USD -> Soles
+                                    total_fin = math.ceil(total_orig * tc)
+                                elif not orig_is_usd and target_is_usd: # Soles -> USD
+                                    total_fin = math.ceil(total_orig / tc) if tc > 0 else math.ceil(total_orig)
+                                else: # Misma moneda
+                                    total_fin = math.ceil(total_orig)
+                                    
+                                return f"{total_fin:,.2f}"
 
                             pricing_matrix = {}
                             matrix_antes = {}
@@ -1575,92 +1647,92 @@ def render_ventas_ui():
 
                             if tipo_t == "Nacional" or tipo_t == "Mixto":
                                 pricing_matrix['tren_local'] = {
-                                    'sin': f"{calc_m(base_final, u_t_local, 0):,.2f}",
-                                    'h2': f"{calc_m(base_final, u_t_local, u_h2):,.2f}",
-                                    'h3': f"{calc_m(base_final, u_t_local, u_h3):,.2f}",
-                                    'h4': f"{calc_m(base_final, u_t_local, u_h4):,.2f}"
+                                    'sin': calc_m_converted(base_final, u_t_local, 0, orig_is_usd=False),
+                                    'h2': calc_m_converted(base_final, u_t_local, u_h2, orig_is_usd=False),
+                                    'h3': calc_m_converted(base_final, u_t_local, u_h3, orig_is_usd=False),
+                                    'h4': calc_m_converted(base_final, u_t_local, u_h4, orig_is_usd=False)
                                 }
                                 
                                 if show_antes_pdf:
                                     matrix_antes['tren_local'] = {
-                                        'sin': f"{calc_m(base_antes, u_t_local, 0):,.2f}",
-                                        'h2': f"{calc_m(base_antes, u_t_local, u_h2):,.2f}",
-                                        'h3': f"{calc_m(base_antes, u_t_local, u_h3):,.2f}",
-                                        'h4': f"{calc_m(base_antes, u_t_local, u_h4):,.2f}"
+                                        'sin': calc_m_converted(base_antes, u_t_local, 0, orig_is_usd=False),
+                                        'h2': calc_m_converted(base_antes, u_t_local, u_h2, orig_is_usd=False),
+                                        'h3': calc_m_converted(base_antes, u_t_local, u_h3, orig_is_usd=False),
+                                        'h4': calc_m_converted(base_antes, u_t_local, u_h4, orig_is_usd=False)
                                     }
                             
                             if tipo_t == "Mixto":
                                 pricing_matrix_ext['tren_local'] = {
-                                    'sin': f"{calc_m(base_ext_final, u_t_local / tc if tc > 0 else 0, 0):,.2f}",
-                                    'h2': f"{calc_m(base_ext_final, u_t_local / tc if tc > 0 else 0, u_h2):,.2f}",
-                                    'h3': f"{calc_m(base_ext_final, u_t_local / tc if tc > 0 else 0, u_h3):,.2f}",
-                                    'h4': f"{calc_m(base_ext_final, u_t_local / tc if tc > 0 else 0, u_h4):,.2f}"
+                                    'sin': calc_m_converted(base_ext_final, u_t_local / tc if tc > 0 else 0, 0, orig_is_usd=True),
+                                    'h2': calc_m_converted(base_ext_final, u_t_local / tc if tc > 0 else 0, u_h2, orig_is_usd=True),
+                                    'h3': calc_m_converted(base_ext_final, u_t_local / tc if tc > 0 else 0, u_h3, orig_is_usd=True),
+                                    'h4': calc_m_converted(base_ext_final, u_t_local / tc if tc > 0 else 0, u_h4, orig_is_usd=True)
                                 }
 
 
 
                             pricing_matrix.update({
                                 'expedition': {
-                                    'sin': f"{calc_m(base_final, 0, 0):,.2f}",
-                                    'h2': f"{calc_m(base_final, 0, u_h2):,.2f}",
-                                    'h3': f"{calc_m(base_final, 0, u_h3):,.2f}",
-                                    'h4': f"{calc_m(base_final, 0, u_h4):,.2f}"
+                                    'sin': calc_m_converted(base_final, 0, 0, orig_is_usd=(tipo_t != "Nacional")),
+                                    'h2': calc_m_converted(base_final, 0, u_h2, orig_is_usd=(tipo_t != "Nacional")),
+                                    'h3': calc_m_converted(base_final, 0, u_h3, orig_is_usd=(tipo_t != "Nacional")),
+                                    'h4': calc_m_converted(base_final, 0, u_h4, orig_is_usd=(tipo_t != "Nacional"))
                                 },
                                 'vistadome': {
-                                    'sin': f"{calc_m(base_final, u_t_v * (tc if tipo_t in ['Nacional', 'Mixto'] else 1), 0):,.2f}",
-                                    'h2': f"{calc_m(base_final, u_t_v * (tc if tipo_t in ['Nacional', 'Mixto'] else 1), u_h2):,.2f}",
-                                    'h3': f"{calc_m(base_final, u_t_v * (tc if tipo_t in ['Nacional', 'Mixto'] else 1), u_h3):,.2f}",
-                                    'h4': f"{calc_m(base_final, u_t_v * (tc if tipo_t in ['Nacional', 'Mixto'] else 1), u_h4):,.2f}"
+                                    'sin': calc_m_converted(base_final, u_t_v * (tc if tipo_t in ['Nacional', 'Mixto'] else 1), 0, orig_is_usd=(tipo_t != "Nacional")),
+                                    'h2': calc_m_converted(base_final, u_t_v * (tc if tipo_t in ['Nacional', 'Mixto'] else 1), u_h2, orig_is_usd=(tipo_t != "Nacional")),
+                                    'h3': calc_m_converted(base_final, u_t_v * (tc if tipo_t in ['Nacional', 'Mixto'] else 1), u_h3, orig_is_usd=(tipo_t != "Nacional")),
+                                    'h4': calc_m_converted(base_final, u_t_v * (tc if tipo_t in ['Nacional', 'Mixto'] else 1), u_h4, orig_is_usd=(tipo_t != "Nacional"))
                                 },
                                 'observatory': {
-                                    'sin': f"{calc_m(base_final, u_t_o * (tc if tipo_t in ['Nacional', 'Mixto'] else 1), 0):,.2f}",
-                                    'h2': f"{calc_m(base_final, u_t_o * (tc if tipo_t in ['Nacional', 'Mixto'] else 1), u_h2):,.2f}",
-                                    'h3': f"{calc_m(base_final, u_t_o * (tc if tipo_t in ['Nacional', 'Mixto'] else 1), u_h3):,.2f}",
-                                    'h4': f"{calc_m(base_final, u_t_o * (tc if tipo_t in ['Nacional', 'Mixto'] else 1), u_h4):,.2f}"
+                                    'sin': calc_m_converted(base_final, u_t_o * (tc if tipo_t in ['Nacional', 'Mixto'] else 1), 0, orig_is_usd=(tipo_t != "Nacional")),
+                                    'h2': calc_m_converted(base_final, u_t_o * (tc if tipo_t in ['Nacional', 'Mixto'] else 1), u_h2, orig_is_usd=(tipo_t != "Nacional")),
+                                    'h3': calc_m_converted(base_final, u_t_o * (tc if tipo_t in ['Nacional', 'Mixto'] else 1), u_h3, orig_is_usd=(tipo_t != "Nacional")),
+                                    'h4': calc_m_converted(base_final, u_t_o * (tc if tipo_t in ['Nacional', 'Mixto'] else 1), u_h4, orig_is_usd=(tipo_t != "Nacional"))
                                 }
                             })
 
                             if tipo_t == "Mixto":
                                 pricing_matrix_ext.update({
                                     'expedition': {
-                                        'sin': f"{calc_m(base_ext_final, 0, 0):,.2f}",
-                                        'h2': f"{calc_m(base_ext_final, 0, u_h2):,.2f}",
-                                        'h3': f"{calc_m(base_ext_final, 0, u_h3):,.2f}",
-                                        'h4': f"{calc_m(base_ext_final, 0, u_h4):,.2f}"
+                                        'sin': calc_m_converted(base_ext_final, 0, 0, orig_is_usd=True),
+                                        'h2': calc_m_converted(base_ext_final, 0, u_h2, orig_is_usd=True),
+                                        'h3': calc_m_converted(base_ext_final, 0, u_h3, orig_is_usd=True),
+                                        'h4': calc_m_converted(base_ext_final, 0, u_h4, orig_is_usd=True)
                                     },
                                     'vistadome': {
-                                        'sin': f"{calc_m(base_ext_final, u_t_v, 0):,.2f}",
-                                        'h2': f"{calc_m(base_ext_final, u_t_v, u_h2):,.2f}",
-                                        'h3': f"{calc_m(base_ext_final, u_t_v, u_h3):,.2f}",
-                                        'h4': f"{calc_m(base_ext_final, u_t_v, u_h4):,.2f}"
+                                        'sin': calc_m_converted(base_ext_final, u_t_v, 0, orig_is_usd=True),
+                                        'h2': calc_m_converted(base_ext_final, u_t_v, u_h2, orig_is_usd=True),
+                                        'h3': calc_m_converted(base_ext_final, u_t_v, u_h3, orig_is_usd=True),
+                                        'h4': calc_m_converted(base_ext_final, u_t_v, u_h4, orig_is_usd=True)
                                     },
                                     'observatory': {
-                                        'sin': f"{calc_m(base_ext_final, u_t_o, 0):,.2f}",
-                                        'h2': f"{calc_m(base_ext_final, u_t_o, u_h2):,.2f}",
-                                        'h3': f"{calc_m(base_ext_final, u_t_o, u_h3):,.2f}",
-                                        'h4': f"{calc_m(base_ext_final, u_t_o, u_h4):,.2f}"
+                                        'sin': calc_m_converted(base_ext_final, u_t_o, 0, orig_is_usd=True),
+                                        'h2': calc_m_converted(base_ext_final, u_t_o, u_h2, orig_is_usd=True),
+                                        'h3': calc_m_converted(base_ext_final, u_t_o, u_h3, orig_is_usd=True),
+                                        'h4': calc_m_converted(base_ext_final, u_t_o, u_h4, orig_is_usd=True)
                                     }
                                 })
 
                             if show_antes_pdf:
                                 matrix_antes.update({
                                     'expedition': {
-                                        'sin': f"{calc_m(base_antes, 0, 0):,.2f}",
-                                        'h2': f"{calc_m(base_antes, 0, u_h2):,.2f}",
-                                        'h3': f"{calc_m(base_antes, 0, u_h3):,.2f}",
-                                        'h4': f"{calc_m(base_antes, 0, u_h4):,.2f}"
+                                        'sin': calc_m_converted(base_antes, 0, 0, orig_is_usd=(tipo_t != "Nacional")),
+                                        'h2': calc_m_converted(base_antes, 0, u_h2, orig_is_usd=(tipo_t != "Nacional")),
+                                        'h3': calc_m_converted(base_antes, 0, u_h3, orig_is_usd=(tipo_t != "Nacional")),
+                                        'h4': calc_m_converted(base_antes, 0, u_h4, orig_is_usd=(tipo_t != "Nacional"))
                                     },
                                     'vistadome': {
-                                        'sin': f"{calc_m(base_antes, u_t_v * (tc if tipo_t == 'Nacional' else 1), 0):,.2f}",
-                                        'h2': f"{calc_m(base_antes, u_t_v * (tc if tipo_t == 'Nacional' else 1), u_h2):,.2f}",
-                                        'h3': f"{calc_m(base_antes, u_t_v * (tc if tipo_t == 'Nacional' else 1), u_h3):,.2f}",
-                                        'h4': f"{calc_m(base_antes, u_t_v * (tc if tipo_t == 'Nacional' else 1), u_h4):,.2f}"
+                                        'sin': calc_m_converted(base_antes, u_t_v * (tc if tipo_t == 'Nacional' else 1), 0, orig_is_usd=(tipo_t != "Nacional")),
+                                        'h2': calc_m_converted(base_antes, u_t_v * (tc if tipo_t == 'Nacional' else 1), u_h2, orig_is_usd=(tipo_t != "Nacional")),
+                                        'h3': calc_m_converted(base_antes, u_t_v * (tc if tipo_t == 'Nacional' else 1), u_h3, orig_is_usd=(tipo_t != "Nacional")),
+                                        'h4': calc_m_converted(base_antes, u_t_v * (tc if tipo_t == 'Nacional' else 1), u_h4, orig_is_usd=(tipo_t != "Nacional"))
                                     },
                                     'observatory': {
-                                        'sin': f"{calc_m(base_antes, u_t_o * (tc if tipo_t == 'Nacional' else 1), 0):,.2f}",
-                                        'h2': f"{calc_m(base_antes, u_t_o * (tc if tipo_t == 'Nacional' else 1), u_h2):,.2f}",
-                                        'h3': f"{calc_m(base_antes, u_t_o * (tc if tipo_t == 'Nacional' else 1), u_h3):,.2f}",
-                                        'h4': f"{calc_m(base_antes, u_t_o * (tc if tipo_t == 'Nacional' else 1), u_h4):,.2f}"
+                                        'sin': calc_m_converted(base_antes, u_t_o * (tc if tipo_t == 'Nacional' else 1), 0, orig_is_usd=(tipo_t != "Nacional")),
+                                        'h2': calc_m_converted(base_antes, u_t_o * (tc if tipo_t == 'Nacional' else 1), u_h2, orig_is_usd=(tipo_t != "Nacional")),
+                                        'h3': calc_m_converted(base_antes, u_t_o * (tc if tipo_t == 'Nacional' else 1), u_h3, orig_is_usd=(tipo_t != "Nacional")),
+                                        'h4': calc_m_converted(base_antes, u_t_o * (tc if tipo_t == 'Nacional' else 1), u_h4, orig_is_usd=(tipo_t != "Nacional"))
                                     }
                                 })                            
                             # --- NUEVA SECCIÓN: DESGLOSE ESTRUCTURADO PARA EXTRACCIÓN (FACTURACIÓN) ---
