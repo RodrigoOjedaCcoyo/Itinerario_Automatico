@@ -310,16 +310,31 @@ def render_ventas_ui():
             st.session_state.f_estrategia = estrategia_v
 
             if estrategia_v == "Matriz":
+                # Inyectar CSS para asegurar visibilidad del texto en multiselect
+                st.markdown("""
+                    <style>
+                    span[data-baseweb="tag"] {
+                        background-color: #e63946 !important;
+                        color: white !important;
+                    }
+                    span[data-baseweb="tag"] span {
+                        color: white !important;
+                    }
+                    </style>
+                """, unsafe_allow_html=True)
+
                 options_h = ["Sin Hotel", "Hotel 2*", "Hotel 3*", "Hotel 4*"]
                 options_t = ["Tren Local", "Expedition", "Vistadome", "Observatory"]
                 
-                # Inicializar si no existen para evitar errores de default
-                if 'cats_activas' not in st.session_state: st.session_state.cats_activas = options_h
-                if 'trenes_activos' not in st.session_state: st.session_state.trenes_activos = options_t
+                # Forzar inicialización limpia si hay inconsistencias
+                if 'cats_activas' not in st.session_state or not st.session_state.cats_activas:
+                    st.session_state.cats_activas = options_h
+                if 'trenes_activos' not in st.session_state or not st.session_state.trenes_activos:
+                    st.session_state.trenes_activos = options_t
                 
-                f_c1, f_c2 = st.columns(2)
-                cats_activas = f_c1.multiselect("Hoteles en PDF", options_h, default=st.session_state.cats_activas, key="ms_cats")
-                trenes_activos = f_c2.multiselect("Trenes en PDF", options_t, default=st.session_state.trenes_activos, key="ms_trenes")
+                # Usar columnas más anchas o quitarlas si persiste el problema
+                cats_activas = st.multiselect("Hoteles en PDF", options_h, default=[x for x in st.session_state.cats_activas if x in options_h], key="ms_cats_v2")
+                trenes_activos = st.multiselect("Trenes en PDF", options_t, default=[x for x in st.session_state.trenes_activos if x in options_t], key="ms_trenes_v2")
                 
                 st.session_state.cats_activas = cats_activas
                 st.session_state.trenes_activos = trenes_activos
