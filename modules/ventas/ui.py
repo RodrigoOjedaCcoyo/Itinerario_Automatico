@@ -1226,6 +1226,10 @@ def render_ventas_ui():
             if c_pc_can > 0: det_can['PCD'] = f"{math.ceil(cost_margined_can_pc + (m_extra_can/max(1, pasajeros_can)) + up_ext):,.2f}"
             if c_ni_can > 0: det_can['Niño'] = f"{math.ceil(cost_margined_can_ni + (m_extra_can/max(1, pasajeros_can)) + up_ext):,.2f}"
 
+            # Define target currency settings globally for the current calculations
+            target_is_usd = (st.session_state.get('f_moneda_pdf', "Soles (S/)") == "Dólares ($)")
+            sym_target = "$" if target_is_usd else "S/"
+
             # Legacy dictionaries for older PDF parts (Respecting target currency)
             def convert_val(orig_val, orig_is_usd):
                 if orig_is_usd and not target_is_usd: # USD -> Soles
@@ -1492,8 +1496,6 @@ def render_ventas_ui():
 
                             # Lista de precios de cierre para el PDF con desglose detallado y CURRENCY CONVERSION
                             precios_cierre_list = []
-                            target_is_usd = (st.session_state.get('f_moneda_pdf', "Soles (S/)") == "Dólares ($)")
-                            sym_target = "$" if target_is_usd else "S/"
 
                             def get_p_detalles_converted(m_extra, n_pax, up_val, counts_list, prices_list, cats_labels, orig_is_usd):
                                 d = []
