@@ -1040,53 +1040,62 @@ def render_ventas_ui():
                 pasajeros_can = c_ad_can + c_es_can + c_pc_can + c_ni_can
                 # Keep all category counts as they are
 
-            # Lógica de Upgrades (RECUPERAR VALORES SEGÚN ORIGEN)
-            # Soles
+            # Recuperar suplementos de tren (Manual)
             u_t_v_sol = st.session_state.get('u_t_v_sol', 0.0)
             u_t_o_sol = st.session_state.get('u_t_o_sol', 0.0)
             u_t_local = st.session_state.get('u_t_local', 0.0)
-            
-            # Dólares
-            u_t_v_usd = st.session_state.get('u_t_v', 0.0) # Key original para USD
-            u_t_o_usd = st.session_state.get('u_t_o', 0.0) # Key original para USD
+            u_t_v_usd = st.session_state.get('u_t_v', 0.0)
+            u_t_o_usd = st.session_state.get('u_t_o', 0.0)
 
-            calc_upgrades = 0.0
-            calc_tren = 0.0
+            # Pre-calcular upgrades (SIEMPRE ambos para evitar conversiones raras en Mixto)
+            calc_upgrades_sol = 0.0
+            calc_upgrades_usd = 0.0
+            calc_tren_sol = 0.0
+            calc_tren_usd = 0.0
             tc = 3.8 # Tipo de cambio base para el sistema
-            
-            if estrategia_v == "General":
-                # 🏨 Cálculo ponderado de Hotel según distribución de habitaciones
-                if sel_hotel_gen != "Sin Hotel":
-                    # Mapeo de tarifas según categoría seleccionada (2*, 3*, 4*)
-                    cat_code = sel_hotel_gen.split(" ")[1].replace("*", "") # "2", "3" o "4"
-                    t_sgl = st.session_state.get(f'u_h{cat_code}_sgl', 0.0)
-                    t_dbl = st.session_state.get(f'u_h{cat_code}_dbl', 0.0)
-                    t_mat = st.session_state.get(f'u_h{cat_code}_mat', 0.0)
-                    t_tpl = st.session_state.get(f'u_h{cat_code}_tpl', 0.0)
-                    t_cua = st.session_state.get(f'u_h{cat_code}_cua', 0.0)
-                    
-                    # Costo total del grupo = sum(pax * tarifa_pp) * num_noches
-                    total_hotel_grupo = (n_sgl * 1 * t_sgl + 
-                                         n_dbl * 2 * t_dbl + 
-                                         n_mat * 2 * t_mat +
-                                         n_tpl * 3 * t_tpl + 
-                                         n_cua * 4 * t_cua) * num_noches
-                    
-                    # El 'upgrade' por persona que entra al cálculo general es el promedio ponderado
-                    calc_upgrades = total_hotel_grupo / max(1, total_pasajeros)
-                
-                if sel_tren_gen == "Tren Local":
-                    calc_tren = u_t_local
-                elif sel_tren_gen == "Vistadome":
-                    calc_tren = u_t_v_sol if tipo_t == "Nacional" else u_t_v_usd
-                elif sel_tren_gen == "Observatory":
-                    calc_tren = u_t_o_sol if tipo_t == "Nacional" else u_t_o_usd
-                else:
-                    calc_tren = 0
 
-                # Si no hay MP, el costo del tren en modo general debe ser 0
-                if not has_mp:
-                    calc_tren = 0
+            if estrategia_v == "General":
+                total_pax_safe = max(1, total_pasajeros)
+                # 🏨 Hotel
+                if sel_hotel_gen != "Sin Hotel":
+                    cat_code = sel_hotel_gen.split(" ")[1].replace("*", "") # "2", "3" o "4"
+                    
+                    # Soles
+                    t_sgl_s = st.session_state.get(f'u_h{cat_code}_sgl_sol', 0.0)
+                    t_dbl_s = st.session_state.get(f'u_h{cat_code}_dbl_sol', 0.0)
+                    t_mat_s = st.session_state.get(f'u_h{cat_code}_mat_sol', 0.0)
+                    t_tpl_s = st.session_state.get(f'u_h{cat_code}_tpl_sol', 0.0)
+                    t_cua_s = st.session_state.get(f'u_h{cat_code}_cua_sol', 0.0)
+                    total_hotel_sol = (n_sgl*1*t_sgl_s + n_dbl*2*t_dbl_s + n_mat*2*t_mat_s + n_tpl*3*t_tpl_s + n_cua*4*t_cua_s) * num_noches
+                    calc_upgrades_sol = total_hotel_sol / total_pax_safe
+                    
+                    # Dólares
+                    t_sgl_u = st.session_state.get(f'u_h{cat_code}_sgl_usd', 0.0)
+                    t_dbl_u = st.session_state.get(f'u_h{cat_code}_dbl_usd', 0.0)
+                    t_mat_u = st.session_state.get(f'u_h{cat_code}_mat_usd', 0.0)
+                    t_tpl_u = st.session_state.get(f'u_h{cat_code}_tpl_usd', 0.0)
+                    t_cua_u = st.session_state.get(f'u_h{cat_code}_cua_usd', 0.0)
+                    total_hotel_usd = (n_sgl*1*t_sgl_u + n_dbl*2*t_dbl_u + n_mat*2*t_mat_u + n_tpl*3*t_tpl_u + n_cua*4*t_cua_u) * num_noches
+                    calc_upgrades_usd = total_hotel_usd / total_pax_safe
+                
+                # 🚂 Tren
+                if has_mp:
+                    if sel_tren_gen == "Tren Local":
+                        calc_tren_sol = u_t_local
+                        calc_tren_usd = 0.0
+                    elif sel_tren_gen == "Vistadome":
+                        calc_tren_sol = u_t_v_sol
+                        calc_tren_usd = u_t_v_usd
+                    elif sel_tren_gen == "Observatory":
+                        calc_tren_sol = u_t_o_sol
+                        calc_tren_usd = u_t_o_usd
+                    else:
+                        calc_tren_sol = 0.0
+                        calc_tren_usd = 0.0
+            
+            # Definir variables de compatibilidad (según Origen principal)
+            calc_upgrades = calc_upgrades_sol if tipo_t == "Nacional" else calc_upgrades_usd
+            calc_tren = calc_tren_sol if tipo_t == "Nacional" else calc_tren_usd
             
             # Factor de margen de utilidad
             factor_m = 1 + (margen_pct / 100)
@@ -1193,14 +1202,9 @@ def render_ventas_ui():
                 cost_margined_can_pc += math.ceil(c_can_pc * f_m_t)
                 cost_margined_can_ni += math.ceil(c_can_ni * f_m_t)
 
-            # Lógica de Upgrades por Moneda (Garantizar consistencia)
-            # Si el origen es Nacional, los inputs de hotel están en Soles (calc_upgrades es Soles).
-            # Si el origen es Extranjero o Mixto, los inputs están en USD (calc_upgrades es USD).
-            
-            # Para Nacionales: Todo debe estar en Soles
-            up_nac = (calc_upgrades if tipo_t == "Nacional" else calc_upgrades * tc) + (calc_tren if tipo_t == "Nacional" else calc_tren * tc)
-            # Para Extranjeros/CAN: Todo debe estar en USD
-            up_ext = (calc_upgrades if tipo_t != "Nacional" else calc_upgrades / tc) + (calc_tren if tipo_t != "Nacional" else calc_tren / tc)
+            # Lógica de Upgrades final (Garantizada sin conversiones)
+            up_nac = calc_upgrades_sol + calc_tren_sol
+            up_ext = calc_upgrades_usd + calc_tren_usd
 
             # Variables base para análisis interno (Solo costos de tours, sin hotel/tren)
             total_nac_pp = total_nac / max(1, pasajeros_nac)
@@ -1662,11 +1666,6 @@ def render_ventas_ui():
                                         m_total_can = real_can
                                         sym_can = "$"
                                     elif target_is_usd:
-                                        m_total_can = real_can
-                                        m_pp_can = avg_can_pp
-                                        sym_can = sym_target
-                                    else:
-                                        m_pp_can = math.ceil(avg_can_pp * tc)
                                         m_total_can = m_pp_can * pasajeros_can
                                         sym_can = sym_target
 
@@ -1678,12 +1677,17 @@ def render_ventas_ui():
                                         'detalles': d_can
                                     })
                             
-                            # Sincronización de base_final (usado en comparativas/metadatos)
-                            # Ya estan redondeados en avg_xxx_pp
-                            # Base para Matrices (Solo tours + extras, sin upgrades que se suman en calc_m)
-                            base_final = (total_nac + m_extra_nac) / max(1, pasajeros_nac) if tipo_t == "Nacional" else (total_ext + m_extra_ext) / max(1, pasajeros_ext)
-                            base_antes = (total_nac_a + m_extra_nac) / max(1, pasajeros_nac) if tipo_t == "Nacional" else (total_ext_a + m_extra_ext) / max(1, pasajeros_ext)
+                            # Sincronización de bases final (Una por origen, sin perder datos en Mixto)
+                            base_nac_final = (total_nac + m_extra_nac) / max(1, pasajeros_nac)
                             base_ext_final = (total_ext + m_extra_ext) / max(1, pasajeros_ext)
+                            base_can_final = (total_can + m_extra_can) / max(1, pasajeros_can)
+                            
+                            # Para compatibilidad con matrices antiguas y desgloses PDF:
+                            total_nac_pp = base_nac_final
+                            total_ext_pp = base_ext_final
+                            total_can_pp = base_can_final
+                            base_final = base_nac_final if tipo_t == "Nacional" else base_ext_final
+                            base_antes = (total_nac_a + m_extra_nac) / max(1, pasajeros_nac) if tipo_t == "Nacional" else (total_ext_a + m_extra_ext) / max(1, pasajeros_ext)
                             
 
                             
@@ -1715,42 +1719,6 @@ def render_ventas_ui():
                                     
                                 return f"{total_fin:,.2f}"
 
-                            pricing_matrix = {}
-                            matrix_antes = {}
-                            pricing_matrix_ext = {} # Nueva matriz para modo Mixto
-
-                            # Calculamos base_ext para el modo Mixto
-                            if estrategia_v == "General": 
-                                base_final += (calc_upgrades + calc_tren)
-                                base_antes += (calc_upgrades + calc_tren)
-                                base_ext_final += (calc_upgrades + calc_tren)
-
-                            if tipo_t == "Nacional" or tipo_t == "Mixto":
-                                pricing_matrix['tren_local'] = {
-                                    'sin': calc_m_converted(base_final, u_t_local, 0, orig_is_usd=False),
-                                    'h2': calc_m_converted(base_final, u_t_local, u_h2, orig_is_usd=False),
-                                    'h3': calc_m_converted(base_final, u_t_local, u_h3, orig_is_usd=False),
-                                    'h4': calc_m_converted(base_final, u_t_local, u_h4, orig_is_usd=False)
-                                }
-                                
-                                if show_antes_pdf:
-                                    matrix_antes['tren_local'] = {
-                                        'sin': calc_m_converted(base_antes, u_t_local, 0, orig_is_usd=False),
-                                        'h2': calc_m_converted(base_antes, u_t_local, u_h2, orig_is_usd=False),
-                                        'h3': calc_m_converted(base_antes, u_t_local, u_h3, orig_is_usd=False),
-                                        'h4': calc_m_converted(base_antes, u_t_local, u_h4, orig_is_usd=False)
-                                    }
-                            
-                            if tipo_t == "Mixto":
-                                pricing_matrix_ext['tren_local'] = {
-                                    'sin': calc_m_converted(base_ext_final, u_t_local / tc if tc > 0 else 0, 0, orig_is_usd=True),
-                                    'h2': calc_m_converted(base_ext_final, u_t_local / tc if tc > 0 else 0, u_h2, orig_is_usd=True),
-                                    'h3': calc_m_converted(base_ext_final, u_t_local / tc if tc > 0 else 0, u_h3, orig_is_usd=True),
-                                    'h4': calc_m_converted(base_ext_final, u_t_local / tc if tc > 0 else 0, u_h4, orig_is_usd=True)
-                                }
-
-
-
                             # Recuperar upgrades para Nacionales (Soles)
                             uh2_s = st.session_state.get('u_h2_sol', 0.0)
                             uh3_s = st.session_state.get('u_h3_sol', 0.0)
@@ -1772,6 +1740,44 @@ def render_ventas_ui():
                             else:
                                 uh2, uh3, uh4 = uh2_u, uh3_u, uh4_u
                                 utv, uto = utv_u, uto_u
+
+                            pricing_matrix = {}
+                            matrix_antes = {}
+                            pricing_matrix_ext = {} # Nueva matriz para modo Mixto
+
+                            # Calculamos base_ext para el modo Mixto
+                            if estrategia_v == "General": 
+                                base_final += (calc_upgrades + calc_tren)
+                                base_antes += (calc_upgrades + calc_tren)
+                                base_ext_final += (calc_upgrades + calc_tren)
+
+                            if tipo_t == "Nacional" or tipo_t == "Mixto":
+                                pricing_matrix['tren_local'] = {
+                                    'sin': calc_m_converted(base_final, u_t_local, 0, orig_is_usd=False),
+                                    'h2': calc_m_converted(base_final, u_t_local, uh2, orig_is_usd=False),
+                                    'h3': calc_m_converted(base_final, u_t_local, uh3, orig_is_usd=False),
+                                    'h4': calc_m_converted(base_final, u_t_local, uh4, orig_is_usd=False)
+                                }
+                                
+                                if show_antes_pdf:
+                                    matrix_antes['tren_local'] = {
+                                        'sin': calc_m_converted(base_antes, u_t_local, 0, orig_is_usd=False),
+                                        'h2': calc_m_converted(base_antes, u_t_local, uh2, orig_is_usd=False),
+                                        'h3': calc_m_converted(base_antes, u_t_local, uh3, orig_is_usd=False),
+                                        'h4': calc_m_converted(base_antes, u_t_local, uh4, orig_is_usd=False)
+                                    }
+                            
+                            if tipo_t == "Mixto":
+                                # En modo Mixto, los extranjeros no tienen Tren Local. Usamos 0 para evitar conversiones.
+                                pricing_matrix_ext['tren_local'] = {
+                                    'sin': calc_m_converted(base_ext_final, 0, 0, orig_is_usd=True),
+                                    'h2': calc_m_converted(base_ext_final, 0, uh2_u, orig_is_usd=True),
+                                    'h3': calc_m_converted(base_ext_final, 0, uh3_u, orig_is_usd=True),
+                                    'h4': calc_m_converted(base_ext_final, 0, uh4_u, orig_is_usd=True)
+                                }
+
+
+
 
                             pricing_matrix.update({
                                 'expedition': {
@@ -1897,9 +1903,9 @@ def render_ventas_ui():
                                 "estrategia_usada": estrategia_v,
                                 "total_pasajeros": total_pasajeros,
                                 "ajustes_manuales": {
-                                    "nacional": round(m_extra_nac, 2),
-                                    "extranjero": round(m_extra_ext, 2),
-                                    "can": round(m_extra_can, 2)
+                                    "nacional": round(float(m_extra_nac), 2),
+                                    "extranjero": round(float(m_extra_ext), 2),
+                                    "can": round(float(m_extra_can), 2)
                                 },
                                 "categorias_seleccionadas": {
                                     "hotel": sel_hotel_gen,
@@ -1908,11 +1914,9 @@ def render_ventas_ui():
                                     "noches_hotel": num_noches
                                 },
                                 "componentes_precio_pp": {
-                                    "hotel_upgrade_pp": round(calc_upgrades, 2),
-                                    "tren_upgrade_pp": round(calc_tren, 2),
+                                    "hotel_upgrade_pp": round(float(calc_upgrades), 2),
+                                    "tren_upgrade_pp": round(float(calc_tren), 2),
                                     "costo_base_itinerario_pp": {
-                                        "nacional": round(total_nac_pp, 2),
-                                        "extranjero": round(total_ext_pp, 2),
                                         "can": round(total_can_pp, 2)
                                     }
                                 },
