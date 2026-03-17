@@ -1265,20 +1265,17 @@ def render_ventas_ui():
 
             # Legacy dictionaries for older PDF parts (Respecting target currency)
             def convert_val(orig_val, orig_is_usd):
-                if target_is_mixed:
-                    return orig_val # No conversion in mixed mode
-                if orig_is_usd and not target_is_usd: # USD -> Soles
-                    return math.ceil(orig_val * tc)
-                elif not orig_is_usd and target_is_usd: # Soles -> USD
-                    return math.ceil(orig_val / tc) if tc > 0 else math.ceil(orig_val)
-                return orig_val
+                # NO-CONVERSION: Siempre devuelve el valor original
+                # El usuario no quiere que se multiplique por TC aunque cambie el símbolo
+                return math.ceil(orig_val)
 
             def convert_det(det_dict, orig_is_usd):
                 new_det = {}
                 for k, v in det_dict.items():
                     # v is a formatted string "1,234.56"
                     clean_v = float(v.replace(',', ''))
-                    conv_v = convert_val(clean_v, orig_is_usd)
+                    # NO-CONVERSION: Siempre devuelve el valor original
+                    conv_v = math.ceil(clean_v)
                     new_det[k] = f"{conv_v:,.2f}"
                 return new_det
 
@@ -1666,7 +1663,8 @@ def render_ventas_ui():
                                         m_total_can = real_can
                                         sym_can = "$"
                                     elif target_is_usd:
-                                        m_total_can = m_pp_can * pasajeros_can
+                                        m_total_can = real_can
+                                        m_pp_can = avg_can_pp
                                         sym_can = sym_target
 
                                     precios_cierre_list.append({
@@ -1677,11 +1675,12 @@ def render_ventas_ui():
                                         'detalles': d_can
                                     })
                             
-                            # Sincronización de bases final (Una por origen, sin perder datos en Mixto)
+                            # Sincronización de bases final (Ya calculada arriba con upgrades)
+                            # Se hereda de la lógica superior garantizando paridad S/ y $
                             base_nac_final = (total_nac + m_extra_nac) / max(1, pasajeros_nac)
                             base_ext_final = (total_ext + m_extra_ext) / max(1, pasajeros_ext)
                             base_can_final = (total_can + m_extra_can) / max(1, pasajeros_can)
-                            
+                                     
                             # Para compatibilidad con matrices antiguas y desgloses PDF:
                             total_nac_pp = base_nac_final
                             total_ext_pp = base_ext_final
