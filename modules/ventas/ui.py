@@ -24,6 +24,16 @@ from utils.supabase_db import (
 )
 from utils.translator import translate_itinerary
 
+def get_image_folders_ventas():
+    base_path = os.path.join("assets", "img", "tours")
+    folders = ["general"]
+    if os.path.exists(base_path):
+        found = [d for d in os.listdir(base_path) if os.path.isdir(os.path.join(base_path, d))]
+        for f in sorted(found):
+            if f != "general":
+                folders.append(f)
+    return folders
+
 # --- ELIMINADAS FUNCIONES DE PERSISTENCIA LOCAL (AHORA ES CLOUD) ---
 
 # --- DICCIONARIO DE ICONOS SVG ---
@@ -137,6 +147,7 @@ def crear_dia_base(titulo="Día Personalizado", desc="", servicios=None, icons=N
 # --- UI PRINCIPAL ---
 def render_ventas_ui():
     """Renderiza la interfaz de ventas"""
+    image_folders = get_image_folders_ventas()
     
     # Esconder elementos de Streamlit (Header, Menu, Footer)
     st.markdown("""
@@ -834,9 +845,10 @@ def render_ventas_ui():
                             tour['usar_margen_propio'] = col_h.checkbox("Activar Margen", value=tour.get('usar_margen_propio', False), key=f"use_m_{tour_id}", disabled=is_disabled)
                             tour['margen_individual'] = col_h.number_input(f"% Margen", value=float(tour.get('margen_individual', m_pct_view)), step=1.0, key=f"margen_{tour_id}", disabled=not tour.get('usar_margen_propio') or is_disabled, help="Si está activado, usa este margen. Si no, usa el global.")
                             
-                            # Campo de Carpeta de Imágenes (Visible solo si se activa edición para no saturar)
                             if modo_edicion:
-                                tour['carpeta_img'] = st.text_input("📁 Carpeta Imágenes (Assets)", value=tour.get('carpeta_img', 'general'), key=f"img_folder_{tour_id}", help="Nombre de la carpeta en assets/img/tours/ para este día.")
+                                current_folder = tour.get('carpeta_img', 'general')
+                                opts_folder = image_folders + [current_folder] if current_folder not in image_folders else image_folders
+                                tour['carpeta_img'] = st.selectbox("📁 Carpeta Imágenes (Assets)", options=opts_folder, index=opts_folder.index(current_folder) if current_folder in opts_folder else 0, key=f"img_folder_{tour_id}", help="Selecciona la carpeta de imágenes para este día.")
                         
                         # --- MEJORA: Tarifas por Categoría (Ahora más visible) ---
                         if modo_edicion:

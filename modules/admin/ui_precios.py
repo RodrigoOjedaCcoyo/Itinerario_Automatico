@@ -1,7 +1,20 @@
+import os
 import streamlit as st
 from utils.supabase_db import get_available_tours, update_tour_master, create_new_tour
 
+def get_image_folders_admin():
+    base_path = os.path.join("assets", "img", "tours")
+    folders = ["general"]
+    if os.path.exists(base_path):
+        found = [d for d in os.listdir(base_path) if os.path.isdir(os.path.join(base_path, d))]
+        for f in sorted(found):
+            if f != "general":
+                folders.append(f)
+    return folders
+
 def render_admin_precios_ui():
+    image_folders = get_image_folders_admin()
+
     st.markdown("## ⚙️ Configuración Maestra de Catálogo")
     st.markdown("Gestiona los tours y paquetes. **Los cambios afectarán a todas las nuevas cotizaciones.**")
     st.divider()
@@ -81,8 +94,11 @@ def render_admin_precios_ui():
                                     n_dificultad = st.selectbox("Dificultad", options=["FACIL", "MODERADO", "DIFICIL", "EXTREMO"], index=["FACIL", "MODERADO", "DIFICIL", "EXTREMO"].index(t.get('dificultad', 'FACIL')), key=f"ed_dif_{id_tour}")
                                     n_categoria = st.text_input("Categoría", value=t.get('categoria', 'General'), key=f"ed_cat_{id_tour}")
                                 
-                                n_img = st.text_input("Carpeta Imágenes", value=t.get('carpeta_img', 'general'), key=f"ed_img_{id_tour}")
-                                n_hora = st.text_input("Hora Inicio (HH:MM:SS)", value=t.get('hora_inicio', '08:00:00')[:8], key=f"ed_hora_{id_tour}")
+                                    current_img = t.get('carpeta_img', 'general')
+                                    opts_img = image_folders + [current_img] if current_img not in image_folders else image_folders
+                                    n_img = st.selectbox("Carpeta Imágenes", options=opts_img, index=opts_img.index(current_img) if current_img in opts_img else 0, key=f"ed_img_{id_tour}")
+                                    n_hora = st.text_input("Hora Inicio (HH:MM:SS)", value=t.get('hora_inicio', '08:00:00')[:8], key=f"ed_hora_{id_tour}")
+
 
                         st.markdown("**📝 Textos del Itinerario**")
                         
@@ -181,7 +197,7 @@ def render_admin_precios_ui():
                 with st.expander("🛠️ Información Técnica"):
                     f_dificultad = st.selectbox("Dificultad", options=["FACIL", "MODERADO", "DIFICIL", "EXTREMO"])
                     f_categoria = st.text_input("Categoría", value="General")
-                    f_img = st.text_input("Carpeta Imágenes", value="general")
+                    f_img = st.selectbox("Carpeta Imágenes", options=image_folders)
                     f_hora = st.text_input("Hora Inicio", value="08:00:00")
 
             st.markdown("**📝 Textos (Separados por comas)**")
