@@ -1562,15 +1562,8 @@ def render_ventas_ui():
                                         # Precio base en su moneda original
                                         p_unit_orig = prices_list[i] + shared_extra + up_val
                                         
-                                        # Conversión si es necesario
-                                        if target_is_mixed:
-                                            p_unit_fin = math.ceil(p_unit_orig)
-                                        elif orig_is_usd and not target_is_usd: # USD -> Soles
-                                            p_unit_fin = math.ceil(p_unit_orig * tc)
-                                        elif not orig_is_usd and target_is_usd: # Soles -> USD
-                                            p_unit_fin = math.ceil(p_unit_orig / tc) if tc > 0 else math.ceil(p_unit_orig)
-                                        else: # Misma moneda
-                                            p_unit_fin = math.ceil(p_unit_orig)
+                                        # Conversión eliminada: siempre devuelve original
+                                        p_unit_fin = math.ceil(p_unit_orig)
                                             
                                         d.append({
                                             'cat': cats_labels[i],
@@ -1598,13 +1591,10 @@ def render_ventas_ui():
                                     m_pp_nac = avg_nac_pp
                                     m_total_nac = real_nac
                                     sym_nac = "S/"
-                                elif not target_is_usd:
-                                    m_total_nac = real_nac
-                                    m_pp_nac = avg_nac_pp
-                                    sym_nac = sym_target
                                 else:
-                                    m_pp_nac = math.ceil(avg_nac_pp / tc) if tc > 0 else avg_nac_pp
-                                    m_total_nac = m_pp_nac * pasajeros_nac
+                                    # NO-CONVERSION
+                                    m_pp_nac = avg_nac_pp
+                                    m_total_nac = real_nac
                                     sym_nac = sym_target
 
                                 precios_cierre_list.append({
@@ -1631,13 +1621,10 @@ def render_ventas_ui():
                                         m_pp_ext = avg_ext_pp
                                         m_total_ext = real_ext
                                         sym_ext = "$"
-                                    elif target_is_usd:
-                                        m_total_ext = real_ext
-                                        m_pp_ext = avg_ext_pp
-                                        sym_ext = sym_target
                                     else:
-                                        m_pp_ext = math.ceil(avg_ext_pp * tc)
-                                        m_total_ext = m_pp_ext * pasajeros_ext
+                                        # NO-CONVERSION
+                                        m_pp_ext = avg_ext_pp
+                                        m_total_ext = real_ext
                                         sym_ext = sym_target
 
                                     precios_cierre_list.append({
@@ -1662,7 +1649,8 @@ def render_ventas_ui():
                                         m_pp_can = avg_can_pp
                                         m_total_can = real_can
                                         sym_can = "$"
-                                    elif target_is_usd:
+                                    else:
+                                        # NO-CONVERSION
                                         m_total_can = real_can
                                         m_pp_can = avg_can_pp
                                         sym_can = sym_target
@@ -1706,15 +1694,8 @@ def render_ventas_ui():
                                 # Total en moneda original
                                 total_orig = base + extra_t + (extra_h_n * num_noches)
                                 
-                                # Conversión si es necesario
-                                if target_is_mixed:
-                                    total_fin = math.ceil(total_orig)
-                                elif orig_is_usd and not target_is_usd: # USD -> Soles
-                                    total_fin = math.ceil(total_orig * tc)
-                                elif not orig_is_usd and target_is_usd: # Soles -> USD
-                                    total_fin = math.ceil(total_orig / tc) if tc > 0 else math.ceil(total_orig)
-                                else: # Misma moneda
-                                    total_fin = math.ceil(total_orig)
+                                # Conversión eliminada
+                                total_fin = math.ceil(total_orig)
                                     
                                 return f"{total_fin:,.2f}"
 
