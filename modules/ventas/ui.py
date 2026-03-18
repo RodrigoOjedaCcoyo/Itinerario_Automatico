@@ -1591,12 +1591,13 @@ def render_ventas_ui():
                             if tipo_t in ["Nacional", "Mixto"] and pasajeros_nac > 0:
                                 d_nac = get_p_detalles_converted(m_extra_nac, pasajeros_nac, up_nac, 
                                                                [c_ad_nac, c_es_nac, c_pc_nac, c_ni_nac],
-                                                               [(total_nac_ad / max(1, c_ad_nac)) if c_ad_nac > 0 else 0 for total_nac_ad in [
-                                                                   sum(math.ceil(t.get('costo_nac', 0) * f_m_t) for t in st.session_state.itinerario),
-                                                                   sum(math.ceil(t.get('costo_nac_est', t.get('costo_nac', 0)-70) * f_m_t) for t in st.session_state.itinerario),
-                                                                   sum(math.ceil(t.get('costo_nac_pcd', t.get('costo_nac', 0)-70) * f_m_t) for t in st.session_state.itinerario),
-                                                                   sum(math.ceil(t.get('costo_nac_nino', t.get('costo_nac', 0)-40) * f_m_t) for t in st.session_state.itinerario)
-                                                               ]], labels_pax, orig_is_usd=False)
+                                                               [(total_nac_cat) if c_nac_cat > 0 else 0 for c_nac_cat, total_nac_cat in zip(
+                                                                   [c_ad_nac, c_es_nac, c_pc_nac, c_ni_nac],
+                                                                   [sum(math.ceil(t.get('costo_nac', 0) * f_m_t) for t in st.session_state.itinerario),
+                                                                    sum(math.ceil(t.get('costo_nac_est', t.get('costo_nac', 0)-70) * f_m_t) for t in st.session_state.itinerario),
+                                                                    sum(math.ceil(t.get('costo_nac_pcd', t.get('costo_nac', 0)-70) * f_m_t) for t in st.session_state.itinerario),
+                                                                    sum(math.ceil(t.get('costo_nac_nino', t.get('costo_nac', 0)-40) * f_m_t) for t in st.session_state.itinerario)]
+                                                               )], labels_pax, orig_is_usd=False)
                                 
                                 # Calcular monto total convertido para el label
                                 if target_is_mixed:
@@ -1621,7 +1622,7 @@ def render_ventas_ui():
                                 if pasajeros_ext > 0:
                                     d_ext = get_p_detalles_converted(m_extra_ext, pasajeros_ext, up_ext, 
                                                                    [c_ad_ext, c_es_ext, c_pc_ext, c_ni_ext],
-                                                                   [(total_ext_cat / max(1, c_ext_cat)) if c_ext_cat > 0 else 0 for c_ext_cat, total_ext_cat in zip(
+                                                                   [(total_ext_cat) if c_ext_cat > 0 else 0 for c_ext_cat, total_ext_cat in zip(
                                                                        [c_ad_ext, c_es_ext, c_pc_ext, c_ni_ext],
                                                                        [sum(math.ceil(t.get('costo_ext', 0) * f_m_t) for t in st.session_state.itinerario),
                                                                         sum(math.ceil(t.get('costo_ext_est', t.get('costo_ext', 0)-20) * f_m_t) for t in st.session_state.itinerario),
@@ -1649,7 +1650,7 @@ def render_ventas_ui():
                                 if pasajeros_can > 0:
                                     d_can = get_p_detalles_converted(m_extra_can, pasajeros_can, up_ext, 
                                                                    [c_ad_can, c_es_can, c_pc_can, c_ni_can],
-                                                                   [(total_can_cat / max(1, c_can_cat)) if c_can_cat > 0 else 0 for c_can_cat, total_can_cat in zip(
+                                                                   [(total_can_cat) if c_can_cat > 0 else 0 for c_can_cat, total_can_cat in zip(
                                                                        [c_ad_can, c_es_can, c_pc_can, c_ni_can],
                                                                        [sum(math.ceil(t.get('costo_can', 0) * f_m_t) for t in st.session_state.itinerario),
                                                                         sum(math.ceil(t.get('costo_can_est', t.get('costo_can', 0)-20) * f_m_t) for t in st.session_state.itinerario),
