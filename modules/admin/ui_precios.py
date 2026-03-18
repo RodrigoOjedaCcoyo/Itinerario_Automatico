@@ -144,6 +144,8 @@ def render_admin_precios_ui():
                                 else:
                                     success, msg = update_tour_master(id_tour, update_data)
                                     if success:
+                                        if 'catalogo_tours' in st.session_state:
+                                            del st.session_state['catalogo_tours']
                                         st.success(f"✅ '{new_nombre}' actualizado correctamente.")
                                         st.rerun()
                                     else:
@@ -226,10 +228,10 @@ def render_admin_precios_ui():
                         carpeta_img=f_img, hora_inicio=f_hora
                     )
                     if success:
+                        if 'catalogo_tours' in st.session_state:
+                            del st.session_state['catalogo_tours']
                         st.success(f"✅ Tour '{f_nombre}' creado con éxito.")
-                        st.info("💡 Pulsa el botón superior 'Refrescar Catálogo' para ver los cambios.")
-                        if st.button("Ver catálogo actualizado"):
-                            st.rerun()
+                        st.rerun()
                     else: 
                         st.error(f"❌ Error al crear: {msg}")
                         with st.expander("Ver detalle del error"):
