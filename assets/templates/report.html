@@ -167,12 +167,16 @@
                     <h2
                         style="color: #444; font-size: 1.1rem; margin-bottom: 5px; font-weight: 700; text-transform: uppercase;">
                         {{ p.label }}</h2>
+                    {% if not ocultar_total %}
                     <div class="total-price" style="font-size: 3.5rem; font-weight: 900; color: #2d3436;">{{
                         p.simbolo }} {{ p.monto_total }}</div>
+                    {% else %}
+                    <div class="total-price" style="font-size: 1.8rem; font-weight: 900; color: #2d3436; margin-bottom: 20px;">Desglose por Pasajero</div>
+                    {% endif %}
                     
                     {% if p.detalles %}
                     <!-- DESGLOSE TIPO BOLETA -->
-                    <div class="breakdown-receipt" style="margin-top: 20px; border-top: 1px dashed #cccccc; padding-top: 15px;">
+                    <div class="breakdown-receipt" style="margin-top: {% if not ocultar_total %}20px{% else %}0px{% endif %}; border-top: {% if not ocultar_total %}1px dashed #cccccc{% else %}none{% endif %}; padding-top: {% if not ocultar_total %}15px{% else %}0px{% endif %};">
                         {% for d in p.detalles %}
                         <div class="receipt-row" style="display: flex; justify-content: space-between; align-items: baseline; margin-bottom: 8px;">
                             <div style="text-align: left;">
@@ -180,9 +184,11 @@
                                 <span style="font-size: 0.95rem; color: #636e72; margin-left: 5px; text-transform: uppercase;">{{ d.cat }}</span>
                                 <span style="font-size: 0.8rem; color: #b2bec3; margin-left: 10px;">({{ p.simbolo }} {{ d.precio }} c/u)</span>
                             </div>
+                            {% if not ocultar_total %}
                             <div style="font-weight: 700; color: #2d3436; font-size: 1.05rem;">
                                 {{ p.simbolo }} {{ d.subtotal }}
                             </div>
+                            {% endif %}
                         </div>
                         {% endfor %}
                     </div>

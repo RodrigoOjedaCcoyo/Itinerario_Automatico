@@ -1422,6 +1422,9 @@ def render_ventas_ui():
                 ["Español", "English", "Français", "Deutsch", "Português", "Italiano", "日本語 (Japonés)"],
                 key="f_idioma_itinerario"
             )
+
+            st.markdown("👁️ **Visualización en PDF**")
+            ocultar_total = st.checkbox("Ocultar Precios Totales (Solo mostrar precios por persona)", value=False, key="f_ocultar_total")
             
             # (La selección de portada ahora se encuentra en el panel superior, al elegir el paquete)
             
@@ -1939,6 +1942,7 @@ def render_ventas_ui():
                                 'celular_cliente': celular,
                                 'fuente': origen_lead,
                                 'estrategia': estrategia_v,
+                                'ocultar_total': ocultar_total,
                                 'cats_activas': st.session_state.get('cats_activas', []),
                                 'trenes_activos': st.session_state.get('trenes_activos', []),
                                 'estado': "Cotización",
