@@ -184,11 +184,9 @@
                                 <span style="font-size: 0.95rem; color: #636e72; margin-left: 5px; text-transform: uppercase;">{{ d.cat }}</span>
                                 <span style="font-size: 0.8rem; color: #b2bec3; margin-left: 10px;">({{ p.simbolo }} {{ d.precio }} c/u)</span>
                             </div>
-                            {% if not ocultar_total %}
                             <div style="font-weight: 700; color: #2d3436; font-size: 1.05rem;">
                                 {{ p.simbolo }} {{ d.subtotal }}
                             </div>
-                            {% endif %}
                         </div>
                         {% endfor %}
                     </div>
