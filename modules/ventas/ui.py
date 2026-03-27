@@ -1434,7 +1434,25 @@ def render_ventas_ui():
             # Catálogo de portadas dinámico
             opciones_portadas = get_opciones_portadas()
 
+            st.markdown("---")
+            st.markdown("### 🎒 Recomendaciones y Equipaje")
+            st.caption("Puedes editar libremente las listas antes de generar el PDF. Coloca cada ítem en una línea nueva.")
             
+            col_r1, col_r2 = st.columns(2)
+            with col_r1:
+                recomendacion_salud = st.text_area(
+                    "🌿 Salud y Protección", 
+                    value="BLOQUEADOR SOLAR SPF 50+\nREPELENTE DE INSECTOS\nMEDICACIÓN PERSONAL\nTOALLITAS HÚMEDAS",
+                    height=150
+                )
+            with col_r2:
+                recomendacion_ropa = st.text_area(
+                    "👕 Ropa y Equipo", 
+                    value="CAMISAS DE MANGA LARGA\nPANTALONES CÓMODOS\nCHAQUETA DE LLUVIA / PONCHO\nMOCHILA LIGERA",
+                    height=150
+                )
+            st.markdown("---")
+
             if c_btn1.button("🔥 GENERAR ITINERARIO PDF"):
                 if celular and st.session_state.itinerario:
                     with st.spinner("Generando PDF con Edge..."):
