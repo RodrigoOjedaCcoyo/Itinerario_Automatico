@@ -560,26 +560,26 @@
             </div>
 
             <!-- Header con gradiente premium -->
-            <div style="background: linear-gradient(135deg, var(--color-primary) 0%, #3d9691 100%); color: white; padding: 25px 30px; border-radius: 15px; text-align: center; margin-bottom: 20px;">
-                <h1 style="margin: 0; font-size: 1.6rem; font-weight: 900; letter-spacing: 2px; text-transform: uppercase;">📋 Términos y Condiciones</h1>
-                <p style="margin: 8px 0 0 0; font-size: 0.85rem; opacity: 0.85; letter-spacing: 1px;">RESUMEN DE POLÍTICAS DE RESERVA</p>
+            <div style="background: linear-gradient(135deg, var(--color-primary) 0%, #3d9691 100%); color: white; padding: 15px 25px; border-radius: 12px; text-align: center; margin-bottom: 12px;">
+                <h1 style="margin: 0; font-size: 1.3rem; font-weight: 900; letter-spacing: 2px; text-transform: uppercase;">📋 Términos y Condiciones</h1>
+                <p style="margin: 4px 0 0 0; font-size: 0.75rem; opacity: 0.85; letter-spacing: 1px;">RESUMEN DE POLÍTICAS DE RESERVA</p>
             </div>
 
             <!-- Grid de 2 columnas con tarjetas premium -->
-            <div style="display: flex; flex-wrap: wrap; gap: 12px; justify-content: center;">
+            <div style="display: flex; flex-wrap: wrap; gap: 8px; justify-content: center;">
                 {% for seccion in politicas.secciones %}
-                <div style="width: 47%; background: white; border: 1px solid #eef2f3; border-radius: 12px; padding: 14px 16px; box-shadow: 0 3px 12px rgba(0,0,0,0.04); position: relative; overflow: hidden;">
+                <div style="width: 47%; background: white; border: 1px solid #eef2f3; border-radius: 10px; padding: 10px 12px; box-shadow: 0 2px 8px rgba(0,0,0,0.03); position: relative; overflow: hidden;">
                     <!-- Barra lateral de color -->
-                    <div style="position: absolute; left: 0; top: 0; bottom: 0; width: 4px; background: linear-gradient(180deg, var(--color-primary) 0%, #3d9691 100%); border-radius: 12px 0 0 12px;"></div>
+                    <div style="position: absolute; left: 0; top: 0; bottom: 0; width: 3px; background: linear-gradient(180deg, var(--color-primary) 0%, #3d9691 100%); border-radius: 10px 0 0 10px;"></div>
                     
-                    <!-- Número circular -->
-                    <div style="display: flex; align-items: center; gap: 8px; margin-bottom: 8px;">
-                        <div style="width: 26px; height: 26px; background: linear-gradient(135deg, var(--color-primary), #3d9691); color: white; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 0.7rem; font-weight: 900; flex-shrink: 0;">{{ loop.index }}</div>
-                        <div style="font-size: 0.72rem; font-weight: 800; color: var(--color-primary); text-transform: uppercase; letter-spacing: 0.5px; line-height: 1.2;">{{ seccion.icon }} {{ seccion.titulo }}</div>
+                    <!-- Número circular + título -->
+                    <div style="display: flex; align-items: center; gap: 6px; margin-bottom: 5px; padding-left: 6px;">
+                        <div style="width: 22px; height: 22px; background: linear-gradient(135deg, var(--color-primary), #3d9691); color: white; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 0.6rem; font-weight: 900; flex-shrink: 0;">{{ loop.index }}</div>
+                        <div style="font-size: 0.65rem; font-weight: 800; color: var(--color-primary); text-transform: uppercase; letter-spacing: 0.3px; line-height: 1.1;">{{ seccion.icon }} {{ seccion.titulo }}</div>
                     </div>
 
                     <!-- Contenido -->
-                    <div style="font-size: 0.62rem; color: #4b6584; line-height: 1.35; padding-left: 34px;">
+                    <div style="font-size: 0.55rem; color: #4b6584; line-height: 1.25; padding-left: 34px;">
                         {{ seccion.contenido | safe }}
                     </div>
                 </div>
@@ -587,8 +587,8 @@
             </div>
 
             <!-- Footer disclaimer -->
-            <div style="margin-top: 18px; text-align: center; padding: 12px 20px; background: #f8f9fa; border-radius: 10px; border: 1px solid #eee;">
-                <p style="margin: 0; font-size: 0.7rem; color: #636e72; font-style: italic;">
+            <div style="margin-top: 10px; text-align: center; padding: 8px 15px; background: #f8f9fa; border-radius: 8px; border: 1px solid #eee;">
+                <p style="margin: 0; font-size: 0.6rem; color: #636e72; font-style: italic;">
                     ⚖️ Al confirmar su reserva, acepta los términos y condiciones aquí descritos. Para consultas, contáctenos directamente.
                 </p>
             </div>
