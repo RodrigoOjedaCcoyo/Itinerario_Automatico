@@ -567,13 +567,17 @@
 
             <!-- Dos columnas estilo Guía del Viajero -->
             <div style="display: flex; gap: 25px;">
-                <!-- Columna Izquierda -->
+                <!-- Columna Izquierda: Secciones 1, 2, 6 -->
                 <div style="flex: 1;">
                     <div style="background: linear-gradient(135deg, #55b7b0 0%, #3d9691 100%); color: white; padding: 22px; border-radius: 15px; height: 100%;">
-                        {% for seccion in politicas.secciones[:3] %}
-                        <div style="background: rgba(255,255,255,0.15); padding: 18px; border-radius: 10px; margin-bottom: {% if not loop.last %}18px{% else %}0{% endif %};">
+                        {% set left_order = [0, 1, 5] %}
+                        {% set left_nums = [1, 2, 6] %}
+                        {% for i in range(3) %}
+                        {% set seccion = politicas.secciones[left_order[i]] %}
+                        {% set num = left_nums[i] %}
+                        <div style="background: rgba(255,255,255,0.15); padding: 18px; border-radius: 10px; margin-bottom: {% if i < 2 %}18px{% else %}0{% endif %};">
                             <h3 style="margin: 0 0 10px 0; font-size: 1rem; font-weight: 800; border-bottom: 2px solid rgba(255,255,255,0.3); padding-bottom: 6px; display: flex; align-items: center; gap: 8px;">
-                                <span style="width: 26px; height: 26px; background: rgba(255,255,255,0.3); border-radius: 50%; display: inline-flex; align-items: center; justify-content: center; font-size: 0.75rem; font-weight: 900; flex-shrink: 0;">{{ loop.index }}</span>
+                                <span style="width: 26px; height: 26px; background: rgba(255,255,255,0.3); border-radius: 50%; display: inline-flex; align-items: center; justify-content: center; font-size: 0.75rem; font-weight: 900; flex-shrink: 0;">{{ num }}</span>
                                 {{ seccion.icon }} {{ seccion.titulo }}
                             </h3>
                             <div style="font-size: 0.8rem; line-height: 1.6; opacity: 0.95;">
@@ -584,13 +588,17 @@
                     </div>
                 </div>
 
-                <!-- Columna Derecha -->
+                <!-- Columna Derecha: Secciones 4, 5, 3 -->
                 <div style="flex: 1;">
                     <div style="background: linear-gradient(135deg, #2d3436 0%, #000000 100%); color: white; padding: 22px; border-radius: 15px; height: 100%;">
-                        {% for seccion in politicas.secciones[3:] %}
-                        <div style="background: rgba(255,255,255,0.1); padding: 18px; border-radius: 10px; margin-bottom: {% if not loop.last %}18px{% else %}0{% endif %};">
+                        {% set right_order = [3, 4, 2] %}
+                        {% set right_nums = [4, 5, 3] %}
+                        {% for i in range(3) %}
+                        {% set seccion = politicas.secciones[right_order[i]] %}
+                        {% set num = right_nums[i] %}
+                        <div style="background: rgba(255,255,255,0.1); padding: 18px; border-radius: 10px; margin-bottom: {% if i < 2 %}18px{% else %}0{% endif %};">
                             <h3 style="margin: 0 0 10px 0; font-size: 1rem; font-weight: 800; border-bottom: 2px solid rgba(255,255,255,0.3); padding-bottom: 6px; display: flex; align-items: center; gap: 8px;">
-                                <span style="width: 26px; height: 26px; background: rgba(255,255,255,0.2); border-radius: 50%; display: inline-flex; align-items: center; justify-content: center; font-size: 0.75rem; font-weight: 900; flex-shrink: 0;">{{ loop.index + 3 }}</span>
+                                <span style="width: 26px; height: 26px; background: rgba(255,255,255,0.2); border-radius: 50%; display: inline-flex; align-items: center; justify-content: center; font-size: 0.75rem; font-weight: 900; flex-shrink: 0;">{{ num }}</span>
                                 {{ seccion.icon }} {{ seccion.titulo }}
                             </h3>
                             <div style="font-size: 0.8rem; line-height: 1.6; opacity: 0.95;">
