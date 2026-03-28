@@ -580,57 +580,18 @@
                 <img src="{{ logo_url }}" alt="Logo">
             </div>
 
-            <h1 class="premium-title-main">Términos de Reserva</h1>
+            <h1 class="premium-title-main">{{ politicas.titulo_principal | default('Términos de Reserva') }}</h1>
 
-            <table style="width: 100%; border-collapse: collapse;">
-                <tr>
-                    <td style="width: 55%; vertical-align: top; padding-right: 30px;">
-                        <div class="premium-section-header">INFORMACIÓN DE COMPRA DEL PAQUETE TURÍSTICO</div>
-                        <div class="exclusive-rates-badge">TARIFAS EXCLUSIVAS PARA PERUANOS</div>
-
-                        <div class="policy-card">
-                            <div class="policy-card-title">💳 {{ politicas.titulo_reserva | default('RESERVA') }}</div>
-                            <div class="policy-card-body">
-                                {{ politicas.reserva | safe }}
-                            </div>
-                        </div>
-
-                        <div class="policy-card" style="margin-top: 20px;">
-                            <div class="policy-card-title">🕒 {{ politicas.titulo_anulacion | default('ANULACIÓN') }}
-                            </div>
-                            <div class="policy-card-body">
-                                {{ politicas.anulacion | safe }}
-                            </div>
-                        </div>
-                    </td>
-                    <td style="width: 45%; vertical-align: top; text-align: center;">
-                        <div class="policy-card" style="text-align: left; margin-bottom: 20px;">
-                            <div class="policy-card-title">📋 {{ politicas.titulo_condiciones | default('CONDICIONES
-                                ADICIONALES') }}</div>
-                            <div class="policy-card-body">
-                                {% for c in politicas.condiciones %}
-                                - {{ c }}<br>
-                                {% endfor %}
-                            </div>
-                        </div>
-
-                        <div class="regulation-box" style="text-align: left; margin-bottom: 30px;">
-                            <div class="regulation-title">🏛️ {{ politicas.titulo_reglamento | default('REGLAMENTO MACHU
-                                PICCHU') }}</div>
-                            <div class="regulation-text">
-                                {{ politicas.reglamento_mp }}
-                            </div>
-                        </div>
-
-                        <div style="margin-top: 10px;">
-                            <img src="{{ llama_purchase_img }}" class="premium-llama-footer" style="width: 140px;">
-                            <p
-                                style="margin-top: 10px; font-weight: 800; color: var(--color-primary); font-size: 1.2rem;">
-                                ¡TODO LISTO!</p>
-                        </div>
-                    </td>
-                </tr>
-            </table>
+            <div style="display: flex; flex-wrap: wrap; gap: 20px; margin-top: 20px;">
+                {% for seccion in politicas.secciones %}
+                <div class="policy-card" style="width: 48%; margin-top: 0; min-height: 180px;">
+                    <div class="policy-card-title">{{ seccion.icon }} {{ seccion.titulo }}</div>
+                    <div class="policy-card-body" style="font-size: 0.85rem; line-height: 1.4;">
+                        {{ seccion.contenido | safe }}
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
         </div>
 
         <!-- NUEVA PÁGINA: RECOMENDACIONES Y EQUIPAJE -->
@@ -713,61 +674,17 @@
                 <img src="{{ logo_url }}" alt="Logo">
             </div>
 
-            <h1 class="premium-title-main">Información de Compra</h1>
+            <h1 class="premium-title-main">{{ politicas.titulo_principal | default('Información de Compra') }}</h1>
 
-            <div style="padding: 0 40px;">
-                <div class="exclusive-rates-badge">INFORMACIÓN DE COMPRA DEL PAQUETE DE VIAJE</div>
-
-                <table style="width: 100%; border-collapse: collapse; margin-top: 20px;">
-                    <tr>
-                        <td style="width: 55%; vertical-align: top; padding-right: 30px;">
-                            <div class="policy-card">
-                                <div class="policy-card-title">💳 {{ politicas.titulo_reserva | default('RESERVA') }}
-                                </div>
-                                <div class="policy-card-body">
-                                    {{ politicas.reserva | safe }}
-                                </div>
-                            </div>
-
-                            <div class="policy-card" style="margin-top: 20px;">
-                                <div class="policy-card-title">🕒 {{ politicas.titulo_anulacion | default('ANULACIÓN')
-                                    }}
-                                </div>
-                                <div class="policy-card-body">
-                                    {{ politicas.anulacion | safe }}
-                                </div>
-                            </div>
-                        </td>
-                        <td style="width: 45%; vertical-align: top; text-align: center;">
-                            <div class="policy-card" style="text-align: left; margin-bottom: 20px;">
-                                <div class="policy-card-title">📋 {{ politicas.titulo_condiciones | default('CONDICIONES
-                                    ADICIONALES') }}</div>
-                                <div class="policy-card-body">
-                                    {% for c in politicas.condiciones %}
-                                    - {{ c }}<br>
-                                    {% endfor %}
-                                </div>
-                            </div>
-
-                            <div class="regulation-box" style="text-align: left; margin-bottom: 30px;">
-                                <div class="regulation-title">🏛️ {{ politicas.titulo_reglamento | default('REGLAMENTO
-                                    MACHU
-                                    PICCHU') }}</div>
-                                <div class="regulation-text">
-                                    {{ politicas.reglamento_mp }}
-                                </div>
-                            </div>
-
-                            <div style="margin-top: 10px;">
-                                <img src="{{ llama_purchase_img }}"
-                                    style="width: 100px; border-radius: 50%; border: 3px solid #eee;">
-                                <h3 style="color: var(--color-primary); margin: 10px 0 0 0;">Viaje con Confianza</h3>
-                                <p style="font-size: 0.8rem; color: #666;">Nuestro equipo se encarga de cada detalle por
-                                    usted.</p>
-                            </div>
-                        </td>
-                    </tr>
-                </table>
+            <div style="display: flex; flex-wrap: wrap; gap: 20px; margin-top: 20px;">
+                {% for seccion in politicas.secciones %}
+                <div class="policy-card" style="width: 48%; margin-top: 0; min-height: 180px;">
+                    <div class="policy-card-title">{{ seccion.icon }} {{ seccion.titulo }}</div>
+                    <div class="policy-card-body" style="font-size: 0.85rem; line-height: 1.4;">
+                        {{ seccion.contenido | safe }}
+                    </div>
+                </div>
+                {% endfor %}
             </div>
         </div>
 

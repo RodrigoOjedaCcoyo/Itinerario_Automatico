@@ -1994,14 +1994,39 @@ def render_ventas_ui():
                                     "mensaje_final": "<p style='margin: 0; font-size: 1.1rem; color: #2d3436; font-weight: 600;'>✨ <strong>¡Prepárate para vivir una experiencia inolvidable!</strong> ✨</p><p style='margin: 10px 0 0 0; font-size: 0.9rem; color: #636e72;'>Cada detalle cuenta para que tu viaje sea perfecto. ¡Nos vemos pronto en Cusco!</p>"
                                 },
                                 'politicas': translated_data.get('politicas') if idioma_pdf != "Español" else {
-                                    "titulo_reserva": "RESERVA",
-                                    "reserva": "<strong>La reserva del paquete turístico es con el 50%.</strong><br>El 50% restante lo tendrás que pagar hasta un día antes de iniciar el primer tour.<br><br><strong>Método de pago:</strong><br>Depósito o trasferencia a la cuenta de la empresa.",
-                                    "titulo_anulacion": "ANULACIÓN",
-                                    "anulacion": "La anulación se debe realizar con anticipación. Ingresos a Machupicchu, vías y cambios o devoluciones solo en casos excepcionales.<br><strong>Menor a 15 días antes de su llegada, No hay devolución.</strong>",
-                                    "titulo_condiciones": "CONDICIONES ADICIONALES",
-                                    "condiciones": ["Habitación Individual (SGL): Suplemento aplica.", "Infantes (menores de 2 años): Gratis.", "Pasaporte vigente obligatorio."],
-                                    "titulo_reglamento": "REGLAMENTO MACHU PICCHU",
-                                    "reglamento_mp": "Los boletos son válidos para un solo ingreso. Los pasajeros suelen permanecer entre 2 a 3 horas."
+                                    "titulo_principal": "RESUMEN DE TÉRMINOS Y CONDICIONES",
+                                    "secciones": [
+                                        {
+                                            "titulo": "1. Reservas y Pagos",
+                                            "icon": "💳",
+                                            "contenido": "<strong>Depósito inicial:</strong> Se requiere el 50% del total para confirmar la reserva del paquete turístico.<br><strong>Saldo restante:</strong> Debe liquidarse a más tardar 48 horas antes del inicio del primer tour o según lo acordado con su asesor.<br><strong>Métodos de pago:</strong> Transferencia bancaria, depósito, efectivo, PayPal y tarjetas (estas últimas con un recargo del 5%).<br><strong>Información requerida:</strong> El cliente debe facilitar datos reales (pasaporte/DNI, edad, restricciones médicas y alimentarias)."
+                                        },
+                                        {
+                                            "titulo": "2. Políticas de Anulación",
+                                            "icon": "🕒",
+                                            "contenido": "<strong>Más de 15 días:</strong> Reembolso del 100% (menos 10% de gastos administrativos).<br><strong>Entre 8 y 14 días:</strong> Reembolso del 50%.<br><strong>Entre 4 y 7 días:</strong> Reembolso del 25%.<br><strong>Menos de 4 días:</strong> No hay devolución.<br><strong>Casos excepcionales:</strong> Ingresos a Machu Picchu o pasajes quedan sujetos a condiciones de los proveedores."
+                                        },
+                                        {
+                                            "titulo": "3. Condiciones del Servicio",
+                                            "icon": "📋",
+                                            "contenido": "<strong>Documentación:</strong> Es obligatorio portar pasaporte o DNI original vigente.<br><strong>Infantes:</strong> Menores de 2 años viajan gratis.<br><strong>Habitaciones:</strong> El alojamiento individual (SGL) conlleva un suplemento adicional.<br><strong>Puntualidad:</strong> El cliente debe presentarse puntualmente en los puntos de encuentro.<br><strong>Seguro:</strong> Se recomienda contar con un seguro de viaje personal."
+                                        },
+                                        {
+                                            "titulo": "4. Reglamento de Visita",
+                                            "icon": "🏛️",
+                                            "contenido": "<strong>Boletos:</strong> Son válidos para un solo ingreso a la Ciudadela de Machu Picchu.<br><strong>Permanencia:</strong> El tiempo promedio permitido es de 2 a 3 horas según circuito.<br><strong>Guía:</strong> El uso de guía oficial es obligatorio para el ingreso."
+                                        },
+                                        {
+                                            "titulo": "5. Responsabilidades",
+                                            "icon": "🛡️",
+                                            "contenido": "<strong>La Agencia:</strong> Se compromete a brindar guías certificados y transporte autorizado.<br><strong>Eximentes:</strong> La agencia no se responsabiliza por robos, accidentes externos o cierres por causas de fuerza mayor (clima, huelgas, desastres).<br><strong>Jurisdicción:</strong> Controversias legales se resolverán bajo los tribunales de Cusco."
+                                        },
+                                        {
+                                            "titulo": "6. Atención y Reclamos",
+                                            "icon": "📱",
+                                            "contenido": "<strong>Atención:</strong> Las consultas y reservas son 100% virtuales (WhatsApp/Email).<br><strong>Reclamos:</strong> Se dispone de un Libro de Reclamaciones (físico y virtual) conforme a la ley de INDECOPI."
+                                        }
+                                    ]
                                 }
                             }
 
