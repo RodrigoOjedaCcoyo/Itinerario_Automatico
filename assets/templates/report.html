@@ -204,17 +204,6 @@
 
                 </div>
 
-                <!-- TÉRMINOS Y CONDICIONES (INTEGRADOS EN PRECIOS) -->
-                <div class="policy-grid-compact" style="margin-top: 35px; border-top: 1px solid #eee; padding-top: 25px;">
-                    {% for seccion in politicas.secciones %}
-                    <div class="policy-card-compact" style="width: 31%; min-height: 130px; margin-bottom: 10px;">
-                        <div class="policy-card-compact-title" style="font-size: 0.75rem;">{{ seccion.icon }} {{ seccion.titulo }}</div>
-                        <div class="policy-card-compact-body" style="font-size: 0.65rem; line-height: 1.3;">
-                            {{ seccion.contenido | safe }}
-                        </div>
-                    </div>
-                    {% endfor %}
-                </div>
             </div>
 
             {% elif estrategia == "Matriz" %}
@@ -370,17 +359,6 @@
 
                 </div>
 
-                <!-- TÉRMINOS Y CONDICIONES (INTEGRADOS EN PRECIOS MATRIZ) -->
-                <div class="policy-grid-compact" style="margin-top: 25px; border-top: 1px solid #eee; padding-top: 20px;">
-                    {% for seccion in politicas.secciones %}
-                    <div class="policy-card-compact" style="width: 31%; min-height: 120px; margin-bottom: 8px;">
-                        <div class="policy-card-compact-title" style="font-size: 0.72rem;">{{ seccion.icon }} {{ seccion.titulo }}</div>
-                        <div class="policy-card-compact-body" style="font-size: 0.62rem; line-height: 1.2;">
-                            {{ seccion.contenido | safe }}
-                        </div>
-                    </div>
-                    {% endfor %}
-                </div>
             </div>
 
             {% if nota_p %}
@@ -536,18 +514,6 @@
 
                 </div>
 
-                <!-- TÉRMINOS Y CONDICIONES (INTEGRADOS EN PRECIOS LUXURY) -->
-                <div class="policy-grid-compact" style="margin-top: 35px; border-top: 1px solid #eee; padding-top: 25px;">
-                    {% for seccion in politicas.secciones %}
-                    <div class="policy-card-compact" style="width: 31%; min-height: 130px; margin-bottom: 10px;">
-                        <div class="policy-card-compact-title" style="font-size: 0.75rem;">{{ seccion.icon }} {{ seccion.titulo }}</div>
-                        <div class="policy-card-compact-body" style="font-size: 0.65rem; line-height: 1.3;">
-                            {{ seccion.contenido | safe }}
-                        </div>
-                    </div>
-                    {% endfor %}
-                </div>
-
                 {% if nota_p %}
                 <div class="price-note"
                     style="margin-top: 30px; padding: 15px; border-radius: 12px; border: 2px dashed var(--color-primary); background: #f0f7f7; font-size: 0.95rem; color: #2c3e50; text-align: center;">
@@ -558,6 +524,27 @@
             </div>
         </div>
 
+
+        <!-- PÁGINA SEPARADA: TÉRMINOS Y CONDICIONES -->
+        <div class="page-container premium-appendix-page">
+            <div class="logo-container">
+                <img src="{{ logo_url }}" alt="Logo">
+            </div>
+
+            <h1 class="premium-title-main" style="font-size: 1.4rem;">{{ politicas.titulo }}</h1>
+            <div class="premium-section-header">RESUMEN DE TÉRMINOS Y CONDICIONES</div>
+
+            <div class="policy-grid-compact" style="margin-top: 25px;">
+                {% for seccion in politicas.secciones %}
+                <div class="policy-card-compact" style="width: 31%; min-height: 150px; margin-bottom: 12px;">
+                    <div class="policy-card-compact-title" style="font-size: 0.8rem;">{{ seccion.icon }} {{ seccion.titulo }}</div>
+                    <div class="policy-card-compact-body" style="font-size: 0.7rem; line-height: 1.4;">
+                        {{ seccion.contenido | safe }}
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+        </div>
 
         <!-- SECCIÓN DE ANEXOS PREMIUM -->
         {% if es_nacional %}
