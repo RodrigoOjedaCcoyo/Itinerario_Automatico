@@ -42,8 +42,6 @@
     <!-- PÁGINAS DE ITINERARIO (Culebrita) -->
     {% for day in days %}
     <div class="page-container">
-        <div class="decor-top-right"></div>
-        <div class="decor-bottom-left"></div>
         <div class="logo-container">
             <img src="{{ logo_url }}" alt="Logo">
         </div>
@@ -130,8 +128,6 @@
 
     <!-- PÁGINA DE PRECIOS DETALLADA (RESTAURADA) -->
     <div class="page-container" style="display: flex; flex-direction: column; justify-content: center;">
-        <div class="decor-top-right"></div>
-        <div class="decor-bottom-left"></div>
         <div class="logo-container">
             <img src="{{ logo_url }}" alt="Logo">
         </div>
@@ -574,19 +570,17 @@
         {% if es_nacional %}
         <!-- ANEXO NACIONAL - PÁGINA 1: CONDICIONES -->
         <div class="page-container premium-appendix-page">
-            <div class="decor-top-right"></div>
-            <div class="decor-bottom-left"></div>
             <div class="logo-container">
                 <img src="{{ logo_url }}" alt="Logo">
             </div>
 
             <h1 class="premium-title-main">{{ politicas.titulo_principal | default('Términos de Reserva') }}</h1>
 
-            <div style="display: flex; flex-wrap: wrap; gap: 20px; margin-top: 20px;">
+            <div class="policy-grid">
                 {% for seccion in politicas.secciones %}
-                <div class="policy-card" style="width: 48%; margin-top: 0; min-height: 180px;">
+                <div class="policy-card">
                     <div class="policy-card-title">{{ seccion.icon }} {{ seccion.titulo }}</div>
-                    <div class="policy-card-body" style="font-size: 0.85rem; line-height: 1.4;">
+                    <div class="policy-card-body">
                         {{ seccion.contenido | safe }}
                     </div>
                 </div>
@@ -595,9 +589,6 @@
         </div>
 
         <!-- NUEVA PÁGINA: RECOMENDACIONES Y EQUIPAJE -->
-        <div class="page-container premium-appendix-page">
-            <div class="decor-top-right"></div>
-            <div class="decor-bottom-left"></div>
             <div class="logo-container">
                 <img src="{{ logo_url }}" alt="Logo">
             </div>
@@ -667,20 +658,17 @@
         </div>
         {% else %}
         <!-- ANEXO EXTRANJERO - PÁGINA 1: CONTRATO INTERNACIONAL -->
-        <div class="page-container premium-appendix-page">
-            <div class="decor-top-right"></div>
-            <div class="decor-bottom-left"></div>
             <div class="logo-container">
                 <img src="{{ logo_url }}" alt="Logo">
             </div>
 
             <h1 class="premium-title-main">{{ politicas.titulo_principal | default('Información de Compra') }}</h1>
 
-            <div style="display: flex; flex-wrap: wrap; gap: 20px; margin-top: 20px;">
+            <div class="policy-grid">
                 {% for seccion in politicas.secciones %}
-                <div class="policy-card" style="width: 48%; margin-top: 0; min-height: 180px;">
+                <div class="policy-card">
                     <div class="policy-card-title">{{ seccion.icon }} {{ seccion.titulo }}</div>
-                    <div class="policy-card-body" style="font-size: 0.85rem; line-height: 1.4;">
+                    <div class="policy-card-body">
                         {{ seccion.contenido | safe }}
                     </div>
                 </div>
@@ -689,9 +677,6 @@
         </div>
 
         <!-- NUEVA PÁGINA: RECOMENDACIONES Y EQUIPAJE (EXTRANJEROS) -->
-        <div class="page-container premium-appendix-page">
-            <div class="decor-top-right"></div>
-            <div class="decor-bottom-left"></div>
             <div class="logo-container">
                 <img src="{{ logo_url }}" alt="Logo">
             </div>
