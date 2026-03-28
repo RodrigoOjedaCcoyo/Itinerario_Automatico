@@ -553,65 +553,61 @@
         </div>
 
 
-        <!-- PÁGINA SEPARADA: TÉRMINOS Y CONDICIONES (PREMIUM) -->
-        <div class="page-container premium-appendix-page">
+        <!-- PÁGINA SEPARADA: TÉRMINOS Y CONDICIONES (PREMIUM DORADO) -->
+        <div class="page-container premium-appendix-page" style="background: #fafaf8;">
             <div class="logo-container">
                 <img src="{{ logo_url }}" alt="Logo">
             </div>
 
-            <!-- Header con gradiente premium -->
-            <div style="background: linear-gradient(135deg, var(--color-primary) 0%, #3d9691 100%); color: white; padding: 25px 30px; border-radius: 15px; text-align: center; margin-bottom: 25px;">
+            <!-- Header con degradado turquesa → dorado -->
+            <div style="background: linear-gradient(135deg, var(--color-primary) 0%, #c9a84c 100%); color: white; padding: 25px 30px; border-radius: 15px; text-align: center; margin-bottom: 25px; box-shadow: 0 6px 20px rgba(201, 168, 76, 0.25);">
                 <h1 style="margin: 0; font-size: 1.7rem; font-weight: 900; letter-spacing: 3px; text-transform: uppercase;">📋 Términos y Condiciones</h1>
-                <p style="margin: 8px 0 0 0; font-size: 0.95rem; opacity: 0.85; letter-spacing: 1.5px;">RESUMEN DE POLÍTICAS DE RESERVA</p>
+                <p style="margin: 8px 0 0 0; font-size: 0.95rem; opacity: 0.9; letter-spacing: 1.5px;">RESUMEN DE POLÍTICAS DE RESERVA</p>
             </div>
 
-            <!-- Dos columnas estilo Guía del Viajero -->
+            <!-- Dos columnas Premium Dorado -->
             <div style="display: flex; gap: 25px;">
                 <!-- Columna Izquierda: Secciones 1, 2, 6 -->
                 <div style="flex: 1;">
-                    <div style="background: linear-gradient(135deg, #55b7b0 0%, #3d9691 100%); color: white; padding: 22px; border-radius: 15px; height: 100%;">
-                        {% set left_order = [0, 1, 5] %}
-                        {% set left_nums = [1, 2, 6] %}
-                        {% for i in range(3) %}
-                        {% set seccion = politicas.secciones[left_order[i]] %}
-                        {% set num = left_nums[i] %}
-                        <div style="background: rgba(255,255,255,0.15); padding: 18px; border-radius: 10px; margin-bottom: {% if i < 2 %}18px{% else %}0{% endif %};">
-                            <h3 style="margin: 0 0 10px 0; font-size: 1rem; font-weight: 800; border-bottom: 2px solid rgba(255,255,255,0.3); padding-bottom: 6px; display: flex; align-items: center; gap: 8px;">
-                                <span style="width: 26px; height: 26px; background: rgba(255,255,255,0.3); border-radius: 50%; display: inline-flex; align-items: center; justify-content: center; font-size: 0.75rem; font-weight: 900; flex-shrink: 0;">{{ num }}</span>
-                                {{ seccion.icon }} {{ seccion.titulo }}
-                            </h3>
-                            <div style="font-size: 0.8rem; line-height: 1.6; opacity: 0.95;">
-                                {{ seccion.contenido | safe }}
-                            </div>
+                    {% set left_order = [0, 1, 5] %}
+                    {% set left_nums = [1, 2, 6] %}
+                    {% for i in range(3) %}
+                    {% set seccion = politicas.secciones[left_order[i]] %}
+                    {% set num = left_nums[i] %}
+                    <div style="background: white; border-radius: 12px; padding: 18px; margin-bottom: {% if i < 2 %}15px{% else %}0{% endif %}; border-top: 4px solid var(--color-primary); box-shadow: 0 3px 15px rgba(0,0,0,0.06);">
+                        <h3 style="margin: 0 0 10px 0; font-size: 1rem; font-weight: 800; color: #2d3436; display: flex; align-items: center; gap: 10px; border-bottom: 1px solid #f0e6c8; padding-bottom: 8px;">
+                            <span style="width: 28px; height: 28px; background: linear-gradient(135deg, #c9a84c, #d4b85c); color: white; border-radius: 50%; display: inline-flex; align-items: center; justify-content: center; font-size: 0.8rem; font-weight: 900; flex-shrink: 0; box-shadow: 0 2px 6px rgba(201,168,76,0.3);">{{ num }}</span>
+                            <span style="color: var(--color-primary);">{{ seccion.icon }}</span> {{ seccion.titulo }}
+                        </h3>
+                        <div style="font-size: 0.8rem; line-height: 1.6; color: #4b6584; padding-left: 38px;">
+                            {{ seccion.contenido | safe }}
                         </div>
-                        {% endfor %}
                     </div>
+                    {% endfor %}
                 </div>
 
                 <!-- Columna Derecha: Secciones 4, 5, 3 -->
                 <div style="flex: 1;">
-                    <div style="background: linear-gradient(135deg, #2d3436 0%, #000000 100%); color: white; padding: 22px; border-radius: 15px; height: 100%;">
-                        {% set right_order = [3, 4, 2] %}
-                        {% set right_nums = [4, 5, 3] %}
-                        {% for i in range(3) %}
-                        {% set seccion = politicas.secciones[right_order[i]] %}
-                        {% set num = right_nums[i] %}
-                        <div style="background: rgba(255,255,255,0.1); padding: 18px; border-radius: 10px; margin-bottom: {% if i < 2 %}18px{% else %}0{% endif %};">
-                            <h3 style="margin: 0 0 10px 0; font-size: 1rem; font-weight: 800; border-bottom: 2px solid rgba(255,255,255,0.3); padding-bottom: 6px; display: flex; align-items: center; gap: 8px;">
-                                <span style="width: 26px; height: 26px; background: rgba(255,255,255,0.2); border-radius: 50%; display: inline-flex; align-items: center; justify-content: center; font-size: 0.75rem; font-weight: 900; flex-shrink: 0;">{{ num }}</span>
-                                {{ seccion.icon }} {{ seccion.titulo }}
-                            </h3>
-                            <div style="font-size: 0.8rem; line-height: 1.6; opacity: 0.95;">
-                                {{ seccion.contenido | safe }}
-                            </div>
+                    {% set right_order = [3, 4, 2] %}
+                    {% set right_nums = [4, 5, 3] %}
+                    {% for i in range(3) %}
+                    {% set seccion = politicas.secciones[right_order[i]] %}
+                    {% set num = right_nums[i] %}
+                    <div style="background: white; border-radius: 12px; padding: 18px; margin-bottom: {% if i < 2 %}15px{% else %}0{% endif %}; border-top: 4px solid #c9a84c; box-shadow: 0 3px 15px rgba(0,0,0,0.06);">
+                        <h3 style="margin: 0 0 10px 0; font-size: 1rem; font-weight: 800; color: #2d3436; display: flex; align-items: center; gap: 10px; border-bottom: 1px solid #f0e6c8; padding-bottom: 8px;">
+                            <span style="width: 28px; height: 28px; background: linear-gradient(135deg, #c9a84c, #d4b85c); color: white; border-radius: 50%; display: inline-flex; align-items: center; justify-content: center; font-size: 0.8rem; font-weight: 900; flex-shrink: 0; box-shadow: 0 2px 6px rgba(201,168,76,0.3);">{{ num }}</span>
+                            <span style="color: #c9a84c;">{{ seccion.icon }}</span> {{ seccion.titulo }}
+                        </h3>
+                        <div style="font-size: 0.8rem; line-height: 1.6; color: #4b6584; padding-left: 38px;">
+                            {{ seccion.contenido | safe }}
                         </div>
-                        {% endfor %}
                     </div>
+                    {% endfor %}
                 </div>
             </div>
 
-            <!-- Footer disclaimer -->
-            <div style="margin-top: 25px; text-align: center; padding: 15px 20px; background: #f8f9fa; border-radius: 12px; border-left: 5px solid var(--color-primary);">
+            <!-- Footer disclaimer premium -->
+            <div style="margin-top: 20px; text-align: center; padding: 14px 20px; background: linear-gradient(135deg, rgba(85,183,176,0.08), rgba(201,168,76,0.08)); border-radius: 12px; border: 1px solid #f0e6c8;">
                 <p style="margin: 0; font-size: 0.85rem; color: #636e72; font-style: italic;">
                     ⚖️ Al confirmar su reserva, acepta los términos y condiciones aquí descritos. Para consultas, contáctenos directamente.
                 </p>
