@@ -560,9 +560,9 @@
             </div>
 
             <!-- Header con gradiente premium -->
-            <div style="background: linear-gradient(135deg, var(--color-primary) 0%, #3d9691 100%); color: white; padding: 22px 30px; border-radius: 15px; text-align: center; margin-bottom: 25px;">
-                <h1 style="margin: 0; font-size: 1.6rem; font-weight: 900; letter-spacing: 3px; text-transform: uppercase;">📋 Términos y Condiciones</h1>
-                <p style="margin: 8px 0 0 0; font-size: 0.9rem; opacity: 0.85; letter-spacing: 1.5px;">RESUMEN DE POLÍTICAS DE RESERVA</p>
+            <div style="background: linear-gradient(135deg, var(--color-primary) 0%, #3d9691 100%); color: white; padding: 25px 30px; border-radius: 15px; text-align: center; margin-bottom: 25px;">
+                <h1 style="margin: 0; font-size: 1.7rem; font-weight: 900; letter-spacing: 3px; text-transform: uppercase;">📋 Términos y Condiciones</h1>
+                <p style="margin: 8px 0 0 0; font-size: 0.95rem; opacity: 0.85; letter-spacing: 1.5px;">RESUMEN DE POLÍTICAS DE RESERVA</p>
             </div>
 
             <!-- Dos columnas estilo Guía del Viajero -->
@@ -571,12 +571,12 @@
                 <div style="flex: 1;">
                     <div style="background: linear-gradient(135deg, #55b7b0 0%, #3d9691 100%); color: white; padding: 22px; border-radius: 15px; height: 100%;">
                         {% for seccion in politicas.secciones[:3] %}
-                        <div style="background: rgba(255,255,255,0.15); padding: 16px; border-radius: 10px; margin-bottom: {% if not loop.last %}18px{% else %}0{% endif %};">
-                            <h3 style="margin: 0 0 10px 0; font-size: 0.95rem; font-weight: 800; border-bottom: 2px solid rgba(255,255,255,0.3); padding-bottom: 6px; display: flex; align-items: center; gap: 8px;">
-                                <span style="width: 24px; height: 24px; background: rgba(255,255,255,0.3); border-radius: 50%; display: inline-flex; align-items: center; justify-content: center; font-size: 0.7rem; font-weight: 900; flex-shrink: 0;">{{ loop.index }}</span>
+                        <div style="background: rgba(255,255,255,0.15); padding: 18px; border-radius: 10px; margin-bottom: {% if not loop.last %}18px{% else %}0{% endif %};">
+                            <h3 style="margin: 0 0 10px 0; font-size: 1rem; font-weight: 800; border-bottom: 2px solid rgba(255,255,255,0.3); padding-bottom: 6px; display: flex; align-items: center; gap: 8px;">
+                                <span style="width: 26px; height: 26px; background: rgba(255,255,255,0.3); border-radius: 50%; display: inline-flex; align-items: center; justify-content: center; font-size: 0.75rem; font-weight: 900; flex-shrink: 0;">{{ loop.index }}</span>
                                 {{ seccion.icon }} {{ seccion.titulo }}
                             </h3>
-                            <div style="font-size: 0.75rem; line-height: 1.5; opacity: 0.95;">
+                            <div style="font-size: 0.8rem; line-height: 1.6; opacity: 0.95;">
                                 {{ seccion.contenido | safe }}
                             </div>
                         </div>
@@ -588,12 +588,12 @@
                 <div style="flex: 1;">
                     <div style="background: linear-gradient(135deg, #2d3436 0%, #000000 100%); color: white; padding: 22px; border-radius: 15px; height: 100%;">
                         {% for seccion in politicas.secciones[3:] %}
-                        <div style="background: rgba(255,255,255,0.1); padding: 16px; border-radius: 10px; margin-bottom: {% if not loop.last %}18px{% else %}0{% endif %};">
-                            <h3 style="margin: 0 0 10px 0; font-size: 0.95rem; font-weight: 800; border-bottom: 2px solid rgba(255,255,255,0.3); padding-bottom: 6px; display: flex; align-items: center; gap: 8px;">
-                                <span style="width: 24px; height: 24px; background: rgba(255,255,255,0.2); border-radius: 50%; display: inline-flex; align-items: center; justify-content: center; font-size: 0.7rem; font-weight: 900; flex-shrink: 0;">{{ loop.index + 3 }}</span>
+                        <div style="background: rgba(255,255,255,0.1); padding: 18px; border-radius: 10px; margin-bottom: {% if not loop.last %}18px{% else %}0{% endif %};">
+                            <h3 style="margin: 0 0 10px 0; font-size: 1rem; font-weight: 800; border-bottom: 2px solid rgba(255,255,255,0.3); padding-bottom: 6px; display: flex; align-items: center; gap: 8px;">
+                                <span style="width: 26px; height: 26px; background: rgba(255,255,255,0.2); border-radius: 50%; display: inline-flex; align-items: center; justify-content: center; font-size: 0.75rem; font-weight: 900; flex-shrink: 0;">{{ loop.index + 3 }}</span>
                                 {{ seccion.icon }} {{ seccion.titulo }}
                             </h3>
-                            <div style="font-size: 0.75rem; line-height: 1.5; opacity: 0.95;">
+                            <div style="font-size: 0.8rem; line-height: 1.6; opacity: 0.95;">
                                 {{ seccion.contenido | safe }}
                             </div>
                         </div>
@@ -604,7 +604,7 @@
 
             <!-- Footer disclaimer -->
             <div style="margin-top: 25px; text-align: center; padding: 15px 20px; background: #f8f9fa; border-radius: 12px; border-left: 5px solid var(--color-primary);">
-                <p style="margin: 0; font-size: 0.8rem; color: #636e72; font-style: italic;">
+                <p style="margin: 0; font-size: 0.85rem; color: #636e72; font-style: italic;">
                     ⚖️ Al confirmar su reserva, acepta los términos y condiciones aquí descritos. Para consultas, contáctenos directamente.
                 </p>
             </div>
