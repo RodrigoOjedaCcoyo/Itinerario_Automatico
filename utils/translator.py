@@ -1,4 +1,5 @@
 import os
+import streamlit as st
 from openai import OpenAI
 from dotenv import load_dotenv
 
@@ -9,9 +10,12 @@ def translate_itinerary(itinerary_data, target_lang="English"):
     Traduce los textos de un itinerario (títulos, descripciones, servicios) 
     usando OpenAI GPT-4o-mini.
     """
-    api_key = os.getenv("OPENAI_API_KEY")
+    try:
+        api_key = st.secrets.get("OPENAI_API_KEY") or os.getenv("OPENAI_API_KEY")
+    except:
+        api_key = os.getenv("OPENAI_API_KEY")
     if not api_key:
-        return itinerary_data, "Error: No se encontró la API KEY de OpenAI."
+        return itinerary_data, "Error: No se encontró la API KEY de OpenAI (configura OPENAI_API_KEY en st.secrets o .env)."
 
     client = OpenAI(api_key=api_key)
     

@@ -13,4 +13,4 @@ paquetes_personalizados.json
 !*.webp
 !assets/
 
-env_itinerario/
+itinerario/
