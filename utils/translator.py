@@ -189,4 +189,70 @@ def translate_itinerary(itinerary_data, target_lang="English"):
         itinerary_data['guia_viajero'] = guia_base
         itinerary_data['politicas'] = politicas_base
 
+    # 6. Traducir ETIQUETAS DE INTERFAZ (textos fijos del template HTML)
+    labels_base = {
+        # Portada
+        "preparado_para": "PREPARADO PARA",
+        # Días del itinerario
+        "dia_label": "DÍA",
+        "inicia_label": "INICIA:",
+        "servicios_incluye": "SERVICIOS QUE INCLUYE:",
+        "servicios_no_incluye": "SERVICIOS QUE NO INCLUYE:",
+        # Precios - Estrategia General
+        "confirmacion_titulo": "CONFIRMACIÓN FINAL",
+        "confirmacion_subtitulo": "DOCUMENTO DE CIERRE DE RESERVA",
+        "total_acordado": "TOTAL ACORDADO",
+        "monto_final_cierre": "Monto Final de Cierre",
+        "desglose_pasajero": "Desglose por Pasajero",
+        "inversion_persona": "Inversión por persona:",
+        "observaciones": "Observaciones:",
+        "nota_inversion": "Nota sobre la inversión:",
+        # Precios - Estrategia Matriz
+        "propuesta_inversion": "Propuesta de Inversión",
+        "seleccione_nivel": "Seleccione su nivel de experiencia",
+        "experiencia_label": "EXPERIENCIA",
+        "mas_elegido": "MÁS ELEGIDO",
+        "garantia_titulo": "GARANTÍA DE RESERVA",
+        "garantia_texto": "Confirmación con el 50% del total. El saldo se cancela al llegar a Cusco. Incluye todos los impuestos bancarios.",
+        # Precios - Estrategia Oferta
+        "oferta_lanzamiento": "OFERTA DE LANZAMIENTO",
+        "tarifas_preferenciales": "TARIFAS PREFERENCIALES POR PERSONA",
+        "super_precio": "¡SÚPER PRECIO!",
+        "tarifa_nacional": "TARIFA NACIONAL",
+        "tarifa_internacional": "TARIFA INTERNACIONAL / CAN",
+        "total_por_pasajero": "TOTAL POR PASAJERO",
+        "extranjero_label": "Extranjero",
+        "can_label": "Comunidad Andina (CAN)",
+        "disponibilidad_titulo": "DISPONIBILIDAD",
+        "disponibilidad_texto": "Esta tarifa especial está sujeta a cambios según la disponibilidad de espacios al momento de la reserva.",
+        "validez_titulo": "VALIDEZ",
+        "validez_texto": "Oferta válida para reservas confirmadas en las próximas 48 horas.",
+        "nota_experto": "Nota del Experto:",
+        # Términos y Condiciones
+        "terminos_titulo": "Términos y Condiciones",
+        "terminos_subtitulo": "RESUMEN DE POLÍTICAS DE RESERVA",
+        "terminos_disclaimer": "Al confirmar su reserva, acepta los términos y condiciones aquí descritos. Para consultas, contáctenos directamente.",
+        # Guía del Viajero
+        "guia_titulo": "Guía del Viajero",
+        "guia_subtitulo": "PREPARA TU AVENTURA",
+        "recomendaciones_titulo": "RECOMENDACIONES",
+        "equipaje_titulo": "EQUIPAJE",
+        "mensaje_final_1": "¡Prepárate para vivir una experiencia inolvidable!",
+        "mensaje_final_2": "Cada detalle cuenta para que tu viaje sea perfecto. ¡Nos vemos pronto en Cusco!",
+        "notas_adicionales": "Notas Adicionales:"
+    }
+    try:
+        json_labels = client.chat.completions.create(
+            model="gpt-4o-mini",
+            response_format={"type": "json_object"},
+            messages=[
+                {"role": "system", "content": system_prompt},
+                {"role": "user", "content": f"Traduce este objeto de etiquetas de interfaz al {target_lang}, respetando las llaves y solo traduciendo los valores de texto: {json.dumps(labels_base)}"}
+            ]
+        )
+        itinerary_data['labels'] = json.loads(json_labels.choices[0].message.content)
+    except:
+        itinerary_data['labels'] = labels_base
+
     return itinerary_data, None
+
