@@ -1511,6 +1511,7 @@ def render_ventas_ui():
                                 if error:
                                     st.error(f"Error en traducción: {error}")
                                     st.warning("Se generará en Español por defecto.")
+                                    idioma_pdf = "Español"  # Reset para evitar errores en el template PDF
                                 else:
                                     itinerario_a_procesar = translated_data['days']
                                     notas_a_procesar = translated_data['notas_finales']
