@@ -1,4 +1,5 @@
 import os
+import json
 import streamlit as st
 from openai import OpenAI
 from dotenv import load_dotenv
@@ -87,30 +88,32 @@ def translate_itinerary(itinerary_data, target_lang="English"):
     # ✅ Guardar los días traducidos de vuelta en itinerary_data
     itinerary_data['days'] = processed_days
 
-    # 3. Traducir NOTA DE PRECIO
+    # 3. Traducir NOTA DE PRECIO (texto plano - usar JSON wrapper para evitar que la IA lo devuelva como clave JSON)
     if itinerary_data.get('nota_precio'):
         try:
             res_np = client.chat.completions.create(
                 model="gpt-4o-mini",
+                response_format={"type": "json_object"},
                 messages=[
-                    {"role": "system", "content": system_prompt},
-                    {"role": "user", "content": f"Traduce al {target_lang}: {itinerary_data.get('nota_precio')}"}
+                    {"role": "system", "content": f"Eres un traductor. Devuelve SOLO un JSON con esta estructura: {{\"resultado\": \"texto traducido\"}}"},
+                    {"role": "user", "content": f"Traduce al {target_lang} este texto: {itinerary_data.get('nota_precio')}"}
                 ]
             )
-            itinerary_data['nota_precio'] = res_np.choices[0].message.content
+            itinerary_data['nota_precio'] = json.loads(res_np.choices[0].message.content).get('resultado', itinerary_data['nota_precio'])
         except: pass
 
-    # 4. Traducir NOTAS FINALES (Personalizadas)
+    # 4. Traducir NOTAS FINALES (texto plano - mismo fix JSON wrapper)
     if itinerary_data.get('notas_finales'):
         try:
             res_nf = client.chat.completions.create(
                 model="gpt-4o-mini",
+                response_format={"type": "json_object"},
                 messages=[
-                    {"role": "system", "content": system_prompt},
-                    {"role": "user", "content": f"Traduce al {target_lang}: {itinerary_data.get('notas_finales')}"}
+                    {"role": "system", "content": f"Eres un traductor. Devuelve SOLO un JSON con esta estructura: {{\"resultado\": \"texto traducido\"}}"},
+                    {"role": "user", "content": f"Traduce al {target_lang} este texto: {itinerary_data.get('notas_finales')}"}
                 ]
             )
-            itinerary_data['notas_finales'] = res_nf.choices[0].message.content
+            itinerary_data['notas_finales'] = json.loads(res_nf.choices[0].message.content).get('resultado', itinerary_data['notas_finales'])
         except: pass
 
     # 5. Traducir BLOQUES ESTÁTICOS (Guía y Políticas)
@@ -198,6 +201,19 @@ def translate_itinerary(itinerary_data, target_lang="English"):
         "inicia_label": "INICIA:",
         "servicios_incluye": "SERVICIOS QUE INCLUYE:",
         "servicios_no_incluye": "SERVICIOS QUE NO INCLUYE:",
+        # Categorías dinámicas (pasajeros y totales)
+        "categorias": {
+            "ADULTO": "ADULTO",
+            "NIÑO": "NIÑO",
+            "BEBÉ": "BEBÉ",
+            "INFANTE": "INFANTE",
+            "ESTUDIANTE": "ESTUDIANTE",
+            "PcD": "PcD",
+            "TOTAL NACIONAL": "TOTAL NACIONAL",
+            "TOTAL EXTRANJERO": "TOTAL EXTRANJERO",
+            "TOTAL CAN": "TOTAL CAN"
+        },
+        "cada_uno": "c/u",
         # Precios - Estrategia General
         "confirmacion_titulo": "CONFIRMACIÓN FINAL",
         "confirmacion_subtitulo": "DOCUMENTO DE CIERRE DE RESERVA",

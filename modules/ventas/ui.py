@@ -2035,6 +2035,14 @@ def render_ventas_ui():
                                     "inicia_label": "INICIA:",
                                     "servicios_incluye": "SERVICIOS QUE INCLUYE:",
                                     "servicios_no_incluye": "SERVICIOS QUE NO INCLUYE:",
+                                    "categorias": {
+                                        "ADULTO": "ADULTO", "NIÑO": "NIÑO", "BEBÉ": "BEBÉ",
+                                        "INFANTE": "INFANTE", "ESTUDIANTE": "ESTUDIANTE", "PcD": "PcD",
+                                        "TOTAL NACIONAL": "TOTAL NACIONAL",
+                                        "TOTAL EXTRANJERO": "TOTAL EXTRANJERO",
+                                        "TOTAL CAN": "TOTAL CAN"
+                                    },
+                                    "cada_uno": "c/u",
                                     "confirmacion_titulo": "CONFIRMACIÓN FINAL",
                                     "confirmacion_subtitulo": "DOCUMENTO DE CIERRE DE RESERVA",
                                     "total_acordado": "TOTAL ACORDADO",
