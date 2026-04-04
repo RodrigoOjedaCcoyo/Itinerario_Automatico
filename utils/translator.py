@@ -47,20 +47,6 @@ def translate_itinerary(itinerary_data, target_lang="English"):
         """
         
         try:
-            response = client.chat.completions.create(
-                model="gpt-4o-mini",
-                messages=[
-                    {"role": "system", "content": system_prompt},
-                    {"role": "user", "content": user_prompt}
-                ],
-                temperature=0.3
-            )
-            
-            translated_text = response.choices[0].message.content
-            # Aquí necesitaríamos un parsing más robusto si enviamos todo junto, 
-            # pero para esta versión inicial lo haremos por campos o con un formato claro de respuesta.
-            # Mejorar: Pedirle a la IA que devuelva JSON directamente.
-            
             json_prompt = f"""
             Traduce este JSON al {target_lang} respetando las llaves. Solo traduce los valores.
             {{
@@ -97,6 +83,9 @@ def translate_itinerary(itinerary_data, target_lang="English"):
         except Exception as e:
             print(f"Error traduciendo día: {e}")
             processed_days.append(day)
+
+    # ✅ Guardar los días traducidos de vuelta en itinerary_data
+    itinerary_data['days'] = processed_days
 
     # 3. Traducir NOTA DE PRECIO
     if itinerary_data.get('nota_precio'):
