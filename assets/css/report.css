@@ -1553,4 +1553,42 @@ body {
     font-size: 1rem;
     color: #2d3436;
     font-weight: 600;
-}
+}
+
+/* GLOBAL FOOTER (WEBSITE LINK) */
+.global-footer {
+    position: absolute;
+    bottom: 20px;
+    left: 0;
+    width: 100%;
+    text-align: center;
+    z-index: 100;
+}
+
+.global-footer a {
+    text-decoration: none;
+    color: #636e72; /* Gris elegante */
+    font-size: 0.85rem;
+    font-weight: 600;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    letter-spacing: 1px;
+    opacity: 0.8;
+}
+
+.global-footer a span {
+    color: var(--color-primary); /* Toque de turquesa opcional para el nombre */
+}
+
+.global-footer a:hover {
+    opacity: 1;
+}
+
+.footer-icon {
+    width: 16px;
+    height: 16px;
+    stroke: #636e72;
+}
+
