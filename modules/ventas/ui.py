@@ -105,6 +105,19 @@ def format_tour_time(raw_time):
             return raw_str
     return raw_str
 
+def normalize_text(text):
+    """Limpia el texto eliminando acentos, prefijos de Día y caracteres especiales para matching robótico."""
+    import unicodedata
+    import re
+    if not text: return ""
+    # 1. Eliminar prefijos comunes como "Día 1: ", "Dia 02 - ", etc.
+    text = re.sub(r'^(D[íi]a\s*\d+\s*[:\-\ ]*|Tour\s*[:\-\ ]*)', '', text, flags=re.IGNORECASE)
+    # 2. Quitar acentos
+    text = "".join(c for c in unicodedata.normalize('NFD', text) if unicodedata.category(c) != 'Mn')
+    # 3. Solo letras, números y espacios
+    text = re.sub(r'[^a-zA-Z0-9\s]', '', text)
+    return text.upper().strip()
+
 def obtener_imagenes_tour(nombre_carpeta):
     """Obtiene las imágenes de un tour desde la carpeta assets/img/tours/"""
     base_path = Path(os.getcwd()) / 'assets' / 'img' / 'tours' / nombre_carpeta
@@ -685,6 +698,7 @@ def render_ventas_ui():
                 
                 # ID único para persistencia de widgets
                 nuevo_t['id'] = str(uuid.uuid4())
+                nuevo_t['carpeta_img'] = t_data.get('carpeta_img', 'general')
                 
                 st.session_state.itinerario.append(nuevo_t)
                 st.rerun()
@@ -716,6 +730,8 @@ def render_ventas_ui():
                         titulo=template_data['titulo'],
                         desc=template_data.get('descripcion', "")
                     )
+                    # Persistencia de carpeta si la plantilla la tiene
+                    nuevo_d['carpeta_img'] = template_data.get('carpeta_img', 'general')
                     # Opcional: Si la plantilla tiene precios, podrías asignarlos aquí
                     nuevo_d['costo_nac'] = float(template_data.get('costo_nac', 0.0))
                     nuevo_d['costo_ext'] = float(template_data.get('costo_ext', 0.0))
@@ -1498,16 +1514,29 @@ def render_ventas_ui():
                         itinerario_v = st.session_state.itinerario
                         notas_a_procesar = st.session_state.get('f_notas_finales', '')
                         
-                        # PRE-PROCESAMIENTO: Identificar carpetas de imágenes en ESPAÑOL antes de traducir
+                        # PRE-PROCESAMIENTO: Identificar carpetas de imágenes en ESPAÑOL con FUZZY MATCH
                         itinerario_a_procesar = []
                         for tour in itinerario_v:
                             new_tour = tour.copy()
-                            # Solo buscar si no tiene carpeta o es general
+                            # 1. Si ya tiene carpeta específica (no general), la respetamos
                             if new_tour.get('carpeta_img', 'general') == 'general' and tours_db:
-                                titulo_esp = new_tour.get('titulo', '').upper().strip()
-                                match_t = next((t for t in tours_db if t['nombre'].upper().strip() == titulo_esp), None)
+                                titulo_orig = new_tour.get('titulo', '')
+                                n_titulo = normalize_text(titulo_orig)
+                                
+                                # A. Búsqueda exacta normalizada
+                                match_t = next((t for t in tours_db if normalize_text(t['nombre']) == n_titulo), None)
+                                
+                                # B. Búsqueda por contención (si el título del itinerario contiene el nombre del tour DB)
+                                if not match_t:
+                                    match_t = next((t for t in tours_db if normalize_text(t['nombre']) in n_titulo), None)
+                                    
+                                # C. Búsqueda inversa (si el nombre del tour DB contiene el título del itinerario)
+                                if not match_t:
+                                    match_t = next((t for t in tours_db if n_titulo in normalize_text(t['nombre'])), None)
+                                
                                 if match_t:
                                     new_tour['carpeta_img'] = match_t.get('carpeta_img', 'general')
+                                    
                             itinerario_a_procesar.append(new_tour)
 
                         if idioma_pdf != "Español":
