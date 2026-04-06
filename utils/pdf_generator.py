@@ -98,9 +98,21 @@ def generate_pdf(itinerary_data, output_filename=OUTPUT_FILENAME):
     itinerary_data['train_vis_img'] = get_image_as_base64(itinerary_data.get('train_vis_img'))
     itinerary_data['train_obs_img'] = get_image_as_base64(itinerary_data.get('train_obs_img'))
 
-    # Imágenes de Acreditación Legal (Usamos rutas absolutas para mayor seguridad)
-    itinerary_data['ruc_img_url'] = get_image_as_base64(BASE_DIR / "assets" / "img" / "accreditations" / "ruc_sunat.png")
-    itinerary_data['constancia_img_url'] = get_image_as_base64(BASE_DIR / "assets" / "img" / "accreditations" / "constancia_gercetur.png")
+    # Imágenes de Acreditación Legal (Método Directo Robusto)
+    def load_direct_b64(rel_path):
+        abs_path = BASE_DIR / rel_path
+        if abs_path.exists():
+            try:
+                with open(abs_path, "rb") as f:
+                    content = f.read()
+                    b64 = base64.b64encode(content).decode('utf-8')
+                    return f"data:image/png;base64,{b64}"
+            except Exception as e:
+                return ""
+        return ""
+
+    itinerary_data['ruc_img_url'] = load_direct_b64("assets/img/accreditations/ruc_sunat.png")
+    itinerary_data['constancia_img_url'] = load_direct_b64("assets/img/accreditations/constancia_gercetur.png")
 
     # Intentar importar markdown aquí por si se instaló después del arranque
     global markdown
@@ -117,6 +129,17 @@ def generate_pdf(itinerary_data, output_filename=OUTPUT_FILENAME):
         if markdown and day.get('descripcion'):
             # Usamos una conversión más robusta
             day['descripcion'] = markdown.markdown(str(day['descripcion']), extensions=['nl2br', 'sane_lists'])
+
+    # DEBUG: Guardar estado de imágenes en un archivo temporal
+    debug_info = {
+        "ruc_img_len": len(itinerary_data.get('ruc_img_url', '')),
+        "constancia_img_len": len(itinerary_data.get('constancia_img_url', '')),
+        "logo_len": len(itinerary_data.get('logo_url', '')),
+        "cwd": os.getcwd(),
+        "base_dir": str(BASE_DIR)
+    }
+    with open(BASE_DIR / "debug_pdf.json", "w") as f:
+        json.dump(debug_info, f, indent=4)
 
     html_content = template.render(**itinerary_data)
     
@@ -188,7 +211,7 @@ if __name__ == "__main__":
             raise Exception(f"Playwright falló: {error_msg}")
             
     finally:
-        if temp_html_path.exists(): temp_html_path.unlink()
+        # if temp_html_path.exists(): temp_html_path.unlink() # Comentado para debug
         if script_path.exists(): script_path.unlink()
 
     return str(output_path)
