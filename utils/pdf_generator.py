@@ -98,9 +98,9 @@ def generate_pdf(itinerary_data, output_filename=OUTPUT_FILENAME):
     itinerary_data['train_vis_img'] = get_image_as_base64(itinerary_data.get('train_vis_img'))
     itinerary_data['train_obs_img'] = get_image_as_base64(itinerary_data.get('train_obs_img'))
 
-    # Imágenes de Acreditación Legal
-    itinerary_data['ruc_img_url'] = get_image_as_base64("assets/img/accreditations/ruc_sunat.png")
-    itinerary_data['constancia_img_url'] = get_image_as_base64("assets/img/accreditations/constancia_gercetur.png")
+    # Imágenes de Acreditación Legal (Usamos rutas absolutas para mayor seguridad)
+    itinerary_data['ruc_img_url'] = get_image_as_base64(BASE_DIR / "assets" / "img" / "accreditations" / "ruc_sunat.png")
+    itinerary_data['constancia_img_url'] = get_image_as_base64(BASE_DIR / "assets" / "img" / "accreditations" / "constancia_gercetur.png")
 
     # Intentar importar markdown aquí por si se instaló después del arranque
     global markdown
