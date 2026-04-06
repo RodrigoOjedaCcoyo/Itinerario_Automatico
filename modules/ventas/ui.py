@@ -776,16 +776,19 @@ def render_ventas_ui():
                     date_str = current_date.strftime('%d/%m/%Y')
                     header_icon = "⭐" if modo_s == "B2B" else "📍" 
                     
-                    # Precios marginados para el encabezado (Redondeo solicitado)
-                    p_nac_m = math.ceil(tour.get('costo_nac', 0) * f_m_view)
-                    p_ext_m = math.ceil(tour.get('costo_ext', 0) * f_m_view)
-                    p_can_m = math.ceil(tour.get('costo_can', 0) * f_m_view)
+                    # Precios marginados para el encabezado (Respetando margen individual si existe)
+                    m_tour_val = tour.get('margen_individual', m_pct_view) if tour.get('usar_margen_propio', False) else m_pct_view
+                    f_m_tour = 1 + (m_tour_val / 100)
                     
-                    # Precios "Antes" para visualización (Redondeo solicitado)
+                    p_nac_m = math.ceil(tour.get('costo_nac', 0) * f_m_tour)
+                    p_ext_m = math.ceil(tour.get('costo_ext', 0) * f_m_tour)
+                    p_can_m = math.ceil(tour.get('costo_can', 0) * f_m_tour)
+                    
+                    # Precios "Antes" para visualización (Se mantiene global por ahora)
                     p_nac_a = math.ceil(tour.get('costo_nac', 0) * f_m_antes_view)
                     p_ext_a = math.ceil(tour.get('costo_ext', 0) * f_m_antes_view)
                     
-                    show_antes = m_antes_view > m_pct_view
+                    show_antes = m_antes_view > m_tour_val
                     
                     p_nac_str = f"S/ {p_nac_m:,.2f}"
                     if show_antes: p_nac_str = f"~~S/ {p_nac_a:,.2f}~~ {p_nac_str}"
