@@ -255,7 +255,23 @@ def translate_itinerary(itinerary_data, target_lang="English"):
         "equipaje_titulo": "EQUIPAJE",
         "mensaje_final_1": "¡Prepárate para vivir una experiencia inolvidable!",
         "mensaje_final_2": "Cada detalle cuenta para que tu viaje sea perfecto. ¡Nos vemos pronto en Cusco!",
-        "notas_adicionales": "Notas Adicionales:"
+        "notas_adicionales": "Notas Adicionales:",
+        # --- NUEVAS ETIQUETAS (ACREDITACIONES Y WEB) ---
+        "visit_web_text": "Visita nuestra web:",
+        "accreditation_title": "Garantía y Confianza",
+        "accreditation_subtitle": "Operador Turístico Autorizado por el Estado Peruano",
+        "accreditation_gercetur_label": "Certificación GERCETUR",
+        "accreditation_gercetur_sub": "Autorización Regional de Cusco",
+        "accreditation_sunat_label": "Acreditación SUNAT",
+        "accreditation_sunat_sub": "Registro Único de Contribuyentes",
+        # --- OTRAS CONDICIONES ---
+        "otras_condiciones_titulo": "OTRAS CONDICIONES:",
+        "condicion_hotel": "La reserva de hoteles está sujeta a disponibilidad de espacios.",
+        "condicion_precios": "Los precios son por persona.",
+        "condicion_tours": "Los Tours son compartidos.",
+        "condicion_machu": "Los Ingresos a Machupicchu son sujetos a disponibilidad.",
+        "condicion_igv": "No Incluye IGV.",
+        "condicion_festivas": "En fechas festivas las tarifas de hotel estaran sujetas a incremento del 20%."
     }
     try:
         json_labels = client.chat.completions.create(

@@ -1495,9 +1495,21 @@ def render_ventas_ui():
                         logo_path = os.path.abspath(logo_orig if os.path.exists(logo_orig) else os.path.join("assets", "images", "logo_background.png"))
                         
                         # --- TRADUCCIÓN CON IA (Si aplica) ---
-                        itinerario_a_procesar = st.session_state.itinerario
+                        itinerario_v = st.session_state.itinerario
                         notas_a_procesar = st.session_state.get('f_notas_finales', '')
                         
+                        # PRE-PROCESAMIENTO: Identificar carpetas de imágenes en ESPAÑOL antes de traducir
+                        itinerario_a_procesar = []
+                        for tour in itinerario_v:
+                            new_tour = tour.copy()
+                            # Solo buscar si no tiene carpeta o es general
+                            if new_tour.get('carpeta_img', 'general') == 'general' and tours_db:
+                                titulo_esp = new_tour.get('titulo', '').upper().strip()
+                                match_t = next((t for t in tours_db if t['nombre'].upper().strip() == titulo_esp), None)
+                                if match_t:
+                                    new_tour['carpeta_img'] = match_t.get('carpeta_img', 'general')
+                            itinerario_a_procesar.append(new_tour)
+
                         if idioma_pdf != "Español":
                             with st.status(f"🌐 Traducción Inteligente al {idioma_pdf}...", expanded=True) as status:
                                 st.write("Conectando con la IA...")
@@ -1521,17 +1533,8 @@ def render_ventas_ui():
                         # Preparar días con imágenes
                         days_data = []
                         for i, tour in enumerate(itinerario_a_procesar):
-                            titulo_actual = tour.get('titulo', '').upper()
-                            # PRIORIDAD 1: Carpeta ya asignada en el tour (especialmente si el usuario la editó en Ventas)
-                            # PRIORIDAD 2: Sincronización por título si no hay carpeta o es 'general'
-                            
+                            # Usamos la carpeta ya identificada en el pre-procesamiento
                             carpeta = tour.get('carpeta_img', 'general')
-                            
-                            if (carpeta == 'general' or not carpeta) and tours_db:
-                                match_t = next((t for t in tours_db if t['nombre'].upper().strip() == titulo_actual.strip()), None)
-                                if match_t:
-                                    carpeta = match_t.get('carpeta_img', 'general')
-
                             imgs = obtener_imagenes_tour(carpeta)
                             
                             # Preparar servicios con iconos SVG

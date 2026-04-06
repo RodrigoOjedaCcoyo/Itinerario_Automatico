@@ -40,7 +40,7 @@
         <div class="global-footer">
             <a href="https://viajescuscoperu.com/">
                 <svg class="footer-icon" viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><line x1="2" y1="12" x2="22" y2="12"></line><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"></path></svg>
-                Visita nuestra web: <span>viajescuscoperu.com</span>
+                {{ labels.visit_web_text | default('Visita nuestra web:') }} <span>viajescuscoperu.com</span>
             </a>
         </div>
     </div>
@@ -132,7 +132,7 @@
         <div class="global-footer">
             <a href="https://viajescuscoperu.com/">
                 <svg class="footer-icon" viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><line x1="2" y1="12" x2="22" y2="12"></line><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"></path></svg>
-                Visita nuestra web: <span>viajescuscoperu.com</span>
+                {{ labels.visit_web_text | default('Visita nuestra web:') }} <span>viajescuscoperu.com</span>
             </a>
         </div>
     </div>
@@ -560,7 +560,7 @@
         <div class="global-footer">
             <a href="https://viajescuscoperu.com/">
                 <svg class="footer-icon" viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><line x1="2" y1="12" x2="22" y2="12"></line><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"></path></svg>
-                Visita nuestra web: <span>viajescuscoperu.com</span>
+                {{ labels.visit_web_text | default('Visita nuestra web:') }} <span>viajescuscoperu.com</span>
             </a>
         </div>
     </div>
@@ -620,25 +620,25 @@
 
             <!-- Sección: OTRAS CONDICIONES -->
             <div style="margin-top: 15px; background: #fff; border: 1px solid #f0e6c8; border-radius: 10px; padding: 12px; box-shadow: 0 2px 8px rgba(0,0,0,0.03);">
-                <h4 style="margin: 0 0 8px 0; font-size: 0.85rem; font-weight: 800; color: var(--color-primary); text-transform: uppercase; letter-spacing: 1px; border-bottom: 1px solid #f0e6c8; padding-bottom: 5px;">📍 OTRAS CONDICIONES:</h4>
+                <h4 style="margin: 0 0 8px 0; font-size: 0.85rem; font-weight: 800; color: var(--color-primary); text-transform: uppercase; letter-spacing: 1px; border-bottom: 1px solid #f0e6c8; padding-bottom: 5px;">📍 {{ labels.otras_condiciones_titulo | default('OTRAS CONDICIONES:') }}</h4>
                 <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 8px 20px;">
                     <div style="font-size: 0.72rem; color: #4b6584; display: flex; align-items: flex-start; gap: 5px;">
-                        <span style="color: #c9a84c;">•</span> La reserva de hoteles está sujeta a disponibilidad de espacios.
+                        <span style="color: #c9a84c;">•</span> {{ labels.condicion_hotel | default('La reserva de hoteles está sujeta a disponibilidad de espacios.') }}
                     </div>
                     <div style="font-size: 0.72rem; color: #4b6584; display: flex; align-items: flex-start; gap: 5px;">
-                        <span style="color: #c9a84c;">•</span> Los precios son por persona.
+                        <span style="color: #c9a84c;">•</span> {{ labels.condicion_precios | default('Los precios son por persona.') }}
                     </div>
                     <div style="font-size: 0.72rem; color: #4b6584; display: flex; align-items: flex-start; gap: 5px;">
-                        <span style="color: #c9a84c;">•</span> Los Tours son compartidos.
+                        <span style="color: #c9a84c;">•</span> {{ labels.condicion_tours | default('Los Tours son compartidos.') }}
                     </div>
                     <div style="font-size: 0.72rem; color: #4b6584; display: flex; align-items: flex-start; gap: 5px;">
-                        <span style="color: #c9a84c;">•</span> Los Ingresos a Machupicchu son sujetos a disponibilidad.
+                        <span style="color: #c9a84c;">•</span> {{ labels.condicion_machu | default('Los Ingresos a Machupicchu son sujetos a disponibilidad.') }}
                     </div>
                     <div style="font-size: 0.72rem; color: #4b6584; display: flex; align-items: flex-start; gap: 5px;">
-                        <span style="color: #c9a84c;">•</span> No Incluye IGV.
+                        <span style="color: #c9a84c;">•</span> {{ labels.condicion_igv | default('No Incluye IGV.') }}
                     </div>
                     <div style="font-size: 0.72rem; color: #4b6584; display: flex; align-items: flex-start; gap: 5px;">
-                        <span style="color: #c9a84c;">•</span> En fechas festivas las tarifas de hotel estaran sujetas a incremento del 20%.
+                        <span style="color: #c9a84c;">•</span> {{ labels.condicion_festivas | default('En fechas festivas las tarifas de hotel estaran sujetas a incremento del 20%.') }}
                     </div>
                 </div>
             </div>
@@ -789,8 +789,8 @@
             </div>
 
             <div class="accreditation-header">
-                <h1 class="accreditation-title">Garantía y Confianza</h1>
-                <p class="accreditation-subtitle">Operador Turístico Autorizado por el Estado Peruano</p>
+                <h1 class="accreditation-title">{{ labels.accreditation_title | default('Garantía y Confianza') }}</h1>
+                <p class="accreditation-subtitle">{{ labels.accreditation_subtitle | default('Operador Turístico Autorizado por el Estado Peruano') }}</p>
             </div>
 
             <div class="accreditation-grid">
@@ -799,8 +799,8 @@
                     <div class="accreditation-img-container">
                         <img src="{{ constancia_img_url }}" alt="Constancia GERCETUR">
                     </div>
-                    <div class="accreditation-label">Certificación GERCETUR</div>
-                    <p style="font-size: 0.75rem; color: #666; margin-top: 5px;">Autorización Regional de Cusco</p>
+                    <div class="accreditation-label">{{ labels.accreditation_gercetur_label | default('Certificación GERCETUR') }}</div>
+                    <p style="font-size: 0.75rem; color: #666; margin-top: 5px;">{{ labels.accreditation_gercetur_sub | default('Autorización Regional de Cusco') }}</p>
                 </div>
 
                 <!-- Ficha RUC SUNAT -->
@@ -808,8 +808,8 @@
                     <div class="accreditation-img-container">
                         <img src="{{ ruc_img_url }}" alt="Ficha RUC SUNAT">
                     </div>
-                    <div class="accreditation-label">Acreditación SUNAT</div>
-                    <p style="font-size: 0.75rem; color: #666; margin-top: 5px;">Registro Único de Contribuyentes</p>
+                    <div class="accreditation-label">{{ labels.accreditation_sunat_label | default('Acreditación SUNAT') }}</div>
+                    <p style="font-size: 0.75rem; color: #666; margin-top: 5px;">{{ labels.accreditation_sunat_sub | default('Registro Único de Contribuyentes') }}</p>
                 </div>
             </div>
 
