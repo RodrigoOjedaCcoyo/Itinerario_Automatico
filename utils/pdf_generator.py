@@ -75,10 +75,8 @@ def ensure_playwright_installed():
     except Exception as e:
         print(f"Aviso en instalación de Playwright: {e}")
 
-def generate_pdf(itinerary_data, output_filename=OUTPUT_FILENAME):
-    # Asegurar entorno Playwright
-    ensure_playwright_installed()
-    
+def render_html_preview(itinerary_data):
+    """Renderiza el itinerario a HTML con imágenes en Base64 para la vista previa."""
     env = Environment(loader=FileSystemLoader(str(TEMPLATE_DIR)))
     template = env.get_template("report.html")
     
@@ -130,18 +128,22 @@ def generate_pdf(itinerary_data, output_filename=OUTPUT_FILENAME):
             # Usamos una conversión más robusta
             day['descripcion'] = markdown.markdown(str(day['descripcion']), extensions=['nl2br', 'sane_lists'])
 
-    # DEBUG: Guardar estado de imágenes en un archivo temporal
-    debug_info = {
-        "ruc_img_len": len(itinerary_data.get('ruc_img_url', '')),
-        "constancia_img_len": len(itinerary_data.get('constancia_img_url', '')),
-        "logo_len": len(itinerary_data.get('logo_url', '')),
-        "cwd": os.getcwd(),
-        "base_dir": str(BASE_DIR)
-    }
-    with open(BASE_DIR / "debug_pdf.json", "w") as f:
-        json.dump(debug_info, f, indent=4)
-
     html_content = template.render(**itinerary_data)
+    
+    # Inyectar CSS directamente en el HTML para la vista previa
+    if css_content:
+        # Añadir estilos específicos para la vista previa para asegurar que se vea similar al PDF
+        extra_css = ".service-icon, .service-icon svg { width: 35px !important; height: 35px !important; } .pin-icon { width: 45px !important; height: 45px !important; }"
+        style_tag = f"<style>{css_content}\\n{extra_css}</style>"
+        html_content = html_content.replace('</head>', f'{style_tag}\\n</head>')
+
+    return html_content, css_content
+
+def generate_pdf(itinerary_data, output_filename=OUTPUT_FILENAME):
+    # Asegurar entorno Playwright
+    ensure_playwright_installed()
+    
+    html_content, css_content = render_html_preview(itinerary_data)
     
     temp_html_path = BASE_DIR / "temp_report.html"
     with open(temp_html_path, 'w', encoding='utf-8') as f:
