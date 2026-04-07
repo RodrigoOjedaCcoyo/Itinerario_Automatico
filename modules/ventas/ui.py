@@ -2161,7 +2161,7 @@ def render_ventas_ui():
                                 from utils.pdf_generator import render_html_preview
                                 import streamlit.components.v1 as components
                                 try:
-                                    html_str, _ = render_html_preview(itinerary_data)
+                                    html_str, _ = render_html_preview(full_itinerary_data)
                                     with tab_prev:
                                         components.html(html_str, height=1200, scrolling=True)
                                 except Exception as e:
