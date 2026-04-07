@@ -162,8 +162,8 @@ def render_html_preview(itinerary_data, is_preview=False):
             """
             extra_css += viewer_css
             
-        style_tag = f"<style>{css_content}\\n{extra_css}</style>"
-        html_content = html_content.replace('</head>', f'{style_tag}\\n</head>')
+        style_tag = f"<style>{css_content}\n{extra_css}</style>"
+        html_content = html_content.replace('</head>', f'{style_tag}\n</head>')
 
     return html_content, css_content
 
