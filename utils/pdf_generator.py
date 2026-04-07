@@ -75,7 +75,7 @@ def ensure_playwright_installed():
     except Exception as e:
         print(f"Aviso en instalación de Playwright: {e}")
 
-def render_html_preview(itinerary_data):
+def render_html_preview(itinerary_data, is_preview=False):
     """Renderiza el itinerario a HTML con imágenes en Base64 para la vista previa."""
     env = Environment(loader=FileSystemLoader(str(TEMPLATE_DIR)))
     template = env.get_template("report.html")
@@ -130,10 +130,33 @@ def render_html_preview(itinerary_data):
 
     html_content = template.render(**itinerary_data)
     
-    # Inyectar CSS directamente en el HTML para la vista previa
+    # Inyectar CSS directamente en el HTML
     if css_content:
-        # Añadir estilos específicos para la vista previa para asegurar que se vea similar al PDF
         extra_css = ".service-icon, .service-icon svg { width: 35px !important; height: 35px !important; } .pin-icon { width: 45px !important; height: 45px !important; }"
+        
+        # Inyectar variables de escala adaptativa solo si es modo vista previa web (Simulador PDF)
+        if is_preview:
+            # Simulamos un visor de PDF separando A4 con fondo gris y eliminando márgenes de body
+            viewer_css = """
+            html, body {
+                margin: 0 !important;
+                padding: 20px 0 !important;
+                background-color: #525659 !important; /* Gris típico de PDF */
+                display: flex !important;
+                flex-direction: column;
+                align-items: center;
+                gap: 40px !important; /* Separación entre cada página web = hojas separadas */
+                overflow-x: hidden;
+            }
+            .cover-container, .page-container, .premium-appendix-page {
+                box-shadow: 0 10px 40px rgba(0,0,0,0.5) !important; /* Sombra de la hoja */
+                margin: 0 !important;
+                page-break-after: avoid !important; /* Elimina hojas blancas extra en el renderizado web */
+                flex-shrink: 0;
+            }
+            """
+            extra_css += viewer_css
+            
         style_tag = f"<style>{css_content}\\n{extra_css}</style>"
         html_content = html_content.replace('</head>', f'{style_tag}\\n</head>')
 
@@ -143,7 +166,7 @@ def generate_pdf(itinerary_data, output_filename=OUTPUT_FILENAME):
     # Asegurar entorno Playwright
     ensure_playwright_installed()
     
-    html_content, css_content = render_html_preview(itinerary_data)
+    html_content, css_content = render_html_preview(itinerary_data, is_preview=False)
     
     temp_html_path = BASE_DIR / "temp_report.html"
     with open(temp_html_path, 'w', encoding='utf-8') as f:
