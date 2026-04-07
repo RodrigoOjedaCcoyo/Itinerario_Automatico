@@ -1471,6 +1471,19 @@ def render_ventas_ui():
                     height=150
                 )
             st.markdown("---")
+            
+            with st.expander("📝 Páginas Adicionales de Texto Libres (Ej. Trekkings, Equipaje)", expanded=False):
+                st.caption("Escribe contenido opcional para crear hojas adicionales. Usa guiones (-) para crear viñetas. Deja el título vacío si no quieres imprimir la hoja.")
+                col_ex1, col_ex2 = st.columns(2)
+                with col_ex1:
+                    st.markdown("**Hoja Adicional 1**")
+                    p1_titulo = st.text_input("Título", value="", key="pax_p1_tit", placeholder="Ej. Recomendaciones Salkantay")
+                    p1_texto = st.text_area("Contenido", value="", key="pax_p1_txt", height=200, placeholder="- Zapatos de trekking altos\n- Pastillas para el soroche")
+                with col_ex2:
+                    st.markdown("**Hoja Adicional 2**")
+                    p2_titulo = st.text_input("Título", value="", key="pax_p2_tit", placeholder="Opcional...")
+                    p2_texto = st.text_area("Contenido", value="", key="pax_p2_txt", height=200, placeholder="Opcional...")
+            st.markdown("---")
 
             preview_clicked = False
             gen_pdf_clicked = False
@@ -2028,6 +2041,10 @@ def render_ventas_ui():
                                 'promociones': [],
                                 'nota_p': translated_data.get('nota_precio', st.session_state.get('f_nota_precio', 'INCLUYE TOUR')) if idioma_pdf != "Español" else st.session_state.get('f_nota_precio', 'INCLUYE TOUR'),
                                 'notas_finales': notas_a_procesar,
+                                'paginas_extra': [
+                                    {"titulo": p1_titulo.strip(), "texto": [t.strip() for t in p1_texto.split('\n') if t.strip()]} if p1_titulo.strip() else None,
+                                    {"titulo": p2_titulo.strip(), "texto": [t.strip() for t in p2_texto.split('\n') if t.strip()]} if p2_titulo.strip() else None
+                                ],
                                 'guia_viajero': translated_data.get('guia_viajero') if idioma_pdf != "Español" else {
                                     "titulo": "Guía del Viajero",
                                     "subtitulo": "PREPARA TU AVENTURA",
