@@ -108,7 +108,7 @@ body {
 
 .page-container {
     width: 210mm;
-    height: 297mm;
+    height: 296.5mm;
     background: white;
     margin: 0;
     position: relative;
@@ -467,7 +467,7 @@ body {
 .cover-container {
     position: relative;
     width: 210mm;
-    height: 297mm;
+    height: 296.5mm;
     background-size: cover !important;
     background-position: center;
     color: white;

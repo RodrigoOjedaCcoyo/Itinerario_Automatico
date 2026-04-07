@@ -132,7 +132,12 @@ def render_html_preview(itinerary_data, is_preview=False):
     
     # Inyectar CSS directamente en el HTML
     if css_content:
-        extra_css = ".service-icon, .service-icon svg { width: 35px !important; height: 35px !important; } .pin-icon { width: 45px !important; height: 45px !important; }"
+        # Reset básico y forzado de márgenes y tamaños SVG, aplicable TANTO en PDF como web
+        extra_css = """
+        html, body { margin: 0 !important; padding: 0 !important; }
+        .service-icon, .service-icon svg { width: 35px !important; height: 35px !important; } 
+        .pin-icon { width: 45px !important; height: 45px !important; }
+        """
         
         # Inyectar variables de escala adaptativa solo si es modo vista previa web (Simulador PDF)
         if is_preview:

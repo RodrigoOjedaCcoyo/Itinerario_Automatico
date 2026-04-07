@@ -1660,10 +1660,10 @@ def render_ventas_ui():
                                                                [c_ad_nac, c_es_nac, c_pc_nac, c_ni_nac],
                                                                [(total_nac_cat) if c_nac_cat > 0 else 0 for c_nac_cat, total_nac_cat in zip(
                                                                    [c_ad_nac, c_es_nac, c_pc_nac, c_ni_nac],
-                                                                   [sum(math.ceil(t.get('costo_nac', 0) * f_m_t) for t in st.session_state.itinerario),
-                                                                    sum(math.ceil(t.get('costo_nac_est', t.get('costo_nac', 0)-70) * f_m_t) for t in st.session_state.itinerario),
-                                                                    sum(math.ceil(t.get('costo_nac_pcd', t.get('costo_nac', 0)-70) * f_m_t) for t in st.session_state.itinerario),
-                                                                    sum(math.ceil(t.get('costo_nac_nino', t.get('costo_nac', 0)-40) * f_m_t) for t in st.session_state.itinerario)]
+                                                                   [cost_margined_nac_ad,
+                                                                    cost_margined_nac_es,
+                                                                    cost_margined_nac_pc,
+                                                                    cost_margined_nac_ni]
                                                                )], labels_pax, orig_is_usd=False)
                                 
                                 # Calcular monto total convertido para el label
@@ -1691,10 +1691,10 @@ def render_ventas_ui():
                                                                    [c_ad_ext, c_es_ext, c_pc_ext, c_ni_ext],
                                                                    [(total_ext_cat) if c_ext_cat > 0 else 0 for c_ext_cat, total_ext_cat in zip(
                                                                        [c_ad_ext, c_es_ext, c_pc_ext, c_ni_ext],
-                                                                       [sum(math.ceil(t.get('costo_ext', 0) * f_m_t) for t in st.session_state.itinerario),
-                                                                        sum(math.ceil(t.get('costo_ext_est', t.get('costo_ext', 0)-20) * f_m_t) for t in st.session_state.itinerario),
-                                                                        sum(math.ceil(t.get('costo_ext_pcd', t.get('costo_ext', 0)-20) * f_m_t) for t in st.session_state.itinerario),
-                                                                        sum(math.ceil(t.get('costo_ext_nino', t.get('costo_ext', 0)-15) * f_m_t) for t in st.session_state.itinerario)]
+                                                                       [cost_margined_ext_ad,
+                                                                        cost_margined_ext_es,
+                                                                        cost_margined_ext_pc,
+                                                                        cost_margined_ext_ni]
                                                                    )], labels_pax, orig_is_usd=True)
                                     
                                     if target_is_mixed:
@@ -1719,10 +1719,10 @@ def render_ventas_ui():
                                                                    [c_ad_can, c_es_can, c_pc_can, c_ni_can],
                                                                    [(total_can_cat) if c_can_cat > 0 else 0 for c_can_cat, total_can_cat in zip(
                                                                        [c_ad_can, c_es_can, c_pc_can, c_ni_can],
-                                                                       [sum(math.ceil(t.get('costo_can', 0) * f_m_t) for t in st.session_state.itinerario),
-                                                                        sum(math.ceil(t.get('costo_can_est', t.get('costo_can', 0)-20) * f_m_t) for t in st.session_state.itinerario),
-                                                                        sum(math.ceil(t.get('costo_can_pcd', t.get('costo_can', 0)-20) * f_m_t) for t in st.session_state.itinerario),
-                                                                        sum(math.ceil(t.get('costo_can_nino', t.get('costo_can', 0)-15) * f_m_t) for t in st.session_state.itinerario)]
+                                                                       [cost_margined_can_ad,
+                                                                        cost_margined_can_es,
+                                                                        cost_margined_can_pc,
+                                                                        cost_margined_can_ni]
                                                                    )], labels_pax, orig_is_usd=True)
                                     
                                     if target_is_mixed:
