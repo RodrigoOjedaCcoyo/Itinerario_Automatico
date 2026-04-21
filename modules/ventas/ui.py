@@ -389,47 +389,108 @@ def render_ventas_ui():
                 with st.spinner("Buscando por celular..."):
                     last_data = get_last_itinerary_by_phone(celular)
                     if last_data:
-                        datos_completos = last_data.get("datos_render", {})
-                        st.session_state.f_nombre = datos_completos.get("pasajero", "")
-                        st.session_state.f_vendedor = datos_completos.get("vendedor", "")
-                        st.session_state.f_fuente = datos_completos.get("fuente", "WhatsApp")
-                        st.session_state.f_estrategia = datos_completos.get("estrategia", "Opciones")
-                        st.session_state.f_origen = datos_completos.get("categoria", "Nacional")
-                        
-                        if datos_completos and 'days' in datos_completos:
-                             new_it = []
-                             for d in datos_completos['days']:
-                                 # 1. Intentar buscar metadatos en el catálogo oficial (como la carpeta_img)
-                                 t_catalog = next((t for t in tours_db if t.get('titulo') == d.get('titulo')), None)
-                                 
-                                 # 2. Reconstruir con PRIORIDAD a lo guardado en el PDF (lo que el vendedor editó)
-                                 tour_obj = {
-                                     "id": d.get('id_original', str(uuid.uuid4())),
-                                     "titulo": d.get('titulo', 'Día Cargado'),
-                                     "descripcion": d.get('descripcion', ''),
-                                     # Convertir servicios de [{texto, svg}] a lista simple de textos
-                                     "servicios": [s['texto'] for s in d.get('servicios', [])] if isinstance(d.get('servicios'), list) and d.get('servicios') and isinstance(d.get('servicios')[0], dict) else d.get('servicios', []),
-                                     "servicios_no_incluye": d.get('servicios_no_incluye', [s['texto'] for s in d.get('servicios_no', [])] if d.get('servicios_no') else []),
-                                     "costo_nac": float(d.get('costo_nac', 0)),
-                                     "costo_ext": float(d.get('costo_ext', 0)),
-                                     "costo_can": float(d.get('costo_can', 0)),
-                                     "costo_nac_est": float(d.get('costo_nac_est', float(d.get('costo_nac', 0))-70)),
-                                     "costo_nac_nino": float(d.get('costo_nac_nino', float(d.get('costo_nac', 0))-40)),
-                                     "costo_ext_est": float(d.get('costo_ext_est', float(d.get('costo_ext', 0))-20)),
-                                     "costo_ext_nino": float(d.get('costo_ext_nino', float(d.get('costo_ext', 0))-15)),
-                                     "costo_can_est": float(d.get('costo_can_est', float(d.get('costo_can', 0))-20)),
-                                     "costo_can_nino": float(d.get('costo_can_nino', float(d.get('costo_can', 0))-15)),
-                                     "hora_inicio": d.get('hora_inicio', '08:00 AM'),
-                                     "carpeta_img": t_catalog.get('carpeta_img', 'general') if t_catalog else 'general'
-                                 }
-                                 new_it.append(tour_obj)
-                                     
-                             st.session_state.itinerario = new_it
-                        
-                        st.success(f"¡Datos de {st.session_state.f_nombre} cargados!")
+                        d = last_data.get("datos_render", {})
+                        ci = d.get("control_interno", {})
+
+                        # --- CAMPOS BÁSICOS DEL CLIENTE ---
+                        st.session_state.f_nombre = d.get("pasajero", "")
+                        st.session_state.f_vendedor = d.get("vendedor", "")
+                        st.session_state.f_fuente = d.get("fuente", "WhatsApp")
+                        st.session_state.f_estrategia = d.get("estrategia", "Opciones")
+                        st.session_state.f_origen = d.get("origen", d.get("categoria", "Nacional"))
+                        st.session_state.f_moneda_pdf = d.get("simbolo_moneda", "Soles (S/)")
+                        st.session_state.f_nota_precio = d.get("nota_p", "INCLUYE TOUR")
+
+                        # --- MÁRGENES Y TIPO DE CAMBIO ---
+                        if ci:
+                            st.session_state.f_margen_porcentaje = ci.get("margen_utilidad_pct", 30.0)
+                            tc_saved = ci.get("tipo_cambio_aplicado", 3.7)
+                            st.session_state.f_tipo_cambio = tc_saved
+
+                            # Distribución de habitaciones
+                            hab = ci.get("distribucion_habitaciones", {})
+                            st.session_state.f_n_sgl = hab.get("simples", 0)
+                            st.session_state.f_n_dbl = hab.get("dobles_twin", 0)
+                            st.session_state.f_n_mat = hab.get("matrimoniales", 0)
+                            st.session_state.f_n_tpl = hab.get("triples", 0)
+                            st.session_state.f_n_cua = hab.get("cuadruples", 0)
+
+                            # Pasajeros por categoría
+                            pax = ci.get("desglose_pasajeros", {})
+                            nac = pax.get("nacional", {})
+                            ext = pax.get("extranjero", {})
+                            can = pax.get("can", {})
+                            st.session_state.n_adultos_nac = nac.get("adultos", 0)
+                            st.session_state.n_estud_nac  = nac.get("estudiantes", 0)
+                            st.session_state.n_pcd_nac    = nac.get("pcd", 0)
+                            st.session_state.n_ninos_nac  = nac.get("niños", 0)
+                            st.session_state.n_adultos_ext = ext.get("adultos", 0)
+                            st.session_state.n_estud_ext  = ext.get("estudiantes", 0)
+                            st.session_state.n_pcd_ext    = ext.get("pcd", 0)
+                            st.session_state.n_ninos_ext  = ext.get("niños", 0)
+                            st.session_state.n_adultos_can = can.get("adultos", 0)
+                            st.session_state.n_estud_can  = can.get("estudiantes", 0)
+                            st.session_state.n_pcd_can    = can.get("pcd", 0)
+                            st.session_state.n_ninos_can  = can.get("niños", 0)
+
+                            # Ajustes manuales de precio
+                            aj = ci.get("ajustes_manuales", {})
+                            st.session_state.f_extra_nac = aj.get("nacional", 0.0)
+                            st.session_state.f_extra_ext = aj.get("extranjero", 0.0)
+                            st.session_state.f_extra_can = aj.get("can", 0.0)
+
+                            # Categorías de hotel y tren seleccionadas
+                            cat = ci.get("categorias_seleccionadas", {})
+                            st.session_state.f_sel_hotel_gen = cat.get("hotel", "")
+                            st.session_state.f_sel_tren_gen  = cat.get("tren", "")
+                            st.session_state.f_num_noches    = cat.get("noches_hotel", 0)
+
+                            # Suplementos de tren y tipo de cambio en el momento de la venta
+                            sup = ci.get("tarifas_suplementos_momento_venta", {})
+                            st.session_state.u_t_v     = sup.get("tren_vistadome", 90.0)
+                            st.session_state.u_t_o     = sup.get("tren_observatory", 140.0)
+                            st.session_state.u_t_local = sup.get("tren_local", 0.0)
+
+                        # Upgrades de hotel (si se guardaron en cats_activas / control_interno)
+                        st.session_state.cats_activas    = d.get("cats_activas", ["Sin Hotel", "Hotel 2*", "Hotel 3*", "Hotel 4*"])
+                        st.session_state.trenes_activos  = d.get("trenes_activos", ["Tren Local", "Expedition", "Vistadome", "Observatory"])
+
+                        # --- RECONSTRUCCIÓN DE LOS TOURS DEL ITINERARIO ---
+                        if d and 'days' in d:
+                            new_it = []
+                            for day in d['days']:
+                                t_catalog = next((t for t in tours_db if t.get('titulo') == day.get('titulo')), None)
+                                tour_obj = {
+                                    "id": day.get('id_original', str(uuid.uuid4())),
+                                    "titulo": day.get('titulo', 'Día Cargado'),
+                                    "descripcion": day.get('descripcion', ''),
+                                    "servicios": [s['texto'] for s in day.get('servicios', [])] if isinstance(day.get('servicios'), list) and day.get('servicios') and isinstance(day.get('servicios')[0], dict) else day.get('servicios', []),
+                                    "servicios_no_incluye": day.get('servicios_no_incluye', [s['texto'] for s in day.get('servicios_no', [])] if day.get('servicios_no') else []),
+                                    "costo_nac": float(day.get('costo_nac', 0)),
+                                    "costo_ext": float(day.get('costo_ext', 0)),
+                                    "costo_can": float(day.get('costo_can', 0)),
+                                    "costo_nac_est": float(day.get('costo_nac_est', float(day.get('costo_nac', 0))-70)),
+                                    "costo_nac_nino": float(day.get('costo_nac_nino', float(day.get('costo_nac', 0))-40)),
+                                    "costo_ext_est": float(day.get('costo_ext_est', float(day.get('costo_ext', 0))-20)),
+                                    "costo_ext_nino": float(day.get('costo_ext_nino', float(day.get('costo_ext', 0))-15)),
+                                    "costo_can_est": float(day.get('costo_can_est', float(day.get('costo_can', 0))-20)),
+                                    "costo_can_nino": float(day.get('costo_can_nino', float(day.get('costo_can', 0))-15)),
+                                    "hora_inicio": day.get('hora_inicio', '08:00 AM'),
+                                    "mostrar_hora": day.get('mostrar_hora', False),
+                                    "nota_precio": day.get('nota_precio', 'INCLUYE TOUR'),
+                                    "carpeta_img": t_catalog.get('carpeta_img', 'general') if t_catalog else 'general'
+                                }
+                                # Restaurar suplementos de tren locales si existen
+                                for k in ['u_t_v_local', 'u_t_o_local', 'u_t_local_local', 'tiene_mp']:
+                                    if k in day:
+                                        tour_obj[k] = day[k]
+                                new_it.append(tour_obj)
+                            st.session_state.itinerario = new_it
+
+                        st.success(f"✅ Itinerario de **{st.session_state.f_nombre}** restaurado como fotocopia.")
                         st.rerun()
                     else:
-                        st.warning("No se encontraron registros previos.")
+                        st.warning("No se encontraron registros previos para este número.")
         
         t_col1, t_col2 = st.columns(2)
         idx_o = 0
