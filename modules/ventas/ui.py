@@ -389,73 +389,117 @@ def render_ventas_ui():
                 with st.spinner("Buscando por celular..."):
                     last_data = get_last_itinerary_by_phone(celular)
                     if last_data:
-                        d = last_data.get("datos_render", {})
+                        d  = last_data.get("datos_render", {})
                         ci = d.get("control_interno", {})
 
-                        # --- CAMPOS BÁSICOS DEL CLIENTE ---
-                        st.session_state.f_nombre = d.get("pasajero", "")
-                        st.session_state.f_vendedor = d.get("vendedor", "")
-                        st.session_state.f_fuente = d.get("fuente", "WhatsApp")
-                        st.session_state.f_estrategia = d.get("estrategia", "Opciones")
-                        st.session_state.f_origen = d.get("origen", d.get("categoria", "Nacional"))
-                        st.session_state.f_moneda_pdf = d.get("simbolo_moneda", "Soles (S/)")
+                        # ── CAMPOS BÁSICOS ──
+                        st.session_state.f_nombre    = d.get("pasajero", "")
+                        st.session_state.f_vendedor  = d.get("vendedor", "")
+                        st.session_state.f_fuente    = d.get("fuente", "WhatsApp")
+                        st.session_state.f_estrategia= d.get("estrategia", "Opciones")
+                        st.session_state.f_origen    = d.get("origen", d.get("categoria", "Nacional"))
                         st.session_state.f_nota_precio = d.get("nota_p", "INCLUYE TOUR")
+                        st.session_state.cats_activas   = d.get("cats_activas", ["Sin Hotel","Hotel 2*","Hotel 3*","Hotel 4*"])
+                        st.session_state.trenes_activos = d.get("trenes_activos", ["Tren Local","Expedition","Vistadome","Observatory"])
 
-                        # --- MÁRGENES Y TIPO DE CAMBIO ---
+                        # ── MÁRGENES: usan key= en number_input ──
                         if ci:
-                            st.session_state.f_margen_porcentaje = ci.get("margen_utilidad_pct", 30.0)
-                            tc_saved = ci.get("tipo_cambio_aplicado", 3.7)
-                            st.session_state.f_tipo_cambio = tc_saved
+                            mp = float(ci.get("margen_utilidad_pct", 30.0))
+                            st.session_state.f_margen_porcentaje = mp
 
-                            # Distribución de habitaciones
-                            hab = ci.get("distribucion_habitaciones", {})
-                            st.session_state.f_n_sgl = hab.get("simples", 0)
-                            st.session_state.f_n_dbl = hab.get("dobles_twin", 0)
-                            st.session_state.f_n_mat = hab.get("matrimoniales", 0)
-                            st.session_state.f_n_tpl = hab.get("triples", 0)
-                            st.session_state.f_n_cua = hab.get("cuadruples", 0)
-
-                            # Pasajeros por categoría
+                            # Pasajeros → se establecen en TODAS las variantes de key
+                            # para que funcione sin importar si el origen es Nacional/Ext/Mixto
                             pax = ci.get("desglose_pasajeros", {})
                             nac = pax.get("nacional", {})
                             ext = pax.get("extranjero", {})
                             can = pax.get("can", {})
-                            st.session_state.n_adultos_nac = nac.get("adultos", 0)
-                            st.session_state.n_estud_nac  = nac.get("estudiantes", 0)
-                            st.session_state.n_pcd_nac    = nac.get("pcd", 0)
-                            st.session_state.n_ninos_nac  = nac.get("niños", 0)
-                            st.session_state.n_adultos_ext = ext.get("adultos", 0)
-                            st.session_state.n_estud_ext  = ext.get("estudiantes", 0)
-                            st.session_state.n_pcd_ext    = ext.get("pcd", 0)
-                            st.session_state.n_ninos_ext  = ext.get("niños", 0)
-                            st.session_state.n_adultos_can = can.get("adultos", 0)
-                            st.session_state.n_estud_can  = can.get("estudiantes", 0)
-                            st.session_state.n_pcd_can    = can.get("pcd", 0)
-                            st.session_state.n_ninos_can  = can.get("niños", 0)
 
-                            # Ajustes manuales de precio
+                            an = int(nac.get("adultos", 0))
+                            en = int(nac.get("estudiantes", 0))
+                            pn = int(nac.get("pcd", 0))
+                            nn = int(nac.get("niños", 0))
+
+                            ae = int(ext.get("adultos", 0))
+                            ee = int(ext.get("estudiantes", 0))
+                            pe = int(ext.get("pcd", 0))
+                            ne = int(ext.get("niños", 0))
+
+                            ac = int(can.get("adultos", 0))
+                            ec = int(can.get("estudiantes", 0))
+                            pc = int(can.get("pcd", 0))
+                            nc = int(can.get("niños", 0))
+
+                            # Keys usadas por widget (Nacional-modo único)
+                            st.session_state.an_nac_uni  = an
+                            st.session_state.es_nac_uni  = en
+                            st.session_state.pcd_nac_uni = pn
+                            st.session_state.ni_nac_uni  = nn
+                            # Keys usadas por widget (Extranjero-modo único)
+                            st.session_state.an_ext_uni  = ae
+                            st.session_state.es_ext_uni  = ee
+                            st.session_state.pcd_ext_uni = pe
+                            st.session_state.ni_ext_uni  = ne
+                            # CAN modo único
+                            st.session_state.an_can_uni  = ac
+                            st.session_state.es_can_uni  = ec
+                            st.session_state.pcd_can_uni = pc
+                            st.session_state.ni_can_uni  = nc
+                            # Keys usadas por widget (Mixto)
+                            st.session_state.an_nac_mix  = an
+                            st.session_state.es_nac_mix  = en
+                            st.session_state.pcd_nac_mix = pn
+                            st.session_state.ni_nac_mix  = nn
+                            st.session_state.an_ext_mix  = ae
+                            st.session_state.es_ext_mix  = ee
+                            st.session_state.pcd_ext_mix = pe
+                            st.session_state.ni_ext_mix  = ne
+                            st.session_state.an_can_mix  = ac
+                            st.session_state.es_can_mix  = ec
+                            st.session_state.pcd_can_mix = pc
+                            st.session_state.ni_can_mix  = nc
+                            # Variables internas de cálculo
+                            st.session_state.n_adultos_nac = an
+                            st.session_state.n_estud_nac   = en
+                            st.session_state.n_pcd_nac     = pn
+                            st.session_state.n_ninos_nac   = nn
+                            st.session_state.n_adultos_ext = ae
+                            st.session_state.n_estud_ext   = ee
+                            st.session_state.n_pcd_ext     = pe
+                            st.session_state.n_ninos_ext   = ne
+                            st.session_state.n_adultos_can = ac
+                            st.session_state.n_estud_can   = ec
+                            st.session_state.n_pcd_can     = pc
+                            st.session_state.n_ninos_can   = nc
+
+                            # Ajustes manuales → keys del widget f_extra_*
                             aj = ci.get("ajustes_manuales", {})
-                            st.session_state.f_extra_nac = aj.get("nacional", 0.0)
-                            st.session_state.f_extra_ext = aj.get("extranjero", 0.0)
-                            st.session_state.f_extra_can = aj.get("can", 0.0)
+                            st.session_state.f_extra_nac = float(aj.get("nacional", 0.0))
+                            st.session_state.f_extra_ext = float(aj.get("extranjero", 0.0))
+                            st.session_state.f_extra_can = float(aj.get("can", 0.0))
 
-                            # Categorías de hotel y tren seleccionadas
+                            # Habitaciones → keys del widget f_n_*
+                            hab = ci.get("distribucion_habitaciones", {})
+                            st.session_state.f_n_sgl = int(hab.get("simples", 0))
+                            st.session_state.f_n_dbl = int(hab.get("dobles_twin", 0))
+                            st.session_state.f_n_mat = int(hab.get("matrimoniales", 0))
+                            st.session_state.f_n_tpl = int(hab.get("triples", 0))
+                            st.session_state.f_n_cua = int(hab.get("cuadruples", 0))
+
+                            # Noches hotel
                             cat = ci.get("categorias_seleccionadas", {})
-                            st.session_state.f_sel_hotel_gen = cat.get("hotel", "")
-                            st.session_state.f_sel_tren_gen  = cat.get("tren", "")
-                            st.session_state.f_num_noches    = cat.get("noches_hotel", 0)
+                            st.session_state.f_num_noches = int(cat.get("noches_hotel", 0))
 
-                            # Suplementos de tren y tipo de cambio en el momento de la venta
+                            # Suplementos de tren → keys directas del session_state
                             sup = ci.get("tarifas_suplementos_momento_venta", {})
-                            st.session_state.u_t_v     = sup.get("tren_vistadome", 90.0)
-                            st.session_state.u_t_o     = sup.get("tren_observatory", 140.0)
-                            st.session_state.u_t_local = sup.get("tren_local", 0.0)
+                            st.session_state.u_t_v     = float(sup.get("tren_vistadome", 90.0))
+                            st.session_state.u_t_o     = float(sup.get("tren_observatory", 140.0))
+                            st.session_state.u_t_local = float(sup.get("tren_local", 0.0))
 
-                        # Upgrades de hotel (si se guardaron en cats_activas / control_interno)
-                        st.session_state.cats_activas    = d.get("cats_activas", ["Sin Hotel", "Hotel 2*", "Hotel 3*", "Hotel 4*"])
-                        st.session_state.trenes_activos  = d.get("trenes_activos", ["Tren Local", "Expedition", "Vistadome", "Observatory"])
+                            # Hotel/tren seleccionados (General)
+                            st.session_state.sel_h_gen = cat.get("hotel", "Sin Hotel")
+                            st.session_state.sel_t_gen = cat.get("tren", "Expedition")
 
-                        # --- RECONSTRUCCIÓN DE LOS TOURS DEL ITINERARIO ---
+                        # ── RECONSTRUCCIÓN DEL ITINERARIO ──
                         if d and 'days' in d:
                             new_it = []
                             for day in d['days']:
@@ -466,31 +510,28 @@ def render_ventas_ui():
                                     "descripcion": day.get('descripcion', ''),
                                     "servicios": [s['texto'] for s in day.get('servicios', [])] if isinstance(day.get('servicios'), list) and day.get('servicios') and isinstance(day.get('servicios')[0], dict) else day.get('servicios', []),
                                     "servicios_no_incluye": day.get('servicios_no_incluye', [s['texto'] for s in day.get('servicios_no', [])] if day.get('servicios_no') else []),
-                                    "costo_nac": float(day.get('costo_nac', 0)),
-                                    "costo_ext": float(day.get('costo_ext', 0)),
-                                    "costo_can": float(day.get('costo_can', 0)),
+                                    "costo_nac":     float(day.get('costo_nac', 0)),
+                                    "costo_ext":     float(day.get('costo_ext', 0)),
+                                    "costo_can":     float(day.get('costo_can', 0)),
                                     "costo_nac_est": float(day.get('costo_nac_est', float(day.get('costo_nac', 0))-70)),
-                                    "costo_nac_nino": float(day.get('costo_nac_nino', float(day.get('costo_nac', 0))-40)),
+                                    "costo_nac_nino":float(day.get('costo_nac_nino', float(day.get('costo_nac', 0))-40)),
                                     "costo_ext_est": float(day.get('costo_ext_est', float(day.get('costo_ext', 0))-20)),
-                                    "costo_ext_nino": float(day.get('costo_ext_nino', float(day.get('costo_ext', 0))-15)),
+                                    "costo_ext_nino":float(day.get('costo_ext_nino', float(day.get('costo_ext', 0))-15)),
                                     "costo_can_est": float(day.get('costo_can_est', float(day.get('costo_can', 0))-20)),
-                                    "costo_can_nino": float(day.get('costo_can_nino', float(day.get('costo_can', 0))-15)),
-                                    "hora_inicio": day.get('hora_inicio', '08:00 AM'),
-                                    "mostrar_hora": day.get('mostrar_hora', False),
-                                    "nota_precio": day.get('nota_precio', 'INCLUYE TOUR'),
-                                    "carpeta_img": t_catalog.get('carpeta_img', 'general') if t_catalog else 'general'
+                                    "costo_can_nino":float(day.get('costo_can_nino', float(day.get('costo_can', 0))-15)),
+                                    "hora_inicio":   day.get('hora_inicio', '08:00 AM'),
+                                    "mostrar_hora":  day.get('mostrar_hora', False),
+                                    "nota_precio":   day.get('nota_precio', 'INCLUYE TOUR'),
+                                    "carpeta_img":   t_catalog.get('carpeta_img', 'general') if t_catalog else 'general'
                                 }
-                                # Restaurar suplementos de tren locales si existen
-                                for k in ['u_t_v_local', 'u_t_o_local', 'u_t_local_local', 'tiene_mp']:
-                                    if k in day:
-                                        tour_obj[k] = day[k]
                                 new_it.append(tour_obj)
                             st.session_state.itinerario = new_it
 
                         st.success(f"✅ Itinerario de **{st.session_state.f_nombre}** restaurado como fotocopia.")
                         st.rerun()
                     else:
-                        st.warning("No se encontraron registros previos para este número.")
+                        st.warning("⚠️ No se encontraron registros previos para este número.")
+
         
         t_col1, t_col2 = st.columns(2)
         idx_o = 0
