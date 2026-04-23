@@ -153,10 +153,10 @@
                   {% if linea.startswith('-') or linea.startswith('*') %}
                       <div style="display: flex; gap: 10px; margin-bottom: 8px;">
                           <span style="color: #00d1cc; font-weight: 900;">•</span>
-                          <span>{{ linea[1:].strip() }}</span>
+                          <span>{{ linea[1:].strip() | safe }}</span>
                       </div>
                   {% else %}
-                      <p style="margin-bottom: 12px; text-align: justify;">{{ linea }}</p>
+                      <p style="margin-bottom: 12px; text-align: justify;">{{ linea | safe }}</p>
                   {% endif %}
               {% endfor %}
           </div>
@@ -450,13 +450,13 @@
                         <div style="margin-bottom: 5px;">
                             <span
                                 style="color: #999; text-decoration: line-through; font-size: 1.2rem; font-weight: 600;">
-                                {{ simbolo_moneda }} {{ precios_antes.nac.total }}
+                                {{ simbolo_nac | default(simbolo_moneda) }} {{ precios_antes.nac.total }}
                             </span>
                         </div>
                         {% endif %}
                         <div style="display: flex; align-items: center; justify-content: center; gap: 5px;">
                             <span class="offer-currency"
-                                style="font-size: 1.5rem; color: var(--color-primary); font-weight: 800;">{{ simbolo_moneda }}</span>
+                                style="font-size: 1.5rem; color: var(--color-primary); font-weight: 800;">{{ simbolo_nac | default(simbolo_moneda) }}</span>
                             <span class="offer-amount"
                                 style="font-size: 2.8rem; line-height: 1; color: var(--color-primary); font-weight: 900;">{{
                                 precios.nac.total }}</span>
@@ -467,7 +467,7 @@
                             <div
                                 style="display: flex; justify-content: space-between; font-size: 0.85rem; color: #555; margin-bottom: 2px;">
                                 <span>{{ label }}:</span>
-                                <span style="font-weight: 700;">{{ simbolo_moneda }} {{ monto }}</span>
+                                <span style="font-weight: 700;">{{ simbolo_nac | default(simbolo_moneda) }} {{ monto }}</span>
                             </div>
                             {% endfor %}
                         </div>
@@ -494,7 +494,7 @@
                         <div style="margin-bottom: 5px;">
                             <span
                                 style="color: #999; text-decoration: line-through; font-size: 1.2rem; font-weight: 600;">
-                                {{ simbolo_moneda }} {{ precios_antes.ext.total }}
+                                {{ simbolo_ext | default(simbolo_moneda) }} {{ precios_antes.ext.total }}
                             </span>
                         </div>
                         {% endif %}
@@ -506,7 +506,7 @@
                                 {{ labels.extranjero_label | default('Extranjero') }}</div>
                             <div style="display: flex; align-items: center; justify-content: center; gap: 5px;">
                                 <span class="offer-currency"
-                                    style="font-size: 1.5rem; color: var(--color-primary); font-weight: 800;">{{ simbolo_moneda }}</span>
+                                    style="font-size: 1.5rem; color: var(--color-primary); font-weight: 800;">{{ simbolo_ext | default(simbolo_moneda) }}</span>
                                 <span class="offer-amount"
                                     style="font-size: 2.8rem; line-height: 1; color: var(--color-primary); font-weight: 900;">{{
                                     precios.ext.total }}</span>
@@ -517,7 +517,7 @@
                                 <div
                                     style="display: flex; justify-content: space-between; font-size: 0.82rem; color: #555;">
                                     <span>{{ label }}:</span>
-                                    <span style="font-weight: 700;">{{ simbolo_moneda }} {{ monto }}</span>
+                                    <span style="font-weight: 700;">{{ simbolo_ext | default(simbolo_moneda) }} {{ monto }}</span>
                                 </div>
                                 {% endfor %}
                             </div>

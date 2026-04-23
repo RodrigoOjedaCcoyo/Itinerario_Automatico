@@ -1576,7 +1576,7 @@ def render_ventas_ui():
             
             with st.expander("📝 Páginas Adicionales de Texto Libres (Ej. Trekkings, Equipaje)", expanded=False):
                 st.caption("Escribe contenido opcional para crear hojas adicionales. Usa guiones (-) para crear viñetas. Deja el título vacío si no quieres imprimir la hoja.")
-                col_ex1, col_ex2 = st.columns(2)
+                col_ex1, col_ex2, col_ex3 = st.columns(3)
                 with col_ex1:
                     st.markdown("**Hoja Adicional 1**")
                     p1_titulo = st.text_input("Título", value="", key="pax_p1_tit", placeholder="Ej. Recomendaciones Salkantay")
@@ -1585,6 +1585,10 @@ def render_ventas_ui():
                     st.markdown("**Hoja Adicional 2**")
                     p2_titulo = st.text_input("Título", value="", key="pax_p2_tit", placeholder="Opcional...")
                     p2_texto = st.text_area("Contenido", value="", key="pax_p2_txt", height=200, max_chars=1300, placeholder="Opcional...")
+                with col_ex3:
+                    st.markdown("**Hoja Adicional 3**")
+                    p3_titulo = st.text_input("Título", value="", key="pax_p3_tit", placeholder="Opcional...")
+                    p3_texto = st.text_area("Contenido", value="", key="pax_p3_txt", height=200, max_chars=1300, placeholder="Opcional...")
             st.markdown("---")
 
             preview_clicked = False
@@ -2115,6 +2119,8 @@ def render_ventas_ui():
                                 'origen': tipo_t,
                                 'show_antes_pdf': show_antes_pdf,
                                 'simbolo_moneda': curr_sym,
+                                'simbolo_ext': "$" if tipo_t in ["Extranjero", "Mixto"] else curr_sym,
+                                'simbolo_nac': "S/" if tipo_t in ["Nacional", "Mixto"] else curr_sym,
                                 'duracion': "1 DÍA" if len(st.session_state.itinerario) == 1 else f"{len(st.session_state.itinerario)}D / {num_noches}N",
                                 'cover_url': os.path.abspath(cover_img),
                                 'vendedor': vendedor,
@@ -2144,8 +2150,9 @@ def render_ventas_ui():
                                 'nota_p': translated_data.get('nota_precio', st.session_state.get('f_nota_precio', 'INCLUYE TOUR')) if idioma_pdf != "Español" else st.session_state.get('f_nota_precio', 'INCLUYE TOUR'),
                                 'notas_finales': notas_a_procesar,
                                 'paginas_extra': [p for p in [
-                                    {"titulo": p1_titulo.strip(), "texto": [t.strip() for t in p1_texto.split('\n') if t.strip()]} if p1_titulo.strip() else None,
-                                    {"titulo": p2_titulo.strip(), "texto": [t.strip() for t in p2_texto.split('\n') if t.strip()]} if p2_titulo.strip() else None
+                                    {"titulo": p1_titulo.strip(), "texto": [re.sub(r'\*\*(.*?)\*\*', r'<b>\1</b>', t.strip()) for t in p1_texto.split('\n') if t.strip()]} if p1_titulo.strip() else None,
+                                    {"titulo": p2_titulo.strip(), "texto": [re.sub(r'\*\*(.*?)\*\*', r'<b>\1</b>', t.strip()) for t in p2_texto.split('\n') if t.strip()]} if p2_titulo.strip() else None,
+                                    {"titulo": p3_titulo.strip(), "texto": [re.sub(r'\*\*(.*?)\*\*', r'<b>\1</b>', t.strip()) for t in p3_texto.split('\n') if t.strip()]} if p3_titulo.strip() else None
                                 ] if p is not None],
                                 'guia_viajero': translated_data.get('guia_viajero') if idioma_pdf != "Español" else {
                                     "titulo": "Guía del Viajero",
