@@ -1580,11 +1580,11 @@ def render_ventas_ui():
                 with col_ex1:
                     st.markdown("**Hoja Adicional 1**")
                     p1_titulo = st.text_input("Título", value="", key="pax_p1_tit", placeholder="Ej. Recomendaciones Salkantay")
-                    p1_texto = st.text_area("Contenido", value="", key="pax_p1_txt", height=200, max_chars=800, placeholder="- Zapatos de trekking altos\n- Pastillas para el soroche")
+                    p1_texto = st.text_area("Contenido", value="", key="pax_p1_txt", height=200, max_chars=1200, placeholder="- Zapatos de trekking altos\n- Pastillas para el soroche")
                 with col_ex2:
                     st.markdown("**Hoja Adicional 2**")
                     p2_titulo = st.text_input("Título", value="", key="pax_p2_tit", placeholder="Opcional...")
-                    p2_texto = st.text_area("Contenido", value="", key="pax_p2_txt", height=200, max_chars=800, placeholder="Opcional...")
+                    p2_texto = st.text_area("Contenido", value="", key="pax_p2_txt", height=200, max_chars=1200, placeholder="Opcional...")
             st.markdown("---")
 
             preview_clicked = False
