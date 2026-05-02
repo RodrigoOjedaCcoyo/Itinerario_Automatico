@@ -1193,6 +1193,9 @@ def render_ventas_ui():
             calc_upgrades_usd = 0.0
             calc_tren_sol = 0.0
             calc_tren_usd = 0.0
+            up_nac = 0.0
+            up_ext = 0.0
+            up_can = 0.0
             tc = 3.8 # Tipo de cambio base para el sistema
 
             if estrategia_v == "General":
