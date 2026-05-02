@@ -913,9 +913,16 @@ def render_ventas_ui():
                             col_t1, col_n, col_e, col_c, col_h = st.columns([1.5, 0.6, 0.6, 0.6, 0.6])
                             tour['titulo'] = col_t1.text_input(f"Título día {i+1}", tour['titulo'], key=f"title_{tour_id}", disabled=is_disabled)
                             tour['hora_inicio'] = col_h.text_input(f"⏰ Hora", value=tour.get('hora_inicio', '08:00 AM'), key=f"hi_{tour_id}", disabled=is_disabled)
-                            # Control de visibilidad de hora
-                            tour['mostrar_hora'] = st.toggle("👁️ Mostrar hora en PDF", value=tour.get('mostrar_hora', True), key=f"v_h_{tour_id}", disabled=is_disabled)
+                            # Control de visibilidad de hora e imágenes
+                            v_col1, v_col2 = st.columns(2)
+                            tour['mostrar_hora'] = v_col1.toggle("👁️ Mostrar hora en PDF", value=tour.get('mostrar_hora', True), key=f"v_h_{tour_id}", disabled=is_disabled)
                             
+                            current_folder = tour.get('carpeta_img', 'general')
+                            opts_folder = image_folders + [current_folder] if current_folder not in image_folders else image_folders
+                            tour['carpeta_img'] = v_col2.selectbox("📁 Carpeta Imágenes (Assets)", options=opts_folder, index=opts_folder.index(current_folder) if current_folder in opts_folder else 0, key=f"img_folder_{tour_id}", disabled=is_disabled)
+
+                            st.markdown("---")
+                            # Casillas de Precios (Restauradas)
                             tour['costo_nac'] = col_n.number_input(f"Nac (S/)", value=float(tour.get('costo_nac', 0)), key=f"cn_{tour_id}", disabled=is_disabled)
                             tour['costo_ext'] = col_e.number_input(f"Ext ($)", value=float(tour.get('costo_ext', 0)), key=f"ce_{tour_id}", disabled=is_disabled)
                             tour['costo_can'] = col_c.number_input(f"CAN ($)", value=float(tour.get('costo_can', 0)), key=f"cc_{tour_id}", disabled=is_disabled)
@@ -923,8 +930,7 @@ def render_ventas_ui():
                             # Margen individual por tour opcional
                             tour['usar_margen_propio'] = col_h.checkbox("Activar Margen", value=tour.get('usar_margen_propio', False), key=f"use_m_{tour_id}", disabled=is_disabled)
                             tour['margen_individual'] = col_h.number_input(f"% Margen", value=float(tour.get('margen_individual', m_pct_view)), step=1.0, key=f"margen_{tour_id}", disabled=not tour.get('usar_margen_propio') or is_disabled, help="Si está activado, usa este margen. Si no, usa el global.")
-                            
-                            st.markdown("---")
+
                             # Campo movido a la sección de resumen global abajo
                             
                             # --- Suplementos de Tren (Localizados en MP) ---
@@ -955,9 +961,16 @@ def render_ventas_ui():
                             col_t1, col_n, col_e, col_h = st.columns([2, 0.8, 0.8, 0.8])
                             tour['titulo'] = col_t1.text_input(f"Título día {i+1}", tour['titulo'], key=f"title_{tour_id}", disabled=is_disabled)
                             tour['hora_inicio'] = col_h.text_input(f"⏰ Hora", value=tour.get('hora_inicio', '08:00 AM'), key=f"hi_{tour_id}", disabled=is_disabled)
-                            # Control de visibilidad de hora
-                            tour['mostrar_hora'] = st.toggle("👁️ Mostrar hora en PDF", value=tour.get('mostrar_hora', True), key=f"v_h_{tour_id}", disabled=is_disabled)
+                            # Control de visibilidad de hora e imágenes
+                            v_col1, v_col2 = st.columns(2)
+                            tour['mostrar_hora'] = v_col1.toggle("👁️ Mostrar hora en PDF", value=tour.get('mostrar_hora', True), key=f"v_h_{tour_id}", disabled=is_disabled)
                             
+                            current_folder = tour.get('carpeta_img', 'general')
+                            opts_folder = image_folders + [current_folder] if current_folder not in image_folders else image_folders
+                            tour['carpeta_img'] = v_col2.selectbox("📁 Carpeta Imágenes (Assets)", options=opts_folder, index=opts_folder.index(current_folder) if current_folder in opts_folder else 0, key=f"img_folder_{tour_id}", disabled=is_disabled)
+
+                            st.markdown("---")
+                            # Casillas de Precios (Restauradas)
                             tour['costo_nac'] = col_n.number_input(f"Nac (S/)", value=float(tour.get('costo_nac', 0)), key=f"cn_{tour_id}", disabled=is_disabled)
                             tour['costo_ext'] = col_e.number_input(f"Ext ($)", value=float(tour.get('costo_ext', 0)), key=f"ce_{tour_id}", disabled=is_disabled)
                             tour['costo_can'] = tour['costo_ext']
@@ -965,11 +978,6 @@ def render_ventas_ui():
                             # Margen individual por tour opcional
                             tour['usar_margen_propio'] = col_h.checkbox("Activar Margen", value=tour.get('usar_margen_propio', False), key=f"use_m_{tour_id}", disabled=is_disabled)
                             tour['margen_individual'] = col_h.number_input(f"% Margen", value=float(tour.get('margen_individual', m_pct_view)), step=1.0, key=f"margen_{tour_id}", disabled=not tour.get('usar_margen_propio') or is_disabled, help="Si está activado, usa este margen. Si no, usa el global.")
-                            
-                            if modo_edicion:
-                                current_folder = tour.get('carpeta_img', 'general')
-                                opts_folder = image_folders + [current_folder] if current_folder not in image_folders else image_folders
-                                tour['carpeta_img'] = st.selectbox("📁 Carpeta Imágenes (Assets)", options=opts_folder, index=opts_folder.index(current_folder) if current_folder in opts_folder else 0, key=f"img_folder_{tour_id}", help="Selecciona la carpeta de imágenes para este día.")
                         
                         # --- MEJORA: Tarifas por Categoría (Ahora más visible) ---
                         if modo_edicion:
@@ -1356,7 +1364,7 @@ def render_ventas_ui():
             real_ext = (avg_ext_pp * pasajeros_ext) + m_extra_ext
             
             # CAN
-            avg_can_pp = math.ceil((total_can) / max(1, pasajeros_can) + up_ext)
+            avg_can_pp = math.ceil((total_can) / max(1, pasajeros_can) + up_can)
             real_can = (avg_can_pp * pasajeros_can) + m_extra_can
 
             # Promedios con el factor de "Antes" (También unificados)
