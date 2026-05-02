@@ -678,8 +678,7 @@ def render_ventas_ui():
         if 'f_fecha' not in st.session_state:
             st.session_state.f_fecha = datetime.now().date()
             
-        fecha_inicio = col_date1.date_input("📅 Fecha de Inicio del Viaje", value=st.session_state.f_fecha)
-        st.session_state.f_fecha = fecha_inicio
+        fecha_inicio = col_date1.date_input("📅 Fecha de Inicio del Viaje", key="f_fecha")
         usa_fechas = col_date2.checkbox("¿Ver fechas?", value=st.session_state.get('f_usa_fechas', True), key="f_usa_fechas", help="Si se desactiva, el PDF dirá 'DÍA 1' en lugar de fechas exactas.")
         
         # Calculamos la fecha fin automáticamente basada en el número de días
@@ -2140,6 +2139,7 @@ def render_ventas_ui():
                                 'title_2': t2,
                                 'pasajero': (nombre.upper() if nombre else ""),
                                 'fechas': rango_fechas.upper(),
+                                'fecha_viaje': fecha_inicio.isoformat(),
                                 'usa_fechas': usa_fechas,
                                 'matriz': pricing_matrix,
                                 'matriz_ext': pricing_matrix_ext,
