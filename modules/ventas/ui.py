@@ -402,6 +402,17 @@ def render_ventas_ui():
                         st.session_state.cats_activas   = d.get("cats_activas", ["Sin Hotel","Hotel 2*","Hotel 3*","Hotel 4*"])
                         st.session_state.trenes_activos = d.get("trenes_activos", ["Tren Local","Expedition","Vistadome","Observatory"])
 
+                        # ── FECHA DE VIAJE ──
+                        try:
+                            f_str = d.get("fecha_viaje")
+                            if f_str:
+                                if isinstance(f_str, str):
+                                    st.session_state.f_fecha = datetime.strptime(f_str[:10], "%Y-%m-%d").date()
+                                else:
+                                    st.session_state.f_fecha = f_str
+                        except Exception as e:
+                            st.session_state.f_fecha = datetime.now().date()
+
                         # ── MÁRGENES: usan key= en number_input ──
                         if ci:
                             mp = float(ci.get("margen_utilidad_pct", 30.0))
@@ -663,7 +674,12 @@ def render_ventas_ui():
         
         
         col_date1, col_date2 = st.columns([2, 1])
-        fecha_inicio = col_date1.date_input("📅 Fecha de Inicio del Viaje", datetime.now())
+        # Usar la fecha de la sesión si existe, si no, hoy.
+        if 'f_fecha' not in st.session_state:
+            st.session_state.f_fecha = datetime.now().date()
+            
+        fecha_inicio = col_date1.date_input("📅 Fecha de Inicio del Viaje", value=st.session_state.f_fecha)
+        st.session_state.f_fecha = fecha_inicio
         usa_fechas = col_date2.checkbox("¿Ver fechas?", value=st.session_state.get('f_usa_fechas', True), key="f_usa_fechas", help="Si se desactiva, el PDF dirá 'DÍA 1' en lugar de fechas exactas.")
         
         # Calculamos la fecha fin automáticamente basada en el número de días
