@@ -1346,6 +1346,7 @@ def render_ventas_ui():
             # Lógica de Upgrades final (Garantizada sin conversiones)
             up_nac = calc_upgrades_sol + calc_tren_sol
             up_ext = calc_upgrades_usd + calc_tren_usd
+            up_can = up_ext
 
             # Variables base para análisis interno (Solo costos de tours, sin hotel/tren)
             total_nac_pp = total_nac / max(1, pasajeros_nac)
