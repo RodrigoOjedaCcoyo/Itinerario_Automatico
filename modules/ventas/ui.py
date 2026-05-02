@@ -1043,9 +1043,9 @@ def render_ventas_ui():
             st.markdown("#### 💰 Margen Extra / Ajuste Global (Opcional)")
             ma1, ma2, ma3, ma4 = st.columns(4)
             # Usar keys permite que el valor se mantenga estable aunque la app se refresque por otras razones
-            extra_nac = ma1.number_input("S/ Extra (Nac)", step=10.0, key="f_extra_nac")
-            extra_ext = ma2.number_input("$ Extra (Ext)", step=5.0, key="f_extra_ext")
-            extra_can = ma3.number_input("$ Extra (CAN)", step=5.0, key="f_extra_can")
+            extra_nac = ma1.number_input("S/ Extra (Nac)", step=1.0, min_value=-10000.0, key="f_extra_nac")
+            extra_ext = ma2.number_input("$ Extra (Ext)", step=1.0, min_value=-10000.0, key="f_extra_ext")
+            extra_can = ma3.number_input("$ Extra (CAN)", step=1.0, min_value=-10000.0, key="f_extra_can")
             margen_pct = ma4.number_input("% Margen (Venta)", value=float(st.session_state.get('f_margen_porcentaje', 30.0)), step=1.0, key="f_margen_porcentaje", help="Aumenta los precios de los tours en este porcentaje.")
             
             ma5, ma6, ma7, ma8 = st.columns(4)
@@ -1348,16 +1348,16 @@ def render_ventas_ui():
             # Esto evita discrepancias visuales de (Total != Promedio * Pax)
             
             # Nacional
-            avg_nac_pp = math.ceil((total_nac + m_extra_nac) / max(1, pasajeros_nac) + up_nac)
-            real_nac = avg_nac_pp * pasajeros_nac
+            avg_nac_pp = math.ceil((total_nac) / max(1, pasajeros_nac) + up_nac)
+            real_nac = (avg_nac_pp * pasajeros_nac) + m_extra_nac
             
             # Extranjero
-            avg_ext_pp = math.ceil((total_ext + m_extra_ext) / max(1, pasajeros_ext) + up_ext)
-            real_ext = avg_ext_pp * pasajeros_ext
+            avg_ext_pp = math.ceil((total_ext) / max(1, pasajeros_ext) + up_ext)
+            real_ext = (avg_ext_pp * pasajeros_ext) + m_extra_ext
             
             # CAN
-            avg_can_pp = math.ceil((total_can + m_extra_can) / max(1, pasajeros_can) + up_ext)
-            real_can = avg_can_pp * pasajeros_can
+            avg_can_pp = math.ceil((total_can) / max(1, pasajeros_can) + up_ext)
+            real_can = (avg_can_pp * pasajeros_can) + m_extra_can
 
             # Promedios con el factor de "Antes" (También unificados)
             avg_nac_a_pp = math.ceil((total_nac_a + m_extra_nac) / max(1, pasajeros_nac) + up_nac)
