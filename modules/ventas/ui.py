@@ -1574,6 +1574,26 @@ def render_ventas_ui():
             st.markdown("👁️ **Visualización en PDF**")
             ocultar_total = st.checkbox("Ocultar Precios Totales (Solo mostrar precios por persona)", value=False, key="f_ocultar_total")
             
+            # --- NUEVA SECCIÓN: TÍTULO DE PORTADA ---
+            st.markdown("✨ **Título de la Portada**")
+            titulos_predeterminados = [
+                "Usar nombre del paquete",
+                "Machu Picchu & Cusco",
+                "Peru - Bolivia",
+                "Los Andes",
+                "✨ Escribir mi propio título..."
+            ]
+            titulo_portada_sel = st.selectbox(
+                "Estilo de Título", 
+                titulos_predeterminados,
+                key="f_titulo_portada_sel",
+                label_visibility="collapsed"
+            )
+            
+            titulo_personalizado = ""
+            if titulo_portada_sel == "✨ Escribir mi propio título...":
+                titulo_personalizado = st.text_input("Escribe el título personalizado:", key="f_titulo_personalizado", placeholder="Ej. Familia Gómez en Cusco")
+            
             # (La selección de portada ahora se encuentra en el panel superior, al elegir el paquete)
             
             # Obtener el valor actual del selector global vía session_state
@@ -1643,10 +1663,15 @@ def render_ventas_ui():
                         else:
                             archivo_img = "cusco_tradicional.jpg"
                             
-                        # Limpiar el nombre del paquete para usarlo de título: 
-                        # Remover cosas como "8D/7N" o "08D/07N" usando Expresiones Regulares
-                        nombre_limpio = pkg_name_sel if 'pkg_name_sel' in locals() else "TU PRÓXIMA AVENTURA"
-                        nombre_limpio = re.sub(r'\b\d{1,2}D(?:/|-)?\d{1,2}N\b', '', nombre_limpio, flags=re.IGNORECASE).strip()
+                        # Lógica del título de portada según la selección del usuario
+                        if titulo_portada_sel == "Usar nombre del paquete":
+                            nombre_limpio = pkg_name_sel if 'pkg_name_sel' in locals() else "TU PRÓXIMA AVENTURA"
+                            # Remover cosas como "8D/7N" o "08D/07N" usando Expresiones Regulares
+                            nombre_limpio = re.sub(r'\b\d{1,2}D(?:/|-)?\d{1,2}N\b', '', nombre_limpio, flags=re.IGNORECASE).strip()
+                        elif titulo_portada_sel == "✨ Escribir mi propio título...":
+                            nombre_limpio = titulo_personalizado.strip() if titulo_personalizado.strip() else "TU PRÓXIMA AVENTURA"
+                        else:
+                            nombre_limpio = titulo_portada_sel
                         
                         # Dividir el nombre limpio en dos líneas si es muy largo, priorizando T1
                         palabras = nombre_limpio.split()
