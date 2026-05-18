@@ -708,6 +708,27 @@ def render_ventas_ui():
             key="user_selected_cover" # Streamlit recordará automáticamente esta selección
         )
         
+        # --- NUEVA SECCIÓN: TÍTULO DE PORTADA ---
+        st.markdown("✨ **Título de la Portada**")
+        titulos_predeterminados = [
+            "Usar nombre del paquete",
+            "Machu Picchu & Cusco",
+            "Peru - Bolivia",
+            "Los Andes",
+            "✨ Escribir mi propio título..."
+        ]
+        titulo_portada_sel = st.selectbox(
+            "Estilo de Título", 
+            titulos_predeterminados,
+            key="f_titulo_portada_sel",
+            label_visibility="collapsed"
+        )
+        
+        titulo_personalizado = ""
+        if titulo_portada_sel == "✨ Escribir mi propio título...":
+            titulo_personalizado = st.text_input("Escribe el título personalizado:", key="f_titulo_personalizado", placeholder="Ej. Familia Gómez en Cusco")
+            
+
         # Eliminar lógica de Línea de Producto, cargar todos los paquetes directamente
         if paquetes_db:
             opciones_pkg = {p['nombre']: p for p in paquetes_db}
@@ -1573,26 +1594,6 @@ def render_ventas_ui():
 
             st.markdown("👁️ **Visualización en PDF**")
             ocultar_total = st.checkbox("Ocultar Precios Totales (Solo mostrar precios por persona)", value=False, key="f_ocultar_total")
-            
-            # --- NUEVA SECCIÓN: TÍTULO DE PORTADA ---
-            st.markdown("✨ **Título de la Portada**")
-            titulos_predeterminados = [
-                "Usar nombre del paquete",
-                "Machu Picchu & Cusco",
-                "Peru - Bolivia",
-                "Los Andes",
-                "✨ Escribir mi propio título..."
-            ]
-            titulo_portada_sel = st.selectbox(
-                "Estilo de Título", 
-                titulos_predeterminados,
-                key="f_titulo_portada_sel",
-                label_visibility="collapsed"
-            )
-            
-            titulo_personalizado = ""
-            if titulo_portada_sel == "✨ Escribir mi propio título...":
-                titulo_personalizado = st.text_input("Escribe el título personalizado:", key="f_titulo_personalizado", placeholder="Ej. Familia Gómez en Cusco")
             
             # (La selección de portada ahora se encuentra en el panel superior, al elegir el paquete)
             
