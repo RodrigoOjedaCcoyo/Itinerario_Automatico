@@ -1087,9 +1087,9 @@ def render_ventas_ui():
             st.markdown("#### 💰 Margen Extra / Ajuste Global (Opcional)")
             ma1, ma2, ma3, ma4 = st.columns(4)
             # Usar keys permite que el valor se mantenga estable aunque la app se refresque por otras razones
-            extra_nac = ma1.number_input("S/ Extra (Nac)", step=1.0, min_value=-10000.0, key="f_extra_nac")
-            extra_ext = ma2.number_input("$ Extra (Ext)", step=1.0, min_value=-10000.0, key="f_extra_ext")
-            extra_can = ma3.number_input("$ Extra (CAN)", step=1.0, min_value=-10000.0, key="f_extra_can")
+            extra_nac = ma1.number_input("S/ Extra (Nac)", step=1.0, min_value=-10000.0, value=0.0, key="f_extra_nac")
+            extra_ext = ma2.number_input("$ Extra (Ext)", step=1.0, min_value=-10000.0, value=0.0, key="f_extra_ext")
+            extra_can = ma3.number_input("$ Extra (CAN)", step=1.0, min_value=-10000.0, value=0.0, key="f_extra_can")
             margen_pct = ma4.number_input("% Margen (Venta)", value=float(st.session_state.get('f_margen_porcentaje', 30.0)), step=1.0, key="f_margen_porcentaje", help="Aumenta los precios de los tours en este porcentaje.")
             
             ma5, ma6, ma7, ma8 = st.columns(4)
