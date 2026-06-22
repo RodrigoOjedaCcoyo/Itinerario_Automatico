@@ -101,16 +101,25 @@ def render_html_preview(itinerary_data, is_preview=False):
         abs_path = BASE_DIR / rel_path
         if abs_path.exists():
             try:
+                ext = abs_path.suffix[1:].lower()
+                mime = f"image/{ext}" if ext != 'jpg' else "image/jpeg"
                 with open(abs_path, "rb") as f:
                     content = f.read()
                     b64 = base64.b64encode(content).decode('utf-8')
-                    return f"data:image/png;base64,{b64}"
+                    return f"data:{mime};base64,{b64}"
             except Exception as e:
                 return ""
         return ""
 
     itinerary_data['ruc_img_url'] = load_direct_b64("assets/img/accreditations/ruc_sunat.png")
     itinerary_data['constancia_img_url'] = load_direct_b64("assets/img/accreditations/constancia_gercetur.png")
+    
+    # Redes Sociales
+    itinerary_data['fb_icon'] = load_direct_b64("assets/Logo de Redes Sociales/Logo de Facebook.png")
+    itinerary_data['ig_icon'] = load_direct_b64("assets/Logo de Redes Sociales/Logo de Instagram.webp")
+    itinerary_data['tt_icon'] = load_direct_b64("assets/Logo de Redes Sociales/Logo de Tik Tok.webp")
+    itinerary_data['yt_icon'] = load_direct_b64("assets/Logo de Redes Sociales/Logo de Youtube.webp")
+    itinerary_data['ta_icon'] = load_direct_b64("assets/Logo de Redes Sociales/Logo de Tripadvisor.png")
 
     # Intentar importar markdown aquí por si se instaló después del arranque
     global markdown

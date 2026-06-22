@@ -1555,35 +1555,64 @@ body {
     font-weight: 600;
 }
 
-/* GLOBAL FOOTER (WEBSITE LINK) */
+/* GLOBAL FOOTER (WEBSITE LINK + SOCIALS) */
 .global-footer {
     position: absolute;
     bottom: 20px;
     left: 0;
     width: 100%;
-    text-align: center;
     z-index: 100;
 }
 
-.global-footer a {
+.global-footer .footer-content {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0 60px;
+    box-sizing: border-box;
+}
+
+.global-footer a.footer-web-link {
     text-decoration: none;
-    color: #636e72; /* Gris elegante */
+    color: #636e72;
     font-size: 0.85rem;
     font-weight: 600;
     display: flex;
     align-items: center;
-    justify-content: center;
     gap: 8px;
     letter-spacing: 1px;
     opacity: 0.8;
 }
 
-.global-footer a span {
-    color: var(--color-primary); /* Toque de turquesa opcional para el nombre */
+.global-footer a.footer-web-link span {
+    color: var(--color-primary);
 }
 
-.global-footer a:hover {
+.global-footer a.footer-web-link:hover {
     opacity: 1;
+}
+
+.global-footer .footer-social-links {
+    display: flex;
+    gap: 12px;
+    align-items: center;
+}
+
+.global-footer .footer-social-links a {
+    display: flex;
+    align-items: center;
+    opacity: 0.75;
+    transition: opacity 0.2s ease;
+}
+
+.global-footer .footer-social-links a:hover {
+    opacity: 1;
+}
+
+.global-footer .footer-social-links img {
+    width: 18px;
+    height: 18px;
+    object-fit: contain;
 }
 
 .footer-icon {

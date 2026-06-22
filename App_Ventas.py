@@ -1,11 +1,26 @@
 import streamlit as st
 import sys
 import datetime
+import base64
 from pathlib import Path
 import extra_streamlit_components as nsc
 
 # Configurar path para imports relativos
 sys.path.insert(0, str(Path(__file__).parent))
+
+# Helper para cargar imágenes en Base64 en Streamlit
+def get_base64_image(img_path):
+    p = Path(img_path)
+    if not p.exists():
+        return ""
+    try:
+        with open(p, "rb") as image_file:
+            encoded_string = base64.b64encode(image_file.read()).decode()
+        ext = p.suffix[1:].lower()
+        mime = f"image/{ext}" if ext != "jpg" else "image/jpeg"
+        return f"data:{mime};base64,{encoded_string}"
+    except Exception as e:
+        return ""
 
 # Configuración de Página Global (Debe ser lo primero)
 st.set_page_config(
@@ -69,6 +84,37 @@ else:
         st.divider()
             
         st.caption("v2.5 - Catálogo Integrado 🚀")
+        
+        # Redes Sociales en Sidebar
+        st.divider()
+        st.markdown("### 📱 Síguenos en Redes")
+        
+        fb_b64 = get_base64_image("assets/Logo de Redes Sociales/Logo de Facebook.png")
+        ig_b64 = get_base64_image("assets/Logo de Redes Sociales/Logo de Instagram.webp")
+        tt_b64 = get_base64_image("assets/Logo de Redes Sociales/Logo de Tik Tok.webp")
+        yt_b64 = get_base64_image("assets/Logo de Redes Sociales/Logo de Youtube.webp")
+        ta_b64 = get_base64_image("assets/Logo de Redes Sociales/Logo de Tripadvisor.png")
+        
+        html_social = f"""
+        <div style="display: flex; gap: 12px; justify-content: center; align-items: center; padding: 10px 0;">
+            <a href="https://www.facebook.com/ViajesCuscoPeruSalkantay" target="_blank" title="Facebook">
+                <img src="{fb_b64}" width="30" height="30" style="border-radius: 50%; box-shadow: 0 2px 5px rgba(0,0,0,0.15);" />
+            </a>
+            <a href="https://www.instagram.com/viajescuscoperu" target="_blank" title="Instagram">
+                <img src="{ig_b64}" width="30" height="30" style="border-radius: 50%; box-shadow: 0 2px 5px rgba(0,0,0,0.15);" />
+            </a>
+            <a href="https://www.tiktok.com/@viajescuscoperu1" target="_blank" title="TikTok">
+                <img src="{tt_b64}" width="30" height="30" style="border-radius: 50%; box-shadow: 0 2px 5px rgba(0,0,0,0.15);" />
+            </a>
+            <a href="https://www.youtube.com/@viajescuscoperu" target="_blank" title="YouTube">
+                <img src="{yt_b64}" width="30" height="30" style="border-radius: 50%; box-shadow: 0 2px 5px rgba(0,0,0,0.15);" />
+            </a>
+            <a href="https://www.tripadvisor.com.pe/Attraction_Review-g294314-d7777014-Reviews-Viajes_Cusco_Peru-Cusco_Cusco_Region.html" target="_blank" title="TripAdvisor">
+                <img src="{ta_b64}" width="30" height="30" style="border-radius: 50%; box-shadow: 0 2px 5px rgba(0,0,0,0.15);" />
+            </a>
+        </div>
+        """
+        st.markdown(html_social, unsafe_allow_html=True)
 
     # Renderizar el módulo seleccionado
     if active_tab == "Catálogo Maestro":

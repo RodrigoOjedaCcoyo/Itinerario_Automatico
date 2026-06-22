@@ -38,10 +38,19 @@
             {% endif %}
         </div>
         <div class="global-footer">
-            <a href="https://viajescuscoperu.com/">
-                <svg class="footer-icon" viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><line x1="2" y1="12" x2="22" y2="12"></line><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"></path></svg>
-                {{ labels.visit_web_text | default('Visita nuestra web:') }} <span>viajescuscoperu.com</span>
-            </a>
+            <div class="footer-content">
+                <a href="https://viajescuscoperu.com/" class="footer-web-link">
+                    <svg class="footer-icon" viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><line x1="2" y1="12" x2="22" y2="12"></line><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"></path></svg>
+                    {{ labels.visit_web_text | default('Visita nuestra web:') }} <span>viajescuscoperu.com</span>
+                </a>
+                <div class="footer-social-links">
+                    {% if fb_icon %}<a href="https://www.facebook.com/ViajesCuscoPeruSalkantay" target="_blank"><img src="{{ fb_icon }}" alt="Facebook"></a>{% endif %}
+                    {% if ig_icon %}<a href="https://www.instagram.com/viajescuscoperu" target="_blank"><img src="{{ ig_icon }}" alt="Instagram"></a>{% endif %}
+                    {% if tt_icon %}<a href="https://www.tiktok.com/@viajescuscoperu1" target="_blank"><img src="{{ tt_icon }}" alt="TikTok"></a>{% endif %}
+                    {% if yt_icon %}<a href="https://www.youtube.com/@viajescuscoperu" target="_blank"><img src="{{ yt_icon }}" alt="YouTube"></a>{% endif %}
+                    {% if ta_icon %}<a href="https://www.tripadvisor.com.pe/Attraction_Review-g294314-d7777014-Reviews-Viajes_Cusco_Peru-Cusco_Cusco_Region.html" target="_blank"><img src="{{ ta_icon }}" alt="TripAdvisor"></a>{% endif %}
+                </div>
+            </div>
         </div>
     </div>
 
@@ -130,10 +139,19 @@
 
         </div>
         <div class="global-footer">
-            <a href="https://viajescuscoperu.com/">
-                <svg class="footer-icon" viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><line x1="2" y1="12" x2="22" y2="12"></line><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"></path></svg>
-                {{ labels.visit_web_text | default('Visita nuestra web:') }} <span>viajescuscoperu.com</span>
-            </a>
+            <div class="footer-content">
+                <a href="https://viajescuscoperu.com/" class="footer-web-link">
+                    <svg class="footer-icon" viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><line x1="2" y1="12" x2="22" y2="12"></line><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"></path></svg>
+                    {{ labels.visit_web_text | default('Visita nuestra web:') }} <span>viajescuscoperu.com</span>
+                </a>
+                <div class="footer-social-links">
+                    {% if fb_icon %}<a href="https://www.facebook.com/ViajesCuscoPeruSalkantay" target="_blank"><img src="{{ fb_icon }}" alt="Facebook"></a>{% endif %}
+                    {% if ig_icon %}<a href="https://www.instagram.com/viajescuscoperu" target="_blank"><img src="{{ ig_icon }}" alt="Instagram"></a>{% endif %}
+                    {% if tt_icon %}<a href="https://www.tiktok.com/@viajescuscoperu1" target="_blank"><img src="{{ tt_icon }}" alt="TikTok"></a>{% endif %}
+                    {% if yt_icon %}<a href="https://www.youtube.com/@viajescuscoperu" target="_blank"><img src="{{ yt_icon }}" alt="YouTube"></a>{% endif %}
+                    {% if ta_icon %}<a href="https://www.tripadvisor.com.pe/Attraction_Review-g294314-d7777014-Reviews-Viajes_Cusco_Peru-Cusco_Cusco_Region.html" target="_blank"><img src="{{ ta_icon }}" alt="TripAdvisor"></a>{% endif %}
+                </div>
+            </div>
         </div>
     </div>
     {% endfor %}
@@ -162,10 +180,19 @@
           </div>
           
           <div class="global-footer">
-              <a href="https://viajescuscoperu.com/">
-                  <svg class="footer-icon" viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><line x1="2" y1="12" x2="22" y2="12"></line><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"></path></svg>
-                  Visita nuestra web: <span>viajescuscoperu.com</span>
-              </a>
+              <div class="footer-content">
+                  <a href="https://viajescuscoperu.com/" class="footer-web-link">
+                      <svg class="footer-icon" viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><line x1="2" y1="12" x2="22" y2="12"></line><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1 4-10z"></path></svg>
+                      Visita nuestra web: <span>viajescuscoperu.com</span>
+                  </a>
+                  <div class="footer-social-links">
+                      {% if fb_icon %}<a href="https://www.facebook.com/ViajesCuscoPeruSalkantay" target="_blank"><img src="{{ fb_icon }}" alt="Facebook"></a>{% endif %}
+                      {% if ig_icon %}<a href="https://www.instagram.com/viajescuscoperu" target="_blank"><img src="{{ ig_icon }}" alt="Instagram"></a>{% endif %}
+                      {% if tt_icon %}<a href="https://www.tiktok.com/@viajescuscoperu1" target="_blank"><img src="{{ tt_icon }}" alt="TikTok"></a>{% endif %}
+                      {% if yt_icon %}<a href="https://www.youtube.com/@viajescuscoperu" target="_blank"><img src="{{ yt_icon }}" alt="YouTube"></a>{% endif %}
+                      {% if ta_icon %}<a href="https://www.tripadvisor.com.pe/Attraction_Review-g294314-d7777014-Reviews-Viajes_Cusco_Peru-Cusco_Cusco_Region.html" target="_blank"><img src="{{ ta_icon }}" alt="TripAdvisor"></a>{% endif %}
+                  </div>
+              </div>
           </div>
       </div>
       {% endfor %}
@@ -591,10 +618,19 @@
             </div>
         </div>
         <div class="global-footer">
-            <a href="https://viajescuscoperu.com/">
-                <svg class="footer-icon" viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><line x1="2" y1="12" x2="22" y2="12"></line><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"></path></svg>
-                {{ labels.visit_web_text | default('Visita nuestra web:') }} <span>viajescuscoperu.com</span>
-            </a>
+            <div class="footer-content">
+                <a href="https://viajescuscoperu.com/" class="footer-web-link">
+                    <svg class="footer-icon" viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><line x1="2" y1="12" x2="22" y2="12"></line><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"></path></svg>
+                    {{ labels.visit_web_text | default('Visita nuestra web:') }} <span>viajescuscoperu.com</span>
+                </a>
+                <div class="footer-social-links">
+                    {% if fb_icon %}<a href="https://www.facebook.com/ViajesCuscoPeruSalkantay" target="_blank"><img src="{{ fb_icon }}" alt="Facebook"></a>{% endif %}
+                    {% if ig_icon %}<a href="https://www.instagram.com/viajescuscoperu" target="_blank"><img src="{{ ig_icon }}" alt="Instagram"></a>{% endif %}
+                    {% if tt_icon %}<a href="https://www.tiktok.com/@viajescuscoperu1" target="_blank"><img src="{{ tt_icon }}" alt="TikTok"></a>{% endif %}
+                    {% if yt_icon %}<a href="https://www.youtube.com/@viajescuscoperu" target="_blank"><img src="{{ yt_icon }}" alt="YouTube"></a>{% endif %}
+                    {% if ta_icon %}<a href="https://www.tripadvisor.com.pe/Attraction_Review-g294314-d7777014-Reviews-Viajes_Cusco_Peru-Cusco_Cusco_Region.html" target="_blank"><img src="{{ ta_icon }}" alt="TripAdvisor"></a>{% endif %}
+                </div>
+            </div>
         </div>
     </div>
 
@@ -683,10 +719,19 @@
                 </p>
             </div>
             <div class="global-footer">
-                <a href="https://viajescuscoperu.com/">
-                    <svg class="footer-icon" viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><line x1="2" y1="12" x2="22" y2="12"></line><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"></path></svg>
-                    Visita nuestra web: <span>viajescuscoperu.com</span>
-                </a>
+                <div class="footer-content">
+                    <a href="https://viajescuscoperu.com/" class="footer-web-link">
+                        <svg class="footer-icon" viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><line x1="2" y1="12" x2="22" y2="12"></line><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"></path></svg>
+                        Visita nuestra web: <span>viajescuscoperu.com</span>
+                    </a>
+                    <div class="footer-social-links">
+                        {% if fb_icon %}<a href="https://www.facebook.com/ViajesCuscoPeruSalkantay" target="_blank"><img src="{{ fb_icon }}" alt="Facebook"></a>{% endif %}
+                        {% if ig_icon %}<a href="https://www.instagram.com/viajescuscoperu" target="_blank"><img src="{{ ig_icon }}" alt="Instagram"></a>{% endif %}
+                        {% if tt_icon %}<a href="https://www.tiktok.com/@viajescuscoperu1" target="_blank"><img src="{{ tt_icon }}" alt="TikTok"></a>{% endif %}
+                        {% if yt_icon %}<a href="https://www.youtube.com/@viajescuscoperu" target="_blank"><img src="{{ yt_icon }}" alt="YouTube"></a>{% endif %}
+                        {% if ta_icon %}<a href="https://www.tripadvisor.com.pe/Attraction_Review-g294314-d7777014-Reviews-Viajes_Cusco_Peru-Cusco_Cusco_Region.html" target="_blank"><img src="{{ ta_icon }}" alt="TripAdvisor"></a>{% endif %}
+                    </div>
+                </div>
             </div>
         </div>
 
@@ -743,10 +788,19 @@
                 <p style="margin: 10px 0 0 0; font-size: 0.9rem; color: #636e72;">{{ labels.mensaje_final_2 | default('Cada detalle cuenta para que tu viaje sea perfecto. ¡Nos vemos pronto en Cusco!') }}</p>
             </div>
             <div class="global-footer">
-                <a href="https://viajescuscoperu.com/">
-                    <svg class="footer-icon" viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><line x1="2" y1="12" x2="22" y2="12"></line><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"></path></svg>
-                    Visita nuestra web: <span>viajescuscoperu.com</span>
-                </a>
+                <div class="footer-content">
+                    <a href="https://viajescuscoperu.com/" class="footer-web-link">
+                        <svg class="footer-icon" viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><line x1="2" y1="12" x2="22" y2="12"></line><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"></path></svg>
+                        Visita nuestra web: <span>viajescuscoperu.com</span>
+                    </a>
+                    <div class="footer-social-links">
+                        {% if fb_icon %}<a href="https://www.facebook.com/ViajesCuscoPeruSalkantay" target="_blank"><img src="{{ fb_icon }}" alt="Facebook"></a>{% endif %}
+                        {% if ig_icon %}<a href="https://www.instagram.com/viajescuscoperu" target="_blank"><img src="{{ ig_icon }}" alt="Instagram"></a>{% endif %}
+                        {% if tt_icon %}<a href="https://www.tiktok.com/@viajescuscoperu1" target="_blank"><img src="{{ tt_icon }}" alt="TikTok"></a>{% endif %}
+                        {% if yt_icon %}<a href="https://www.youtube.com/@viajescuscoperu" target="_blank"><img src="{{ yt_icon }}" alt="YouTube"></a>{% endif %}
+                        {% if ta_icon %}<a href="https://www.tripadvisor.com.pe/Attraction_Review-g294314-d7777014-Reviews-Viajes_Cusco_Peru-Cusco_Cusco_Region.html" target="_blank"><img src="{{ ta_icon }}" alt="TripAdvisor"></a>{% endif %}
+                    </div>
+                </div>
             </div>
         </div>
         {% else %}
@@ -808,10 +862,19 @@
             </div>
             {% endif %}
             <div class="global-footer">
-                <a href="https://viajescuscoperu.com/">
-                    <svg class="footer-icon" viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><line x1="2" y1="12" x2="22" y2="12"></line><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"></path></svg>
-                    Visita nuestra web: <span>viajescuscoperu.com</span>
-                </a>
+                <div class="footer-content">
+                    <a href="https://viajescuscoperu.com/" class="footer-web-link">
+                        <svg class="footer-icon" viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><line x1="2" y1="12" x2="22" y2="12"></line><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"></path></svg>
+                        Visita nuestra web: <span>viajescuscoperu.com</span>
+                    </a>
+                    <div class="footer-social-links">
+                        {% if fb_icon %}<a href="https://www.facebook.com/ViajesCuscoPeruSalkantay" target="_blank"><img src="{{ fb_icon }}" alt="Facebook"></a>{% endif %}
+                        {% if ig_icon %}<a href="https://www.instagram.com/viajescuscoperu" target="_blank"><img src="{{ ig_icon }}" alt="Instagram"></a>{% endif %}
+                        {% if tt_icon %}<a href="https://www.tiktok.com/@viajescuscoperu1" target="_blank"><img src="{{ tt_icon }}" alt="TikTok"></a>{% endif %}
+                        {% if yt_icon %}<a href="https://www.youtube.com/@viajescuscoperu" target="_blank"><img src="{{ yt_icon }}" alt="YouTube"></a>{% endif %}
+                        {% if ta_icon %}<a href="https://www.tripadvisor.com.pe/Attraction_Review-g294314-d7777014-Reviews-Viajes_Cusco_Peru-Cusco_Cusco_Region.html" target="_blank"><img src="{{ ta_icon }}" alt="TripAdvisor"></a>{% endif %}
+                    </div>
+                </div>
             </div>
         </div>
         {% endif %}
@@ -854,10 +917,19 @@
                 </div>
             </div>
             <div class="global-footer">
-                <a href="https://viajescuscoperu.com/">
-                    <svg class="footer-icon" viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><line x1="2" y1="12" x2="22" y2="12"></line><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"></path></svg>
-                    Visita nuestra web: <span>viajescuscoperu.com</span>
-                </a>
+                <div class="footer-content">
+                    <a href="https://viajescuscoperu.com/" class="footer-web-link">
+                        <svg class="footer-icon" viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><line x1="2" y1="12" x2="22" y2="12"></line><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"></path></svg>
+                        Visita nuestra web: <span>viajescuscoperu.com</span>
+                    </a>
+                    <div class="footer-social-links">
+                        {% if fb_icon %}<a href="https://www.facebook.com/ViajesCuscoPeruSalkantay" target="_blank"><img src="{{ fb_icon }}" alt="Facebook"></a>{% endif %}
+                        {% if ig_icon %}<a href="https://www.instagram.com/viajescuscoperu" target="_blank"><img src="{{ ig_icon }}" alt="Instagram"></a>{% endif %}
+                        {% if tt_icon %}<a href="https://www.tiktok.com/@viajescuscoperu1" target="_blank"><img src="{{ tt_icon }}" alt="TikTok"></a>{% endif %}
+                        {% if yt_icon %}<a href="https://www.youtube.com/@viajescuscoperu" target="_blank"><img src="{{ yt_icon }}" alt="YouTube"></a>{% endif %}
+                        {% if ta_icon %}<a href="https://www.tripadvisor.com.pe/Attraction_Review-g294314-d7777014-Reviews-Viajes_Cusco_Peru-Cusco_Cusco_Region.html" target="_blank"><img src="{{ ta_icon }}" alt="TripAdvisor"></a>{% endif %}
+                    </div>
+                </div>
             </div>
         </div>
 
