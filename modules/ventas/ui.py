@@ -1792,7 +1792,11 @@ def render_ventas_ui():
                             # 1. Preparar data completa
                             # USAR EL VALOR MANUAL DE NOCHES RECIÉN DEFINIDO
                             num_noches = st.session_state.get('f_num_noches', len(st.session_state.itinerario))
-                            curr_sym = sym_target
+                            
+                            if target_is_mixed:
+                                curr_sym = "$" if tipo_t in ["Extranjero", "CAN"] else "S/"
+                            else:
+                                curr_sym = sym_target
                             
                             # Base Price calculation for the primary category
                             if tipo_t == "Nacional":
