@@ -218,7 +218,7 @@ def generate_pdf(itinerary_data, output_filename=OUTPUT_FILENAME):
 
     response = requests.post(
         PDFSHIFT_API_URL,
-        auth=(api_key, ""),
+        headers={"X-API-Key": api_key},
         json={
             "source": html_content,
             "format": "A4",
