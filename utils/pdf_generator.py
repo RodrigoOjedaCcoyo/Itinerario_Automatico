@@ -223,7 +223,7 @@ def generate_pdf(itinerary_data, output_filename=OUTPUT_FILENAME):
             "source": html_content,
             "format": "A4",
             "margin": "0",
-            "print_media_type": True,
+            "use_print": True,
         },
         timeout=120,
     )
