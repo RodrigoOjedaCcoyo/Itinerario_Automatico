@@ -12,8 +12,6 @@ from jinja2 import Environment, FileSystemLoader
 
 load_dotenv()
 
-PDFSHIFT_API_URL = "https://api.pdfshift.io/v3/convert/pdf"
-
 # --- CONFIGURACIÓN ---
 BASE_DIR = Path(__file__).parent.parent
 TEMPLATE_DIR = BASE_DIR / "assets" / "templates"
@@ -60,12 +58,15 @@ def get_image_as_base64(path):
         print(f"Error procesando {path}: {e}")
         return ""
 
-def get_pdfshift_api_key():
-    """Obtiene la API key de PDFShift desde st.secrets (Streamlit Cloud) o .env (local)."""
+def get_pdf_service_config():
+    """Obtiene la URL y API key de nuestro propio servicio de PDF desde st.secrets o .env."""
     try:
-        return st.secrets.get("PDFSHIFT_API_KEY") or os.getenv("PDFSHIFT_API_KEY")
+        url = st.secrets.get("PDF_SERVICE_URL") or os.getenv("PDF_SERVICE_URL")
+        api_key = st.secrets.get("PDF_SERVICE_API_KEY") or os.getenv("PDF_SERVICE_API_KEY")
     except Exception:
-        return os.getenv("PDFSHIFT_API_KEY")
+        url = os.getenv("PDF_SERVICE_URL")
+        api_key = os.getenv("PDF_SERVICE_API_KEY")
+    return url, api_key
 
 def render_html_preview(itinerary_data, is_preview=False):
     """Renderiza el itinerario a HTML con imágenes en Base64 para la vista previa."""
@@ -169,20 +170,21 @@ def render_html_preview(itinerary_data, is_preview=False):
     return html_content, css_content
 
 def generate_pdf(itinerary_data, output_filename=OUTPUT_FILENAME):
-    """Genera el PDF llamando a la API de PDFShift (sin depender de Chromium local)."""
-    api_key = get_pdfshift_api_key()
-    if not api_key:
+    """Genera el PDF llamando a nuestro propio microservicio de Playwright (sin límite de créditos de terceros)."""
+    service_url, api_key = get_pdf_service_config()
+    if not service_url:
         raise Exception(
-            "No se encontró la API KEY de PDFShift (configura PDFSHIFT_API_KEY en st.secrets o .env)."
+            "No se encontró la URL del servicio de PDF (configura PDF_SERVICE_URL en st.secrets o .env)."
         )
 
     html_content, _ = render_html_preview(itinerary_data, is_preview=False)
 
+    headers = {"X-API-Key": api_key} if api_key else {}
     response = requests.post(
-        PDFSHIFT_API_URL,
-        auth=(api_key, ""),
+        f"{service_url.rstrip('/')}/pdf",
+        headers=headers,
         json={
-            "source": html_content,
+            "html": html_content,
             "format": "A4",
             "margin": "0",
             "print_media_type": True,
@@ -191,7 +193,7 @@ def generate_pdf(itinerary_data, output_filename=OUTPUT_FILENAME):
     )
 
     if response.status_code != 200:
-        raise Exception(f"PDFShift falló ({response.status_code}): {response.text}")
+        raise Exception(f"Servicio de PDF falló ({response.status_code}): {response.text}")
 
     output_path = BASE_DIR / output_filename
     with open(output_path, "wb") as f:
