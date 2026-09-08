@@ -2,11 +2,16 @@ import os
 import base64
 import requests
 import streamlit as st
+from io import BytesIO
 from dotenv import load_dotenv
 try:
     import markdown
 except ImportError:
     markdown = None
+try:
+    from PIL import Image
+except ImportError:
+    Image = None
 from pathlib import Path
 from jinja2 import Environment, FileSystemLoader
 
@@ -40,8 +45,36 @@ def find_image(path):
             
     return None
 
+def compress_image_bytes(raw_bytes, max_width=1600, jpeg_quality=82):
+    """Redimensiona/recomprime una imagen para reducir su peso antes de mandarla como base64.
+    Las portadas del proyecto pesan varios MB sin comprimir, lo que satura la memoria
+    del servicio de PDF. Preserva transparencia (PNG); el resto se convierte a JPEG."""
+    if Image is None:
+        return raw_bytes, None
+    try:
+        img = Image.open(BytesIO(raw_bytes))
+        img.load()
+        has_alpha = img.mode in ("RGBA", "LA") or (img.mode == "P" and "transparency" in img.info)
+
+        if img.width > max_width:
+            ratio = max_width / float(img.width)
+            img = img.resize((max_width, int(img.height * ratio)), Image.LANCZOS)
+
+        buf = BytesIO()
+        if has_alpha:
+            img.save(buf, format="PNG", optimize=True)
+            mime = "image/png"
+        else:
+            img = img.convert("RGB")
+            img.save(buf, format="JPEG", quality=jpeg_quality, optimize=True)
+            mime = "image/jpeg"
+        return buf.getvalue(), mime
+    except Exception as e:
+        print(f"Aviso: no se pudo comprimir imagen ({e}), se usará el original.")
+        return raw_bytes, None
+
 def get_image_as_base64(path):
-    """Convierte imagen a Base64 asegurando compatibilidad total."""
+    """Convierte imagen a Base64 asegurando compatibilidad total (comprimida para PDF)."""
     img_path = find_image(path)
     if not img_path:
         # Si no es un archivo local pero es una URL, devolverla tal cual
@@ -50,10 +83,13 @@ def get_image_as_base64(path):
         return ""
     try:
         ext = img_path.suffix[1:].lower()
-        mime = f"image/{ext}" if ext != 'jpg' else "image/jpeg"
+        default_mime = f"image/{ext}" if ext != 'jpg' else "image/jpeg"
         with open(img_path, "rb") as f:
-            b64 = base64.b64encode(f.read()).decode('utf-8')
-            return f"data:{mime};base64,{b64}"
+            raw_bytes = f.read()
+        compressed_bytes, mime = compress_image_bytes(raw_bytes)
+        mime = mime or default_mime
+        b64 = base64.b64encode(compressed_bytes).decode('utf-8')
+        return f"data:{mime};base64,{b64}"
     except Exception as e:
         print(f"Error procesando {path}: {e}")
         return ""
@@ -95,11 +131,13 @@ def render_html_preview(itinerary_data, is_preview=False):
         if abs_path.exists():
             try:
                 ext = abs_path.suffix[1:].lower()
-                mime = f"image/{ext}" if ext != 'jpg' else "image/jpeg"
+                default_mime = f"image/{ext}" if ext != 'jpg' else "image/jpeg"
                 with open(abs_path, "rb") as f:
-                    content = f.read()
-                    b64 = base64.b64encode(content).decode('utf-8')
-                    return f"data:{mime};base64,{b64}"
+                    raw_bytes = f.read()
+                compressed_bytes, mime = compress_image_bytes(raw_bytes, max_width=600)
+                mime = mime or default_mime
+                b64 = base64.b64encode(compressed_bytes).decode('utf-8')
+                return f"data:{mime};base64,{b64}"
             except Exception as e:
                 return ""
         return ""

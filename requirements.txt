@@ -6,3 +6,4 @@ python-dotenv
 markdown
 extra-streamlit-components
 openai
+Pillow
