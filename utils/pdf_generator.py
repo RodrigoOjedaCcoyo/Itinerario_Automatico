@@ -1,14 +1,18 @@
 import os
-import subprocess
-import sys
 import base64
-import json
+import requests
+import streamlit as st
+from dotenv import load_dotenv
 try:
     import markdown
 except ImportError:
     markdown = None
 from pathlib import Path
 from jinja2 import Environment, FileSystemLoader
+
+load_dotenv()
+
+PDFSHIFT_API_URL = "https://api.pdfshift.io/v3/convert/pdf"
 
 # --- CONFIGURACIÓN ---
 BASE_DIR = Path(__file__).parent.parent
@@ -56,24 +60,12 @@ def get_image_as_base64(path):
         print(f"Error procesando {path}: {e}")
         return ""
 
-def ensure_playwright_installed():
-    """Asegura que Playwright y Chromium estén instalados en el entorno actual."""
+def get_pdfshift_api_key():
+    """Obtiene la API key de PDFShift desde st.secrets (Streamlit Cloud) o .env (local)."""
     try:
-        # Intentar ejecutar playwright para ver si está instalado
-        subprocess.run(["playwright", "--version"], capture_output=True, check=True)
-    except (subprocess.CalledProcessError, FileNotFoundError):
-        print("Playwright no encontrado. Instalando...")
-        subprocess.run([sys.executable, "-m", "pip", "install", "playwright"], check=True)
-    
-    # Intentar instalar chromium si no existe
-    try:
-        print("Asegurando Chromium para Playwright...")
-        subprocess.run([sys.executable, "-m", "playwright", "install", "chromium"], check=True)
-        # En Linux (Streamlit Cloud), a veces se necesitan dependencias del sistema
-        if sys.platform == "linux":
-            subprocess.run([sys.executable, "-m", "playwright", "install-deps", "chromium"], check=False)
-    except Exception as e:
-        print(f"Aviso en instalación de Playwright: {e}")
+        return st.secrets.get("PDFSHIFT_API_KEY") or os.getenv("PDFSHIFT_API_KEY")
+    except Exception:
+        return os.getenv("PDFSHIFT_API_KEY")
 
 def render_html_preview(itinerary_data, is_preview=False):
     """Renderiza el itinerario a HTML con imágenes en Base64 para la vista previa."""
@@ -177,80 +169,32 @@ def render_html_preview(itinerary_data, is_preview=False):
     return html_content, css_content
 
 def generate_pdf(itinerary_data, output_filename=OUTPUT_FILENAME):
-    # Asegurar entorno Playwright
-    ensure_playwright_installed()
-    
-    html_content, css_content = render_html_preview(itinerary_data, is_preview=False)
-    
-    temp_html_path = BASE_DIR / "temp_report.html"
-    with open(temp_html_path, 'w', encoding='utf-8') as f:
-        f.write(html_content)
-    
-    output_path = BASE_DIR / output_filename
-    script_path = BASE_DIR / "temp_pdf_script.py"
-    
-    # Usamos json.dumps para pasar el CSS de forma segura al script
-    css_json = json.dumps(css_content)
-    
-    # Script Playwright
-    script_content = f'''
-import asyncio
-import sys
-import json
-from playwright.async_api import async_playwright
-
-async def main():
-    try:
-        async with async_playwright() as p:
-            browser = await p.chromium.launch(headless=True)
-            page = await browser.new_page()
-            
-            html_file = r"{str(temp_html_path).replace(chr(92), '/')}"
-            await page.goto(f"file://{{html_file}}", wait_until='load', timeout=60000)
-            
-            # Inyectar CSS de forma segura
-            css_content = {css_json}
-            await page.add_style_tag(content=css_content)
-            
-            # Forzamos estilos de iconos y pines
-            extra_css = ".service-icon, .service-icon svg {{ width: 35px !important; height: 35px !important; }} .pin-icon {{ width: 45px !important; height: 45px !important; }}"
-            await page.add_style_tag(content=extra_css)
-            
-            await asyncio.sleep(2)
-            
-            await page.pdf(
-                path=r"{str(output_path).replace(chr(92), '/')}",
-                format='A4',
-                print_background=True,
-                margin={{'top': '0', 'right': '0', 'bottom': '0', 'left': '0'}},
-                prefer_css_page_size=True
-            )
-            await browser.close()
-            print("PDF generado con éxito")
-    except Exception as e:
-        print(f"ERROR EN SCRIPT: {{e}}", file=sys.stderr)
-        sys.exit(1)
-
-if __name__ == "__main__":
-    asyncio.run(main())
-'''
-    with open(script_path, 'w', encoding='utf-8') as f:
-        f.write(script_content)
-    
-    try:
-        # Ejecutar capturando errores
-        result = subprocess.run(
-            [sys.executable, str(script_path)], 
-            capture_output=True, 
-            text=True, 
-            timeout=180
+    """Genera el PDF llamando a la API de PDFShift (sin depender de Chromium local)."""
+    api_key = get_pdfshift_api_key()
+    if not api_key:
+        raise Exception(
+            "No se encontró la API KEY de PDFShift (configura PDFSHIFT_API_KEY en st.secrets o .env)."
         )
-        if result.returncode != 0:
-            error_msg = result.stderr if result.stderr else result.stdout
-            raise Exception(f"Playwright falló: {error_msg}")
-            
-    finally:
-        # if temp_html_path.exists(): temp_html_path.unlink() # Comentado para debug
-        if script_path.exists(): script_path.unlink()
+
+    html_content, _ = render_html_preview(itinerary_data, is_preview=False)
+
+    response = requests.post(
+        PDFSHIFT_API_URL,
+        auth=(api_key, ""),
+        json={
+            "source": html_content,
+            "format": "A4",
+            "margin": "0",
+            "print_media_type": True,
+        },
+        timeout=120,
+    )
+
+    if response.status_code != 200:
+        raise Exception(f"PDFShift falló ({response.status_code}): {response.text}")
+
+    output_path = BASE_DIR / output_filename
+    with open(output_path, "wb") as f:
+        f.write(response.content)
 
     return str(output_path)
