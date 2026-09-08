@@ -1,9 +1,8 @@
 streamlit
 jinja2
-requests
+playwright
 supabase
 python-dotenv
 markdown
 extra-streamlit-components
 openai
-Pillow
