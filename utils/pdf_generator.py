@@ -1,14 +1,23 @@
 import os
-import subprocess
-import sys
 import base64
-import json
+import requests
+import streamlit as st
+from io import BytesIO
+from dotenv import load_dotenv
 try:
     import markdown
 except ImportError:
     markdown = None
+try:
+    from PIL import Image
+except ImportError:
+    Image = None
 from pathlib import Path
 from jinja2 import Environment, FileSystemLoader
+
+load_dotenv()
+
+PDFSHIFT_API_URL = "https://api.pdfshift.io/v3/convert/pdf"
 
 # --- CONFIGURACIÓN ---
 BASE_DIR = Path(__file__).parent.parent
@@ -21,25 +30,53 @@ def find_image(path):
     if not path: return None
     path_str = str(path)
     p = Path(path_str)
-    
+
     # 1. Probar ruta tal cual
     if p.exists(): return p
-    
+
     # 2. Probar ruta relativa al BASE_DIR
     # Limpiamos la ruta de posibles prefijos de Windows si estamos en Linux
     clean_filename = path_str.replace('\\', '/').split('/')[-1]
     p_rel = BASE_DIR / clean_filename
     if p_rel.exists(): return p_rel
-    
+
     # 3. Buscar en todo el proyecto por nombre de archivo
     for root, dirs, files in os.walk(BASE_DIR):
         if clean_filename in files:
             return Path(root) / clean_filename
-            
+
     return None
 
+def compress_image_bytes(raw_bytes, max_width=1600, jpeg_quality=82):
+    """Redimensiona/recomprime una imagen para reducir su peso antes de mandarla como base64.
+    Las portadas del proyecto pesan varios MB sin comprimir, lo que infla el payload
+    enviado a la API de PDF. Preserva transparencia (PNG); el resto se convierte a JPEG."""
+    if Image is None:
+        return raw_bytes, None
+    try:
+        img = Image.open(BytesIO(raw_bytes))
+        img.load()
+        has_alpha = img.mode in ("RGBA", "LA") or (img.mode == "P" and "transparency" in img.info)
+
+        if img.width > max_width:
+            ratio = max_width / float(img.width)
+            img = img.resize((max_width, int(img.height * ratio)), Image.LANCZOS)
+
+        buf = BytesIO()
+        if has_alpha:
+            img.save(buf, format="PNG", optimize=True)
+            mime = "image/png"
+        else:
+            img = img.convert("RGB")
+            img.save(buf, format="JPEG", quality=jpeg_quality, optimize=True)
+            mime = "image/jpeg"
+        return buf.getvalue(), mime
+    except Exception as e:
+        print(f"Aviso: no se pudo comprimir imagen ({e}), se usará el original.")
+        return raw_bytes, None
+
 def get_image_as_base64(path):
-    """Convierte imagen a Base64 asegurando compatibilidad total."""
+    """Convierte imagen a Base64 asegurando compatibilidad total (comprimida para PDF)."""
     img_path = find_image(path)
     if not img_path:
         # Si no es un archivo local pero es una URL, devolverla tal cual
@@ -48,38 +85,29 @@ def get_image_as_base64(path):
         return ""
     try:
         ext = img_path.suffix[1:].lower()
-        mime = f"image/{ext}" if ext != 'jpg' else "image/jpeg"
+        default_mime = f"image/{ext}" if ext != 'jpg' else "image/jpeg"
         with open(img_path, "rb") as f:
-            b64 = base64.b64encode(f.read()).decode('utf-8')
-            return f"data:{mime};base64,{b64}"
+            raw_bytes = f.read()
+        compressed_bytes, mime = compress_image_bytes(raw_bytes)
+        mime = mime or default_mime
+        b64 = base64.b64encode(compressed_bytes).decode('utf-8')
+        return f"data:{mime};base64,{b64}"
     except Exception as e:
         print(f"Error procesando {path}: {e}")
         return ""
 
-def ensure_playwright_installed():
-    """Asegura que Playwright y Chromium estén instalados en el entorno actual."""
+def get_pdfshift_api_key():
+    """Obtiene la API key de PDFShift desde st.secrets (Streamlit Cloud) o .env (local)."""
     try:
-        # Intentar ejecutar playwright para ver si está instalado
-        subprocess.run(["playwright", "--version"], capture_output=True, check=True)
-    except (subprocess.CalledProcessError, FileNotFoundError):
-        print("Playwright no encontrado. Instalando...")
-        subprocess.run([sys.executable, "-m", "pip", "install", "playwright"], check=True)
-    
-    # Intentar instalar chromium si no existe
-    try:
-        print("Asegurando Chromium para Playwright...")
-        subprocess.run([sys.executable, "-m", "playwright", "install", "chromium"], check=True)
-        # En Linux (Streamlit Cloud), a veces se necesitan dependencias del sistema
-        if sys.platform == "linux":
-            subprocess.run([sys.executable, "-m", "playwright", "install-deps", "chromium"], check=False)
-    except Exception as e:
-        print(f"Aviso en instalación de Playwright: {e}")
+        return st.secrets.get("PDFSHIFT_API_KEY") or os.getenv("PDFSHIFT_API_KEY")
+    except Exception:
+        return os.getenv("PDFSHIFT_API_KEY")
 
 def render_html_preview(itinerary_data, is_preview=False):
     """Renderiza el itinerario a HTML con imágenes en Base64 para la vista previa."""
     env = Environment(loader=FileSystemLoader(str(TEMPLATE_DIR)))
     template = env.get_template("report.html")
-    
+
     # Cargar CSS
     css_content = ""
     if CSS_FILE.exists():
@@ -102,18 +130,20 @@ def render_html_preview(itinerary_data, is_preview=False):
         if abs_path.exists():
             try:
                 ext = abs_path.suffix[1:].lower()
-                mime = f"image/{ext}" if ext != 'jpg' else "image/jpeg"
+                default_mime = f"image/{ext}" if ext != 'jpg' else "image/jpeg"
                 with open(abs_path, "rb") as f:
-                    content = f.read()
-                    b64 = base64.b64encode(content).decode('utf-8')
-                    return f"data:{mime};base64,{b64}"
+                    raw_bytes = f.read()
+                compressed_bytes, mime = compress_image_bytes(raw_bytes, max_width=600)
+                mime = mime or default_mime
+                b64 = base64.b64encode(compressed_bytes).decode('utf-8')
+                return f"data:{mime};base64,{b64}"
             except Exception as e:
                 return ""
         return ""
 
     itinerary_data['ruc_img_url'] = load_direct_b64("assets/img/accreditations/ruc_sunat.png")
     itinerary_data['constancia_img_url'] = load_direct_b64("assets/img/accreditations/constancia_gercetur.png")
-    
+
     # Redes Sociales
     itinerary_data['fb_icon'] = load_direct_b64("assets/Logo de Redes Sociales/Logo de Facebook.png")
     itinerary_data['ig_icon'] = load_direct_b64("assets/Logo de Redes Sociales/Logo de Instagram.webp")
@@ -138,16 +168,16 @@ def render_html_preview(itinerary_data, is_preview=False):
             day['descripcion'] = markdown.markdown(str(day['descripcion']), extensions=['nl2br', 'sane_lists'])
 
     html_content = template.render(**itinerary_data)
-    
+
     # Inyectar CSS directamente en el HTML
     if css_content:
         # Reset básico y forzado de márgenes y tamaños SVG, aplicable TANTO en PDF como web
         extra_css = """
         html, body { margin: 0 !important; padding: 0 !important; }
-        .service-icon, .service-icon svg { width: 35px !important; height: 35px !important; } 
+        .service-icon, .service-icon svg { width: 35px !important; height: 35px !important; }
         .pin-icon { width: 45px !important; height: 45px !important; }
         """
-        
+
         # Inyectar variables de escala adaptativa solo si es modo vista previa web (Simulador PDF)
         if is_preview:
             # Simulamos un visor de PDF separando A4 con fondo gris y eliminando márgenes de body
@@ -170,87 +200,39 @@ def render_html_preview(itinerary_data, is_preview=False):
             }
             """
             extra_css += viewer_css
-            
+
         style_tag = f"<style>{css_content}\n{extra_css}</style>"
         html_content = html_content.replace('</head>', f'{style_tag}\n</head>')
 
     return html_content, css_content
 
 def generate_pdf(itinerary_data, output_filename=OUTPUT_FILENAME):
-    # Asegurar entorno Playwright
-    ensure_playwright_installed()
-    
-    html_content, css_content = render_html_preview(itinerary_data, is_preview=False)
-    
-    temp_html_path = BASE_DIR / "temp_report.html"
-    with open(temp_html_path, 'w', encoding='utf-8') as f:
-        f.write(html_content)
-    
-    output_path = BASE_DIR / output_filename
-    script_path = BASE_DIR / "temp_pdf_script.py"
-    
-    # Usamos json.dumps para pasar el CSS de forma segura al script
-    css_json = json.dumps(css_content)
-    
-    # Script Playwright
-    script_content = f'''
-import asyncio
-import sys
-import json
-from playwright.async_api import async_playwright
-
-async def main():
-    try:
-        async with async_playwright() as p:
-            browser = await p.chromium.launch(headless=True)
-            page = await browser.new_page()
-            
-            html_file = r"{str(temp_html_path).replace(chr(92), '/')}"
-            await page.goto(f"file://{{html_file}}", wait_until='load', timeout=60000)
-            
-            # Inyectar CSS de forma segura
-            css_content = {css_json}
-            await page.add_style_tag(content=css_content)
-            
-            # Forzamos estilos de iconos y pines
-            extra_css = ".service-icon, .service-icon svg {{ width: 35px !important; height: 35px !important; }} .pin-icon {{ width: 45px !important; height: 45px !important; }}"
-            await page.add_style_tag(content=extra_css)
-            
-            await asyncio.sleep(2)
-            
-            await page.pdf(
-                path=r"{str(output_path).replace(chr(92), '/')}",
-                format='A4',
-                print_background=True,
-                margin={{'top': '0', 'right': '0', 'bottom': '0', 'left': '0'}},
-                prefer_css_page_size=True
-            )
-            await browser.close()
-            print("PDF generado con éxito")
-    except Exception as e:
-        print(f"ERROR EN SCRIPT: {{e}}", file=sys.stderr)
-        sys.exit(1)
-
-if __name__ == "__main__":
-    asyncio.run(main())
-'''
-    with open(script_path, 'w', encoding='utf-8') as f:
-        f.write(script_content)
-    
-    try:
-        # Ejecutar capturando errores
-        result = subprocess.run(
-            [sys.executable, str(script_path)], 
-            capture_output=True, 
-            text=True, 
-            timeout=180
+    """Genera el PDF llamando a la API de PDFShift (sin depender de Chromium local)."""
+    api_key = get_pdfshift_api_key()
+    if not api_key:
+        raise Exception(
+            "No se encontró la API KEY de PDFShift (configura PDFSHIFT_API_KEY en st.secrets o .env)."
         )
-        if result.returncode != 0:
-            error_msg = result.stderr if result.stderr else result.stdout
-            raise Exception(f"Playwright falló: {error_msg}")
-            
-    finally:
-        # if temp_html_path.exists(): temp_html_path.unlink() # Comentado para debug
-        if script_path.exists(): script_path.unlink()
+
+    html_content, _ = render_html_preview(itinerary_data, is_preview=False)
+
+    response = requests.post(
+        PDFSHIFT_API_URL,
+        auth=(api_key, ""),
+        json={
+            "source": html_content,
+            "format": "A4",
+            "margin": "0",
+            "print_media_type": True,
+        },
+        timeout=120,
+    )
+
+    if response.status_code != 200:
+        raise Exception(f"PDFShift falló ({response.status_code}): {response.text}")
+
+    output_path = BASE_DIR / output_filename
+    with open(output_path, "wb") as f:
+        f.write(response.content)
 
     return str(output_path)
